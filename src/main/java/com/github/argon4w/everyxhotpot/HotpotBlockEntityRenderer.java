@@ -67,14 +67,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         poseStack.scale(scale, scale, scale);
 
         BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(new ResourceLocation("everyxhotpot", "effect/hotpot_bubble"));
-
-
-        int i = 0xFFFFFF;
-        float f = (float)(i >> 16 & 255) / 255.0F;
-        float f1 = (float)(i >> 8 & 255) / 255.0F;
-        float f2 = (float)(i & 255) / 255.0F;
-
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, f, f1, f2, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
+        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
         poseStack.popPose();
     }
