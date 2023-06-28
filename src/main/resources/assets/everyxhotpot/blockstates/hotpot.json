@@ -1,0 +1,19 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_water"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/campfire_off"
+      }
+    }
+  ]
+}

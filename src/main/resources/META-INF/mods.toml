@@ -23,7 +23,7 @@ displayName="${mod_name}" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.minecraftforge.net/en/latest/misc/updatechecker/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+displayURL="https://github.com/Argon4W/EveryXHotpot" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
@@ -39,7 +39,20 @@ authors="${mod_authors}" #optional
 #displayTest="MATCH_VERSION" # MATCH_VERSION is the default if nothing is specified (#optional)
 
 # The description text for the mod (multi line!) (#mandatory)
-description='''${mod_description}'''
+description='''
+谈起热闹, AR最先想到的就是火锅, 咕噜咕噜的冒泡泡, 热气腾腾的, 和朋友们一起大快朵颐, 好不热闹.
+所以AR决定做一个大家一起都能吃火锅的Mod, 在Minecraft的世界里, 把大家聚在一起, 一起热闹地说笑, 一起吃暖暖的火锅.
+无论大家的朋友在哪, 哪怕没办法见面, 都能在Minecraft里, 升起炉灶, 围在一桌
+与§l所有§r朋友, 在§l所有§r时间, 享受§l所有§r§m(甚至可以是荒诞的)§r美食, 一起开开心心地吃上火锅!
+
+I think "热闹" in Chinese is not so easy to explain in English.
+Translaters told me that it could be "lively", "busy", "bustling", "boisterous" and more.
+But I had my own thoughts jumping into my mind at the moment I saw the topic,
+which respresents friends sitting together around a bubbling hotpot, enjoying and talking.
+Even if you cannot get in touch with your friends in reality, we can connect each other together
+in Minecraft, enjoying the hotpot with this Minecraft Mod,
+§lEVERAYone, EVERYthing, EVERYtime.
+'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.${mod_id}]] #optional
     # the modid of the dependency
