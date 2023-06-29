@@ -1,0 +1,219 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_basement"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_face_n"
+      },
+      "when": {
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_a_n"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_wn"
+      },
+      "when": {
+        "north": "true",
+        "west_north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_ne"
+      },
+      "when": {
+        "north": "true",
+        "north_east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_face_s"
+      },
+      "when": {
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_a_s"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_es"
+      },
+      "when": {
+        "south": "true",
+        "east_south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_sw"
+      },
+      "when": {
+        "south": "true",
+        "south_west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_face_e"
+      },
+      "when": {
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_a_e"
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_ne"
+      },
+      "when": {
+        "east": "true",
+        "north_east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_es"
+      },
+      "when": {
+        "east": "true",
+        "east_south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_face_w"
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_a_w"
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_sw"
+      },
+      "when": {
+        "west": "true",
+        "south_west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_b_wn"
+      },
+      "when": {
+        "west": "true",
+        "west_north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_corner_wn"
+      },
+      "when": {
+        "west_north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_corner_ne"
+      },
+      "when": {
+        "north_east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_corner_es"
+      },
+      "when": {
+        "east_south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_corner_sw"
+      },
+      "when": {
+        "south_west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_c_wn"
+      },
+      "when": {
+        "west_north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_c_ne"
+      },
+      "when": {
+        "north_east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_c_es"
+      },
+      "when": {
+        "east_south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_expand_c_sw"
+      },
+      "when": {
+        "south_west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "every_x_hotpot:block/hotpot_soup"
+      }
+    },
+    {
+      "apply": {
+        "model": "minecraft:block/campfire_off"
+      }
+    }
+  ]
+}
