@@ -133,7 +133,7 @@ public class HotpotBlock extends BaseEntityBlock {
                 }
 
                 int cookingTime = HotpotBlockEntity.quickCheck.getRecipeFor(new SimpleContainer(stack), level).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
-                if (!level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotItemStackContent(player.getAbilities().instabuild ? stack.copy() : stack, cookingTime, 0))) {
+                if (!level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotItemStackContent((player.getAbilities().instabuild ? stack.copy() : stack).split(1), cookingTime, 0))) {
                     return InteractionResult.SUCCESS;
                 }
 

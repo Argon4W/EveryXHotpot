@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +21,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
@@ -38,8 +42,8 @@ public class HotpotBlockEntity extends BlockEntity {
     private boolean shouldSendItemUpdate = true;
     private int time;
 
-    public HotpotBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
-        super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), p_155229_, p_155230_);
+    public HotpotBlockEntity(BlockPos pos, BlockState state) {
+        super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
     }
 
     private int getItemStackSection(int hitSection) {
@@ -111,6 +115,10 @@ public class HotpotBlockEntity extends BlockEntity {
         return contents;
     }
 
+    public void markShouldSendItemUpdate() {
+        shouldSendItemUpdate = true;
+    }
+
     public int getTime() {
         return time;
     }
@@ -168,6 +176,16 @@ public class HotpotBlockEntity extends BlockEntity {
     }
 
     @Override
+    public void onLoad() {
+        super.onLoad();
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            if (!Minecraft.getInstance().isSingleplayer()) {
+                HotpotModEntry.NETWORK_CHANNEL.sendToServer(new HotpotBlockEntitySyncItemMessage(worldPosition));
+            }
+        });
+    }
+
+    @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         // Will get tag from #getUpdateTag
         return ClientboundBlockEntityDataPacket.create(this);
@@ -179,6 +197,6 @@ public class HotpotBlockEntity extends BlockEntity {
             blockEntity.shouldSendItemUpdate |= content.tick(blockEntity, level, pos);
         }
 
-        level.sendBlockUpdated(pos, state, state, 2);
+        level.sendBlockUpdated(pos, state, state, 3);
     }
 }

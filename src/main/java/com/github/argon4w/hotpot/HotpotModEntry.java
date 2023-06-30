@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -11,6 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
@@ -29,6 +32,14 @@ public class HotpotModEntry {
             .displayItems((parameters, output) -> {
                 output.accept(HOTPOT_BLOCK_ITEM.get());
             }).build());
+
+    public static final String PROTOCOL_VERSION = "1";
+    public static final SimpleChannel NETWORK_CHANNEL = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(HotpotModEntry.MODID, "hotpot_block_sync_item"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
 
     public HotpotModEntry() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

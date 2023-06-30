@@ -40,7 +40,7 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     public HotpotPlayerContent(Player player) {
         this.profile = player.getGameProfile();
-        reloadModelPartWithSkin(modelPartIndex = RANDOM_SOURCE.nextInt(VALID_PARTS.length));
+        modelPartIndex = RANDOM_SOURCE.nextInt(VALID_PARTS.length);
     }
 
     public HotpotPlayerContent() {}
@@ -61,7 +61,6 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     private void updatePlayerModel(int index) {
-        HotpotModEntry.LOGGER.info("{}", index);
         ModelPart playerModelPart = Minecraft.getInstance().getEntityModels().bakeLayer(slim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER);
         modelPart = playerModelPart.getChild(VALID_PARTS[index]);
         modelPart.setPos(0, 0, 0);
@@ -70,6 +69,10 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset) {
+        if (modelPart == null) {
+            reloadModelPartWithSkin(modelPartIndex);
+        }
+
         poseStack.pushPose();
 
         float f = blockEntity.getTime() / 20f / ITEM_ROUND_TRIP_TIME + offset;
@@ -79,9 +82,7 @@ public class HotpotPlayerContent implements IHotpotContent {
         poseStack.mulPose(Axis.XP.rotationDegrees(-90f + HotpotItemStackContent.getFloatingCurve(f, 1f) * ITEM_ROTATION));
         poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
 
-        if (modelPart != null) {
-            modelPart.render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(modelSkin)), combinedLight, combinedOverlay);
-        }
+        modelPart.render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(modelSkin)), combinedLight, combinedOverlay);
 
         poseStack.popPose();
     }
@@ -101,13 +102,8 @@ public class HotpotPlayerContent implements IHotpotContent {
         UUID uuid = tag.getUUID("UUID");
         String name = tag.getString("Name");
 
-        GameProfile newProfile = new GameProfile(uuid, name);
+        profile = new GameProfile(uuid, name);
         modelPartIndex = tag.getInt("ModelPartIndex");
-
-        if (!newProfile.equals(profile)) {
-            profile = newProfile;
-            reloadModelPartWithSkin(modelPartIndex);
-        }
     }
 
     @Override
