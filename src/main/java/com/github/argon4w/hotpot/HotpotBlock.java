@@ -4,9 +4,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -21,11 +24,22 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
 public class HotpotBlock extends BaseEntityBlock {
+    public static final VoxelShape SHAPE = Shapes.or(
+            box(0, 0, 0, 16, 9, 16),
+            box(0, 9, 0, 16, 16, 1),
+            box(0, 9, 0, 1, 16, 16),
+            box(15, 9, 0, 16, 16, 16),
+            box(0, 9, 15, 16, 16, 16)
+    );
+
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
@@ -109,12 +123,17 @@ public class HotpotBlock extends BaseEntityBlock {
 
             if (stack.isEmpty()) {
                 if (!level.isClientSide) {
-                    hotpotBlockEntity.dropFood(hitSection, level, pos);
+                    hotpotBlockEntity.dropContent(hitSection, level, pos);
                 }
 
                 return InteractionResult.SUCCESS;
             } else {
-                if (!level.isClientSide && hotpotBlockEntity.placeFood(hitSection, player.getAbilities().instabuild ? stack.copy() : stack)) {
+                if (stack.is(Items.DIRT) && !level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotPlayerContent(player))) {
+                    return InteractionResult.SUCCESS;
+                }
+
+                int cookingTime = HotpotBlockEntity.quickCheck.getRecipeFor(new SimpleContainer(stack), level).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
+                if (!level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotItemStackContent(player.getAbilities().instabuild ? stack.copy() : stack, cookingTime, 0))) {
                     return InteractionResult.SUCCESS;
                 }
 
@@ -136,6 +155,13 @@ public class HotpotBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide() ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntity::tick);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
+        return SHAPE;
     }
 
     @Nullable

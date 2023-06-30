@@ -16,14 +16,14 @@ import org.slf4j.Logger;
 
 @Mod(HotpotModEntry.MODID)
 public class HotpotModEntry {
-    public static final String MODID = "every_x_hotpot";
+    public static final String MODID = "everyxhotpot";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final RegistryObject<Block> HOTPOT_BLOCK = HotpotRegistries.BLOCKS.register("hotpot", HotpotBlock::new);
     public static final RegistryObject<BlockEntityType<HotpotBlockEntity>> HOTPOT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot",
             () -> BlockEntityType.Builder.of(HotpotBlockEntity::new, HOTPOT_BLOCK.get()).build(DSL.remainderType()));
     public static final RegistryObject<Item> HOTPOT_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot", () -> new BlockItem(HOTPOT_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<CreativeModeTab> EVERY_X_HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("everyxhotpot_tab", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> EVERY_X_HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> HOTPOT_BLOCK_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
