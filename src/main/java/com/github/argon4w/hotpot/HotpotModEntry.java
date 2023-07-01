@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -41,6 +42,7 @@ public class HotpotModEntry {
     public static final RegistryObject<CreativeModeTab> EVERY_X_HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> HOTPOT_BLOCK_ITEM.get().getDefaultInstance())
+            .title(Component.translatable("itemGroup.EveryXHotpot"))
             .displayItems((parameters, output) -> {
                 output.accept(HOTPOT_BLOCK_ITEM.get());
             }).build());

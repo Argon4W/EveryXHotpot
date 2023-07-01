@@ -11,13 +11,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -43,7 +46,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
-public class HotpotBlock extends BaseEntityBlock {
+public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
@@ -64,7 +67,7 @@ public class HotpotBlock extends BaseEntityBlock {
                 .sound(SoundType.COPPER)
                 .requiresCorrectToolForDrops()
                 .lightLevel((blockState) -> 15)
-                .strength(1.5f, 6.0f));
+                .strength(3.0F, 6.0F));
 
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(NORTH, false)
@@ -200,6 +203,16 @@ public class HotpotBlock extends BaseEntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
+            hotpotBlockEntity.onRemove(level, pos);
+        }
+
+        super.onRemove(state, level, pos, newState, b);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         super.entityInside(state, level, pos, entity);
 
@@ -247,5 +260,11 @@ public class HotpotBlock extends BaseEntityBlock {
     @Override
     public  RenderShape getRenderShape(BlockState p_49232_) {
         return RenderShape.MODEL;
+    }
+
+    @NotNull
+    @Override
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.HEAD;
     }
 }

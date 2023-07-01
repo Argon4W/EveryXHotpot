@@ -1,0 +1,6 @@
+{
+  "death.attack.in_hotpot": "%1$s自愿当成了火锅食材",
+  "death.attack.in_hotpot.player": "%1$s在逃离%2$s时被自愿当成了火锅食材",
+  "block.everyxhotpot.hotpot": "火锅",
+  "itemGroup.EveryXHotpot": "EveryXHotpot 一起火锅"
+}

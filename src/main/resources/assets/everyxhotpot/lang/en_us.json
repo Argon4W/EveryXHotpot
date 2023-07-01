@@ -1,0 +1,6 @@
+{
+  "death.attack.in_hotpot": "%1$s jumps into the hotpot and becomes a member of the hotpot ingredients voluntarily.",
+  "death.attack.in_hotpot.player": "%1$s jumps into the hotpot when escaping %2$s and becomes a member of the hotpot ingredients involuntarily.",
+  "block.everyxhotpot.hotpot": "Hotpot",
+  "itemGroup.EveryXHotpot": "EveryXHotpot"
+}

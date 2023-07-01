@@ -15,12 +15,15 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
@@ -44,20 +47,6 @@ public class HotpotBlockEntity extends BlockEntity {
         super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
     }
 
-    private int getContentSection(int hitSection) {
-        double sectionSize = (360f / 8f);
-        double degree =  (time / 20f / 60f) * 360f + sectionSize / 2f;
-
-        int rootSection = (int) Math.floor((degree % 360f) / sectionSize);
-        int offsetSection = hitSection - rootSection;
-
-        return offsetSection < 0 ? 8 + offsetSection : offsetSection;
-    }
-
-    public boolean placeContent(int hitSection, IHotpotContent content, Level level, BlockPos pos) {
-        return placeContent(hitSection, content, level, pos, new LinkedList<>());
-    }
-
     private boolean placeContent(int hitSection, IHotpotContent content, Level level, BlockPos pos, LinkedList<BlockPos> chain) {
         int section = getContentSection(hitSection);
 
@@ -69,7 +58,7 @@ public class HotpotBlockEntity extends BlockEntity {
         }
 
         for (int i = 0; i < contents.size(); i ++) {
-           if (contents.get(i) instanceof HotpotEmptyContent) {
+            if (contents.get(i) instanceof HotpotEmptyContent) {
                 contents.set(i, content);
                 markDataChanged();
 
@@ -84,16 +73,16 @@ public class HotpotBlockEntity extends BlockEntity {
 
         for (BlockPos neighbor : neighbors) {
             if (!chain.contains(neighbor) && level.getBlockEntity(neighbor) instanceof HotpotBlockEntity hotpotBlockEntity) {
-                 if (hotpotBlockEntity.placeContent(hitSection, content, level, neighbor, chain)) {
-                     return true;
-                 }
+                if (hotpotBlockEntity.placeContent(hitSection, content, level, neighbor, chain)) {
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    public void saveContents(CompoundTag compoundTag) {
+    private void saveContents(CompoundTag compoundTag) {
         ListTag list = new ListTag();
 
         for(int i = 0; i < contents.size(); ++i) {
@@ -109,6 +98,16 @@ public class HotpotBlockEntity extends BlockEntity {
         compoundTag.put("Items", list);
     }
 
+    public int getContentSection(int hitSection) {
+        double sectionSize = (360f / 8f);
+        double degree =  (time / 20f / 60f) * 360f + sectionSize / 2f;
+
+        int rootSection = (int) Math.floor((degree % 360f) / sectionSize);
+        int offsetSection = hitSection - rootSection;
+
+        return offsetSection < 0 ? 8 + offsetSection : offsetSection;
+    }
+
     public void dropContent(int hitSection, Level level, BlockPos pos) {
         int section = getContentSection(hitSection);
         IHotpotContent content = contents.get(section);
@@ -117,6 +116,16 @@ public class HotpotBlockEntity extends BlockEntity {
             content.dropContent(level, pos);
             contents.set(section, HOTPOT_CONTENT_TYPES.get("Empty").get());
             markDataChanged();
+        }
+    }
+
+    public boolean placeContent(int hitSection, IHotpotContent content, Level level, BlockPos pos) {
+        return placeContent(hitSection, content, level, pos, new LinkedList<>());
+    }
+
+    public void onRemove(Level level, BlockPos pos) {
+        for (IHotpotContent content : contents) {
+            content.dropContent(level, pos);
         }
     }
 
