@@ -1,5 +1,6 @@
-package com.github.argon4w.hotpot;
+package com.github.argon4w.hotpot.events;
 
+import com.github.argon4w.hotpot.HotpotModEntry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;

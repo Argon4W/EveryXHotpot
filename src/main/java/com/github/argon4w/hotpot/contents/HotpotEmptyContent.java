@@ -1,19 +1,12 @@
-package com.github.argon4w.hotpot;
+package com.github.argon4w.hotpot.contents;
 
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.Container;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.joml.Math;
 
 public class HotpotEmptyContent implements IHotpotContent {
     public HotpotEmptyContent() {}

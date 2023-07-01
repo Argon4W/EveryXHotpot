@@ -1,10 +1,22 @@
-package com.github.argon4w.hotpot;
+package com.github.argon4w.hotpot.blocks;
 
+import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
+import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -32,14 +44,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
 public class HotpotBlock extends BaseEntityBlock {
-    public static final VoxelShape SHAPE = Shapes.or(
-            box(0, 0, 0, 16, 9, 16),
-            box(0, 9, 0, 16, 16, 1),
-            box(0, 9, 0, 1, 16, 16),
-            box(15, 9, 0, 16, 16, 16),
-            box(0, 9, 15, 16, 16, 16)
-    );
-
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
@@ -49,6 +53,9 @@ public class HotpotBlock extends BaseEntityBlock {
     public static final BooleanProperty NORTH_EAST = BooleanProperty.create("north_east");
     public static final BooleanProperty EAST_SOUTH = BooleanProperty.create("east_south");
     public static final BooleanProperty SOUTH_WEST = BooleanProperty.create("south_west");
+
+    private final VoxelShape[] shapesByIndex = makeShapes();
+    private final Object2IntMap<BlockState> stateToIndex = new Object2IntOpenHashMap<>();
 
     public HotpotBlock() {
         super(BlockBehaviour.Properties.of()
@@ -69,6 +76,39 @@ public class HotpotBlock extends BaseEntityBlock {
                 .setValue(EAST_SOUTH, false)
                 .setValue(SOUTH_WEST, false)
         );
+    }
+
+    private VoxelShape[] makeShapes() {
+        VoxelShape base = box(0, 0, 0, 16, 8, 16);
+        VoxelShape south = box(0, 8, 15, 16, 16, 16); //south(2^0)
+        VoxelShape west = box(0, 8, 0, 1, 16, 16); //west(2^1)
+        VoxelShape north = box(0, 8, 0, 16, 16, 1); //north(2^2)
+        VoxelShape east = box(15, 8, 0, 16, 16, 16); //east(2^3)
+
+        VoxelShape[] faces = {
+                Shapes.empty(), //0000 (0)
+                south, //0001 (1)
+                west, //0010 (2)
+                Shapes.or(south, west), //0011 (3)
+                north, //0100 (4)
+                Shapes.or(north, south), //0101 (5)
+                Shapes.or(north, west), //0110 (6)
+                Shapes.or(north, west, south), //0111 (7)
+                east, //1000 (8)
+                Shapes.or(east, south), //1001 (9)
+                Shapes.or(east, west), //1010 (10)
+                Shapes.or(east, west, south), //1011 (11)
+                Shapes.or(east, north), //1100 (12)
+                Shapes.or(east, north, south), //1101 (13)
+                Shapes.or(east, north, west), //1110 (14)
+                Shapes.or(east, north, west, south) //1111 (15)
+        };
+
+        for (int i = 0; i < faces.length; i ++) {
+            faces[i] = Shapes.or(base, faces[i]);
+        }
+
+        return faces;
     }
 
     private BlockState updateState(BlockState state, BlockPos pos, BlockGetter getter) {
@@ -111,13 +151,31 @@ public class HotpotBlock extends BaseEntityBlock {
         return (int) Math.floor(degree / sectionSize);
     }
 
+    @SuppressWarnings("deprecation")
+    private int getShapeIndex(BlockState state) {
+        return stateToIndex.computeIntIfAbsent(state, (blockState) -> {
+            int index = 0;
+
+            index = blockState.getValue(SOUTH) ? index : index | indexFor(Direction.SOUTH);
+            index = blockState.getValue(WEST) ? index : index | indexFor(Direction.WEST);
+            index = blockState.getValue(NORTH) ? index : index | indexFor(Direction.NORTH);
+            index = blockState.getValue(EAST) ? index : index | indexFor(Direction.EAST);
+
+            return index;
+        });
+    }
+
+    private static int indexFor(Direction direction) {
+        return 1 << direction.get2DDataValue();
+    }
+
     @NotNull
     @Override
     @SuppressWarnings("deprecation")
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         BlockEntity entity = level.getBlockEntity(pos);
 
-        if (entity instanceof HotpotBlockEntity hotpotBlockEntity && result.getDirection() != Direction.DOWN) {
+        if (entity instanceof HotpotBlockEntity hotpotBlockEntity) {
             ItemStack stack = player.getItemInHand(hand);
             int hitSection = getHitSection(result);
 
@@ -128,12 +186,8 @@ public class HotpotBlock extends BaseEntityBlock {
 
                 return InteractionResult.SUCCESS;
             } else {
-                if (stack.is(Items.DIRT) && !level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotPlayerContent(player))) {
-                    return InteractionResult.SUCCESS;
-                }
-
                 int cookingTime = HotpotBlockEntity.quickCheck.getRecipeFor(new SimpleContainer(stack), level).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
-                if (!level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotItemStackContent((player.getAbilities().instabuild ? stack.copy() : stack).split(1), cookingTime, 0))) {
+                if (!level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotItemStackContent((player.getAbilities().instabuild ? stack.copy() : stack).split(1), cookingTime, 0), level, pos)) {
                     return InteractionResult.SUCCESS;
                 }
 
@@ -142,6 +196,14 @@ public class HotpotBlock extends BaseEntityBlock {
         }
 
         return InteractionResult.PASS;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        super.entityInside(state, level, pos, entity);
+
+        entity.hurt(new DamageSource(HotpotModEntry.IN_HOTPOT_DAMAGE_TYPE.apply(level), new Vec3(pos.getX(), pos.getY(), pos.getZ())), 3f);
     }
 
     @NotNull
@@ -160,8 +222,8 @@ public class HotpotBlock extends BaseEntityBlock {
     @NotNull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
-        return SHAPE;
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
+        return shapesByIndex[getShapeIndex(state)];
     }
 
     @Nullable

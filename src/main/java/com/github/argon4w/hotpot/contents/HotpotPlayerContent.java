@@ -1,5 +1,6 @@
-package com.github.argon4w.hotpot;
+package com.github.argon4w.hotpot.contents;
 
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -12,11 +13,18 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.checkerframework.checker.units.qual.C;
 import org.joml.Math;
 
 import java.util.UUID;
@@ -38,9 +46,9 @@ public class HotpotPlayerContent implements IHotpotContent {
     private ResourceLocation modelSkin;
     private boolean slim;
 
-    public HotpotPlayerContent(Player player) {
+    public HotpotPlayerContent(Player player, boolean head) {
         this.profile = player.getGameProfile();
-        modelPartIndex = RANDOM_SOURCE.nextInt(VALID_PARTS.length);
+        this.modelPartIndex = head ? 0 : RANDOM_SOURCE.nextInt(1, VALID_PARTS.length);;
     }
 
     public HotpotPlayerContent() {}
@@ -89,7 +97,14 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public void dropContent(Level level, BlockPos pos) {
+        if (modelPartIndex == 0) {
+            ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
+            itemStack.addTagElement("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), profile));
 
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+        } else {
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2)));
+        }
     }
 
     @Override
@@ -99,17 +114,13 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public void load(CompoundTag tag) {
-        UUID uuid = tag.getUUID("UUID");
-        String name = tag.getString("Name");
-
-        profile = new GameProfile(uuid, name);
+        profile = NbtUtils.readGameProfile(tag.getCompound("Profile"));
         modelPartIndex = tag.getInt("ModelPartIndex");
     }
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        tag.putUUID("UUID", profile.getId());
-        tag.putString("Name", profile.getName());
+        tag.put("Profile", NbtUtils.writeGameProfile(new CompoundTag(), profile));
         tag.putInt("ModelPartIndex", modelPartIndex);
 
         return tag;
@@ -117,7 +128,7 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public boolean isValid(CompoundTag tag) {
-        return tag.contains("UUID", Tag.TAG_INT_ARRAY) && tag.contains("Name", Tag.TAG_STRING) && tag.contains("ModelPartIndex", Tag.TAG_ANY_NUMERIC);
+        return tag.contains("Profile", Tag.TAG_COMPOUND) && NbtUtils.readGameProfile(tag.getCompound("Profile")) != null && tag.contains("ModelPartIndex", Tag.TAG_ANY_NUMERIC);
     }
 
     @Override

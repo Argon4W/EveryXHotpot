@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "everyxhotpot:block/hotpot_basement"
+        "model": "everyxhotpot:block/hotpot_base"
       }
     },
     {
