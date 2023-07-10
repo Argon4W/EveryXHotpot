@@ -42,8 +42,6 @@ public class HotpotBlockEntity extends BlockEntity implements IHotpotNeighborFin
     private IHotpotSoup soup = HotpotDefinitions.HOTPOT_SOUP_TYPES.get("Empty").get();
     private int time = 0;
     private float waterLevel = 0f;
-
-    @OnlyIn(Dist.CLIENT)
     public float renderedWaterLevel = -1f;
 
     public HotpotBlockEntity(BlockPos pos, BlockState state) {
