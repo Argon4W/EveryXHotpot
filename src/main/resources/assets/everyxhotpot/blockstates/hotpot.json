@@ -207,7 +207,34 @@
     },
     {
       "apply": {
-        "model": "everyxhotpot:block/hotpot_soup"
+        "model": "everyxhotpot:block/hotpot_separator_n"
+      },
+      "when": {
+        "separator_north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_s"
+      },
+      "when": {
+        "separator_south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_e"
+      },
+      "when": {
+        "separator_east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_w"
+      },
+      "when": {
+        "separator_west": "true"
       }
     },
     {

@@ -1,39 +1,46 @@
 package com.github.argon4w.hotpot.contents;
 
+import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptyContent implements IHotpotContent {
     public HotpotEmptyContent() {}
 
     @Override
-    public void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset) {}
+    public void placed(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+
+    }
 
     @Override
-    public void dropContent(Level level, BlockPos pos) {}
+    public void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity hotpotBlockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline) {}
 
     @Override
-    public boolean tick(HotpotBlockEntity blockEntity, Level level, BlockPos pos) {
+    public ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         return false;
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(CompoundTag compoundTag) {
+
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
-        return tag;
+    public CompoundTag save(CompoundTag compoundTag) {
+        return compoundTag;
     }
 
     @Override
-    public boolean isValid(CompoundTag tag) {
+    public boolean isValid(CompoundTag compoundTag) {
         return true;
     }
 

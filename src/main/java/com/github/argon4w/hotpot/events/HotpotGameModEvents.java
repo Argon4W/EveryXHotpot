@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.events;
 
+import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,13 +19,12 @@ public class HotpotGameModEvents {
             Vec3 vec = event.getSource().getSourcePosition();
 
             if (vec != null) {
-                BlockPos pos = new BlockPos((int) vec.x, (int) vec.y, (int) vec.z);
-                Level level = event.getEntity().level();
+                BlockPosWithLevel pos = new BlockPosWithLevel(event.getEntity().level(), new BlockPos((int) vec.x, (int) vec.y, (int) vec.z));
 
-                if (level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
-                    hotpotBlockEntity.placeContent(0, new HotpotPlayerContent(player, true), level, pos);
-                    hotpotBlockEntity.placeContent(0, new HotpotPlayerContent(player, false), level, pos);
-                    hotpotBlockEntity.placeContent(0, new HotpotPlayerContent(player, false), level, pos);
+                if (pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
+                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, true), pos);
+                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, false), pos);
+                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, false), pos);
                 }
             }
         }

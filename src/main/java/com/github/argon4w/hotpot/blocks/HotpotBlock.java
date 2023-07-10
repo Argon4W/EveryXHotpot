@@ -1,34 +1,27 @@
 package com.github.argon4w.hotpot.blocks;
 
+import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
-import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -57,6 +50,11 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public static final BooleanProperty EAST_SOUTH = BooleanProperty.create("east_south");
     public static final BooleanProperty SOUTH_WEST = BooleanProperty.create("south_west");
 
+    public static final BooleanProperty SEPARATOR_NORTH = BooleanProperty.create("separator_north");
+    public static final BooleanProperty SEPARATOR_SOUTH = BooleanProperty.create("separator_south");
+    public static final BooleanProperty SEPARATOR_EAST = BooleanProperty.create("separator_east");
+    public static final BooleanProperty SEPARATOR_WEST = BooleanProperty.create("separator_west");
+
     private final VoxelShape[] shapesByIndex = makeShapes();
     private final Object2IntMap<BlockState> stateToIndex = new Object2IntOpenHashMap<>();
 
@@ -78,6 +76,10 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .setValue(NORTH_EAST, false)
                 .setValue(EAST_SOUTH, false)
                 .setValue(SOUTH_WEST, false)
+                .setValue(SEPARATOR_NORTH, false)
+                .setValue(SEPARATOR_SOUTH, false)
+                .setValue(SEPARATOR_EAST, false)
+                .setValue(SEPARATOR_WEST, false)
         );
     }
 
@@ -114,49 +116,53 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         return faces;
     }
 
-    private BlockState updateState(BlockState state, BlockPos pos, BlockGetter getter) {
-        BlockPos north = pos.north();
-        BlockPos south = pos.south();
-        BlockPos east = pos.east();
-        BlockPos west = pos.west();
+    private BlockState updateState(BlockState state, BlockPos pos, LevelAccessor accessor) {
+        if (!(accessor instanceof Level)) {
+            return defaultBlockState();
+        }
 
-        BlockPos westNorth = north.west();
-        BlockPos northEast = east.north();
-        BlockPos eastSouth = south.east();
-        BlockPos southWest = west.south();
+        BlockPosWithLevel.Builder posBuilder = new BlockPosWithLevel.Builder((Level) accessor);
+        BlockPosWithLevel selfPos = posBuilder.of(pos);
 
-        boolean northValue = getter.getBlockState(north).is(HotpotModEntry.HOTPOT_BLOCK.get());
-        boolean southValue = getter.getBlockState(south).is(HotpotModEntry.HOTPOT_BLOCK.get());
-        boolean eastValue = getter.getBlockState(east).is(HotpotModEntry.HOTPOT_BLOCK.get());
-        boolean westValue = getter.getBlockState(west).is(HotpotModEntry.HOTPOT_BLOCK.get());
+        BlockPosWithLevel north = posBuilder.of(pos.north());
+        BlockPosWithLevel south = posBuilder.of(pos.south());
+        BlockPosWithLevel east = posBuilder.of(pos.east());
+        BlockPosWithLevel west = posBuilder.of(pos.west());
+
+        BlockPosWithLevel westNorth = north.west();
+        BlockPosWithLevel northEast = east.north();
+        BlockPosWithLevel eastSouth = south.east();
+        BlockPosWithLevel southWest = west.south();
+
+        boolean northValue = north.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean southValue = south.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean eastValue = east.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean westValue = west.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
 
         return state
                 .setValue(NORTH, northValue)
                 .setValue(SOUTH, southValue)
                 .setValue(EAST, eastValue)
                 .setValue(WEST, westValue)
-                .setValue(WEST_NORTH, westValue && northValue && getter.getBlockState(westNorth).is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(NORTH_EAST, northValue && eastValue && getter.getBlockState(northEast).is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(EAST_SOUTH, eastValue && southValue && getter.getBlockState(eastSouth).is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(SOUTH_WEST, southValue && westValue && getter.getBlockState(southWest).is(HotpotModEntry.HOTPOT_BLOCK.get()));
+                .setValue(WEST_NORTH, westValue && northValue && westNorth.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(NORTH_EAST, northValue && eastValue && northEast.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(EAST_SOUTH, eastValue && southValue && eastSouth.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(SOUTH_WEST, southValue && westValue && southWest.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(SEPARATOR_NORTH, northValue && !HotpotBlockEntity.isSameSoup(selfPos, north))
+                .setValue(SEPARATOR_SOUTH, southValue && !HotpotBlockEntity.isSameSoup(selfPos, south))
+                .setValue(SEPARATOR_EAST, eastValue && !HotpotBlockEntity.isSameSoup(selfPos, east))
+                .setValue(SEPARATOR_WEST, westValue && !HotpotBlockEntity.isSameSoup(selfPos, west));
     }
 
     private int getHitSection(BlockHitResult result) {
-        BlockPos blockpos = result.getBlockPos().relative(Direction.UP);
-        Vec3 vec3 = result.getLocation().subtract(blockpos.getX(), blockpos.getY(), blockpos.getZ());
-        double x = vec3.x() - 0.5f;
-        double z = vec3.z() - 0.5f;
+        BlockPos blockPos = result.getBlockPos().relative(Direction.UP);
 
-        double sectionSize = (360f / 8f);
-        double degree = Math.atan2(x, z) / Math.PI * 180f + sectionSize / 2f;
-        degree = degree < 0f ? degree + 360f : degree;
-
-        return (int) Math.floor(degree / sectionSize);
+        return HotpotBlockEntity.getPosSection(blockPos, result.getLocation());
     }
 
     @SuppressWarnings("deprecation")
     private int getShapeIndex(BlockState state) {
-        return stateToIndex.computeIntIfAbsent(state, (blockState) -> {
+        return stateToIndex.computeIntIfAbsent(state, blockState -> {
             int index = 0;
 
             index = blockState.getValue(SOUTH) ? index : index | indexFor(Direction.SOUTH);
@@ -176,26 +182,17 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @Override
     @SuppressWarnings("deprecation")
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        BlockEntity entity = level.getBlockEntity(pos);
+        BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
 
-        if (entity instanceof HotpotBlockEntity hotpotBlockEntity) {
-            ItemStack stack = player.getItemInHand(hand);
+        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
+            ItemStack itemStack = player.getItemInHand(hand);
             int hitSection = getHitSection(result);
 
-            if (stack.isEmpty()) {
-                if (!level.isClientSide) {
-                    hotpotBlockEntity.dropContent(hitSection, level, pos);
-                }
-
-                return InteractionResult.SUCCESS;
-            } else {
-                int cookingTime = HotpotBlockEntity.quickCheck.getRecipeFor(new SimpleContainer(stack), level).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
-                if (!level.isClientSide && hotpotBlockEntity.placeContent(hitSection, new HotpotItemStackContent((player.getAbilities().instabuild ? stack.copy() : stack).split(1), cookingTime, 0), level, pos)) {
-                    return InteractionResult.SUCCESS;
-                }
-
-                return InteractionResult.CONSUME;
+            if (!level.isClientSide) {
+                hotpotBlockEntity.tryPlaceContentViaInteraction(hitSection, player, hand, itemStack, levelPos);
             }
+
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;
@@ -205,7 +202,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @SuppressWarnings("deprecation")
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
         if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
-            hotpotBlockEntity.onRemove(level, pos);
+            hotpotBlockEntity.onRemove(new BlockPosWithLevel(level, pos));
         }
 
         super.onRemove(state, level, pos, newState, b);
@@ -216,7 +213,11 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         super.entityInside(state, level, pos, entity);
 
-        entity.hurt(new DamageSource(HotpotModEntry.IN_HOTPOT_DAMAGE_TYPE.apply(level), new Vec3(pos.getX(), pos.getY(), pos.getZ())), 3f);
+        BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
+
+        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity && !level.isClientSide) {
+            hotpotBlockEntity.getSoup().entityInside(hotpotBlockEntity, levelPos, entity);
+        }
     }
 
     @NotNull
@@ -247,7 +248,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(NORTH, SOUTH, EAST, WEST, WEST_NORTH, NORTH_EAST, EAST_SOUTH, SOUTH_WEST);
+        builder.add(NORTH, SOUTH, EAST, WEST, WEST_NORTH, NORTH_EAST, EAST_SOUTH, SOUTH_WEST, SEPARATOR_NORTH, SEPARATOR_SOUTH, SEPARATOR_EAST, SEPARATOR_WEST);
     }
 
     @Nullable

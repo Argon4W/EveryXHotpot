@@ -1,21 +1,16 @@
 package com.github.argon4w.hotpot.contents;
 
+import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.IHotpotSavable;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.ItemStack;
 
-public interface IHotpotContent {
-    void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset);
-    boolean tick(HotpotBlockEntity blockEntity, Level level, BlockPos pos);
-    void dropContent(Level level, BlockPos pos);
-    void load(CompoundTag tag);
-    CompoundTag save(CompoundTag tag);
-
-    boolean isValid(CompoundTag tag);
-    String getID();
+public interface IHotpotContent extends IHotpotSavable {
+    void placed(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
+    void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity hotpotBlockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline);
+    boolean tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
+    ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
 }

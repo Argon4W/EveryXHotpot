@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -153,6 +154,10 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+
+    maven {
+        url = 'https://maven.yuluo.dev/repository/minecraft-repo/'
+    }
 }
 
 dependencies {
@@ -177,6 +182,26 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    implementation fg.deobf("games.moegirl.sinocraft:sinocalligraphy:1.20.1-1.5.1-SNAPSHOT")
+    implementation fg.deobf("games.moegirl.sinocraft:sinocore:1.20.1-1.5.1-SNAPSHOT")
+    implementation fg.deobf("games.moegirl.sinocraft:sinodivination:1.20.1-1.5.1-SNAPSHOT")
+    implementation fg.deobf("games.moegirl.sinocraft:sinofeast:1.20.1-1.5.1-SNAPSHOT")
+    implementation fg.deobf("games.moegirl.sinocraft:sinofoundation:1.20.1-1.5.1-SNAPSHOT")
+    implementation fg.deobf("games.moegirl.sinocraft:sinotest:1.20.1-1.5.1-SNAPSHOT")
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+mixin {
+    add sourceSets.main, 'mixins.everyxhotpot.refmap.json'
+    config 'mixins.everyxhotpot.json'
+
+    debug.verbose = true
+    debug.export = true
+
+    env.remapRefMap = true
+    env.refMapRemappingFile = "${projectDir}/build/createSrgToMcp/output.srg"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -210,7 +235,8 @@ jar {
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : mod_authors,
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs': 'mixins.everyxhotpot.json',
         ])
     }
 }
