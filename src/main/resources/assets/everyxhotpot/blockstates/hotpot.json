@@ -239,6 +239,78 @@
     },
     {
       "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_wn"
+      },
+      "when": {
+        "separator_west": "true",
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_wn"
+      },
+      "when": {
+        "separator_north": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_ne"
+      },
+      "when": {
+        "separator_north": "true",
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_ne"
+      },
+      "when": {
+        "separator_east": "true",
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_es"
+      },
+      "when": {
+        "separator_east": "true",
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_es"
+      },
+      "when": {
+        "separator_south": "true",
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_sw"
+      },
+      "when": {
+        "separator_south": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "everyxhotpot:block/hotpot_separator_corner_sw"
+      },
+      "when": {
+        "separator_west": "true",
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
         "model": "minecraft:block/campfire_off"
       }
     }
