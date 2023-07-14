@@ -19,8 +19,8 @@ public class HotpotClientModEvents {
 
     @SubscribeEvent
     public static void onRegisterAdditional(ModelEvent.RegisterAdditional event) {
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "effect/hotpot_clear_soup_bubble"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_clear_soup"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_clear_soup_bubble"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_clear_soup"));
     }
 
     @SubscribeEvent

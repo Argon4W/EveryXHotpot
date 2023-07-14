@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -28,7 +29,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         this.context = context;
     }
 
-    private void renderBubble(HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, Bubble bubble, ResourceLocation bubbleModelLocation) {
+    private void renderBubble(HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, Bubble bubble, BakedModel model) {
         poseStack.pushPose();
 
         float progress = (blockEntity.getTime() + bubble.offset) % BUBBLE_GROWTH_TIME / BUBBLE_GROWTH_TIME;
@@ -38,16 +39,16 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         poseStack.translate(bubble.x, y, bubble.z);
         poseStack.scale(scale, scale, scale);
 
-
-        BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(bubbleModelLocation);
         context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
         poseStack.popPose();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void render(HotpotBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         float waterLevel = blockEntity.getWaterLevel();
+        MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
 
         float renderedWaterLevel = blockEntity.renderedWaterLevel;
         float difference = (waterLevel - renderedWaterLevel);
@@ -59,14 +60,15 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             }
         }
 
-        //FIXME: Probably UNSAFE!
-        if (bufferSource instanceof MultiBufferSource.BufferSource source) {
-            source.endBatch(Sheets.translucentCullBlockSheet());
-        }
+        //FIXME: Probably UNSAFE FOR RENDERING!
+        source.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
+        source.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
+        source.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
+        source.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
 
-        ResourceLocation bubbleModelLocation = blockEntity.getSoup().getBubbleResourceLocation();
+        blockEntity.getSoup().getBubbleResourceLocation().ifPresent(bubbleLocation -> {
+            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(bubbleLocation);
 
-        if (bubbleModelLocation != null) {
             for (int i = 0; i < bubbles.length; i++) {
                 Bubble bubble = bubbles[i];
 
@@ -75,21 +77,23 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
                     continue;
                 }
 
-                renderBubble(blockEntity, poseStack, bufferSource, combinedLight, combinedOverlay, bubble, bubbleModelLocation);
+                renderBubble(blockEntity, poseStack, bufferSource, combinedLight, combinedOverlay, bubble, model);
             }
-        }
+        });
 
-        ResourceLocation soupModelLocation = blockEntity.getSoup().getSoupResourceLocation();
-
-        if (soupModelLocation != null) {
+        blockEntity.getSoup().getSoupResourceLocation().ifPresent(soupLocation -> {
             poseStack.pushPose();
             poseStack.translate(0, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f), 0);
 
-            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(soupModelLocation);
+            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(soupLocation);
             context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
             poseStack.popPose();
-        }
+        });
+
+        //FIXME: Probably UNSAFE FOR RENDERING!
+        source.endBatch(Sheets.translucentCullBlockSheet());
+        source.endBatch(RenderType.glintTranslucent());
     }
 
     @Override

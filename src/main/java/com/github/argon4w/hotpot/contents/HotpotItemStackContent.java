@@ -66,6 +66,10 @@ public class HotpotItemStackContent implements IHotpotContent {
         return HotpotDefinitions.QUICK_CHECK.getRecipeFor(container, pos.level()).map((recipe) -> recipe.assemble(container, pos.level().registryAccess())).orElse(itemStack);
     }
 
+    public boolean isAssembled() {
+        return cookingTime < 0;
+    }
+
     @Override
     public boolean tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         if (cookingTime < 0) return false;

@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -31,13 +30,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 
 public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -121,33 +118,32 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return defaultBlockState();
         }
 
-        BlockPosWithLevel.Builder posBuilder = new BlockPosWithLevel.Builder((Level) accessor);
-        BlockPosWithLevel selfPos = posBuilder.of(pos);
+        BlockPosWithLevel selfPos = new BlockPosWithLevel((Level) accessor, pos);
 
-        BlockPosWithLevel north = posBuilder.of(pos.north());
-        BlockPosWithLevel south = posBuilder.of(pos.south());
-        BlockPosWithLevel east = posBuilder.of(pos.east());
-        BlockPosWithLevel west = posBuilder.of(pos.west());
+        BlockPosWithLevel north = selfPos.north();
+        BlockPosWithLevel south = selfPos.south();
+        BlockPosWithLevel east = selfPos.east();
+        BlockPosWithLevel west = selfPos.west();
 
         BlockPosWithLevel westNorth = north.west();
         BlockPosWithLevel northEast = east.north();
         BlockPosWithLevel eastSouth = south.east();
         BlockPosWithLevel southWest = west.south();
 
-        boolean northValue = north.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
-        boolean southValue = south.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
-        boolean eastValue = east.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
-        boolean westValue = west.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean northValue = north.is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean southValue = south.is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean eastValue = east.is(HotpotModEntry.HOTPOT_BLOCK.get());
+        boolean westValue = west.is(HotpotModEntry.HOTPOT_BLOCK.get());
 
         return state
                 .setValue(NORTH, northValue)
                 .setValue(SOUTH, southValue)
                 .setValue(EAST, eastValue)
                 .setValue(WEST, westValue)
-                .setValue(WEST_NORTH, westValue && northValue && westNorth.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(NORTH_EAST, northValue && eastValue && northEast.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(EAST_SOUTH, eastValue && southValue && eastSouth.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(SOUTH_WEST, southValue && westValue && southWest.getBlockState().is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(WEST_NORTH, westValue && northValue && westNorth.is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(NORTH_EAST, northValue && eastValue && northEast.is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(EAST_SOUTH, eastValue && southValue && eastSouth.is(HotpotModEntry.HOTPOT_BLOCK.get()))
+                .setValue(SOUTH_WEST, southValue && westValue && southWest.is(HotpotModEntry.HOTPOT_BLOCK.get()))
                 .setValue(SEPARATOR_NORTH, northValue && !HotpotBlockEntity.isSameSoup(selfPos, north))
                 .setValue(SEPARATOR_SOUTH, southValue && !HotpotBlockEntity.isSameSoup(selfPos, south))
                 .setValue(SEPARATOR_EAST, eastValue && !HotpotBlockEntity.isSameSoup(selfPos, east))

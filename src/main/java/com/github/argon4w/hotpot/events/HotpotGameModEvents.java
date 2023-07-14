@@ -19,7 +19,7 @@ public class HotpotGameModEvents {
             Vec3 vec = event.getSource().getSourcePosition();
 
             if (vec != null) {
-                BlockPosWithLevel pos = new BlockPosWithLevel(event.getEntity().level(), new BlockPos((int) vec.x, (int) vec.y, (int) vec.z));
+                BlockPosWithLevel pos = BlockPosWithLevel.fromVec3(event.getEntity().level(), vec);
 
                 if (pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
                     hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, true), pos);

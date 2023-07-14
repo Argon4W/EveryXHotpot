@@ -36,25 +36,26 @@ public class HotpotEmptySoup implements IHotpotSoup {
 
     @Override
     public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel selfPos) {
-        Item item = itemStack.getItem();
-
-        if (HotpotDefinitions.HOTPOT_EMPTY_FILL_TYPES.containsKey(item)) {
-            HotpotDefinitions.HotpotFillReturnable returnable = HotpotDefinitions.HOTPOT_EMPTY_FILL_TYPES.get(item);
-
+        HotpotDefinitions.ifMatchEmptyFill(itemStack, returnable -> {
             player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, returnable.returned().get()));
             hotpotBlockEntity.setSoup(returnable.soup().get(), selfPos);
-        }
+        });
 
         return Optional.empty();
     }
 
     @Override
     public Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        return Optional.of(HotpotDefinitions.HOTPOT_CONTENT_TYPES.get("Empty").get());
+        return Optional.of(HotpotDefinitions.getEmptyContent().get());
     }
 
     @Override
-    public void takeOutContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+    public Optional<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, BlockPosWithLevel selfPos) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void takeOutContent(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
 
     }
 
@@ -79,7 +80,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
     }
 
     @Override
-    public float getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+    public int getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         return 0;
     }
 
@@ -94,12 +95,12 @@ public class HotpotEmptySoup implements IHotpotSoup {
     }
 
     @Override
-    public ResourceLocation getBubbleResourceLocation() {
-        return null;
+    public Optional<ResourceLocation> getBubbleResourceLocation() {
+        return Optional.empty();
     }
 
     @Override
-    public ResourceLocation getSoupResourceLocation() {
-        return null;
+    public Optional<ResourceLocation> getSoupResourceLocation() {
+        return Optional.empty();
     }
 }
