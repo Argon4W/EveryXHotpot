@@ -49,6 +49,7 @@ public class BlockEntityFinder<T extends BlockEntity> {
 
             if (predicate.test(blockEntity, pos)) {
                 consumer.accept(blockEntity, pos);
+                break;
             }
         }
     }

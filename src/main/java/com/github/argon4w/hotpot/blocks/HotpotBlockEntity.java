@@ -229,7 +229,9 @@ public class HotpotBlockEntity extends BlockEntity {
         if (tickSpeed < 0) {
             if (blockEntity.time % (- tickSpeed) == 0) {
                 for (IHotpotContent content : blockEntity.contents) {
-                    blockEntity.contentChanged |= content.tick(blockEntity, selfPos);
+                    if (content.tick(blockEntity, selfPos)) {
+                        blockEntity.markDataChanged();
+                    }
                 }
             }
         } else {
@@ -237,7 +239,9 @@ public class HotpotBlockEntity extends BlockEntity {
 
             do {
                 for (IHotpotContent content : blockEntity.contents) {
-                    blockEntity.contentChanged |= content.tick(blockEntity, selfPos);
+                    if (content.tick(blockEntity, selfPos)) {
+                        blockEntity.markDataChanged();
+                    }
                 }
             } while (++ i < tickSpeed);
         }

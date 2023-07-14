@@ -118,4 +118,9 @@ public class HotpotItemStackContent implements IHotpotContent {
     public static float getFloatingCurve(float f, float offset) {
         return (float) Math.sin((f + offset) / 0.25f * 2f  * Math.PI);
     }
+
+    @Override
+    public String toString() {
+        return itemStack.toString();
+    }
 }
