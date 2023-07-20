@@ -3,11 +3,13 @@ package com.github.argon4w.hotpot.blocks;
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.items.HotpotChopstickItem;
-import com.github.argon4w.hotpot.plates.IHotpotPlaceable;
+import com.github.argon4w.hotpot.placeables.HotpotEmptyPlaceable;
+import com.github.argon4w.hotpot.placeables.IHotpotPlaceable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -17,85 +19,111 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class HotpotPlateBlockEntity extends BlockEntity {
+public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
-    private final List<IHotpotPlaceable> plates = new ArrayList<>(4);
+    private final NonNullList<IHotpotPlaceable> placeables = NonNullList.withSize(4, HotpotDefinitions.getEmptyPlaceable().get());
 
-    public HotpotPlateBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
-        super(HotpotModEntry.HOTPOT_PLATE_BLOCK_ENTITY.get(), p_155229_, p_155230_);
+    public HotpotPlaceableBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
+        super(HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), p_155229_, p_155230_);
     }
 
-    public void interact(int hitSlot, Player player, InteractionHand hand, ItemStack itemStack, BlockPosWithLevel selfPos) {
-        IHotpotPlaceable plate = getPlateInSlot(hitSlot);
+    @Override
+    public ItemStack tryPlaceContentViaChopstick(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, BlockPosWithLevel selfPos) {
+        tryPlaceContentViaInteraction(hitSection, player, hand, itemStack, selfPos);
 
-        if (itemStack.isEmpty()) {
-            if (player.isCrouching()) {
-                ItemStack plateItemStack = plate.getCloneItemStack(this, selfPos);
+        return itemStack;
+    }
 
-                removePlate(hitSlot, selfPos);
-                selfPos.dropItemStack(plateItemStack);
+    @Override
+    public void tryPlaceContentViaInteraction(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, BlockPosWithLevel selfPos) {
+        if (isEmpty()) {
+            selfPos.level().removeBlock(selfPos.pos(), true);
+        }
 
-                if (plates.size() == 0) {
-                    selfPos.level().removeBlock(selfPos.pos(), true);
-                }
+        IHotpotPlaceable placeable = getPlaceableInPos(hitSection);
+        placeable.interact(player, hand, itemStack, hitSection, this, selfPos);
+        markDataChanged();
+    }
 
-                markDataChanged();
-            } else {
-                ItemStack contentItemStack = plate.takeContent(hitSlot, this, selfPos);
-                selfPos.dropItemStack(contentItemStack);
-                markDataChanged();
-            }
-        } else if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get())) {
-            ItemStack chopstickFoodItemStack;
+    @Override
+    public ItemStack tryTakeOutContentViaChopstick(int hitSection, BlockPosWithLevel pos) {
+        if (isEmpty()) {
+            pos.level().removeBlock(pos.pos(), true);
+        }
 
-            if (!(chopstickFoodItemStack = HotpotChopstickItem.getChopstickFoodItemStack(itemStack)).isEmpty()) {
-                plate.placeContent(chopstickFoodItemStack, hitSlot, this, selfPos);
-                itemStack.getTag().put("Item", chopstickFoodItemStack.save(new CompoundTag()));
-                markDataChanged();
-            } else {
-                ItemStack foodItemStack = plate.takeContent(hitSlot, this, selfPos);
+        IHotpotPlaceable placeable = getPlaceableInPos(hitSection);
+        ItemStack itemStack = placeable.takeOutContent(hitSection, this, pos);
+        markDataChanged();
 
-                if (!foodItemStack.isEmpty()) {
-                    itemStack.getOrCreateTag().put("Item", foodItemStack.save(new CompoundTag()));
-                }
-                markDataChanged();
-            }
-        } else {
-            plate.placeContent(itemStack, hitSlot, this, selfPos);
+        return itemStack;
+    }
+
+    public void tryTakeOutContentViaHand(int hitSection, BlockPosWithLevel pos) {
+        pos.dropItemStack(tryTakeOutContentViaChopstick(hitSection, pos));
+    }
+
+    public void tryRemove(IHotpotPlaceable placeable, BlockPosWithLevel pos) {
+        tryRemove(placeable.getAnchorPos(), pos);
+    }
+
+    public void tryRemove(int hitSection, BlockPosWithLevel pos) {
+        IHotpotPlaceable placeable = getPlaceableInPos(hitSection);
+
+        if (!(placeable instanceof HotpotEmptyPlaceable)) {
+            placeable.onRemove(this, pos);
+            pos.dropItemStack(placeable.getCloneItemStack(this, pos));
+            placeables.set(placeable.getAnchorPos(), HotpotDefinitions.getEmptyPlaceable().get());
+
             markDataChanged();
+        }
+
+        if (isEmpty()) {
+            pos.level().removeBlock(pos.pos(), true);
         }
     }
 
-    public boolean tryPlace(IHotpotPlaceable plate) {
-        if (IHotpotPlaceable.canPlaceableFit(plates, plate)) {
-            plates.add(plate);
-            markDataChanged();
+    public boolean isEmpty() {
+        return placeables.stream().allMatch(placeable -> placeable instanceof HotpotEmptyPlaceable);
+    }
 
-            return true;
+    public boolean tryPlace(IHotpotPlaceable placeable) {
+        if (canPlaceableFit(placeable)) {
+            IHotpotPlaceable toReplace = placeables.get(placeable.getAnchorPos());
+
+            if (toReplace instanceof HotpotEmptyPlaceable) {
+                placeables.set(placeable.getAnchorPos(), placeable);
+                markDataChanged();
+
+                return true;
+            }
         }
 
         return false;
     }
 
-    public void removePlate(int hitSlot, BlockPosWithLevel pos) {
-        IHotpotPlaceable plate = getPlateInSlot(hitSlot);
-        plate.dropAllContent(this, pos);
-        plates.remove(plate);
+    public void onRemove(BlockPosWithLevel pos) {
+        for (int i = 0; i < placeables.size(); i ++) {
+            IHotpotPlaceable placeable = placeables.get(i);
+
+            placeable.onRemove(this, pos);
+            pos.dropItemStack(placeable.getCloneItemStack(this, pos));
+
+            placeables.set(i, HotpotDefinitions.getEmptyPlaceable().get());
+        }
+
         markDataChanged();
     }
 
-    public IHotpotPlaceable getPlateInSlot(int hitSlot) {
-        return IHotpotPlaceable.getPlateWithSlot(plates, hitSlot).orElseGet(HotpotDefinitions.getEmptyPlaceable());
+    public IHotpotPlaceable getPlaceableInPos(int hitPos) {
+        return placeables.stream().filter(plate -> plate.getPos().contains(hitPos)).findFirst().orElseGet(HotpotDefinitions.getEmptyPlaceable());
     }
 
     public void markDataChanged() {
@@ -107,14 +135,17 @@ public class HotpotPlateBlockEntity extends BlockEntity {
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
 
-        IHotpotPlaceable.loadAll(compoundTag, plates);
+        if (compoundTag.contains("Placeables", Tag.TAG_LIST)) {
+            placeables.clear();
+            IHotpotPlaceable.loadAll(compoundTag.getList("Placeables", Tag.TAG_COMPOUND), placeables);
+        }
     }
 
     @Override //Save
     protected void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
 
-        IHotpotPlaceable.saveAll(compoundTag, plates);
+        compoundTag.put("Placeables", IHotpotPlaceable.saveAll(placeables));
     }
 
     @Nullable
@@ -124,7 +155,7 @@ public class HotpotPlateBlockEntity extends BlockEntity {
             CompoundTag compoundTag = new CompoundTag();
 
             if (contentChanged) {
-                IHotpotPlaceable.saveAll(compoundTag, plates);
+                compoundTag.put("Placeables", IHotpotPlaceable.saveAll(placeables));
 
                 contentChanged = false;
             }
@@ -137,37 +168,41 @@ public class HotpotPlateBlockEntity extends BlockEntity {
     @Override //Chunk Load
     public CompoundTag getUpdateTag() {
         CompoundTag compoundTag = super.getUpdateTag();
-        IHotpotPlaceable.saveAll(compoundTag, plates);
+        compoundTag.put("Placeables", IHotpotPlaceable.saveAll(placeables));
 
         return compoundTag;
     }
 
-    public List<IHotpotPlaceable> getPlates() {
-        return plates;
+    public List<IHotpotPlaceable> getPlaceables() {
+        return placeables;
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, HotpotPlateBlockEntity blockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, HotpotPlaceableBlockEntity blockEntity) {
         if (blockEntity.contentChanged) {
             level.sendBlockUpdated(pos, state, state, 3);
         }
     }
 
-    public static int getHitSlot(BlockPos pos, Vec3 location) {
+    public boolean canPlaceableFit(IHotpotPlaceable plate2) {
+        return placeables.stream().noneMatch(plate -> plate2.getPos().stream().anyMatch(plate::isConflict));
+    }
+
+    public static int getHitPos(BlockPos pos, Vec3 location) {
         BlockPos blockPos = pos.relative(Direction.UP);
         Vec3 vec = location.subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
         return (vec.z() < 0.5 ? 0 : 1) | (vec.x() < 0.5 ? 0 : 2);
     }
 
-    public static int getHitSlot(BlockHitResult result) {
-        return getHitSlot(result.getBlockPos(), result.getLocation());
+    public static int getHitPos(BlockHitResult result) {
+        return getHitPos(result.getBlockPos(), result.getLocation());
     }
 
-    public static int getHitSlot(BlockPlaceContext context) {
-        return getHitSlot(context.getClickedPos(), context.getClickLocation());
+    public static int getHitPos(BlockPlaceContext context) {
+        return getHitPos(context.getClickedPos(), context.getClickLocation());
     }
 
-    public static int getHitSlot(UseOnContext context) {
-        return getHitSlot(context.getClickedPos(), context.getClickLocation());
+    public static int getHitPos(UseOnContext context) {
+        return getHitPos(context.getClickedPos(), context.getClickLocation());
     }
 }

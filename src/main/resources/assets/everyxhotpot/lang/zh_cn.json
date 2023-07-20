@@ -2,5 +2,8 @@
   "death.attack.in_hotpot": "%1$s自愿当成了火锅食材",
   "death.attack.in_hotpot.player": "%1$s在逃离%2$s时被自愿当成了火锅食材",
   "block.everyxhotpot.hotpot": "火锅",
+  "item.everyxhotpot.hotpot_chopstick": "筷子",
+  "item.everyxhotpot.hotpot_long_plate": "长碟",
+  "item.everyxhotpot.hotpot_small_plate": "小蝶",
   "itemGroup.EveryXHotpot": "EveryXHotpot 一起火锅"
 }

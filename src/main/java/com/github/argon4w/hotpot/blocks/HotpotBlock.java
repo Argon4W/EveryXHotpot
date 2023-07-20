@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -184,8 +185,8 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             ItemStack itemStack = player.getItemInHand(hand);
             int hitSection = getHitSection(result);
 
-            if (!level.isClientSide) {
-                hotpotBlockEntity.tryPlaceContentViaInteraction(hitSection, player, hand, itemStack, levelPos);
+            if (levelPos.isServerSide()) {
+                hotpotBlockEntity.interact(hitSection, player, hand, itemStack, levelPos);
             }
 
             return InteractionResult.SUCCESS;
@@ -211,8 +212,17 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
         BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
 
-        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity && !level.isClientSide) {
+        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity && levelPos.isServerSide()) {
             hotpotBlockEntity.getSoup().entityInside(hotpotBlockEntity, levelPos, entity);
+        }
+    }
+
+    @Override
+    public void animateTick(BlockState blockState, Level level, BlockPos pos, RandomSource randomSource) {
+        BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
+
+        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
+            hotpotBlockEntity.getSoup().animateTick(hotpotBlockEntity, levelPos, randomSource);
         }
     }
 
@@ -226,7 +236,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide() ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntity::tick);
     }
 
     @NotNull

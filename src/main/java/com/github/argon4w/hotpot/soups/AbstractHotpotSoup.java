@@ -22,13 +22,15 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     private float overflowWaterLevel = 0f;
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        setInternalWaterLevel(compoundTag.getFloat("WaterLevel"));
+    public IHotpotSoup load(CompoundTag compoundTag) {
+        setWaterLevel(compoundTag.getFloat("WaterLevel"));
+
+        return this;
     }
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
-        compoundTag.putFloat("WaterLevel", getInternalWaterLevel());
+        compoundTag.putFloat("WaterLevel", getWaterLevel());
 
         return compoundTag;
     }
@@ -43,9 +45,10 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
         if (itemStack.isEmpty()) {
             if (player.isCrouching()) {
                 hotpotBlockEntity.setSoup(HotpotDefinitions.getEmptySoup().get(), selfPos);
+                hotpotBlockEntity.onRemove(selfPos);
             } else {
                 player.hurt(player.damageSources().onFire(), 5);
-                hotpotBlockEntity.takeOutContent(hitSection, selfPos);
+                hotpotBlockEntity.tryTakeOutContentViaHand(hitSection, selfPos);
             }
 
             return Optional.empty();
@@ -62,20 +65,18 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     }
 
     @Override
-    public void takeOutContent(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+    public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+        return itemStack;
+    }
+
+    @Override
+    public void takeOutContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         pos.dropItemStack(itemStack);
     }
 
     @Override
     public void setWaterLevel(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos, float waterLevel) {
-        if (waterLevel > 1f) {
-            this.waterLevel = 1f;
-            overflowWaterLevel = waterLevel - 1f;
-
-            return;
-        }
-
-        this.waterLevel = waterLevel;
+        setWaterLevel(waterLevel);
     }
 
     @Override
@@ -91,7 +92,9 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
             return;
         }
 
-        entity.hurt(new DamageSource(HotpotModEntry.IN_HOTPOT_DAMAGE_TYPE.apply(selfPos.level()), selfPos.toVec3()), 3f);
+        if (entity.isAttackable()) {
+            entity.hurt(new DamageSource(HotpotModEntry.IN_HOTPOT_DAMAGE_TYPE.apply(selfPos.level()), selfPos.toVec3()), 3f);
+        }
     }
 
     @Override
@@ -117,11 +120,22 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
         overflowWaterLevel = 0f;
     }
 
-    public void setInternalWaterLevel(float waterLevel) {
-        this.waterLevel = Math.min(1.0f, Math.max(0f, waterLevel));
+    public void setWaterLevel(float waterLevel) {
+        if (waterLevel > 1f) {
+            this.waterLevel = 1f;
+            overflowWaterLevel = waterLevel - 1f;
+
+            return;
+        } else if (waterLevel < 0f) {
+            this.waterLevel = 0f;
+
+            return;
+        }
+
+        this.waterLevel = waterLevel;
     }
 
-    public float getInternalWaterLevel() {
+    public float getWaterLevel() {
         return waterLevel;
     }
 }

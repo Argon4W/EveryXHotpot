@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.items.HotpotPlateBlockItem;
+import com.github.argon4w.hotpot.items.HotpotPlaceableBlockItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,15 +24,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class HotpotPlateBlock extends BaseEntityBlock {
+public class HotpotPlaceableBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = box(0, 0, 0, 16, 3, 16);
 
-    public HotpotPlateBlock() {
+    public HotpotPlaceableBlock() {
         super(Properties.of()
                 .noOcclusion()
                 .mapColor(MapColor.COLOR_GRAY)
                 .sound(SoundType.COPPER)
-                .strength(3.0F, 6.0F));
+                .strength(0.5f));
     }
 
     @NotNull
@@ -49,14 +49,14 @@ public class HotpotPlateBlock extends BaseEntityBlock {
         BlockPosWithLevel selfPos = new BlockPosWithLevel(level, pos);
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (itemStack.is(itemHolder -> itemHolder.get() instanceof HotpotPlateBlockItem)) {
+        if (itemStack.is(itemHolder -> itemHolder.get() instanceof HotpotPlaceableBlockItem)) {
             return InteractionResult.PASS;
         }
 
-        if (selfPos.getBlockEntity() instanceof HotpotPlateBlockEntity hotpotPlateBlockEntity) {
+        if (selfPos.getBlockEntity() instanceof HotpotPlaceableBlockEntity hotpotPlaceableBlockEntity) {
             if (selfPos.isServerSide()) {
-                int hitSlot = HotpotPlateBlockEntity.getHitSlot(result);
-                hotpotPlateBlockEntity.interact(hitSlot, player, hand, itemStack, selfPos);
+                int hitPos = HotpotPlaceableBlockEntity.getHitPos(result);
+                hotpotPlaceableBlockEntity.interact(hitPos, player, hand, itemStack, selfPos);
             }
 
             return InteractionResult.sidedSuccess(!selfPos.isServerSide());
@@ -71,24 +71,34 @@ public class HotpotPlateBlock extends BaseEntityBlock {
 
         BlockPosWithLevel selfPos = new BlockPosWithLevel((Level) blockGetter, pos);
 
-        if (selfPos.getBlockEntity() instanceof HotpotPlateBlockEntity hotpotPlateBlockEntity) {
-            int hitSlot = HotpotPlateBlockEntity.getHitSlot(pos, target.getLocation());
+        if (selfPos.getBlockEntity() instanceof HotpotPlaceableBlockEntity hotpotPlaceableBlockEntity) {
+            int hitPos = HotpotPlaceableBlockEntity.getHitPos(pos, target.getLocation());
 
-            return hotpotPlateBlockEntity.getPlateInSlot(hitSlot).getCloneItemStack(hotpotPlateBlockEntity, selfPos);
+            return hotpotPlaceableBlockEntity.getPlaceableInPos(hitPos).getCloneItemStack(hotpotPlaceableBlockEntity, selfPos);
         }
 
         return super.getCloneItemStack(state, target, blockGetter, pos, player);
     }
 
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof HotpotPlaceableBlockEntity hotpotPlaceableBlockEntity) {
+            hotpotPlaceableBlockEntity.onRemove(new BlockPosWithLevel(level, pos));
+        }
+
+        super.onRemove(state, level, pos, newState, b);
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState blockState) {
-        return new HotpotPlateBlockEntity(pos, blockState);
+        return new HotpotPlaceableBlockEntity(pos, blockState);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_PLATE_BLOCK_ENTITY.get(), HotpotPlateBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), HotpotPlaceableBlockEntity::tick);
     }
 }

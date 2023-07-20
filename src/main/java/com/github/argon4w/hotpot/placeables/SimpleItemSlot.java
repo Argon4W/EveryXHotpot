@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.plates;
+package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +21,7 @@ public class SimpleItemSlot {
     }
 
     public int getRenderCount() {
-        return Math.max(1, itemSlot.getCount() / 16);
+        return itemSlot.isEmpty() ? 0 : Math.max(1, itemSlot.getCount() / 16);
     }
 
     public boolean addItem(ItemStack itemStack) {
@@ -48,6 +48,10 @@ public class SimpleItemSlot {
 
     public ItemStack takeItem() {
         return itemSlot.split(1);
+    }
+
+    public boolean isEmpty() {
+        return itemSlot.isEmpty();
     }
 
     public void dropItem(BlockPosWithLevel pos) {

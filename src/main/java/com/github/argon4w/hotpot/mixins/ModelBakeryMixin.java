@@ -18,7 +18,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Mixin(ModelBakery.class)
-public class ModelBakeryMixin {
+public abstract class ModelBakeryMixin {
     @Shadow
     private @Final Map<ResourceLocation, BakedModel> bakedTopLevelModels;
     @Shadow
@@ -27,30 +27,23 @@ public class ModelBakeryMixin {
     public @Final static BlockModel GENERATION_MARKER;
     @Shadow
     public @Final static ModelResourceLocation MISSING_MODEL_LOCATION;
+    @Shadow
+    private @Final Map<ResourceLocation, UnbakedModel> unbakedCache;
 
     @Inject(method = "bakeModels", at = @At("RETURN"))
     public void bakeModels(BiFunction<ResourceLocation, Material, TextureAtlasSprite> atlasSpriteGetter, CallbackInfo ci) {
         topLevelModels.forEach(((location, unbakedModel) -> {
             if (unbakedModel instanceof BlockModel blockModel && blockModel.getRootModel() == GENERATION_MARKER) {
-                ResourceLocation cheesedLocation = location instanceof ModelResourceLocation modelLocation ?
-                        new ModelResourceLocation(location.withSuffix("_cheesed"), modelLocation.getVariant())
-                        : location.withSuffix("_cheesed");
+                Function<Material, TextureAtlasSprite> spriteGetter = material -> atlasSpriteGetter.apply(location, new Material(
+                            material.atlasLocation(),
+                            material.texture().withSuffix("_cheesed")
+                    ));
 
-                Function<Material, TextureAtlasSprite> spriteGetter = material -> atlasSpriteGetter.apply(cheesedLocation, new Material(
-                        material.atlasLocation(),
-                        material.texture().withSuffix("_cheesed")
-                ));
-
-                SimpleModelBaker baker = new SimpleModelBaker(topLevelModels, topLevelModels.get(MISSING_MODEL_LOCATION), spriteGetter);
-
-                BakedModel itemModel = baker.bake(
-                        cheesedLocation,
-                        blockModel,
-                        BlockModelRotation.X0_Y0,
-                        spriteGetter
-                );
-
-                bakedTopLevelModels.put(location, new CheesedBakedModel(bakedTopLevelModels.get(location), itemModel));
+                SimpleModelBaker baker = new SimpleModelBaker(bakedTopLevelModels, unbakedCache, topLevelModels.get(MISSING_MODEL_LOCATION), spriteGetter);
+                bakedTopLevelModels.put(location, new CheesedBakedModel(bakedTopLevelModels.get(location), baker.bake(
+                        location,
+                        BlockModelRotation.X0_Y0
+                )));
             }
         }));
     }

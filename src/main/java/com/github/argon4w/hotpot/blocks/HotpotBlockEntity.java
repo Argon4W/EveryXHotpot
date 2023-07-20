@@ -17,7 +17,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -28,7 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class HotpotBlockEntity extends BlockEntity {
+public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
     private boolean soupSynchronized = false;
 
@@ -51,6 +50,14 @@ public class HotpotBlockEntity extends BlockEntity {
                 });
     }
 
+    @Override
+    public ItemStack tryPlaceContentViaChopstick(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, BlockPosWithLevel selfPos) {
+        tryPlaceContentViaInteraction(hitSection, player, hand, itemStack, selfPos);
+
+        return itemStack;
+    }
+
+    @Override
     public void tryPlaceContentViaInteraction(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, BlockPosWithLevel selfPos) {
         soup.interact(hitSection, player, hand, itemStack, this, selfPos).ifPresent(content -> tryFindEmptyContent(hitSection, selfPos, (section, hotpotBlockEntity, pos) -> {
             hotpotBlockEntity.placeContent(section, content, pos);
@@ -88,16 +95,33 @@ public class HotpotBlockEntity extends BlockEntity {
         });
     }
 
-    public void takeOutContent(int hitSection, BlockPosWithLevel pos) {
+    public void tryTakeOutContentViaHand(int hitSection, BlockPosWithLevel pos) {
         int contentSection = getContentSection(hitSection);
         IHotpotContent content = contents.get(contentSection);
 
         if (!(content instanceof HotpotEmptyContent)) {
-            soup.takeOutContent(content, content.takeOut(this, pos), this, pos);
+            soup.takeOutContentViaHand(content, soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos), this, pos);
             contents.set(contentSection, HotpotDefinitions.getEmptyContent().get());
 
             markDataChanged();
         }
+    }
+
+    @Override
+    public ItemStack tryTakeOutContentViaChopstick(int hitSection, BlockPosWithLevel pos) {
+        int contentSection = getContentSection(hitSection);
+        IHotpotContent content = contents.get(contentSection);
+
+        if (!(content instanceof HotpotEmptyContent)) {
+            ItemStack itemStack = soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos);
+
+            contents.set(contentSection, HotpotDefinitions.getEmptyContent().get());
+            markDataChanged();
+
+            return itemStack;
+        }
+
+        return ItemStack.EMPTY;
     }
 
     public int getContentSection(int hitSection) {
@@ -114,7 +138,7 @@ public class HotpotBlockEntity extends BlockEntity {
         for (int i = 0; i < contents.size(); i ++) {
             IHotpotContent content = contents.get(i);
 
-            soup.takeOutContent(content, content.takeOut(this, pos), this, pos);
+            soup.takeOutContentViaHand(content, content.takeOut(this, pos), this, pos);
             contents.set(i, HotpotDefinitions.getEmptyContent().get());
         }
 
@@ -134,8 +158,14 @@ public class HotpotBlockEntity extends BlockEntity {
         time = compoundTag.contains("Time", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Time") : 0;
         waterLevel = compoundTag.contains("WaterLevel", Tag.TAG_FLOAT) ?compoundTag.getFloat("WaterLevel") : 0f;
 
-        soup = IHotpotSoup.loadSoup(compoundTag, soup);
-        IHotpotContent.loadAllContents(compoundTag, contents);
+        if (compoundTag.contains("Soup", Tag.TAG_COMPOUND)) {
+            soup = IHotpotSoup.loadSoup(compoundTag.getCompound("Soup"));
+        }
+
+        if (compoundTag.contains("Contents", Tag.TAG_LIST)) {
+            contents.clear();
+            IHotpotContent.loadAll(compoundTag.getList("Contents", Tag.TAG_COMPOUND), contents);
+        }
     }
 
     @Override
@@ -145,8 +175,8 @@ public class HotpotBlockEntity extends BlockEntity {
         compoundTag.putInt("Time", time);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
-        IHotpotSoup.saveSoup(compoundTag, soup);
-        IHotpotContent.saveAllContents(compoundTag, contents);
+        compoundTag.put("Soup", IHotpotSoup.save(soup));
+        compoundTag.put("Contents", IHotpotContent.saveAll(contents));
     }
 
     @Override
@@ -158,8 +188,8 @@ public class HotpotBlockEntity extends BlockEntity {
             compoundTag.putFloat("WaterLevel", waterLevel);
 
             if (contentChanged) {
-                IHotpotSoup.saveSoup(compoundTag, soup);
-                IHotpotContent.saveAllContents(compoundTag, contents);
+                compoundTag.put("Soup", IHotpotSoup.save(soup));
+                compoundTag.put("Contents", IHotpotContent.saveAll(contents));
 
                 contentChanged = false;
             }
@@ -176,8 +206,8 @@ public class HotpotBlockEntity extends BlockEntity {
         compoundTag.putInt("Time", time);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
-        IHotpotSoup.saveSoup(compoundTag, soup);
-        IHotpotContent.saveAllContents(compoundTag, contents);
+        compoundTag.put("Soup", IHotpotSoup.save(soup));
+        compoundTag.put("Contents", IHotpotContent.saveAll(contents));
 
         return compoundTag;
     }
@@ -230,6 +260,7 @@ public class HotpotBlockEntity extends BlockEntity {
             if (blockEntity.time % (- tickSpeed) == 0) {
                 for (IHotpotContent content : blockEntity.contents) {
                     if (content.tick(blockEntity, selfPos)) {
+                        blockEntity.soup.contentUpdate(content, blockEntity, selfPos);
                         blockEntity.markDataChanged();
                     }
                 }
@@ -240,6 +271,7 @@ public class HotpotBlockEntity extends BlockEntity {
             do {
                 for (IHotpotContent content : blockEntity.contents) {
                     if (content.tick(blockEntity, selfPos)) {
+                        blockEntity.soup.contentUpdate(content, blockEntity, selfPos);
                         blockEntity.markDataChanged();
                     }
                 }

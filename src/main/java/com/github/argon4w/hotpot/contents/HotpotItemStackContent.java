@@ -3,18 +3,24 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.soups.IHotpotSoupWithActiveness;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.Container;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import org.joml.Math;
+
+import java.util.Optional;
 
 public class HotpotItemStackContent implements IHotpotContent {
     public static final float ITEM_ROUND_TRIP_TIME = 60f;
@@ -27,6 +33,7 @@ public class HotpotItemStackContent implements IHotpotContent {
     private ItemStack itemStack;
     private int cookingTime;
     private int cookingProgress;
+    private float experience;
 
     public HotpotItemStackContent(ItemStack itemStack) {
         this.itemStack = itemStack;
@@ -39,6 +46,7 @@ public class HotpotItemStackContent implements IHotpotContent {
         this.itemStack = this.itemStack.split(1);
         this.cookingTime = HotpotDefinitions.QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level()).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
         this.cookingProgress = 0;
+        this.experience = 0;
     }
 
     @Override
@@ -58,16 +66,15 @@ public class HotpotItemStackContent implements IHotpotContent {
 
     @Override
     public ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+        if (pos.level() instanceof ServerLevel serverLevel) {
+            if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupWithActiveness withActiveness) {
+                experience *= (1f + withActiveness.getActiveness(hotpotBlockEntity, pos));
+            }
+
+            ExperienceOrb.award(serverLevel, pos.toVec3(), Math.round(experience * 1.5f));
+        }
+
         return itemStack;
-    }
-
-    public ItemStack getAssembledContent(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        Container container = new SimpleContainer(itemStack);
-        return HotpotDefinitions.QUICK_CHECK.getRecipeFor(container, pos.level()).map((recipe) -> recipe.assemble(container, pos.level().registryAccess())).orElse(itemStack);
-    }
-
-    public boolean isAssembled() {
-        return cookingTime < 0;
     }
 
     @Override
@@ -75,10 +82,12 @@ public class HotpotItemStackContent implements IHotpotContent {
         if (cookingTime < 0) return false;
 
         if (cookingProgress >= cookingTime) {
-            ItemStack result = getAssembledContent(hotpotBlockEntity, pos);
-            if (result.isItemEnabled(pos.level().enabledFeatures())) {
-                itemStack = result;
+            Optional<CampfireCookingRecipe> recipeOptional = HotpotDefinitions.QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
+
+            if (recipeOptional.isPresent()) {
+                itemStack = recipeOptional.get().assemble(new SimpleContainer(itemStack), pos.level().registryAccess());
                 cookingTime = -1;
+                experience = recipeOptional.get().getExperience();
 
                 return true;
             }
@@ -89,25 +98,35 @@ public class HotpotItemStackContent implements IHotpotContent {
         return false;
     }
 
+    public Optional<FoodProperties> getFoodProperties() {
+        return Optional.ofNullable(itemStack.getFoodProperties(null));
+    }
+
     @Override
-    public void load(CompoundTag compoundTag) {
+    public IHotpotContent load(CompoundTag compoundTag) {
         itemStack = ItemStack.of(compoundTag);
+
         cookingTime = compoundTag.getInt("CookingTime");
         cookingProgress = compoundTag.getInt("CookingProgress");
+        experience = compoundTag.getFloat("Experience");
+
+        return this;
     }
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
         itemStack.save(compoundTag);
+
         compoundTag.putInt("CookingTime", cookingTime);
         compoundTag.putInt("CookingProgress", cookingProgress);
+        compoundTag.putFloat("Experience", experience);
 
         return compoundTag;
     }
 
     @Override
     public boolean isValid(CompoundTag tag) {
-        return ItemStack.of(tag) != ItemStack.EMPTY && tag.contains("CookingTime", Tag.TAG_ANY_NUMERIC) && tag.contains("CookingProgress", Tag.TAG_ANY_NUMERIC);
+        return ItemStack.of(tag) != ItemStack.EMPTY && tag.contains("CookingTime", Tag.TAG_ANY_NUMERIC) && tag.contains("CookingProgress", Tag.TAG_ANY_NUMERIC) && tag.contains("Experience", Tag.TAG_FLOAT);
     }
 
     @Override

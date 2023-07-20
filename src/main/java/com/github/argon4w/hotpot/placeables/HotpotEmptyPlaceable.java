@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.plates;
+package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -33,17 +35,17 @@ public class HotpotEmptyPlaceable implements IHotpotPlaceable {
     }
 
     @Override
-    public boolean placeContent(ItemStack itemStack, int slot, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
-        return false;
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
+
     }
 
     @Override
-    public ItemStack takeContent(int slot, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
+    public ItemStack takeOutContent(int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void dropAllContent(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
+    public void onRemove(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
 
     }
 
@@ -58,17 +60,22 @@ public class HotpotEmptyPlaceable implements IHotpotPlaceable {
     }
 
     @Override
-    public boolean tryPlace(int slot, Direction direction) {
+    public boolean tryPlace(int pos, Direction direction) {
         return false;
     }
 
     @Override
-    public List<Integer> getSlots() {
+    public List<Integer> getPos() {
         return List.of();
     }
 
     @Override
-    public boolean isConflict(int slot) {
+    public int getAnchorPos() {
+        return 0;
+    }
+
+    @Override
+    public boolean isConflict(int pos) {
         return false;
     }
 }

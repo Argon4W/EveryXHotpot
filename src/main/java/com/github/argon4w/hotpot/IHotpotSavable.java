@@ -4,19 +4,13 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.function.Supplier;
 
-public interface IHotpotSavable {
-    void load(CompoundTag compoundTag);
+public interface IHotpotSavable<T extends IHotpotSavable<?>> {
+    T load(CompoundTag compoundTag);
     CompoundTag save(CompoundTag compoundTag);
     boolean isValid(CompoundTag compoundTag);
     String getID();
 
-    static <T extends IHotpotSavable> T loadOrElseGet(T savable, CompoundTag compoundTag, Supplier<T> supplier) {
-        if (savable.isValid(compoundTag)) {
-            savable.load(compoundTag);
-
-            return savable;
-        } else {
-            return supplier.get();
-        }
+    default T loadOrElseGet(CompoundTag compoundTag, Supplier<T> supplier) {
+        return isValid(compoundTag) ? load(compoundTag) : supplier.get();
     }
 }

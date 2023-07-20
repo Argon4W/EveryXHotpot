@@ -6,8 +6,7 @@
         "items": [
           {
             "items": [
-              "minecraft:cauldron",
-              "minecraft:campfire",
+              "minecraft:stick",
               "minecraft:copper_ingot"
             ]
           }
@@ -17,7 +16,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "everyxhotpot:hotpot"
+        "recipe": "everyxhotpot:hotpot_chopstick"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -30,7 +29,7 @@
   ],
   "rewards": {
     "recipes": [
-      "everyxhotpot:hotpot"
+      "everyxhotpot:hotpot_chopstick"
     ]
   },
   "sends_telemetry_event": false

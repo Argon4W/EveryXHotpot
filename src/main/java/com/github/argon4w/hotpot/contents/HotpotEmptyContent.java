@@ -30,8 +30,8 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-
+    public IHotpotContent load(CompoundTag compoundTag) {
+        return this;
     }
 
     @Override

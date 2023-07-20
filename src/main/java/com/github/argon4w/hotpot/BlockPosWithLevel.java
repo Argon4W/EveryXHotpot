@@ -3,9 +3,13 @@ package com.github.argon4w.hotpot;
 import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -44,6 +48,14 @@ public record BlockPosWithLevel(Level level, BlockPos pos) {
 
     public Vec3 toVec3() {
         return new Vec3(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public SoundType getSoundType(Entity entity) {
+        return getBlockState().getSoundType(level, pos, entity);
+    }
+
+    public boolean isServerSide() {
+        return !level.isClientSide;
     }
 
     public BlockPosWithLevel north() {
@@ -87,5 +99,13 @@ public record BlockPosWithLevel(Level level, BlockPos pos) {
 
     public static BlockPosWithLevel fromVec3(Level level, Vec3 vec) {
         return new BlockPosWithLevel(level, new BlockPos((int) vec.x, (int) vec.y, (int) vec.z));
+    }
+
+    public static BlockPosWithLevel fromUseOnContext(UseOnContext context) {
+        return new BlockPosWithLevel(context.getLevel(), context.getClickedPos());
+    }
+
+    public static BlockPosWithLevel fromBlockPlaceContext(BlockPlaceContext context) {
+        return new BlockPosWithLevel(context.getLevel(), context.getClickedPos());
     }
 }

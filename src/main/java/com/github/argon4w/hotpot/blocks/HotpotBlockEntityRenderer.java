@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.client.model.data.ModelData;
 
@@ -67,7 +66,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         source.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
 
         blockEntity.getSoup().getBubbleResourceLocation().ifPresent(bubbleLocation -> {
-            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(bubbleLocation);
+            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(bubbleLocation);
 
             for (int i = 0; i < bubbles.length; i++) {
                 Bubble bubble = bubbles[i];
@@ -85,7 +84,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             poseStack.pushPose();
             poseStack.translate(0, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f), 0);
 
-            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModelBakery().getBakedTopLevelModels().get(soupLocation);
+            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(soupLocation);
             context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
             poseStack.popPose();

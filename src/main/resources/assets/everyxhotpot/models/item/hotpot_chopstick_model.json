@@ -8,8 +8,8 @@
 	"elements": [
 		{
 			"name": "chopstick_1",
-			"from": [6, 0, 7.5],
-			"to": [7, 24, 8.5],
+			"from": [6.5, 0, 7.5],
+			"to": [7.5, 24, 8.5],
 			"faces": {
 				"north": {"uv": [0, 0, 0.5, 12], "texture": "#0"},
 				"east": {"uv": [0.5, 0, 1, 12], "texture": "#0"},
@@ -21,8 +21,8 @@
 		},
 		{
 			"name": "chopstick_2",
-			"from": [9, 0, 7.5],
-			"to": [10, 24, 8.5],
+			"from": [8.5, 0, 7.5],
+			"to": [9.5, 24, 8.5],
 			"faces": {
 				"north": {"uv": [2, 0, 2.5, 12], "texture": "#0"},
 				"east": {"uv": [2.5, 0, 3, 12], "texture": "#0"},
@@ -32,42 +32,5 @@
 				"down": {"uv": [4.5, 1.5, 4, 2], "texture": "#0"}
 			}
 		}
-	],
-	"gui_light": "front",
-	"display": {
-		"thirdperson_righthand": {
-			"rotation": [68, 15, -5],
-			"translation": [-1, -0.75, -0.75],
-			"scale": [0.375, 0.375, 0.375]
-		},
-		"thirdperson_lefthand": {
-			"rotation": [68, 15, -5],
-			"translation": [-1, -0.75, -0.75],
-			"scale": [0.375, 0.375, 0.375]
-		},
-		"firstperson_righthand": {
-			"rotation": [-90, -35, -175],
-			"translation": [-3.25, 3.25, 4],
-			"scale": [0.68, 0.68, 0.68]
-		},
-		"firstperson_lefthand": {
-			"rotation": [-90, -35, -175],
-			"translation": [-3.25, 3.25, 4],
-			"scale": [0.68, 0.68, 0.68]
-		},
-		"ground": {
-			"translation": [0, 2, 0],
-			"scale": [0.5, 0.5, 0.5]
-		},
-		"gui": {
-			"rotation": [-35, 0, -45],
-			"translation": [-2, -2, 0],
-			"scale": [0.625, 0.625, 0.625]
-		},
-		"fixed": {
-			"rotation": [0, 0, 45],
-			"translation": [2, -2, 0],
-			"scale": [0.5, 0.5, 0.5]
-		}
-	}
+	]
 }

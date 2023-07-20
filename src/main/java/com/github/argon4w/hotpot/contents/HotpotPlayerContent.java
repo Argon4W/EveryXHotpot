@@ -110,10 +110,12 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public IHotpotContent load(CompoundTag tag) {
         profile = NbtUtils.readGameProfile(tag.getCompound("Profile"));
         modelPartIndex = tag.getInt("ModelPartIndex");
         modelPartIndex = Math.min(VALID_PARTS.length - 1, Math.max(0, modelPartIndex));
+
+        return this;
     }
 
     @Override

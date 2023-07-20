@@ -2,23 +2,20 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "c": {
-      "item": "minecraft:cauldron"
+    "S": {
+      "item": "minecraft:stick"
     },
-    "f": {
-      "item": "minecraft:campfire"
-    },
-    "I": {
+    "C": {
       "item": "minecraft:copper_ingot"
     }
   },
   "pattern": [
-    " I ",
-    " c ",
-    " f "
+    "C C",
+    "S S",
+    "S S"
   ],
   "result": {
-    "item": "everyxhotpot:hotpot"
+    "item": "everyxhotpot:hotpot_chopstick"
   },
   "show_notification": true
 }

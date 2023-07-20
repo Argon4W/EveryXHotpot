@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.plates;
+package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotDefinitions;
@@ -14,30 +14,34 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 
 import java.util.List;
 
 public class HotpotSmallPlate implements IHotpotPlaceable {
-    private int slot;
+    private int pos;
     private int directionSlot;
     private Direction direction;
     private final SimpleItemSlot itemSlot = new SimpleItemSlot();
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        slot = compoundTag.getByte("Slot");
-        directionSlot = compoundTag.getByte("DirectionSlot");
-        direction = HotpotDefinitions.SLOT_TO_DIRECTION.get(directionSlot - slot);
+    public IHotpotPlaceable load(CompoundTag compoundTag) {
+        pos = compoundTag.getByte("Pos");
+        directionSlot = compoundTag.getByte("DirectionPos");
+        direction = HotpotDefinitions.POS_TO_DIRECTION.get(directionSlot - pos);
 
         itemSlot.load(compoundTag.getCompound("ItemSlot"));
+
+        return this;
     }
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
-        compoundTag.putByte("Slot", (byte) slot);
-        compoundTag.putByte("DirectionSlot", (byte) directionSlot);
+        compoundTag.putByte("Pos", (byte) pos);
+        compoundTag.putByte("DirectionPos", (byte) directionSlot);
 
         compoundTag.put("ItemSlot", itemSlot.save(new CompoundTag()));
 
@@ -46,33 +50,41 @@ public class HotpotSmallPlate implements IHotpotPlaceable {
 
     @Override
     public boolean isValid(CompoundTag compoundTag) {
-        return compoundTag.contains("Slot", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot", Tag.TAG_COMPOUND);
+        return compoundTag.contains("Pos", Tag.TAG_BYTE) && compoundTag.contains("DirectionPos", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot", Tag.TAG_COMPOUND);
     }
 
     @Override
     public String getID() {
-        return "Small";
+        return "SmallPlate";
     }
 
     @Override
-    public boolean placeContent(ItemStack itemStack, int slot, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
-        return itemSlot.addItem(itemStack);
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
+        if (itemStack.isEmpty()) {
+            if (player.isCrouching()) {
+                hotpotPlateBlockEntity.tryRemove(this, selfPos);
+            } else {
+                hotpotPlateBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
+            }
+        } else {
+            itemSlot.addItem(itemStack);
+        }
     }
 
     @Override
-    public ItemStack takeContent(int slot, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
+    public ItemStack takeOutContent(int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
         return itemSlot.takeItem();
     }
 
     @Override
-    public void dropAllContent(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
+    public void onRemove(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
         itemSlot.dropItem(pos);
     }
 
     @Override
     public void render(BlockEntityRendererProvider.Context context, HotpotPlaceableBlockEntity hotpotBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        float x = IHotpotPlaceable.getSlotX(slot) + 0.25f;
-        float z = IHotpotPlaceable.getSlotZ(slot) + 0.25f;
+        float x = IHotpotPlaceable.getSlotX(pos) + 0.25f;
+        float z = IHotpotPlaceable.getSlotZ(pos) + 0.25f;
 
         poseStack.pushPose();
         poseStack.translate(x, 0f, z);
@@ -103,21 +115,26 @@ public class HotpotSmallPlate implements IHotpotPlaceable {
     }
 
     @Override
-    public boolean tryPlace(int slot1, Direction direction) {
-        this.slot = slot1;
-        this.directionSlot = slot1 + HotpotDefinitions.DIRECTION_TO_SLOT.get(direction);
+    public boolean tryPlace(int pos, Direction direction) {
+        this.pos = pos;
+        this.directionSlot = pos + HotpotDefinitions.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
 
         return true;
     }
 
     @Override
-    public List<Integer> getSlots() {
-        return List.of(slot);
+    public List<Integer> getPos() {
+        return List.of(pos);
     }
 
     @Override
-    public boolean isConflict(int slot) {
-        return this.slot == slot;
+    public int getAnchorPos() {
+        return pos;
+    }
+
+    @Override
+    public boolean isConflict(int pos) {
+        return this.pos == pos;
     }
 }

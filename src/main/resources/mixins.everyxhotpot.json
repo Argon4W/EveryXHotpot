@@ -6,7 +6,8 @@
   "refmap": "mixins.everyxhotpot.refmap.json",
   "client": [
     "ModelBakeryMixin",
-    "SpriteLoaderMixin"
+    "SpriteLoaderMixin",
+    "BreakingItemParticleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

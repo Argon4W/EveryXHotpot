@@ -2,20 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "C": {
-      "item": "minecraft:copper_ingot"
+    "q": {
+      "item": "minecraft:quartz"
     }
   },
   "pattern": [
-    "C C",
-    "S S",
-    "S S"
+    "q"
   ],
   "result": {
-    "item": "everyxhotpot:hotpot_chopstick"
+    "item": "everyxhotpot:hotpot_small_plate"
   },
   "show_notification": true
 }

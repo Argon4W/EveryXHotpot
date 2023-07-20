@@ -14,6 +14,8 @@ public class HotpotSoupWaterLevelSynchronizer implements IHotpotSoupSynchronizer
 
     @Override
     public void integrate(int size, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        hotpotBlockEntity.getSoup().setWaterLevel(hotpotBlockEntity, pos, Math.max(0f, Math.min(1f, collectedWaterLevel / size)));
+        float averageWaterLevel = Math.max(0f, Math.min(1f, collectedWaterLevel / size));
+
+        hotpotBlockEntity.getSoup().setWaterLevel(hotpotBlockEntity, pos, averageWaterLevel);
     }
 }

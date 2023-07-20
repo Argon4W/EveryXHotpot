@@ -17,11 +17,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public class HotpotPlateBlockItem extends BlockItem {
+public class HotpotPlaceableBlockItem extends BlockItem {
     private final Supplier<IHotpotPlaceable> supplier;
 
-    public HotpotPlateBlockItem(Supplier<IHotpotPlaceable> supplier) {
-        super(HotpotModEntry.HOTPOT_PLATE.get(), new Properties().stacksTo(64));
+    public HotpotPlaceableBlockItem(Supplier<IHotpotPlaceable> supplier) {
+        super(HotpotModEntry.HOTPOT_PLACEABLE.get(), new Properties().stacksTo(64));
 
         this.supplier = supplier;
     }
@@ -29,20 +29,20 @@ public class HotpotPlateBlockItem extends BlockItem {
     @NotNull
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        BlockPosWithLevel pos = BlockPosWithLevel.fromUseOnContext(context);
+        BlockPosWithLevel selfPos = BlockPosWithLevel.fromUseOnContext(context);
         Direction direction = context.getHorizontalDirection();
-        int hitSlot = HotpotPlaceableBlockEntity.getHitPos(context);
+        int pos = HotpotPlaceableBlockEntity.getHitPos(context);
 
-        IHotpotPlaceable plate = supplier.get();
+        IHotpotPlaceable placeable = supplier.get();
         Player player = context.getPlayer();
 
-        if (pos.is(HotpotModEntry.HOTPOT_PLATE.get()) && plate.tryPlace(hitSlot, direction) && tryPlace(pos, plate)) {
-            playSound(pos, context.getPlayer());
+        if (selfPos.is(HotpotModEntry.HOTPOT_PLACEABLE.get()) && placeable.tryPlace(pos, direction) && tryPlace(selfPos, placeable)) {
+            playSound(selfPos, context.getPlayer());
 
             if (player == null || !player.getAbilities().instabuild) {
                 context.getItemInHand().shrink(1);
 
-                return InteractionResult.sidedSuccess(!pos.isServerSide());
+                return InteractionResult.sidedSuccess(!selfPos.isServerSide());
             }
 
             return InteractionResult.FAIL;
@@ -54,15 +54,15 @@ public class HotpotPlateBlockItem extends BlockItem {
     @NotNull
     @Override
     public InteractionResult place(BlockPlaceContext context) {
-        BlockPosWithLevel pos = BlockPosWithLevel.fromBlockPlaceContext(context);
+        BlockPosWithLevel selfPos = BlockPosWithLevel.fromBlockPlaceContext(context);
         Direction direction = context.getHorizontalDirection();
-        int hitSlot = HotpotPlaceableBlockEntity.getHitPos(context);
+        int pos = HotpotPlaceableBlockEntity.getHitPos(context);
 
-        IHotpotPlaceable plate = supplier.get();
+        IHotpotPlaceable placeable = supplier.get();
 
-        if (plate.tryPlace(hitSlot, direction)) {
+        if (placeable.tryPlace(pos, direction)) {
             InteractionResult result = super.place(context);
-            tryPlace(pos, plate);
+            tryPlace(selfPos, placeable);
 
             return result;
         }
@@ -70,8 +70,8 @@ public class HotpotPlateBlockItem extends BlockItem {
         return InteractionResult.FAIL;
     }
 
-    public boolean tryPlace(BlockPosWithLevel pos, IHotpotPlaceable plate) {
-        if (pos.isServerSide() && pos.getBlockEntity() instanceof HotpotPlaceableBlockEntity hotpotPlateBlockEntity) {
+    public boolean tryPlace(BlockPosWithLevel selfPos, IHotpotPlaceable plate) {
+        if (selfPos.isServerSide() && selfPos.getBlockEntity() instanceof HotpotPlaceableBlockEntity hotpotPlateBlockEntity) {
             return hotpotPlateBlockEntity.tryPlace(plate);
         }
 

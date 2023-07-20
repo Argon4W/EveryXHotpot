@@ -7,10 +7,10 @@
     }
   },
   "pattern": [
-    "q"
+    "qq"
   ],
   "result": {
-    "item": "everyxhotpot:hotpot_small_plate"
+    "item": "everyxhotpot:hotpot_long_plate"
   },
   "show_notification": true
 }

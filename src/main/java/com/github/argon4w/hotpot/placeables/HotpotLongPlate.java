@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.plates;
+package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotDefinitions;
@@ -14,70 +14,87 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 
 import java.util.List;
 
 public class HotpotLongPlate implements IHotpotPlaceable {
-    private int slot1, slot2;
+    private int pos1, pos2;
     private final SimpleItemSlot itemSlot1 = new SimpleItemSlot(), itemSlot2 = new SimpleItemSlot();
     private Direction direction;
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        slot1 = compoundTag.getByte("Slot1");
-        slot2 = compoundTag.getByte("Slot2");
-        direction = HotpotDefinitions.SLOT_TO_DIRECTION.get(slot2 - slot1);
+    public IHotpotPlaceable load(CompoundTag compoundTag) {
+        pos1 = compoundTag.getByte("Pos1");
+        pos2 = compoundTag.getByte("Pos2");
+        direction = HotpotDefinitions.POS_TO_DIRECTION.get(pos2 - pos1);
 
         itemSlot1.load(compoundTag.getCompound("ItemSlot1"));
-        itemSlot1.load(compoundTag.getCompound("ItemSlot2"));
+        itemSlot2.load(compoundTag.getCompound("ItemSlot2"));
+
+        return this;
     }
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
-        compoundTag.putByte("Slot1", (byte) slot1);
-        compoundTag.putByte("Slot2", (byte) slot2);
+        compoundTag.putByte("Pos1", (byte) pos1);
+        compoundTag.putByte("Pos2", (byte) pos2);
 
         compoundTag.put("ItemSlot1", itemSlot1.save(new CompoundTag()));
-        compoundTag.put("ItemSlot2", itemSlot1.save(new CompoundTag()));
+        compoundTag.put("ItemSlot2", itemSlot2.save(new CompoundTag()));
 
         return compoundTag;
     }
 
     @Override
     public boolean isValid(CompoundTag compoundTag) {
-        return compoundTag.contains("Slot1", Tag.TAG_BYTE) && compoundTag.contains("Slot2", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot1", Tag.TAG_COMPOUND) && compoundTag.contains("ItemSlot2", Tag.TAG_COMPOUND);
+        return compoundTag.contains("Pos1", Tag.TAG_BYTE) && compoundTag.contains("Pos2", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot1", Tag.TAG_COMPOUND) && compoundTag.contains("ItemSlot2", Tag.TAG_COMPOUND);
     }
 
     @Override
     public String getID() {
-        return "Long";
+        return "LongPlate";
     }
 
     @Override
-    public boolean placeContent(ItemStack itemStack, int slot, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
-        return itemSlot1.addItem(itemStack) || itemSlot2.addItem(itemStack);
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
+        if (itemStack.isEmpty()) {
+            if (player.isCrouching()) {
+                hotpotPlateBlockEntity.tryRemove(this, selfPos);
+            } else {
+                hotpotPlateBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
+            }
+        } else {
+            SimpleItemSlot preferred = pos == pos1 ? itemSlot1 : itemSlot2;
+            SimpleItemSlot fallback = pos == pos1 ? itemSlot2 : itemSlot1;
+
+            if (!preferred.addItem(itemStack)) {
+                fallback.addItem(itemStack);
+            }
+        }
     }
 
     @Override
-    public ItemStack takeContent(int slot, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
-        return slot == slot1 ? itemSlot1.takeItem() : itemSlot2.takeItem();
+    public ItemStack takeOutContent(int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
+        return pos == pos1 ? (itemSlot1.isEmpty() ? itemSlot2.takeItem() : itemSlot1.takeItem()) : itemSlot2.takeItem();
     }
 
     @Override
-    public void dropAllContent(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
+    public void onRemove(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos) {
         itemSlot1.dropItem(pos);
         itemSlot2.dropItem(pos);
     }
 
     @Override
     public void render(BlockEntityRendererProvider.Context context, HotpotPlaceableBlockEntity hotpotBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        float x1 = IHotpotPlaceable.getSlotX(slot1) + 0.25f;
-        float z1 = IHotpotPlaceable.getSlotZ(slot1) + 0.25f;
+        float x1 = IHotpotPlaceable.getSlotX(pos1) + 0.25f;
+        float z1 = IHotpotPlaceable.getSlotZ(pos1) + 0.25f;
 
-        float x2 = IHotpotPlaceable.getSlotX(slot2) + 0.25f;
-        float z2 = IHotpotPlaceable.getSlotZ(slot2) + 0.25f;
+        float x2 = IHotpotPlaceable.getSlotX(pos2) + 0.25f;
+        float z2 = IHotpotPlaceable.getSlotZ(pos2) + 0.25f;
 
         poseStack.pushPose();
         poseStack.translate((x1 + x2) / 2, 0f, (z1 + z2) / 2);
@@ -119,12 +136,12 @@ public class HotpotLongPlate implements IHotpotPlaceable {
     }
 
     @Override
-    public boolean tryPlace(int slot1, Direction direction) {
+    public boolean tryPlace(int pos, Direction direction) {
 
-        int slot2 = slot1 + HotpotDefinitions.DIRECTION_TO_SLOT.get(direction);
-        if (isValidSlots(slot1, slot2)) {
-            this.slot1 = slot1;
-            this.slot2 = slot2;
+        int pos2 = pos + HotpotDefinitions.DIRECTION_TO_POS.get(direction);
+        if (isValidPos(pos, pos2)) {
+            this.pos1 = pos;
+            this.pos2 = pos2;
             this.direction = direction;
 
             return true;
@@ -133,17 +150,22 @@ public class HotpotLongPlate implements IHotpotPlaceable {
         return false;
     }
 
-    public boolean isValidSlots(int slot1, int slot2) {
-        return 0 <= slot1 && slot1 <= 3 && 0 <= slot2 && slot2 <= 3 && slot1 + slot2 != 3;
+    public boolean isValidPos(int pos1, int pos2) {
+        return 0 <= pos1 && pos1 <= 3 && 0 <= pos2 && pos2 <= 3 && pos1 + pos2 != 3;
     }
 
     @Override
-    public List<Integer> getSlots() {
-        return List.of(slot1, slot2);
+    public List<Integer> getPos() {
+        return List.of(pos1, pos2);
     }
 
     @Override
-    public boolean isConflict(int slot) {
-        return slot1 == slot || slot2 == slot;
+    public int getAnchorPos() {
+        return pos1;
+    }
+
+    @Override
+    public boolean isConflict(int pos) {
+        return pos1 == pos || pos2 == pos;
     }
 }
