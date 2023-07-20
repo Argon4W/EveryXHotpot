@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.events;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntityRenderer;
 import com.github.argon4w.hotpot.blocks.HotpotPlateBlockEntityRenderer;
+import com.github.argon4w.hotpot.items.HotpotBlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class HotpotClientModEvents {
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent event) {
+        HotpotModEntry.HOTPOT_BEWLR = new HotpotBlockEntityWithoutLevelRenderer();
     }
 
     @SubscribeEvent

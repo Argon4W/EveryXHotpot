@@ -57,7 +57,7 @@ public class HotpotModEntry {
                 output.accept(HOTPOT_LONG_PLATE_BLOCK_ITEM.get());
             }).build());
 
-    public static final HotpotBlockEntityWithoutLevelRenderer HOTPOT_BEWLR = new HotpotBlockEntityWithoutLevelRenderer();
+    public static HotpotBlockEntityWithoutLevelRenderer HOTPOT_BEWLR;
 
     public static final ResourceKey<DamageType> IN_HOTPOT_DAMAGE_KEY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(MODID, "in_hotpot"));
     public static final Function<Level, Holder<DamageType>> IN_HOTPOT_DAMAGE_TYPE = level -> level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(IN_HOTPOT_DAMAGE_KEY);
