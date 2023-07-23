@@ -5,10 +5,7 @@ import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
 import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.placeables.HotpotEmptyPlaceable;
-import com.github.argon4w.hotpot.placeables.HotpotLongPlate;
-import com.github.argon4w.hotpot.placeables.HotpotSmallPlate;
-import com.github.argon4w.hotpot.placeables.IHotpotPlaceable;
+import com.github.argon4w.hotpot.placeables.*;
 import com.github.argon4w.hotpot.soups.HotpotClearSoup;
 import com.github.argon4w.hotpot.soups.HotpotEmptySoup;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
@@ -43,7 +40,8 @@ public class HotpotDefinitions {
     public static final ConcurrentHashMap<String, Supplier<IHotpotPlaceable>> HOTPOT_PLATE_TYPES = new ConcurrentHashMap<>(Map.of(
             "Empty", HotpotEmptyPlaceable::new,
             "LongPlate", HotpotLongPlate::new,
-            "SmallPlate", HotpotSmallPlate::new
+            "SmallPlate", HotpotSmallPlate::new,
+            "PlacedChopstick", HotpotPlacedChopstick::new
     ));
     public static final ConcurrentHashMap<BiPredicate<HotpotBlockEntity, BlockPosWithLevel>, BiFunction<HotpotBlockEntity, BlockPosWithLevel, IHotpotSoup>> HOTPOT_SOUP_MATCHES = new ConcurrentHashMap<>(Map.of(
 

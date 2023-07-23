@@ -10,6 +10,8 @@ import com.github.argon4w.hotpot.items.HotpotPlaceableBlockItem;
 import com.mojang.datafixers.DSL;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -19,6 +21,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -47,7 +51,7 @@ public class HotpotModEntry {
     public static final RegistryObject<Item> HOTPOT_LONG_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlaceableBlockItem(HotpotDefinitions.getPlaceableOrElseEmpty("LongPlate")));
     public static final RegistryObject<Item> HOTPOT_CHOPSTICK = HotpotRegistries.ITEMS.register("hotpot_chopstick", HotpotChopstickItem::new);
     public static final RegistryObject<CreativeModeTab> EVERY_X_HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
-            .withTabsBefore(CreativeModeTabs.COMBAT)
+            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .icon(() -> HOTPOT_BLOCK_ITEM.get().getDefaultInstance())
             .title(Component.translatable("itemGroup.EveryXHotpot"))
             .displayItems((parameters, output) -> {
@@ -69,5 +73,6 @@ public class HotpotModEntry {
         HotpotRegistries.ITEMS.register(modEventBus);
         HotpotRegistries.CREATIVE_MODE_TABS.register(modEventBus);
         HotpotRegistries.BLOCK_ENTITY_TYPES.register(modEventBus);
+        HotpotRegistries.RECIPE_SERIALIZERS.register(modEventBus);
     }
 }

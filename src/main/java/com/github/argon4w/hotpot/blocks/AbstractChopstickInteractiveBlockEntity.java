@@ -3,6 +3,8 @@ package com.github.argon4w.hotpot.blocks;
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.items.HotpotChopstickItem;
+import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -20,10 +22,16 @@ public abstract class AbstractChopstickInteractiveBlockEntity extends BlockEntit
     public void interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, BlockPosWithLevel selfPos) {
         if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get())) {
             ItemStack chopstickFoodItemStack = HotpotChopstickItem.getChopstickFoodItemStack(itemStack);
-            itemStack.getOrCreateTag().put("Item", (chopstickFoodItemStack.isEmpty() ?
+            chopstickFoodItemStack = chopstickFoodItemStack.isEmpty() ?
                     tryTakeOutContentViaChopstick(hitSection, selfPos)
-                    : tryPlaceContentViaChopstick(hitSection, player, hand, chopstickFoodItemStack, selfPos)
-            ).save(new CompoundTag()));
+                    : tryPlaceContentViaChopstick(hitSection, player, hand, chopstickFoodItemStack, selfPos);
+
+            if (chopstickFoodItemStack.getItem().canFitInsideContainerItems()) {
+                itemStack.getOrCreateTag().put("Item", chopstickFoodItemStack.save(new CompoundTag()));
+            } else {
+                selfPos.dropItemStack(chopstickFoodItemStack);
+                itemStack.getOrCreateTag().put("Item", ItemStack.EMPTY.save(new CompoundTag()));
+            }
 
             return;
         }

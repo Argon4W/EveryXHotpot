@@ -1,6 +1,11 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
+import com.github.argon4w.hotpot.placeables.HotpotPlacedChopstick;
+import com.github.argon4w.hotpot.placeables.IHotpotPlaceable;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -8,7 +13,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
@@ -17,9 +21,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class HotpotChopstickItem extends Item {
+public class HotpotChopstickItem extends HotpotPlaceableBlockItem {
     public HotpotChopstickItem() {
-        super(new Properties().stacksTo(1));
+        super(HotpotDefinitions.getPlaceableOrElseEmpty("PlacedChopstick"), new Properties().stacksTo(1));
+    }
+
+    @Override
+    public boolean shouldPlace(Player player, InteractionHand hand, BlockPosWithLevel pos) {
+        return player.isCrouching();
+    }
+
+    @Override
+    public void setAdditional(HotpotPlaceableBlockEntity hotpotPlaceableBlockEntity, BlockPosWithLevel pos, IHotpotPlaceable placeable, ItemStack itemStack) {
+        if (placeable instanceof HotpotPlacedChopstick placedChopstick) {
+            placedChopstick.setChopstickItemStack(itemStack);
+        }
     }
 
     @NotNull

@@ -49,11 +49,11 @@ public class HotpotPlaceableBlock extends BaseEntityBlock {
         BlockPosWithLevel selfPos = new BlockPosWithLevel(level, pos);
         ItemStack itemStack = player.getItemInHand(hand);
 
-        if (itemStack.is(itemHolder -> itemHolder.get() instanceof HotpotPlaceableBlockItem)) {
-            return InteractionResult.PASS;
-        }
-
         if (selfPos.getBlockEntity() instanceof HotpotPlaceableBlockEntity hotpotPlaceableBlockEntity) {
+            if (itemStack.is(itemHolder -> itemHolder.get() instanceof HotpotPlaceableBlockItem hotpotPlaceableBlockItem && hotpotPlaceableBlockItem.shouldPlace(player, hand, selfPos))) {
+                return InteractionResult.PASS;
+            }
+
             if (selfPos.isServerSide()) {
                 int hitPos = HotpotPlaceableBlockEntity.getHitPos(result);
                 hotpotPlaceableBlockEntity.interact(hitPos, player, hand, itemStack, selfPos);

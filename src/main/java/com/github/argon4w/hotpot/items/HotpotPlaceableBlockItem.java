@@ -2,14 +2,17 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlock;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.github.argon4w.hotpot.placeables.IHotpotPlaceable;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.SoundType;
@@ -26,6 +29,20 @@ public class HotpotPlaceableBlockItem extends BlockItem {
         this.supplier = supplier;
     }
 
+    public HotpotPlaceableBlockItem(Supplier<IHotpotPlaceable> supplier, Properties properties) {
+        super(HotpotModEntry.HOTPOT_PLACEABLE.get(), properties);
+
+        this.supplier = supplier;
+    }
+
+    public boolean shouldPlace(Player player, InteractionHand hand, BlockPosWithLevel pos) {
+        return true;
+    }
+
+    public void setAdditional(HotpotPlaceableBlockEntity hotpotPlaceableBlockEntity, BlockPosWithLevel pos, IHotpotPlaceable placeable, ItemStack itemStack) {
+
+    }
+
     @NotNull
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -33,10 +50,14 @@ public class HotpotPlaceableBlockItem extends BlockItem {
         Direction direction = context.getHorizontalDirection();
         int pos = HotpotPlaceableBlockEntity.getHitPos(context);
 
+        if (!shouldPlace(context.getPlayer(), context.getHand(), selfPos)) {
+            return InteractionResult.PASS;
+        }
+
         IHotpotPlaceable placeable = supplier.get();
         Player player = context.getPlayer();
 
-        if (selfPos.is(HotpotModEntry.HOTPOT_PLACEABLE.get()) && placeable.tryPlace(pos, direction) && tryPlace(selfPos, placeable)) {
+        if (selfPos.is(HotpotModEntry.HOTPOT_PLACEABLE.get()) && placeable.tryPlace(pos, direction) && tryPlace(selfPos, placeable, context.getItemInHand().copy())) {
             playSound(selfPos, context.getPlayer());
 
             if (player == null || !player.getAbilities().instabuild) {
@@ -57,12 +78,13 @@ public class HotpotPlaceableBlockItem extends BlockItem {
         BlockPosWithLevel selfPos = BlockPosWithLevel.fromBlockPlaceContext(context);
         Direction direction = context.getHorizontalDirection();
         int pos = HotpotPlaceableBlockEntity.getHitPos(context);
+        ItemStack itemStack = context.getItemInHand().copy();
 
         IHotpotPlaceable placeable = supplier.get();
 
         if (placeable.tryPlace(pos, direction)) {
             InteractionResult result = super.place(context);
-            tryPlace(selfPos, placeable);
+            tryPlace(selfPos, placeable, itemStack);
 
             return result;
         }
@@ -70,9 +92,10 @@ public class HotpotPlaceableBlockItem extends BlockItem {
         return InteractionResult.FAIL;
     }
 
-    public boolean tryPlace(BlockPosWithLevel selfPos, IHotpotPlaceable plate) {
+    public boolean tryPlace(BlockPosWithLevel selfPos, IHotpotPlaceable placeable, ItemStack itemStack) {
         if (selfPos.isServerSide() && selfPos.getBlockEntity() instanceof HotpotPlaceableBlockEntity hotpotPlateBlockEntity) {
-            return hotpotPlateBlockEntity.tryPlace(plate);
+            setAdditional(hotpotPlateBlockEntity, selfPos, placeable, itemStack);
+            return hotpotPlateBlockEntity.tryPlace(placeable);
         }
 
         return false;
