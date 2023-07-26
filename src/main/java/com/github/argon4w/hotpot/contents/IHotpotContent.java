@@ -19,6 +19,7 @@ public interface IHotpotContent extends IHotpotSavableWIthSlot<IHotpotContent> {
     void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity hotpotBlockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline);
     boolean tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
     ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
+    void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
 
     static void loadAll(ListTag listTag, NonNullList<IHotpotContent> list) {
         IHotpotSavableWIthSlot.loadAll(listTag, list.size(), compoundTag -> load(compoundTag, list::set));

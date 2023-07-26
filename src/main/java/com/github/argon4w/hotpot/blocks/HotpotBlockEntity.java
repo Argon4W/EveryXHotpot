@@ -258,28 +258,27 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
 
         if (tickSpeed < 0) {
             if (blockEntity.time % (- tickSpeed) == 0) {
-                for (IHotpotContent content : blockEntity.contents) {
-                    if (content.tick(blockEntity, selfPos)) {
-                        blockEntity.soup.contentUpdate(content, blockEntity, selfPos);
-                        blockEntity.markDataChanged();
-                    }
-                }
+                tickContent(blockEntity, selfPos);
             }
         } else {
             int i = 0;
 
             do {
-                for (IHotpotContent content : blockEntity.contents) {
-                    if (content.tick(blockEntity, selfPos)) {
-                        blockEntity.soup.contentUpdate(content, blockEntity, selfPos);
-                        blockEntity.markDataChanged();
-                    }
-                }
+                tickContent(blockEntity, selfPos);
             } while (++ i < tickSpeed);
         }
 
         level.sendBlockUpdated(pos, state, state, 3);
         blockEntity.setChanged();
+    }
+
+    public static void tickContent(HotpotBlockEntity blockEntity, BlockPosWithLevel selfPos) {
+        for (IHotpotContent content : blockEntity.contents) {
+            if (content.tick(blockEntity, selfPos)) {
+                blockEntity.soup.contentUpdate(content, blockEntity, selfPos);
+                blockEntity.markDataChanged();
+            }
+        }
     }
 
     public static boolean isSameSoup(BlockPosWithLevel selfPos, BlockPosWithLevel pos) {

@@ -105,6 +105,11 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
+    public void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+
+    }
+
+    @Override
     public boolean tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         return false;
     }

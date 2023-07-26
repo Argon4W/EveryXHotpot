@@ -65,6 +65,13 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     }
 
     @Override
+    public void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+        hotpotBlockEntity.getContents().stream()
+                .filter(content1 -> content1 != content)
+                .forEach(content1 -> content1.onOtherContentUpdate(content, hotpotBlockEntity, pos));
+    }
+
+    @Override
     public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         return itemStack;
     }

@@ -62,6 +62,8 @@ public class HotpotClearSoup extends AbstractHotpotSoup implements IHotpotSoupWi
 
     @Override
     public void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+        super.contentUpdate(content, hotpotBlockEntity, pos);
+
         if (content instanceof HotpotItemStackContent itemStackContent) {
             activeness = Math.min(1f, activeness + 0.025f * itemStackContent.getFoodProperties().map(FoodProperties::getNutrition).orElse(1));
         }

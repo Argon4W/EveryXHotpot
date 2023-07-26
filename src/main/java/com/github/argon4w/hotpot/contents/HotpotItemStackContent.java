@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.items.IHotpotSpecialContentItem;
 import com.github.argon4w.hotpot.soups.IHotpotSoupWithActiveness;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -75,6 +76,14 @@ public class HotpotItemStackContent implements IHotpotContent {
         }
 
         return itemStack;
+    }
+
+    @Override
+    public void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+        if (itemStack.getItem() instanceof IHotpotSpecialContentItem iHotpotSpecialContentItem && content instanceof HotpotItemStackContent itemStackContent) {
+            itemStackContent.itemStack = iHotpotSpecialContentItem.onOtherContentUpdate(itemStack, itemStackContent.itemStack, content, hotpotBlockEntity, pos);
+            itemStack = iHotpotSpecialContentItem.getSelfItemStack(itemStack, this, hotpotBlockEntity, pos);
+        }
     }
 
     @Override

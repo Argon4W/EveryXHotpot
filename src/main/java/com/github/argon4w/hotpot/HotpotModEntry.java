@@ -7,6 +7,8 @@ import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.github.argon4w.hotpot.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.items.HotpotChopstickItem;
 import com.github.argon4w.hotpot.items.HotpotPlaceableBlockItem;
+import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
+import com.github.argon4w.hotpot.spice.HotpotSpicePackRecipe;
 import com.mojang.datafixers.DSL;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.Holder;
@@ -50,6 +52,8 @@ public class HotpotModEntry {
     public static final RegistryObject<Item> HOTPOT_SMALL_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlaceableBlockItem(HotpotDefinitions.getPlaceableOrElseEmpty("SmallPlate")));
     public static final RegistryObject<Item> HOTPOT_LONG_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlaceableBlockItem(HotpotDefinitions.getPlaceableOrElseEmpty("LongPlate")));
     public static final RegistryObject<Item> HOTPOT_CHOPSTICK = HotpotRegistries.ITEMS.register("hotpot_chopstick", HotpotChopstickItem::new);
+    public static final RegistryObject<Item> HOTPOT_SPICE_PACK = HotpotRegistries.ITEMS.register("hotpot_spice_pack", HotpotSpicePackItem::new);
+    public static final RegistryObject<RecipeSerializer<HotpotSpicePackRecipe>> HOTPOT_SPICE_PACK_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_spice_pack", () -> new SimpleCraftingRecipeSerializer<>(HotpotSpicePackRecipe::new));
     public static final RegistryObject<CreativeModeTab> EVERY_X_HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .icon(() -> HOTPOT_BLOCK_ITEM.get().getDefaultInstance())
@@ -59,6 +63,7 @@ public class HotpotModEntry {
                 output.accept(HOTPOT_CHOPSTICK.get());
                 output.accept(HOTPOT_SMALL_PLATE_BLOCK_ITEM.get());
                 output.accept(HOTPOT_LONG_PLATE_BLOCK_ITEM.get());
+                output.accept(HOTPOT_SPICE_PACK.get());
             }).build());
 
     public static HotpotBlockEntityWithoutLevelRenderer HOTPOT_BEWLR;

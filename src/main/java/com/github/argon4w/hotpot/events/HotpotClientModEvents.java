@@ -27,6 +27,7 @@ public class HotpotClientModEvents {
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_long"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_small"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_chopstick_stand"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_spice_pack_model"));
     }
 
     @SubscribeEvent
