@@ -1,7 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.IHotpotSavableWIthSlot;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -26,8 +25,8 @@ public interface IHotpotContent extends IHotpotSavableWIthSlot<IHotpotContent> {
     }
 
     static void load(CompoundTag compoundTag, BiConsumer<Integer, IHotpotContent> consumer) {
-        IHotpotContent content = HotpotDefinitions.getContentOrElseEmpty(compoundTag.getString("Type")).get();
-        consumer.accept(compoundTag.getByte("Slot") & 255, content.loadOrElseGet(compoundTag, HotpotDefinitions.getEmptyContent()));
+        IHotpotContent content = HotpotContents.getContentOrElseEmpty(compoundTag.getString("Type")).get();
+        consumer.accept(compoundTag.getByte("Slot") & 255, content.loadOrElseGet(compoundTag, HotpotContents.getEmptyContent()));
     }
 
     static ListTag saveAll(NonNullList<IHotpotContent> list) {

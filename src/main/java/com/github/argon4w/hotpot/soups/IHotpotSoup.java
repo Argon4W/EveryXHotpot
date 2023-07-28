@@ -1,10 +1,11 @@
 package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.IHotpotSavable;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.soups.renderers.IHotpotSoupCustomElementRenderer;
+import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IHotpotSoup extends IHotpotSavable<IHotpotSoup> {
@@ -33,11 +35,12 @@ public interface IHotpotSoup extends IHotpotSavable<IHotpotSoup> {
     void tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
     Optional<ResourceLocation> getBubbleResourceLocation();
     Optional<ResourceLocation> getSoupResourceLocation();
+    List<IHotpotSoupCustomElementRenderer> getCustomElementRenderers();
 
     static IHotpotSoup loadSoup(CompoundTag compoundTag) {
         return isTagValid(compoundTag) ?
-                HotpotDefinitions.getSoupOrElseEmpty(compoundTag.getString("Type")).get().loadOrElseGet(compoundTag, HotpotDefinitions.getEmptySoup())
-                : HotpotDefinitions.getEmptySoup().get();
+                HotpotSoups.getSoupOrElseEmpty(compoundTag.getString("Type")).get().loadOrElseGet(compoundTag, HotpotSoups.getEmptySoup())
+                : HotpotSoups.getEmptySoup().get();
     }
 
     static boolean isTagValid(CompoundTag compoundTag) {

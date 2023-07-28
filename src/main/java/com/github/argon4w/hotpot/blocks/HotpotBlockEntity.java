@@ -1,10 +1,11 @@
 package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.soups.HotpotSoups;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -25,14 +26,15 @@ import org.joml.Math;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
     private boolean soupSynchronized = false;
 
-    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotDefinitions.getEmptyContent().get());
-    private IHotpotSoup soup = HotpotDefinitions.getEmptySoup().get();
+    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotContents.getEmptyContent().get());
+    private IHotpotSoup soup = HotpotSoups.getEmptySoup().get();
     public float renderedWaterLevel = -1f;
     private float waterLevel = 0f;
     private int time = 0;
@@ -70,10 +72,19 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
 
     private void placeContent(int section, IHotpotContent content, BlockPosWithLevel pos) {
         Optional<IHotpotContent> remappedContent = soup.remapContent(content, this, pos);
-        contents.set(section, remappedContent.orElseGet(HotpotDefinitions.getEmptyContent()));
+        contents.set(section, remappedContent.orElseGet(HotpotContents.getEmptyContent()));
 
-        HotpotDefinitions.ifMatchSoup(this, pos, supplier -> setSoup(supplier.apply(this, pos), pos));
+        HotpotSoups.ifMatchSoup(this, pos, supplier -> setSoup(supplier.apply(this, pos), pos));
         markDataChanged();
+    }
+
+    public void consumeContent(UnaryOperator<IHotpotContent> operator) {
+        contents.replaceAll(operator);
+        markDataChanged();
+    }
+
+    public void consumeAllContents() {
+        consumeContent(ignored -> HotpotContents.getEmptyContent().get());
     }
 
     private void synchronizeSoup(BlockPosWithLevel selfPos) {
@@ -101,7 +112,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
 
         if (!(content instanceof HotpotEmptyContent)) {
             soup.takeOutContentViaHand(content, soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos), this, pos);
-            contents.set(contentSection, HotpotDefinitions.getEmptyContent().get());
+            contents.set(contentSection, HotpotContents.getEmptyContent().get());
 
             markDataChanged();
         }
@@ -115,7 +126,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
         if (!(content instanceof HotpotEmptyContent)) {
             ItemStack itemStack = soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos);
 
-            contents.set(contentSection, HotpotDefinitions.getEmptyContent().get());
+            contents.set(contentSection, HotpotContents.getEmptyContent().get());
             markDataChanged();
 
             return itemStack;
@@ -139,7 +150,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
             IHotpotContent content = contents.get(i);
 
             soup.takeOutContentViaHand(content, content.takeOut(this, pos), this, pos);
-            contents.set(i, HotpotDefinitions.getEmptyContent().get());
+            contents.set(i, HotpotContents.getEmptyContent().get());
         }
 
         markDataChanged();

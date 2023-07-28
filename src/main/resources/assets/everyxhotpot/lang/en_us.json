@@ -6,5 +6,8 @@
   "item.everyxhotpot.hotpot_long_plate": "Long Plate",
   "item.everyxhotpot.hotpot_small_plate": "Small Plate",
   "item.everyxhotpot.hotpot_spice_pack": "Spice Pack",
+  "item.everyxhotpot.hotpot_spice_pack.amount": "Charges: %s",
+  "effect.everyxhotpot.acrid": "Acrid",
+  "effect.everyxhotpot.warm": "Warm",
   "itemGroup.EveryXHotpot": "EveryXHotpot"
 }

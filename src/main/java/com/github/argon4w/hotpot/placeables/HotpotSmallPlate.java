@@ -1,7 +1,6 @@
 package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,7 +30,7 @@ public class HotpotSmallPlate implements IHotpotPlaceable {
     public IHotpotPlaceable load(CompoundTag compoundTag) {
         pos = compoundTag.getByte("Pos");
         directionSlot = compoundTag.getByte("DirectionPos");
-        direction = HotpotDefinitions.POS_TO_DIRECTION.get(directionSlot - pos);
+        direction = HotpotPlaceables.POS_TO_DIRECTION.get(directionSlot - pos);
 
         itemSlot.load(compoundTag.getCompound("ItemSlot"));
 
@@ -117,7 +116,7 @@ public class HotpotSmallPlate implements IHotpotPlaceable {
     @Override
     public boolean tryPlace(int pos, Direction direction) {
         this.pos = pos;
-        this.directionSlot = pos + HotpotDefinitions.DIRECTION_TO_POS.get(direction);
+        this.directionSlot = pos + HotpotPlaceables.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
 
         return true;

@@ -1,15 +1,18 @@
 package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
+import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupWaterLevelSynchronizer;
+import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -44,7 +47,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel selfPos) {
         if (itemStack.isEmpty()) {
             if (player.isCrouching()) {
-                hotpotBlockEntity.setSoup(HotpotDefinitions.getEmptySoup().get(), selfPos);
+                hotpotBlockEntity.setSoup(HotpotSoups.getEmptySoup().get(), selfPos);
                 hotpotBlockEntity.onRemove(selfPos);
             } else {
                 player.hurt(player.damageSources().onFire(), 5);

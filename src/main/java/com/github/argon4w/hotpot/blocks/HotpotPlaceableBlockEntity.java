@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
+import com.github.argon4w.hotpot.placeables.HotpotPlaceables;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.placeables.HotpotEmptyPlaceable;
 import com.github.argon4w.hotpot.placeables.IHotpotPlaceable;
@@ -29,7 +29,7 @@ import java.util.List;
 
 public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
-    private final NonNullList<IHotpotPlaceable> placeables = NonNullList.withSize(4, HotpotDefinitions.getEmptyPlaceable().get());
+    private final NonNullList<IHotpotPlaceable> placeables = NonNullList.withSize(4, HotpotPlaceables.getEmptyPlaceable().get());
 
     public HotpotPlaceableBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), p_155229_, p_155230_);
@@ -80,7 +80,7 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
         if (!(placeable instanceof HotpotEmptyPlaceable)) {
             placeable.onRemove(this, pos);
             pos.dropItemStack(placeable.getCloneItemStack(this, pos));
-            placeables.set(placeable.getAnchorPos(), HotpotDefinitions.getEmptyPlaceable().get());
+            placeables.set(placeable.getAnchorPos(), HotpotPlaceables.getEmptyPlaceable().get());
 
             markDataChanged();
         }
@@ -116,14 +116,14 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
             placeable.onRemove(this, pos);
             pos.dropItemStack(placeable.getCloneItemStack(this, pos));
 
-            placeables.set(i, HotpotDefinitions.getEmptyPlaceable().get());
+            placeables.set(i, HotpotPlaceables.getEmptyPlaceable().get());
         }
 
         markDataChanged();
     }
 
     public IHotpotPlaceable getPlaceableInPos(int hitPos) {
-        return placeables.stream().filter(plate -> plate.getPos().contains(hitPos)).findFirst().orElseGet(HotpotDefinitions.getEmptyPlaceable());
+        return placeables.stream().filter(plate -> plate.getPos().contains(hitPos)).findFirst().orElseGet(HotpotPlaceables.getEmptyPlaceable());
     }
 
     public void markDataChanged() {

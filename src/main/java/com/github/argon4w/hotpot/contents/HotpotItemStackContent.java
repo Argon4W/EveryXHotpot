@@ -1,7 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.IHotpotSpecialContentItem;
 import com.github.argon4w.hotpot.soups.IHotpotSoupWithActiveness;
@@ -45,7 +44,7 @@ public class HotpotItemStackContent implements IHotpotContent {
     @Override
     public void placed(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         this.itemStack = this.itemStack.split(1);
-        this.cookingTime = HotpotDefinitions.QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level()).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
+        this.cookingTime = HotpotContents.QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level()).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
         this.cookingProgress = 0;
         this.experience = 0;
     }
@@ -91,7 +90,7 @@ public class HotpotItemStackContent implements IHotpotContent {
         if (cookingTime < 0) return false;
 
         if (cookingProgress >= cookingTime) {
-            Optional<CampfireCookingRecipe> recipeOptional = HotpotDefinitions.QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
+            Optional<CampfireCookingRecipe> recipeOptional = HotpotContents.QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
 
             if (recipeOptional.isPresent()) {
                 itemStack = recipeOptional.get().assemble(new SimpleContainer(itemStack), pos.level().registryAccess());
@@ -144,11 +143,15 @@ public class HotpotItemStackContent implements IHotpotContent {
     }
 
     public static float getFloatingCurve(float f, float offset) {
-        return (float) Math.sin((f + offset) / 0.25f * 2f  * Math.PI);
+        return (float) Math.sin((f + offset) / 0.25f * 2f * Math.PI);
     }
 
     @Override
     public String toString() {
         return itemStack.toString();
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 }

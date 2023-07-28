@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.spice;
+package com.github.argon4w.hotpot.spices;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import net.minecraft.core.RegistryAccess;
@@ -15,29 +15,33 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HotpotSpicePackRecipe extends CustomRecipe {
-    public static final Predicate<ItemStack> PREDICATE = itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get());
-    public static final Supplier<ItemStack> SUPPLIER = () -> new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get());
-
     public HotpotSpicePackRecipe(ResourceLocation p_252125_, CraftingBookCategory p_249010_) {
         super(p_252125_, p_249010_);
     }
 
     @Override
     public boolean matches(CraftingContainer craftingContainer, Level level) {
-        return new CraftingMatcher(craftingContainer)
-                .atLeast(1, itemStack -> itemStack.is(ItemTags.SMALL_FLOWERS))
-                .require(1, HotpotSpicePackRecipe.PREDICATE).match();
+        List<ItemStack> list = new ArrayList<>();
+
+        return new HotpotSpiceMatcher(craftingContainer)
+                .with(itemStack -> itemStack.is(ItemTags.SMALL_FLOWERS)).collect(list::add).atLeast(1)
+                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && (!itemStack.hasTag() || itemStack.getTag().getList("Spices", Tag.TAG_COMPOUND).size() + list.size() <= 4)).once()
+                .withRemaining().empty()
+                .match();
     }
 
     @NotNull
     @Override
     public ItemStack assemble(CraftingContainer craftingContainer, RegistryAccess registryAccess) {
-        return new CraftingAssembler(craftingContainer)
-                .withExisting(HotpotSpicePackRecipe.PREDICATE, HotpotSpicePackRecipe.SUPPLIER)
+        return new HotpotSpiceAssembler(craftingContainer)
+                .withExisting(
+                        itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()),
+                        () -> new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get())
+                )
                 /*.filter(itemStack -> !HotpotSpicePackRecipe.PREDICATE.test(itemStack))*/
                 .forEach((assembled, itemStack) -> {
                     ListTag list = assembled.getOrCreateTag().getList("Spices", Tag.TAG_COMPOUND);

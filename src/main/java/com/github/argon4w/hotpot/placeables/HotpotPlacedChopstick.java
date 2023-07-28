@@ -1,7 +1,6 @@
 package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,7 +30,7 @@ public class HotpotPlacedChopstick implements IHotpotPlaceable {
     public IHotpotPlaceable load(CompoundTag compoundTag) {
         pos1 = compoundTag.getByte("Pos1");
         pos2 = compoundTag.getByte("Pos2");
-        direction = HotpotDefinitions.POS_TO_DIRECTION.get(pos2 - pos1);
+        direction = HotpotPlaceables.POS_TO_DIRECTION.get(pos2 - pos1);
 
         chopstickItemStack = ItemStack.of(compoundTag.getCompound("Chopstick"));
 
@@ -110,7 +109,7 @@ public class HotpotPlacedChopstick implements IHotpotPlaceable {
     @Override
     public boolean tryPlace(int pos, Direction direction) {
 
-        int pos2 = pos + HotpotDefinitions.DIRECTION_TO_POS.get(direction);
+        int pos2 = pos + HotpotPlaceables.DIRECTION_TO_POS.get(direction);
         if (isValidPos(pos, pos2)) {
             this.pos1 = pos;
             this.pos2 = pos2;

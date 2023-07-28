@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
-import com.github.argon4w.hotpot.HotpotDefinitions;
+import com.github.argon4w.hotpot.placeables.HotpotPlaceables;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.github.argon4w.hotpot.placeables.HotpotPlacedChopstick;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 public class HotpotChopstickItem extends HotpotPlaceableBlockItem {
     public HotpotChopstickItem() {
-        super(HotpotDefinitions.getPlaceableOrElseEmpty("PlacedChopstick"), new Properties().stacksTo(1));
+        super(HotpotPlaceables.getPlaceableOrElseEmpty("PlacedChopstick"), new Properties().stacksTo(1));
     }
 
     @Override

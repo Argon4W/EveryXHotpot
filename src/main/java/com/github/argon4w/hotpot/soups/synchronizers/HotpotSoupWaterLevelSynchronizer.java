@@ -1,7 +1,8 @@
-package com.github.argon4w.hotpot.soups;
+package com.github.argon4w.hotpot.soups.synchronizers;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 
 public class HotpotSoupWaterLevelSynchronizer implements IHotpotSoupSynchronizer {
     private float collectedWaterLevel = 0f;
