@@ -58,7 +58,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
             return itemStack;
         }
 
-        selfItemStack.getTag().putInt("Amount", Math.max(0, amount - 1));
+        selfItemStack.getTag().putInt("SpiceAmount", Math.max(0, amount - 1));
         getSpiceEffects(selfItemStack).forEach(mobEffectInstance -> HotpotEffectHelper.saveEffects(itemStack, mobEffectInstance));
 
         return itemStack;
@@ -80,11 +80,11 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
     }
 
     private int getSpiceAmount(ItemStack itemStack) {
-        return itemStack.getTag().getInt("Amount");
+        return itemStack.getTag().getInt("SpiceAmount");
     }
 
     private boolean isSpiceTagValid(ItemStack itemStack) {
-        return itemStack.hasTag() && itemStack.getTag().contains("Spices", Tag.TAG_LIST) && itemStack.getTag().contains("Amount", Tag.TAG_ANY_NUMERIC);
+        return itemStack.hasTag() && itemStack.getTag().contains("Spices", Tag.TAG_LIST) && itemStack.getTag().contains("SpiceAmount", Tag.TAG_ANY_NUMERIC);
     }
 
     private List<MobEffectInstance> getSpiceEffects(ItemStack itemStack) {

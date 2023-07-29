@@ -49,7 +49,6 @@ public class HotpotSpiceMatcher {
     }
 
     public boolean match() {
-        System.out.println(items);
         return items.size() == 0 && matched;
     }
 

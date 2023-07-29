@@ -48,7 +48,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
                     list.add(itemStack.copyWithCount(1).save(new CompoundTag()));
 
                     assembled.getTag().put("Spices", list);
-                    assembled.getTag().putInt("Amount", 20);
+                    assembled.getTag().putInt("SpiceAmount", 20);
                 })
                 .assemble();
     }
