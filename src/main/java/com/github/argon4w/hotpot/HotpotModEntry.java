@@ -44,6 +44,7 @@ import java.util.function.Function;
 public class HotpotModEntry {
     public static final String MODID = "everyxhotpot";
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static final ResourceLocation TAG_LOCATION = new ResourceLocation(HotpotModEntry.MODID, "hotpot_tags");
 
     public static final RegistryObject<Block> HOTPOT_BLOCK = HotpotRegistries.BLOCKS.register("hotpot", HotpotBlock::new);
     public static final RegistryObject<Block> HOTPOT_PLACEABLE = HotpotRegistries.BLOCKS.register("hotpot_plate", HotpotPlaceableBlock::new);

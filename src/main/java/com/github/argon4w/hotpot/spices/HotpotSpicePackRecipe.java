@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.spices;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.HotpotTagsHelper;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -29,7 +30,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
 
         return new HotpotSpiceMatcher(craftingContainer)
                 .with(itemStack -> itemStack.is(ItemTags.SMALL_FLOWERS)).collect(list::add).atLeast(1)
-                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && (!itemStack.hasTag() || itemStack.getTag().getList("Spices", Tag.TAG_COMPOUND).size() + list.size() <= 4)).once()
+                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && (!HotpotTagsHelper.hasHotpotTag(itemStack) || HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).size() + list.size() <= 4)).once()
                 .withRemaining().empty()
                 .match();
     }
@@ -44,11 +45,11 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
                 )
                 /*.filter(itemStack -> !HotpotSpicePackRecipe.PREDICATE.test(itemStack))*/
                 .forEach((assembled, itemStack) -> {
-                    ListTag list = assembled.getOrCreateTag().getList("Spices", Tag.TAG_COMPOUND);
+                    ListTag list = HotpotTagsHelper.getHotpotTag(assembled).getList("Spices", Tag.TAG_COMPOUND);
                     list.add(itemStack.copyWithCount(1).save(new CompoundTag()));
 
-                    assembled.getTag().put("Spices", list);
-                    assembled.getTag().putInt("SpiceAmount", 20);
+                    HotpotTagsHelper.updateHotpotTag(assembled, compoundTag -> compoundTag.put("Spices", list));
+                    HotpotTagsHelper.updateHotpotTag(assembled, compoundTag -> compoundTag.putInt("SpiceAmount", 20));
                 })
                 .assemble();
     }

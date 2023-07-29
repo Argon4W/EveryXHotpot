@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
@@ -58,7 +59,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
             return itemStack;
         }
 
-        selfItemStack.getTag().putInt("SpiceAmount", Math.max(0, amount - 1));
+        setSpiceAmount(selfItemStack, amount - 1);
         getSpiceEffects(selfItemStack).forEach(mobEffectInstance -> HotpotEffectHelper.saveEffects(itemStack, mobEffectInstance));
 
         return itemStack;
@@ -79,16 +80,20 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         }
     }
 
+    public void setSpiceAmount(ItemStack itemStack, int amount) {
+        HotpotTagsHelper.updateHotpotTag(itemStack, compoundTag -> compoundTag.putInt("SpiceAmount", amount));
+    }
+
     private int getSpiceAmount(ItemStack itemStack) {
-        return itemStack.getTag().getInt("SpiceAmount");
+        return HotpotTagsHelper.getHotpotTag(itemStack).getInt("SpiceAmount");
     }
 
     private boolean isSpiceTagValid(ItemStack itemStack) {
-        return itemStack.hasTag() && itemStack.getTag().contains("Spices", Tag.TAG_LIST) && itemStack.getTag().contains("SpiceAmount", Tag.TAG_ANY_NUMERIC);
+        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("Spices", Tag.TAG_LIST) && HotpotTagsHelper.getHotpotTag(itemStack).contains("SpiceAmount", Tag.TAG_ANY_NUMERIC);
     }
 
     private List<MobEffectInstance> getSpiceEffects(ItemStack itemStack) {
-        return itemStack.getTag().getList("Spices", Tag.TAG_COMPOUND).stream()
+        return HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).stream()
                 .map(tag -> ItemStack.of((CompoundTag) tag))
                 .map(itemStack1 -> SuspiciousEffectHolder.tryGet(itemStack1.getItem()))
                 .filter(Objects::nonNull)

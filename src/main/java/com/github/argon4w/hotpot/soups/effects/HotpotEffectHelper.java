@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.soups.effects;
 
+import com.github.argon4w.hotpot.HotpotTagsHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -14,24 +15,24 @@ import java.util.stream.Collectors;
 
 public class HotpotEffectHelper {
     public static void saveEffects(ItemStack itemStack, MobEffectInstance mobEffectInstance) {
-        List<MobEffectInstance> effects = new ArrayList<>(itemStack.getOrCreateTag().getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
+        List<MobEffectInstance> effects = new ArrayList<>(HotpotTagsHelper.getHotpotTag(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
                 .map(tag -> (CompoundTag) tag)
                 .map(MobEffectInstance::load)
                 .filter(Objects::nonNull)
                 .toList());
         mergeEffects(effects, mobEffectInstance);
 
-        itemStack.getTag().put("HotpotEffects", effects.stream().map(effect -> effect.save(new CompoundTag())).collect(Collectors.toCollection(ListTag::new)));
+        HotpotTagsHelper.updateHotpotTag(itemStack, compoundTag -> compoundTag.put("HotpotEffects", effects.stream().map(effect -> effect.save(new CompoundTag())).collect(Collectors.toCollection(ListTag::new))));
     }
 
     public static boolean hasEffects(ItemStack itemStack) {
-        return itemStack.hasTag() && itemStack.getTag().contains("HotpotEffects", Tag.TAG_LIST);
+        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("HotpotEffects", Tag.TAG_LIST);
     }
 
     public static void listEffects(ItemStack itemStack, Consumer<MobEffectInstance> consumer) {
-        if (!itemStack.hasTag()) return;
+        if (!hasEffects(itemStack)) return;
 
-        itemStack.getTag().getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
+        HotpotTagsHelper.getHotpotTag(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
                 .map(tag -> MobEffectInstance.load((CompoundTag) tag))
                 .forEach(consumer);
     }

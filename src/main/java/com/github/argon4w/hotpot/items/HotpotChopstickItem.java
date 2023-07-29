@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.placeables.HotpotPlaceables;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
@@ -53,11 +54,12 @@ public class HotpotChopstickItem extends HotpotPlaceableBlockItem {
                     return InteractionResultHolder.fail(itemStack);
                 }
             } else {
-                if (player.addItem(chopstickFoodItemStack.split(1))) {
-                    player.drop(chopstickFoodItemStack, false);
+                ItemStack notEdible = chopstickFoodItemStack.split(1);
+                if (!player.getInventory().add(notEdible)) {
+                    player.drop(notEdible, false);
                 }
 
-                itemStack.getTag().put("Item", chopstickFoodItemStack.save(new CompoundTag()));
+                setChopstickFoodItemStack(itemStack, chopstickFoodItemStack);
                 return InteractionResultHolder.pass(player.getItemInHand(hand));
             }
         }
@@ -72,7 +74,7 @@ public class HotpotChopstickItem extends HotpotPlaceableBlockItem {
 
         if (!(chopstickFoodItemStack = getChopstickFoodItemStack(itemStack)).isEmpty()) {
             if (chopstickFoodItemStack.isEdible()) {
-                itemStack.getTag().put("Item", chopstickFoodItemStack.finishUsingItem(level, livingEntity).save(new CompoundTag()));
+                setChopstickFoodItemStack(itemStack, chopstickFoodItemStack.finishUsingItem(level, livingEntity));
             }
         }
 
@@ -114,11 +116,15 @@ public class HotpotChopstickItem extends HotpotPlaceableBlockItem {
         });
     }
 
+    public static void setChopstickFoodItemStack(ItemStack chopstick, ItemStack itemStack) {
+        HotpotTagsHelper.updateHotpotTag(chopstick, compoundTag -> compoundTag.put("ChopstickContent", itemStack.save(new CompoundTag())));
+    }
+
     public static ItemStack getChopstickFoodItemStack(ItemStack itemStack) {
         ItemStack chopstickFoodItemStack = ItemStack.EMPTY;
 
-        if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get()) && itemStack.hasTag() && itemStack.getTag().contains("Item", Tag.TAG_COMPOUND)) {
-            chopstickFoodItemStack = ItemStack.of(itemStack.getTag().getCompound("Item"));
+        if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get()) && HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("ChopstickContent", Tag.TAG_COMPOUND)) {
+            chopstickFoodItemStack = ItemStack.of(HotpotTagsHelper.getHotpotTag(itemStack).getCompound("ChopstickContent"));
         }
 
         return chopstickFoodItemStack;

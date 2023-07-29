@@ -27,10 +27,10 @@ public abstract class AbstractChopstickInteractiveBlockEntity extends BlockEntit
                     : tryPlaceContentViaChopstick(hitSection, player, hand, chopstickFoodItemStack, selfPos);
 
             if (chopstickFoodItemStack.getItem().canFitInsideContainerItems()) {
-                itemStack.getOrCreateTag().put("Item", chopstickFoodItemStack.save(new CompoundTag()));
+                HotpotChopstickItem.setChopstickFoodItemStack(itemStack, chopstickFoodItemStack);
             } else {
                 selfPos.dropItemStack(chopstickFoodItemStack);
-                itemStack.getOrCreateTag().put("Item", ItemStack.EMPTY.save(new CompoundTag()));
+                HotpotChopstickItem.setChopstickFoodItemStack(itemStack, ItemStack.EMPTY);
             }
 
             return;
