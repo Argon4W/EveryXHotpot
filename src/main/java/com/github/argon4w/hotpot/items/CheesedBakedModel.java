@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.HotpotTagsHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -71,6 +72,7 @@ public record CheesedBakedModel(BakedModel originalModel, BakedModel cheeseModel
         return originalModel.getTransforms();
     }
 
+    @NotNull
     @Override
     public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
         return isCheesed(itemStack) ?
@@ -79,6 +81,6 @@ public record CheesedBakedModel(BakedModel originalModel, BakedModel cheeseModel
     }
 
     private boolean isCheesed(ItemStack itemStack) {
-        return itemStack.hasTag() && itemStack.getTag().contains("Cheesed", Tag.TAG_BYTE) && itemStack.getTag().getByte("Cheesed") > 0;
+        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("Cheesed", Tag.TAG_BYTE) && HotpotTagsHelper.getHotpotTag(itemStack).getByte("Cheesed") > 0;
     }
 }

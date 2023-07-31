@@ -16,10 +16,13 @@ import java.util.function.*;
 public class HotpotSoups {
     public static final TagKey<Item> SPICY_ITEM_TAG = ItemTags.create(new ResourceLocation("sinofeast", "tastes/primary/spicy"));
     public static final TagKey<Item> ACRID_ITEM_TAG = ItemTags.create(new ResourceLocation("sinofeast", "tastes/primary/acrid"));
+    public static final TagKey<Item> MILK_ITEM_TAG = ItemTags.create(new ResourceLocation("forge", "milk/milk"));
+    public static final TagKey<Item> MILK_BOTTLE_ITEM_TAG = ItemTags.create(new ResourceLocation("forge", "milk/milk_bottle"));
 
     public static final ConcurrentHashMap<String, Supplier<IHotpotSoup>> HOTPOT_SOUP_TYPES = new ConcurrentHashMap<>(Map.of(
             "ClearSoup", HotpotClearSoup::new,
             "SpicySoup", HotpotSpicySoup::new,
+            "CheeseSoup", HotpotCheeseSoup::new,
             "Empty", HotpotEmptySoup::new
     ));
     public static final ConcurrentHashMap<BiPredicate<HotpotBlockEntity, BlockPosWithLevel>, BiFunction<HotpotBlockEntity, BlockPosWithLevel, IHotpotSoup>> HOTPOT_SOUP_MATCHES = new ConcurrentHashMap<>(Map.of(

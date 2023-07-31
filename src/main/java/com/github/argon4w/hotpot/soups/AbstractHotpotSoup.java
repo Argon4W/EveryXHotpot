@@ -57,8 +57,10 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
             return Optional.empty();
         }
 
-        return Optional.of(new HotpotItemStackContent((player.getAbilities().instabuild ? itemStack.copy() : itemStack)));
+        return Optional.of(remapItemStack(player.getAbilities().instabuild, itemStack));
     }
+
+    public abstract IHotpotContent remapItemStack(boolean copy, ItemStack itemStack);
 
     @Override
     public Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
@@ -95,7 +97,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
             ItemStack stack = itemEntity.getItem();
 
             if (!stack.isEmpty()) {
-                hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getPosSection(selfPos.pos(), itemEntity.position()), new HotpotItemStackContent(stack), selfPos);
+                hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getPosSection(selfPos.pos(), itemEntity.position()), remapItemStack(false, stack), selfPos);
                 itemEntity.setItem(stack);
             }
 

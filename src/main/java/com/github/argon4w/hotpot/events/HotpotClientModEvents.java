@@ -28,6 +28,8 @@ public class HotpotClientModEvents {
         event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_floating_pepper_1"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_floating_pepper_2"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_cheese_soup_bubble"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_cheese_soup"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_chopstick_model"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_long"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_small"));

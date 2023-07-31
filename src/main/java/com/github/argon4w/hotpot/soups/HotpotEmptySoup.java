@@ -32,7 +32,8 @@ import java.util.function.Supplier;
 public class HotpotEmptySoup implements IHotpotSoup {
     public static final ConcurrentHashMap<Predicate<ItemStack>, HotpotEmptyFill> HOTPOT_EMPTY_FILL_TYPES = new ConcurrentHashMap<>(Map.of(
             (itemStack) -> itemStack.is(Items.WATER_BUCKET), new HotpotEmptyFill(HotpotSoups.HOTPOT_SOUP_TYPES.get("ClearSoup"), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotEmptyFill(HotpotSoups.getSoupOrElseEmpty("ClearSoup"), 0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.BUCKET))
+            (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotEmptyFill(HotpotSoups.getSoupOrElseEmpty("ClearSoup"), 0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.BUCKET)),
+            (itemStack) -> itemStack.is(Items.MILK_BUCKET), new HotpotEmptyFill(HotpotSoups.HOTPOT_SOUP_TYPES.get("CheeseSoup"), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET))
     ));
 
     @Override
