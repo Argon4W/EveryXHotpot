@@ -82,9 +82,9 @@ public class HotpotPlayerContent implements IHotpotContent {
 
         float f = hotpotBlockEntity.getTime() / 20f / ITEM_ROUND_TRIP_TIME + offset;
 
-        poseStack.translate(0.5f + Math.sin(f * 2f * Math.PI) * ITEM_RADIUS, ITEM_START_Y + HotpotItemStackContent.getFloatingCurve(f, 0f) * ITEM_FLOAT_Y + 0.42f * waterline, 0.5f + Math.cos(f * 2f * Math.PI) * ITEM_RADIUS);
+        poseStack.translate(0.5f + Math.sin(f * 2f * Math.PI) * ITEM_RADIUS, ITEM_START_Y + HotpotCampfireRecipeContent.getFloatingCurve(f, 0f) * ITEM_FLOAT_Y + 0.42f * waterline, 0.5f + Math.cos(f * 2f * Math.PI) * ITEM_RADIUS);
         poseStack.mulPose(Axis.YP.rotationDegrees(f * 360f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-90f + HotpotItemStackContent.getFloatingCurve(f, 1f) * ITEM_ROTATION));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90f + HotpotCampfireRecipeContent.getFloatingCurve(f, 1f) * ITEM_ROTATION));
         poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
 
         modelPart.render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(modelSkin)), combinedLight, combinedOverlay);

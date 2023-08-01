@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.contents.HotpotCampfireRecipeContent;
 import com.github.argon4w.hotpot.contents.HotpotContents;
-import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.HotpotSoups;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
@@ -27,7 +27,7 @@ public class HotpotSoupAssembler {
     }
 
     public HotpotSoupAssembleContext withItem(Predicate<ItemStack> predicate) {
-        return with(content -> content instanceof HotpotItemStackContent itemStackContent && predicate.test(itemStackContent.getItemStack()));
+        return with(content -> content instanceof HotpotCampfireRecipeContent itemStackContent && predicate.test(itemStackContent.getItemStack()));
     }
 
     public HotpotSoupAssembleContext with(Predicate<IHotpotContent> predicate) {

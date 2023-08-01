@@ -15,4 +15,9 @@ public abstract class AbstractHotpotWaterBasedSoup extends AbstractEffectiveFlui
                 (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotFluidRefill(0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.GLASS_BOTTLE))
         ));
     }
+
+    @Override
+    public float getWaterLevelDropRate() {
+        return 0.04f;
+    }
 }

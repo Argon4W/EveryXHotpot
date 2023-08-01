@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.contents.HotpotCampfireRecipeContent;
 import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
-import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +24,7 @@ public class HotpotSoupMatcher {
     }
 
     public HotpotSoupMatchContext withItem(Predicate<ItemStack> predicate) {
-        return with(content -> content instanceof HotpotItemStackContent itemStackContent && predicate.test(itemStackContent.getItemStack()));
+        return with(content -> content instanceof HotpotCampfireRecipeContent itemStackContent && predicate.test(itemStackContent.getItemStack()));
     }
 
     public HotpotSoupMatchContext with(Predicate<IHotpotContent> predicate) {

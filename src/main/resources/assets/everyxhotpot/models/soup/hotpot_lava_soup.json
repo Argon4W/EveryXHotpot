@@ -3,8 +3,8 @@
 	"render_type": "minecraft:translucent",
 	"texture_size": [8, 8],
 	"textures": {
-		"12": "block/water_still",
-		"particle": "block/water_still"
+		"12": "block/lava_still",
+		"particle": "block/lava_still"
 	},
 	"elements": [
 		{

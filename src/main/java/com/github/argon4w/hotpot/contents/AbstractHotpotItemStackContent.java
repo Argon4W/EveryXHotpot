@@ -11,18 +11,15 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import org.joml.Math;
 
 import java.util.Optional;
 
-public abstract class HotpotItemContent implements IHotpotContent {
+public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     public static final float ITEM_ROUND_TRIP_TIME = 60f;
     public static final float ITEM_RADIUS = 0.315f;
     public static final float ITEM_START_Y = 0.53f;
@@ -35,11 +32,11 @@ public abstract class HotpotItemContent implements IHotpotContent {
     private int cookingProgress;
     private float experience;
 
-    public HotpotItemContent(ItemStack itemStack) {
+    public AbstractHotpotItemStackContent(ItemStack itemStack) {
         this.itemStack = itemStack;
     }
 
-    public HotpotItemContent() {
+    public AbstractHotpotItemStackContent() {
     }
 
     @Override
@@ -51,7 +48,8 @@ public abstract class HotpotItemContent implements IHotpotContent {
     }
 
     public abstract int remapCookingTime(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
-    public abstract Optional<Recipe<Container>> remapRecipe(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
+    public abstract Optional<ItemStack> remapResult(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
+    public abstract Optional<Float> remapExperience(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
 
     @Override
     public void render(BlockEntityRendererProvider.Context context, HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline) {
@@ -83,7 +81,7 @@ public abstract class HotpotItemContent implements IHotpotContent {
 
     @Override
     public void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        if (itemStack.getItem() instanceof IHotpotSpecialContentItem iHotpotSpecialContentItem && content instanceof HotpotItemContent itemStackContent) {
+        if (itemStack.getItem() instanceof IHotpotSpecialContentItem iHotpotSpecialContentItem && content instanceof AbstractHotpotItemStackContent itemStackContent) {
             itemStackContent.itemStack = iHotpotSpecialContentItem.onOtherContentUpdate(itemStack, itemStackContent.itemStack, content, hotpotBlockEntity, pos);
             itemStack = iHotpotSpecialContentItem.getSelfItemStack(itemStack, this, hotpotBlockEntity, pos);
         }
@@ -94,12 +92,12 @@ public abstract class HotpotItemContent implements IHotpotContent {
         if (cookingTime < 0) return false;
 
         if (cookingProgress >= cookingTime) {
-            Optional<Recipe<Container>> resultOptional = remapRecipe(itemStack, hotpotBlockEntity, pos);
+            Optional<ItemStack> resultOptional = remapResult(itemStack, hotpotBlockEntity, pos);
 
             if (resultOptional.isPresent()) {
-                itemStack = resultOptional.get().assemble(new SimpleContainer(itemStack), pos.level().registryAccess());
+                experience = remapExperience(itemStack, hotpotBlockEntity, pos).orElse(0f);
+                itemStack = resultOptional.get();
                 cookingTime = -1;
-                experience = resultOptional.get().getExperience();
 
                 return true;
             }
@@ -142,20 +140,15 @@ public abstract class HotpotItemContent implements IHotpotContent {
     }
 
     @Override
-    public String getID() {
-        return "ItemStack";
-    }
-
-    public static float getFloatingCurve(float f, float offset) {
-        return (float) Math.sin((f + offset) / 0.25f * 2f * Math.PI);
-    }
-
-    @Override
     public String toString() {
         return itemStack.toString();
     }
 
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    public static float getFloatingCurve(float f, float offset) {
+        return (float) Math.sin((f + offset) / 0.25f * 2f * Math.PI);
     }
 }

@@ -2,7 +2,6 @@ package com.github.argon4w.hotpot.soups.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;

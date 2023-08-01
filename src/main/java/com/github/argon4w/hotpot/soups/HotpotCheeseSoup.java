@@ -43,7 +43,7 @@ public class HotpotCheeseSoup extends AbstractEffectiveFluidBasedSoup {
     @Override
     public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         ItemStack result = super.takeOutContentViaChopstick(content, itemStack, hotpotBlockEntity, pos);
-        HotpotTagsHelper.updateHotpotTag(itemStack, compoundTag -> compoundTag.putByte("Cheesed", (byte) 1));
+        HotpotTagsHelper.updateHotpotTag(itemStack, compoundTag -> compoundTag.putBoolean("Cheesed", true));
 
         return result;
     }
@@ -68,6 +68,11 @@ public class HotpotCheeseSoup extends AbstractEffectiveFluidBasedSoup {
     @Override
     public List<IHotpotSoupCustomElementRenderer> getCustomElementRenderers() {
         return List.of(HOTPOT_BUBBLE_RENDERER);
+    }
+
+    @Override
+    public float getWaterLevelDropRate() {
+        return 0.03f;
     }
 }
 

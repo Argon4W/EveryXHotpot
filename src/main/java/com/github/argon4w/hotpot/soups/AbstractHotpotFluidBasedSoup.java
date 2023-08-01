@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
+import com.github.argon4w.hotpot.contents.HotpotCampfireRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupActivenessSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
@@ -53,7 +53,7 @@ public abstract class AbstractHotpotFluidBasedSoup extends AbstractHotpotSoup im
     public void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         super.contentUpdate(content, hotpotBlockEntity, pos);
 
-        if (content instanceof HotpotItemStackContent itemStackContent) {
+        if (content instanceof HotpotCampfireRecipeContent itemStackContent) {
             activeness = Math.min(1f, activeness + 0.025f * itemStackContent.getFoodProperties().map(FoodProperties::getNutrition).orElse(1));
         }
     }
@@ -79,9 +79,11 @@ public abstract class AbstractHotpotFluidBasedSoup extends AbstractHotpotSoup im
 
     @Override
     public void tick(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        setWaterLevel(getWaterLevel(hotpotBlockEntity, pos) - 0.5f / 20f / 60f);
+        setWaterLevel(getWaterLevel(hotpotBlockEntity, pos) - (hotpotBlockEntity.isInfiniteWater() ? 0 : getWaterLevelDropRate()) / 20f / 60f);
         activeness = Math.max(0f, activeness - 0.55f / 20f / 60f);
     }
+
+    public abstract float getWaterLevelDropRate();
 
     @Override
     public Optional<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, BlockPosWithLevel selfPos) {

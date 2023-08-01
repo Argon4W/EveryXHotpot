@@ -81,6 +81,6 @@ public record CheesedBakedModel(BakedModel originalModel, BakedModel cheeseModel
     }
 
     private boolean isCheesed(ItemStack itemStack) {
-        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("Cheesed", Tag.TAG_BYTE) && HotpotTagsHelper.getHotpotTag(itemStack).getByte("Cheesed") > 0;
+        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("Cheesed", Tag.TAG_ANY_NUMERIC) && HotpotTagsHelper.getHotpotTag(itemStack).getBoolean("Cheesed");
     }
 }

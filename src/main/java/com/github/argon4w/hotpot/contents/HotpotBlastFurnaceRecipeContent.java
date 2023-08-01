@@ -4,36 +4,35 @@ import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.BlastingRecipe;
 
 import java.util.Optional;
 
-public class HotpotCampfireRecipeContent extends AbstractHotpotItemStackContent {
-    public HotpotCampfireRecipeContent(ItemStack itemStack) {
+public class HotpotBlastFurnaceRecipeContent extends AbstractHotpotCookingRecipeContent {
+    public HotpotBlastFurnaceRecipeContent(ItemStack itemStack) {
         super(itemStack);
     }
 
-    public HotpotCampfireRecipeContent() {
+    public HotpotBlastFurnaceRecipeContent() {
         super();
     }
 
-    public Optional<CampfireCookingRecipe> getRecipe(ItemStack itemStack, BlockPosWithLevel pos) {
-        return HotpotContents.CAMPFIRE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
+    @Override
+    public Optional<BlastingRecipe> getRecipe(ItemStack itemStack, BlockPosWithLevel pos) {
+        return HotpotContents.BLAST_FURNACE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
     }
 
     @Override
     public int remapCookingTime(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        return getRecipe(itemStack, pos).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
+        return (int) (super.remapCookingTime(itemStack, hotpotBlockEntity, pos) * 1.5f);
     }
 
     @Override
-    public Optional<Float> remapExperience(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        return getRecipe(itemStack, pos).map(AbstractCookingRecipe::getExperience);
+    public String getID() {
+        return "BlastingItemStack";
     }
 
-    @Override
-    public Optional<ItemStack> remapResult(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        return getRecipe(itemStack, pos).map(recipe -> recipe.assemble(new SimpleContainer(itemStack), pos.level().registryAccess()));
+    public static boolean hasBlastingRecipe(ItemStack itemStack, BlockPosWithLevel pos) {
+        return HotpotContents.BLAST_FURNACE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level()).isPresent();
     }
 }

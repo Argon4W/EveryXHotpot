@@ -23,6 +23,7 @@ public class HotpotSoups {
             "ClearSoup", HotpotClearSoup::new,
             "SpicySoup", HotpotSpicySoup::new,
             "CheeseSoup", HotpotCheeseSoup::new,
+            "LavaSoup", HotpotLavaSoup::new,
             "Empty", HotpotEmptySoup::new
     ));
     public static final ConcurrentHashMap<BiPredicate<HotpotBlockEntity, BlockPosWithLevel>, BiFunction<HotpotBlockEntity, BlockPosWithLevel, IHotpotSoup>> HOTPOT_SOUP_MATCHES = new ConcurrentHashMap<>(Map.of(

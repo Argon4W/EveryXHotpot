@@ -3,16 +3,13 @@ package com.github.argon4w.hotpot.soups;
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.contents.HotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupWaterLevelSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +43,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     @Override
     public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel selfPos) {
         if (itemStack.isEmpty()) {
-            if (player.isCrouching()) {
+            if (player.isCrouching() && hotpotBlockEntity.canBeRemoved()) {
                 hotpotBlockEntity.setSoup(HotpotSoups.getEmptySoup().get(), selfPos);
                 hotpotBlockEntity.onRemove(selfPos);
             } else {
@@ -57,10 +54,10 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
             return Optional.empty();
         }
 
-        return Optional.of(remapItemStack(player.getAbilities().instabuild, itemStack));
+        return remapItemStack(player.getAbilities().instabuild, itemStack, selfPos);
     }
 
-    public abstract IHotpotContent remapItemStack(boolean copy, ItemStack itemStack);
+    public abstract Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, BlockPosWithLevel pos);
 
     @Override
     public Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
@@ -97,7 +94,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
             ItemStack stack = itemEntity.getItem();
 
             if (!stack.isEmpty()) {
-                hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getPosSection(selfPos.pos(), itemEntity.position()), remapItemStack(false, stack), selfPos);
+                remapItemStack(false, stack, selfPos).ifPresent(content -> hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getPosSection(selfPos.pos(), itemEntity.position()), content, selfPos));
                 itemEntity.setItem(stack);
             }
 

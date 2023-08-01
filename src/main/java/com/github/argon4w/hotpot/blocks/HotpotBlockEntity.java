@@ -38,6 +38,8 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     public float renderedWaterLevel = -1f;
     private float waterLevel = 0f;
     private int time = 0;
+    private boolean infiniteWater = false;
+    private boolean canBeRemoved = true;
 
     public HotpotBlockEntity(BlockPos pos, BlockState state) {
         super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
@@ -166,6 +168,8 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
 
+        canBeRemoved = !compoundTag.contains("CanBeRemoved", Tag.TAG_ANY_NUMERIC) || compoundTag.getBoolean("CanBeRemoved");
+        infiniteWater = compoundTag.contains("InfiniteWater", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteWater");
         time = compoundTag.contains("Time", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Time") : 0;
         waterLevel = compoundTag.contains("WaterLevel", Tag.TAG_FLOAT) ?compoundTag.getFloat("WaterLevel") : 0f;
 
@@ -183,6 +187,8 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     protected void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
 
+        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
+        compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
@@ -195,6 +201,8 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
         return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
             CompoundTag compoundTag = new CompoundTag();
 
+            compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
+            compoundTag.putBoolean("InfiniteWater", infiniteWater);
             compoundTag.putInt("Time", time);
             compoundTag.putFloat("WaterLevel", waterLevel);
 
@@ -214,6 +222,8 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     public CompoundTag getUpdateTag() {
         CompoundTag compoundTag = super.getUpdateTag();
 
+        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
+        compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
@@ -254,6 +264,22 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
 
     public int getTime() {
         return time;
+    }
+
+    public boolean isInfiniteWater() {
+        return infiniteWater;
+    }
+
+    public void setInfiniteWater(boolean infiniteWater) {
+        this.infiniteWater = infiniteWater;
+    }
+
+    public boolean canBeRemoved() {
+        return canBeRemoved;
+    }
+
+    public void setCanBeRemoved(boolean canBeRemoved) {
+        this.canBeRemoved = canBeRemoved;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity blockEntity) {
