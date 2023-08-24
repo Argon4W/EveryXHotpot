@@ -22,7 +22,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
     @SuppressWarnings("deprecation")
     public void render(HotpotBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         float waterLevel = blockEntity.getWaterLevel();
-        MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
+        boolean isVanillaBufferSource = bufferSource instanceof MultiBufferSource.BufferSource; //Fix crashes when using Rubidium
 
         float renderedWaterLevel = blockEntity.renderedWaterLevel;
         float difference = (waterLevel - renderedWaterLevel);
@@ -33,11 +33,16 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             blockEntity.getContents().get(i).render(context, blockEntity, poseStack, bufferSource, combinedLight, combinedOverlay, 0.125f * i, renderedWaterLevel);
         }
 
-        //FIXME: Probably UNSAFE FOR RENDERING!
-        source.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
-        source.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
-        source.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
-        source.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
+        //Fix crashes when using Rubidium
+        if (isVanillaBufferSource) {
+            MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
+
+            //FIXME: Probably UNSAFE FOR RENDERING!
+            source.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
+            source.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
+            source.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
+            source.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
+        }
 
         blockEntity.getSoup().getCustomElementRenderers().forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(context, blockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
 
@@ -51,9 +56,14 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             poseStack.popPose();
         });
 
-        //FIXME: Probably UNSAFE FOR RENDERING!
-        source.endBatch(Sheets.translucentCullBlockSheet());
-        source.endBatch(RenderType.glintTranslucent());
+        //Fix crashes when using Rubidium
+        if (isVanillaBufferSource) {
+            MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
+
+            //FIXME: Probably UNSAFE FOR RENDERING!
+            source.endBatch(Sheets.translucentCullBlockSheet());
+            source.endBatch(RenderType.glintTranslucent());
+        }
     }
 
     @Override
