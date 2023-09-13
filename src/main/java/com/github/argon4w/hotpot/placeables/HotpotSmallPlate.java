@@ -72,7 +72,7 @@ public class HotpotSmallPlate implements IHotpotPlaceable {
 
     @Override
     public ItemStack takeOutContent(int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
-        return itemSlot.takeItem();
+        return itemSlot.takeItem(!hotpotPlateBlockEntity.isInfiniteContent());
     }
 
     @Override

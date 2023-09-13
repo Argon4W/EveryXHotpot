@@ -78,7 +78,8 @@ public class HotpotLongPlate implements IHotpotPlaceable {
 
     @Override
     public ItemStack takeOutContent(int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos) {
-        return pos == pos1 ? (itemSlot1.isEmpty() ? itemSlot2.takeItem() : itemSlot1.takeItem()) : itemSlot2.takeItem();
+        boolean consume = !hotpotPlateBlockEntity.isInfiniteContent();
+        return pos == pos1 ? (itemSlot1.isEmpty() ? itemSlot2.takeItem(consume) : itemSlot1.takeItem(consume)) : itemSlot2.takeItem(consume);
     }
 
     @Override

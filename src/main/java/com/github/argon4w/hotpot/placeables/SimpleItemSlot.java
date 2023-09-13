@@ -46,8 +46,8 @@ public class SimpleItemSlot {
         }
     }
 
-    public ItemStack takeItem() {
-        return itemSlot.split(1);
+    public ItemStack takeItem(boolean consume) {
+        return consume ?  itemSlot.split(1) : itemSlot.copyWithCount(1);
     }
 
     public boolean isEmpty() {

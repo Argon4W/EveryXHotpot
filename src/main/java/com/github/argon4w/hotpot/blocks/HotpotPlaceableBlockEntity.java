@@ -30,6 +30,8 @@ import java.util.List;
 public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
     private final NonNullList<IHotpotPlaceable> placeables = NonNullList.withSize(4, HotpotPlaceables.getEmptyPlaceable().get());
+    private boolean infiniteContent = false;
+    private boolean canBeRemoved = true;
 
     public HotpotPlaceableBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), p_155229_, p_155230_);
@@ -71,6 +73,10 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
     }
 
     public void tryRemove(IHotpotPlaceable placeable, BlockPosWithLevel pos) {
+        if (!canBeRemoved()) {
+            return;
+        }
+
         tryRemove(placeable.getAnchorPos(), pos);
     }
 
@@ -135,6 +141,9 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
 
+        canBeRemoved = !compoundTag.contains("CanBeRemoved", Tag.TAG_ANY_NUMERIC) || compoundTag.getBoolean("CanBeRemoved");
+        infiniteContent = compoundTag.contains("InfiniteContent", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteContent");
+
         if (compoundTag.contains("Placeables", Tag.TAG_LIST)) {
             placeables.clear();
             IHotpotPlaceable.loadAll(compoundTag.getList("Placeables", Tag.TAG_COMPOUND), placeables);
@@ -145,6 +154,9 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
     protected void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
 
+        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
+        compoundTag.putBoolean("InfiniteContent", infiniteContent);
+
         compoundTag.put("Placeables", IHotpotPlaceable.saveAll(placeables));
     }
 
@@ -153,6 +165,9 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
             CompoundTag compoundTag = new CompoundTag();
+
+            compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
+            compoundTag.putBoolean("InfiniteContent", infiniteContent);
 
             if (contentChanged) {
                 compoundTag.put("Placeables", IHotpotPlaceable.saveAll(placeables));
@@ -168,6 +183,9 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
     @Override //Chunk Load
     public CompoundTag getUpdateTag() {
         CompoundTag compoundTag = super.getUpdateTag();
+
+        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
+        compoundTag.putBoolean("InfiniteContent", infiniteContent);
         compoundTag.put("Placeables", IHotpotPlaceable.saveAll(placeables));
 
         return compoundTag;
@@ -185,6 +203,14 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
 
     public boolean canPlaceableFit(IHotpotPlaceable plate2) {
         return placeables.stream().noneMatch(plate -> plate2.getPos().stream().anyMatch(plate::isConflict));
+    }
+
+    public boolean isInfiniteContent() {
+        return infiniteContent;
+    }
+
+    public boolean canBeRemoved() {
+        return canBeRemoved;
     }
 
     public static int getHitPos(BlockPos pos, Vec3 location) {
