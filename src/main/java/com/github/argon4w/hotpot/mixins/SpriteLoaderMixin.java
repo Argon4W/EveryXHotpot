@@ -60,18 +60,6 @@ public abstract class SpriteLoaderMixin {
         return contents;
     }
 
-    @Inject(method = "getStitchedSprites", at = @At("RETURN"), cancellable = true)
-    private void getStitchedSprites(CallbackInfoReturnable<Map<ResourceLocation, TextureAtlasSprite>> cir) {
-        Map<ResourceLocation, TextureAtlasSprite> map = cir.getReturnValue();
-        Map<ResourceLocation, TextureAtlasSprite> cheesedRedirectionMap = new HashMap<>(map);
-
-        map.keySet().stream()
-                .filter(key -> !map.containsKey(key.withSuffix("_cheesed")))
-                .forEach(key -> cheesedRedirectionMap.put(key.withSuffix("_cheesed"), map.get(key)));
-
-        cir.setReturnValue(cheesedRedirectionMap);
-    }
-
     private float getAverageGrayScale(NativeImage image) {
         float totalGray = 0f;
         int validCount = 0;

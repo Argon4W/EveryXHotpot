@@ -148,6 +148,10 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         return itemStack;
     }
 
+    public int getCookingTime() {
+        return cookingTime;
+    }
+
     public static float getFloatingCurve(float f, float offset) {
         return (float) Math.sin((f + offset) / 0.25f * 2f * Math.PI);
     }

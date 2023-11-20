@@ -30,7 +30,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
 
         return new HotpotSpiceMatcher(craftingContainer)
                 .with(itemStack -> itemStack.is(ItemTags.SMALL_FLOWERS)).collect(list::add).atLeast(1)
-                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && (!HotpotTagsHelper.hasHotpotTag(itemStack) || HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).size() + list.size() <= 4)).once()
+                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && ((HotpotTagsHelper.hasHotpotTag(itemStack) ? HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).size() : 0) + list.size() <= 4)).once()
                 .withRemaining().empty()
                 .match();
     }

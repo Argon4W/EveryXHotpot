@@ -8,12 +8,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.*;
 
 public class HotpotSoups {
+    public static final boolean SINOFEAST_LOADED = FMLLoader.getLoadingModList().getMods().stream().anyMatch(modInfo -> modInfo.getModId().equals("sinofeast"));
     public static final TagKey<Item> SPICY_ITEM_TAG = ItemTags.create(new ResourceLocation("sinofeast", "tastes/primary/spicy"));
     public static final TagKey<Item> ACRID_ITEM_TAG = ItemTags.create(new ResourceLocation("sinofeast", "tastes/primary/acrid"));
     public static final TagKey<Item> MILK_ITEM_TAG = ItemTags.create(new ResourceLocation("forge", "milk/milk"));
@@ -27,14 +30,27 @@ public class HotpotSoups {
             "Empty", HotpotEmptySoup::new
     ));
     public static final ConcurrentHashMap<BiPredicate<HotpotBlockEntity, BlockPosWithLevel>, BiFunction<HotpotBlockEntity, BlockPosWithLevel, IHotpotSoup>> HOTPOT_SOUP_MATCHES = new ConcurrentHashMap<>(Map.of(
-            (hotpotBlockEntity, pos) -> new HotpotSoupMatcher(hotpotBlockEntity)
+            SINOFEAST_LOADED ?
+                    (hotpotBlockEntity, pos) -> new HotpotSoupMatcher(hotpotBlockEntity)
                     .withSoup(soup -> soup instanceof HotpotClearSoup)
                     .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).require(6)
                     .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).require(2)
+                    .match() :
+                    (hotpotBlockEntity, pos) -> new HotpotSoupMatcher(hotpotBlockEntity)
+                    .withSoup(soup -> soup instanceof HotpotClearSoup)
+            .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3)
+                    .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).require(3)
+                    .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).require(2)
                     .match(),
+            SINOFEAST_LOADED ?
             (hotpotBlockEntity, pos) -> new HotpotSoupAssembler(hotpotBlockEntity)
                     .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).consume()
                     .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).consume()
+                    .assemble("SpicySoup") :
+                    (hotpotBlockEntity, pos) -> new HotpotSoupAssembler(hotpotBlockEntity)
+                    .withItem(itemStack -> itemStack.is(Items.REDSTONE)).consume()
+                    .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).consume()
+                    .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).consume()
                     .assemble("SpicySoup")
     ));
 

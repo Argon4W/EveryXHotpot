@@ -154,7 +154,6 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
-
     maven {
         url = 'https://maven.yuluo.dev/repository/minecraft-repo/'
     }
@@ -186,7 +185,7 @@ dependencies {
     implementation fg.deobf("games.moegirl.sinocraft:sinocalligraphy:1.20.1-1.5.1-SNAPSHOT")
     implementation fg.deobf("games.moegirl.sinocraft:sinocore:1.20.1-1.5.1-SNAPSHOT")
     implementation fg.deobf("games.moegirl.sinocraft:sinodivination:1.20.1-1.5.1-SNAPSHOT")
-    implementation fg.deobf("games.moegirl.sinocraft:sinofeast:1.20.1-1.5.1-SNAPSHOT")
+    //implementation fg.deobf("games.moegirl.sinocraft:sinofeast:1.20.1-1.5.1-SNAPSHOT")
     implementation fg.deobf("games.moegirl.sinocraft:sinofoundation:1.20.1-1.5.1-SNAPSHOT")
     implementation fg.deobf("games.moegirl.sinocraft:sinotest:1.20.1-1.5.1-SNAPSHOT")
 

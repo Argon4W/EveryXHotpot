@@ -43,6 +43,4 @@ public class HotpotClientModEvents {
         event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), HotpotPlateBlockEntityRenderer::new);
     }
-
-
 }

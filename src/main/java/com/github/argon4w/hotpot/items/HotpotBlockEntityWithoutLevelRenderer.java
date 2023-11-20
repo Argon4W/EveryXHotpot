@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -12,9 +13,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.Tags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLevelRenderer {
     public HotpotBlockEntityWithoutLevelRenderer() {
@@ -53,8 +56,8 @@ public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLev
 
             poseStack.pushPose();
 
-            List<ItemStack> itemStacks = itemStack.hasTag() ?
-                    itemStack.getTag().getList("Spices", Tag.TAG_COMPOUND).stream().map(tag -> ItemStack.of((CompoundTag) tag)).toList()
+            List<ItemStack> itemStacks = HotpotTagsHelper.hasHotpotTag(itemStack) ?
+                    HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).stream().map(tag -> ItemStack.of((CompoundTag) tag)).collect(Collectors.toList())
                     : new ArrayList<>();
             float startX = 0.3f - (0.3f / (itemStacks.size() * 3f)) * Math.max(0, itemStacks.size() - 1);
 

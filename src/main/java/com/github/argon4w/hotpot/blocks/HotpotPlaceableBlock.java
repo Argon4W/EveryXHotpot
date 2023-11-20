@@ -29,6 +29,7 @@ public class HotpotPlaceableBlock extends BaseEntityBlock {
 
     public HotpotPlaceableBlock() {
         super(Properties.of()
+                .forceSolidOn()
                 .noOcclusion()
                 .mapColor(MapColor.COLOR_GRAY)
                 .sound(SoundType.COPPER)

@@ -58,6 +58,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
     public HotpotBlock() {
         super(BlockBehaviour.Properties.of()
+                .forceSolidOn()
                 .noOcclusion()
                 .mapColor(MapColor.METAL)
                 .sound(SoundType.COPPER)

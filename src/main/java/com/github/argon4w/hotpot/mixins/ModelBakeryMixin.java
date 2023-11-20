@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.mixins;
 import com.github.argon4w.hotpot.items.CheesedBakedModel;
 import com.github.argon4w.hotpot.items.SimpleModelBaker;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
@@ -34,10 +35,15 @@ public abstract class ModelBakeryMixin {
     public void bakeModels(BiFunction<ResourceLocation, Material, TextureAtlasSprite> atlasSpriteGetter, CallbackInfo ci) {
         topLevelModels.forEach(((location, unbakedModel) -> {
             if (unbakedModel instanceof BlockModel blockModel && blockModel.getRootModel() == GENERATION_MARKER) {
-                Function<Material, TextureAtlasSprite> spriteGetter = material -> atlasSpriteGetter.apply(location, new Material(
+                Function<Material, TextureAtlasSprite> spriteGetter = material -> {
+                    TextureAtlasSprite sprite = atlasSpriteGetter.apply(location, new Material(
                             material.atlasLocation(),
                             material.texture().withSuffix("_cheesed")
                     ));
+                    return sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) ?
+                            atlasSpriteGetter.apply(location, material) : sprite;
+                };
+
 
                 SimpleModelBaker baker = new SimpleModelBaker(bakedTopLevelModels, unbakedCache, topLevelModels.get(MISSING_MODEL_LOCATION), spriteGetter);
                 bakedTopLevelModels.put(location, new CheesedBakedModel(bakedTopLevelModels.get(location), baker.bake(

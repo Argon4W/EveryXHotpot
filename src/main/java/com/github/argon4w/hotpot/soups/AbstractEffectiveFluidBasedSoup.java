@@ -20,7 +20,7 @@ public abstract class AbstractEffectiveFluidBasedSoup  extends AbstractHotpotFlu
     public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
         ItemStack result = super.takeOutContentViaChopstick(content, itemStack, hotpotBlockEntity, pos);
 
-        if (content instanceof HotpotCampfireRecipeContent itemStackContent && itemStackContent.getFoodProperties().isPresent()) {
+        if (content instanceof HotpotCampfireRecipeContent itemStackContent && itemStackContent.getFoodProperties().isPresent() && itemStackContent.getCookingTime() < 0) {
             addEffectToItem(itemStack, hotpotBlockEntity, pos);
         }
 
