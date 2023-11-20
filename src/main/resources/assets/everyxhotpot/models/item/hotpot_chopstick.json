@@ -1,0 +1,45 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "builtin/entity",
+	"texture_size": [32, 32],
+	"textures": {
+		"particle": "everyxhotpot:item/hotpot_chopstick"
+	},
+	"gui_light": "side",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [68, 15, -5],
+			"translation": [-1, -0.75, -1],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [68, 15, -5],
+			"translation": [-1, -0.75, -1],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [-90, 20, -175],
+			"translation": [-3.25, 3.25, 4],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-90, 30, -175],
+			"translation": [-3.25, 3.25, 4],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"ground": {
+			"translation": [0, 2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [-35, 0, -45],
+			"translation": [-2, -2, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"fixed": {
+			"rotation": [0, 0, 45],
+			"translation": [2, -2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

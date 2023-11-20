@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "minecraft:cauldron"
+    },
+    "f": {
+      "item": "minecraft:campfire"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    " I ",
+    " c ",
+    " f "
+  ],
+  "result": {
+    "item": "everyxhotpot:hotpot"
+  },
+  "show_notification": true
+}

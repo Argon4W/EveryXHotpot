@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.argon4w.hotpot.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.everyxhotpot.refmap.json",
+  "client": [
+    "AtlasTextureMixin",
+    "BreakingItemParticleMixin",
+    "ModelBakeryMixin",
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
