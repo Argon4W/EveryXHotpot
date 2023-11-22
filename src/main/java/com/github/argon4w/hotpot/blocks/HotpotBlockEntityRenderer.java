@@ -35,6 +35,11 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             blockEntity.getContents().get(i).render(context, blockEntity, poseStack, bufferSource, combinedLight, combinedOverlay, 0.125f * i, renderedWaterLevel);
         }
 
+        //Make Oculus Happy
+        poseStack.pushPose();
+        context.getItemRenderer().render(ItemStack.EMPTY, ItemDisplayContext.FIXED, false, poseStack, bufferSource, combinedLight, combinedOverlay, null);
+        poseStack.popPose();
+
         //Fix crashes when using Rubidium
         if (isVanillaBufferSource) {
             MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
