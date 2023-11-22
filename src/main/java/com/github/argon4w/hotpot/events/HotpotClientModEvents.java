@@ -41,7 +41,6 @@ public class HotpotClientModEvents {
 
     public static void enableISTER(ModelBakeEvent event, ResourceLocation location) {
         IBakedModel originalModel = event.getModelRegistry().get(location);
-        System.out.println(originalModel);
         ISTERModel ISTEREnabledModel = new ISTERModel(originalModel);
         event.getModelRegistry().put(location, ISTEREnabledModel);
     }
