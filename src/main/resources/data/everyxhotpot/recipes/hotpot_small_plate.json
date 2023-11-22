@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "q": {
+      "item": "minecraft:quartz"
+    }
+  },
+  "pattern": [
+    "q"
+  ],
+  "result": {
+    "item": "everyxhotpot:hotpot_small_plate"
+  },
+  "show_notification": true
+}
