@@ -1,0 +1,31 @@
+package com.github.argon4w.hotpot.contents;
+
+import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+
+import java.util.Optional;
+
+public class HotpotCampfireRecipeContent extends AbstractHotpotCookingRecipeContent {
+    public HotpotCampfireRecipeContent(ItemStack itemStack) {
+        super(itemStack);
+    }
+
+    public HotpotCampfireRecipeContent() {
+        super();
+    }
+
+    @Override
+    public Optional<CampfireCookingRecipe> getRecipe(ItemStack itemStack, BlockPosWithLevel pos) {
+        return HotpotContents.CAMPFIRE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level()).map(RecipeHolder::value);
+    }
+
+    @Override
+    public String getID() {
+        return "ItemStack";
+    }
+}
