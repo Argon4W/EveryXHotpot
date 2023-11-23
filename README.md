@@ -1,43 +1,40 @@
+![logo](/src/main/resources/logo.png)
+# EveryXHotpot: 一起火锅
+## 基本信息:
+### 支持版本 [(下载链接)](https://www.mcmod.cn/download/12735.html):
+- NeoForge
+  - 1.20.2
+- LexForge
+  - 1.20.1 
+  - 1.19.3
+  - 1.19.2
+  - 1.18.2
+  - 1.16.5
+### 已知问题
+1. 不兼容Optifine **(无计划在保持完整功能的前提下修复)**
+### 交流群号(QQ): 608309578
+### 赞助支持: https://afdian.net/a/argon4w
+***
+## 概述
+这次 TeaCon 的主题是热闹, 于是AR就顺理成章地想到了在自己印象中最能代表热闹的东西: 火锅.
+咕噜咕噜的冒泡泡, 热气腾腾的, 和朋友们一起大快朵颐, 好不热闹.
+所以AR决定做一个大家一起都能吃火锅的 Mod, 在 Minecraft 的世界里, 把大家聚在一起, 一起热闹地说笑, 一起吃暖暖的火锅.
+无论大家的朋友在哪, 哪怕没办法见面, 都能在 Minecraft 里, 升起炉灶, 围在一桌, 一起享用美味的火锅.
 
-Installation information
-=======
+在这次的 Mod 中, 添加了火锅, 火锅配套的筷子, 碟子与可以放在火锅中提供药水效果的香料包.
+玩家可以将食物放入火锅进入烹饪, 根据不同锅底得到不同的效果, 还可以将不同锅底组合为鸳鸯锅.
+总共有清汤, 麻辣, 奶酪, 还有冶炼矿石的岩浆锅底, 其中麻辣锅底是与华夏工艺联动的锅底.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions at [github](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-Once you have your clone, you can initialize your copy.
-
-Setup Process:
---------
-
-Step 1: Open your command-line and browse to the folder where you extracted cloned your copy of this repository to.
-
-Step 2: You're left with a choice.
-If you prefer to use Eclipse:
-1. Run the following command: `gradlew genEclipseRuns` (`./gradlew genEclipseRuns` if you are on Mac/Linux)
-2. Open Eclipse, Import > Existing Gradle Project > Select Folder 
-   or run `gradlew eclipse` to generate the project.
-
-If you prefer to use IntelliJ:
-1. Open IDEA, and import project.
-2. Select your build.gradle file and have it import.
-3. Run the following command: `gradlew genIntellijRuns` (`./gradlew genIntellijRuns` if you are on Mac/Linux)
-4. Refresh the Gradle Project in IDEA if required.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can 
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license, if you do not agree with it you can change your mapping names to other crowdsourced names in your 
-build.gradle. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
-
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## 更新日志:
+### 2023-11-19 1.1.1-TeaCon2023:
+1. 新增了1.16.5支持
+2. 修复了食物一放入火锅就会获得火锅药水效果的问题
+3. 新增了在没有SinoSeries下麻辣锅的配方
+### 2023-11-20 1.1.2-TeaCon2023:
+1. 修复了与AE2一起安装时客户端崩溃的问题
+2. 新增了1.19.3支持
+3. 新增了1.19.2支持
+4. 新增了1.18.2支持
+### 2023-11-22 1.1.21-TeaCon2023:
+1. 修复了使用Oculus时无法看到锅底的问题
+2. 新增了1.20.2 **(NeoForge)** 支持
