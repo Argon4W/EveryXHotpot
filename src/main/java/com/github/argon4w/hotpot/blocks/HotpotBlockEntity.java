@@ -75,7 +75,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
         Optional<IHotpotContent> remappedContent = soup.remapContent(content, this, pos);
         contents.set(section, remappedContent.orElseGet(HotpotContents.getEmptyContent()));
 
-        HotpotSoups.ifMatchSoup(this, pos, supplier -> setSoup(supplier.apply(this, pos), pos));
+        HotpotSoups.ifMatchSoup(this, pos, soup -> setSoup(soup, pos));
         markDataChanged();
     }
 
