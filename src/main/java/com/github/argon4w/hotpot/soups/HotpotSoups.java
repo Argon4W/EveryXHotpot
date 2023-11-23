@@ -38,7 +38,7 @@ public class HotpotSoups {
                     .match() :
                     (hotpotBlockEntity, pos) -> new HotpotSoupMatcher(hotpotBlockEntity)
                     .withSoup(soup -> soup instanceof HotpotClearSoup)
-            .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3)
+                    .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3)
                     .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).require(3)
                     .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).require(2)
                     .match(),
