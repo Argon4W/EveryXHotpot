@@ -2,7 +2,9 @@ package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupAssembler;
+import com.github.argon4w.hotpot.soups.recipes.HotpotSoupFactory;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupMatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -11,12 +13,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.fml.loading.FMLLoader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.*;
 
 public class HotpotSoups {
-    public static final boolean SINOFEAST_LOADED = FMLLoader.getLoadingModList().getMods().stream().anyMatch(modInfo -> modInfo.getModId().equals("sinofeast"));
+    public static final boolean SINO_FEAST_LOADED = FMLLoader.getLoadingModList().getMods().stream().anyMatch(modInfo -> modInfo.getModId().equals("sinofeast"));
     public static final TagKey<Item> SPICY_ITEM_TAG = ItemTags.create(new ResourceLocation("sinofeast", "tastes/primary/spicy"));
     public static final TagKey<Item> ACRID_ITEM_TAG = ItemTags.create(new ResourceLocation("sinofeast", "tastes/primary/acrid"));
     public static final TagKey<Item> MILK_ITEM_TAG = ItemTags.create(new ResourceLocation("forge", "milk/milk"));
@@ -29,30 +34,20 @@ public class HotpotSoups {
             "LavaSoup", HotpotLavaSoup::new,
             "Empty", HotpotEmptySoup::new
     ));
-    public static final ConcurrentHashMap<BiPredicate<HotpotBlockEntity, BlockPosWithLevel>, BiFunction<HotpotBlockEntity, BlockPosWithLevel, IHotpotSoup>> HOTPOT_SOUP_MATCHES = new ConcurrentHashMap<>(Map.of(
-            SINOFEAST_LOADED ?
-                    (hotpotBlockEntity, pos) -> new HotpotSoupMatcher(hotpotBlockEntity)
-                    .withSoup(soup -> soup instanceof HotpotClearSoup)
-                    .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).require(6)
-                    .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).require(2)
-                    .match() :
-                    (hotpotBlockEntity, pos) -> new HotpotSoupMatcher(hotpotBlockEntity)
-                    .withSoup(soup -> soup instanceof HotpotClearSoup)
-                    .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3)
-                    .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).require(3)
-                    .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).require(2)
-                    .match(),
-            SINOFEAST_LOADED ?
-            (hotpotBlockEntity, pos) -> new HotpotSoupAssembler(hotpotBlockEntity)
-                    .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).consume()
-                    .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).consume()
-                    .assemble("SpicySoup") :
-                    (hotpotBlockEntity, pos) -> new HotpotSoupAssembler(hotpotBlockEntity)
-                    .withItem(itemStack -> itemStack.is(Items.REDSTONE)).consume()
-                    .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).consume()
-                    .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).consume()
-                    .assemble("SpicySoup")
-    ));
+
+    public static final List<BiFunction<HotpotBlockEntity, BlockPosWithLevel, Optional<IHotpotSoup>>> HOTPOT_SOUP_RECIPES = List.of(
+            (hotpotBlockEntity, pos) -> new HotpotSoupFactory(hotpotBlockEntity)
+                    .withVariant(() -> SINO_FEAST_LOADED)
+                        .withSoup(soup -> soup instanceof HotpotClearSoup)
+                        .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).require(6).consume()
+                        .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).require(2).consume()
+                    .withVariant(() -> !SINO_FEAST_LOADED)
+                        .withSoup(soup -> soup instanceof HotpotClearSoup)
+                        .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3).consume()
+                        .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).require(3).consume()
+                        .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).require(2).consume()
+                    .match("SpicySoup")
+    );
 
     public static Supplier<IHotpotSoup> getEmptySoup() {
         return HotpotSoups.HOTPOT_SOUP_TYPES.get("Empty");
@@ -62,11 +57,14 @@ public class HotpotSoups {
         return HotpotSoups.HOTPOT_SOUP_TYPES.getOrDefault(key, getEmptySoup());
     }
 
-    public static void ifMatchSoup(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos, Consumer<BiFunction<HotpotBlockEntity, BlockPosWithLevel, IHotpotSoup>> consumer) {
-        HotpotSoups.HOTPOT_SOUP_MATCHES.forEach(((predicate, supplier) -> {
-            if (predicate.test(hotpotBlockEntity, pos)) {
-                consumer.accept(supplier);
+    public static void ifMatchSoup(HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos, Consumer<IHotpotSoup> consumer) {
+        for (BiFunction<HotpotBlockEntity, BlockPosWithLevel, Optional<IHotpotSoup>> recipe : HotpotSoups.HOTPOT_SOUP_RECIPES) {
+            Optional<IHotpotSoup> optional = recipe.apply(hotpotBlockEntity, pos);
+
+            if (optional.isPresent()) {
+                consumer.accept(optional.get());
+                return;
             }
-        }));
+        }
     }
 }
