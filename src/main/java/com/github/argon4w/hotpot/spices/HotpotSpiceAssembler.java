@@ -34,7 +34,7 @@ public class HotpotSpiceAssembler {
         return this;
     }
 
-    public HotpotSpiceAssembler withExisting(Predicate<ItemStack> predicate, Supplier<ItemStack> supplier) {
+    public HotpotSpiceAssembler with(Predicate<ItemStack> predicate) {
         for (int i = 0; i < craftingContainer.getContainerSize(); i ++) {
             ItemStack itemStack = craftingContainer.getItem(i);
 
@@ -45,7 +45,7 @@ public class HotpotSpiceAssembler {
             }
         }
 
-        return with(supplier);
+        return this;
     }
 
     public HotpotSpiceAssembler with(Supplier<ItemStack> supplier) {

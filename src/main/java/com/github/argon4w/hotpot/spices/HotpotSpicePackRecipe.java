@@ -39,11 +39,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     @Override
     public ItemStack assemble(CraftingContainer craftingContainer) {
         return new HotpotSpiceAssembler(craftingContainer)
-                .withExisting(
-                        itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()),
-                        () -> new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get())
-                )
-                /*.filter(itemStack -> !HotpotSpicePackRecipe.PREDICATE.test(itemStack))*/
+                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()))
                 .forEach((assembled, itemStack) -> {
                     ListTag list = HotpotTagsHelper.getHotpotTag(assembled).getList("Spices", Tag.TAG_COMPOUND);
                     list.add(itemStack.copyWithCount(1).save(new CompoundTag()));
