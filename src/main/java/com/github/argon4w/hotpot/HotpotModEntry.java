@@ -4,11 +4,13 @@ import com.github.argon4w.hotpot.blocks.HotpotBlock;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlock;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
+import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.items.HotpotChopstickItem;
 import com.github.argon4w.hotpot.items.HotpotPlaceableBlockItem;
 import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
 import com.github.argon4w.hotpot.placeables.HotpotPlaceables;
+import com.github.argon4w.hotpot.soups.HotpotSoups;
 import com.github.argon4w.hotpot.soups.effects.HotpotMobEffect;
 import com.github.argon4w.hotpot.spices.HotpotSpicePackRecipe;
 import com.mojang.datafixers.DSL;
@@ -54,14 +56,14 @@ public class HotpotModEntry {
             () -> BlockEntityType.Builder.of(HotpotPlaceableBlockEntity::new, HOTPOT_PLACEABLE.get()).build(DSL.remainderType()));
 
     public static final RegistryObject<Item> HOTPOT_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot", () -> new BlockItem(HOTPOT_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> HOTPOT_SMALL_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlaceableBlockItem(HotpotPlaceables.getPlaceableOrElseEmpty("SmallPlate")));
-    public static final RegistryObject<Item> HOTPOT_LONG_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlaceableBlockItem(HotpotPlaceables.getPlaceableOrElseEmpty("LongPlate")));
+    public static final RegistryObject<Item> HOTPOT_SMALL_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlaceableBlockItem(() -> HotpotPlaceables.SMALL_PLATE.get().createPlaceable()));
+    public static final RegistryObject<Item> HOTPOT_LONG_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlaceableBlockItem(() -> HotpotPlaceables.LONG_PLATE.get().createPlaceable()));
     public static final RegistryObject<Item> HOTPOT_CHOPSTICK = HotpotRegistries.ITEMS.register("hotpot_chopstick", HotpotChopstickItem::new);
     public static final RegistryObject<Item> HOTPOT_SPICE_PACK = HotpotRegistries.ITEMS.register("hotpot_spice_pack", HotpotSpicePackItem::new);
     public static final RegistryObject<MobEffect> HOTPOT_WARM = HotpotRegistries.MOB_EFFECTS.register("warm", () -> new HotpotMobEffect(MobEffectCategory.BENEFICIAL, (240 << 16) | (240 << 8) | 240));
     public static final RegistryObject<MobEffect> HOTPOT_ACRID = HotpotRegistries.MOB_EFFECTS.register("acrid", () -> new HotpotMobEffect(MobEffectCategory.BENEFICIAL, (240 << 16) | (84 << 8) | 64).addAttributeModifier(Attributes.ATTACK_SPEED, "46f33e49-ce96-4c75-b126-60a1e4117a8f", 0.5f, AttributeModifier.Operation.MULTIPLY_TOTAL));
     public static final RegistryObject<RecipeSerializer<HotpotSpicePackRecipe>> HOTPOT_SPICE_PACK_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_spice_pack", () -> new SimpleCraftingRecipeSerializer<>(HotpotSpicePackRecipe::new));
-    public static final RegistryObject<CreativeModeTab> EVERY_X_HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .icon(() -> HOTPOT_BLOCK_ITEM.get().getDefaultInstance())
             .title(Component.translatable("itemGroup.EveryXHotpot"))
@@ -87,5 +89,9 @@ public class HotpotModEntry {
         HotpotRegistries.BLOCK_ENTITY_TYPES.register(modEventBus);
         HotpotRegistries.RECIPE_SERIALIZERS.register(modEventBus);
         HotpotRegistries.MOB_EFFECTS.register(modEventBus);
+
+        HotpotSoups.SOUPS.register(modEventBus);
+        HotpotContents.CONTENTS.register(modEventBus);
+        HotpotPlaceables.PLACEABLES.register(modEventBus);
     }
 }

@@ -29,7 +29,7 @@ public class HotpotBlastFurnaceRecipeContent extends AbstractHotpotCookingRecipe
 
     @Override
     public String getID() {
-        return "BlastingItemStack";
+        return "blasting_recipe_content";
     }
 
     public static boolean hasBlastingRecipe(ItemStack itemStack, BlockPosWithLevel pos) {

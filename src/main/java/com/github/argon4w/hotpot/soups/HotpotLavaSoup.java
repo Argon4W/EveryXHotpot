@@ -23,7 +23,7 @@ public class HotpotLavaSoup extends AbstractHotpotFluidBasedSoup {
 
     @Override
     public String getID() {
-        return "LavaSoup";
+        return "lava_soup";
     }
 
     @Override

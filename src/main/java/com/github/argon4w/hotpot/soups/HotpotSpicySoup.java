@@ -22,7 +22,7 @@ public class HotpotSpicySoup extends AbstractHotpotWaterBasedSoup {
 
     @Override
     public String getID() {
-        return "SpicySoup";
+        return "spicy_soup";
     }
 
     @Override

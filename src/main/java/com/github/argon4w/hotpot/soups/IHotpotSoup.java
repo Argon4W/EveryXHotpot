@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.IHotpotSavable;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
@@ -15,10 +16,21 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface IHotpotSoup extends IHotpotSavable<IHotpotSoup> {
+    Map<String, String> ID_FIXES = Map.of(
+            "ClearSoup", "clear_Soup",
+            "SpicySoup", "spicy_soup",
+            "CheeseSoup", "cheese_soup",
+            "LavaSoup", "lava_soup",
+            "EmptySoup", "empty_soup",
+            "Empty", "empty_soup"
+    );
+
     Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel selfPos);
     Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos);
     Optional<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, BlockPosWithLevel selfPos);
@@ -39,8 +51,8 @@ public interface IHotpotSoup extends IHotpotSavable<IHotpotSoup> {
 
     static IHotpotSoup loadSoup(CompoundTag compoundTag) {
         return isTagValid(compoundTag) ?
-                HotpotSoups.getSoupOrElseEmpty(compoundTag.getString("Type")).get().loadOrElseGet(compoundTag, HotpotSoups.getEmptySoup())
-                : HotpotSoups.getEmptySoup().get();
+                HotpotSoups.getSoupRegistry().getValue(new ResourceLocation(HotpotModEntry.MODID, fixID(compoundTag.getString("Type")))).createSoup().loadOrElseGet(compoundTag, () -> HotpotSoups.getEmptySoup().createSoup())
+                : HotpotSoups.getEmptySoup().createSoup();
     }
 
     static boolean isTagValid(CompoundTag compoundTag) {
@@ -52,5 +64,9 @@ public interface IHotpotSoup extends IHotpotSavable<IHotpotSoup> {
         soupTag.putString("Type", soup.getID());
 
         return soup.save(soupTag);
+    }
+
+    static String fixID(String id) {
+        return ID_FIXES.getOrDefault(id, id);
     }
 }

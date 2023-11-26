@@ -32,7 +32,7 @@ public class HotpotCheeseSoup extends AbstractEffectiveFluidBasedSoup {
 
     @Override
     public String getID() {
-        return "CheeseSoup";
+        return "cheese_soup";
     }
 
     @Override

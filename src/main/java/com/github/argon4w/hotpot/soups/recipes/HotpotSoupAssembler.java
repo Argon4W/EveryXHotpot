@@ -1,11 +1,13 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
+import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCampfireRecipeContent;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.HotpotSoups;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +37,7 @@ public class HotpotSoupAssembler {
     }
 
     public IHotpotSoup assemble(String key) {
-        return HotpotSoups.getSoupOrElseEmpty(key).get();
+        return HotpotSoups.getSoupRegistry().getValue(new ResourceLocation(HotpotModEntry.MODID, key)).createSoup();
     }
 
     public static record HotpotSoupAssembleContext(HotpotSoupAssembler assembler, Predicate<IHotpotContent> predicate) {
@@ -44,7 +46,7 @@ public class HotpotSoupAssembler {
         }
 
         public HotpotSoupAssembler consume(int stMost) {
-            return replace(content -> HotpotContents.getEmptyContent().get(), stMost);
+            return replace(content -> HotpotContents.getEmptyContent().createContent(), stMost);
         }
 
         public HotpotSoupAssembler replace(UnaryOperator<IHotpotContent> operator) {

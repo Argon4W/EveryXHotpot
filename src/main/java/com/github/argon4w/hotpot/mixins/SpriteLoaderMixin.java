@@ -92,15 +92,15 @@ public abstract class SpriteLoaderMixin {
             for (int y = 0; y < image.getHeight(); y ++) {
                 int originalColor = image.getPixelRGBA(x, y);
 
-                int alpha = FastColor.ARGB32.alpha(originalColor);
-                int blue = FastColor.ARGB32.blue(originalColor);
-                int green = FastColor.ARGB32.green(originalColor);
-                int red = FastColor.ARGB32.red(originalColor);
+                int alpha = FastColor.ABGR32.alpha(originalColor);
+                int blue = FastColor.ABGR32.blue(originalColor);
+                int green = FastColor.ABGR32.green(originalColor);
+                int red = FastColor.ABGR32.red(originalColor);
 
                 float gray =  Math.min(1f, (red * 0.299f + green * 0.587f + blue * 0.144f) / 255f * amplifier + (float) source.nextGaussian() * 0.12f);
                 int finalAlpha = (int) (alpha *  sigmoid(((image.getHeight() - 2f * y) / image.getHeight()) * 10f));
 
-                blendPixel(image, x, y, FastColor.ARGB32.color(
+                blendPixel(image, x, y, FastColor.ABGR32.color(
                         finalAlpha,
                         0,
                         (int) (170 + gray * 55),

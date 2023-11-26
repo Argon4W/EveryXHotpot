@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 public class HotpotChopstickItem extends HotpotPlaceableBlockItem {
     public HotpotChopstickItem() {
-        super(HotpotPlaceables.getPlaceableOrElseEmpty("PlacedChopstick"), new Properties().stacksTo(1));
+        super(() -> HotpotPlaceables.PLACED_CHOPSTICK.get().createPlaceable(), new Properties().stacksTo(1));
     }
 
     @Override

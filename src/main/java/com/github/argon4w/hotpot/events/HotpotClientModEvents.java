@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.events;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntityRenderer;
-import com.github.argon4w.hotpot.blocks.HotpotPlateBlockEntityRenderer;
+import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntityRenderer;
 import com.github.argon4w.hotpot.items.HotpotBlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -41,6 +41,6 @@ public class HotpotClientModEvents {
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), HotpotPlateBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_PLACEABLE_BLOCK_ENTITY.get(), HotpotPlaceableBlockEntityRenderer::new);
     }
 }

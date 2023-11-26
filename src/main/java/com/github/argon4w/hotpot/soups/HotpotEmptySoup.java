@@ -31,10 +31,10 @@ import java.util.function.Supplier;
 
 public class HotpotEmptySoup implements IHotpotSoup {
     public static final ConcurrentHashMap<Predicate<ItemStack>, HotpotEmptyFill> HOTPOT_EMPTY_FILL_TYPES = new ConcurrentHashMap<>(Map.of(
-            (itemStack) -> itemStack.is(Items.WATER_BUCKET), new HotpotEmptyFill(HotpotSoups.HOTPOT_SOUP_TYPES.get("ClearSoup"), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotEmptyFill(HotpotSoups.getSoupOrElseEmpty("ClearSoup"), 0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.MILK_BUCKET), new HotpotEmptyFill(HotpotSoups.HOTPOT_SOUP_TYPES.get("CheeseSoup"), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.LAVA_BUCKET), new HotpotEmptyFill(HotpotSoups.HOTPOT_SOUP_TYPES.get("LavaSoup"), 1f, SoundEvents.BUCKET_EMPTY_LAVA, () -> new ItemStack(Items.BUCKET))
+            (itemStack) -> itemStack.is(Items.WATER_BUCKET), new HotpotEmptyFill(HotpotSoups.CLEAR_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
+            (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotEmptyFill(HotpotSoups.CLEAR_SOUP.get(), 0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.BUCKET)),
+            (itemStack) -> itemStack.is(Items.MILK_BUCKET), new HotpotEmptyFill(HotpotSoups.CHEESE_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
+            (itemStack) -> itemStack.is(Items.LAVA_BUCKET), new HotpotEmptyFill(HotpotSoups.LAVA_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY_LAVA, () -> new ItemStack(Items.BUCKET))
     ));
 
     @Override
@@ -54,7 +54,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
 
     @Override
     public String getID() {
-        return "Empty";
+        return "empty_soup";
     }
 
     @Override
@@ -62,7 +62,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
         ifMatchEmptyFill(itemStack, returnable -> {
             player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, returnable.returned().get()));
 
-            hotpotBlockEntity.setSoup(returnable.soup().get(), selfPos);
+            hotpotBlockEntity.setSoup(returnable.soup().createSoup(), selfPos);
             hotpotBlockEntity.getSoup().setWaterLevel(hotpotBlockEntity, selfPos, returnable.waterLevel());
 
             selfPos.level().playSound(null, selfPos.pos(), returnable.soundEvent(), SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -73,7 +73,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
 
     @Override
     public Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
-        return Optional.of(HotpotContents.getEmptyContent().get());
+        return Optional.of(HotpotContents.getEmptyContent().createContent());
     }
 
     @Override
@@ -156,5 +156,5 @@ public class HotpotEmptySoup implements IHotpotSoup {
         key.ifPresent(itemStackPredicate -> consumer.accept(HotpotEmptySoup.HOTPOT_EMPTY_FILL_TYPES.get(itemStackPredicate)));
     }
 
-    public record HotpotEmptyFill(Supplier<IHotpotSoup> soup, float waterLevel, SoundEvent soundEvent, Supplier<ItemStack> returned) {}
+    public record HotpotEmptyFill(HotpotSoupType<?> soup, float waterLevel, SoundEvent soundEvent, Supplier<ItemStack> returned) {}
 }

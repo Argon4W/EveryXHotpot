@@ -51,7 +51,7 @@ public class HotpotEmptyContent implements IHotpotContent {
 
     @Override
     public String getID() {
-        return "Empty";
+        return "empty_content";
     }
 
     @Override

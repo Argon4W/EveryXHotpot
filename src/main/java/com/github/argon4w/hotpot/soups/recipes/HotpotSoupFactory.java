@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
+import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCampfireRecipeContent;
 import com.github.argon4w.hotpot.contents.HotpotContents;
@@ -7,6 +8,7 @@ import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.HotpotSoups;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -28,7 +30,7 @@ public class HotpotSoupFactory {
 
     protected Optional<IHotpotSoup> assemble(String key) {
         queuedReplaces.forEach((predicate, operator) -> hotpotBlockEntity.consumeContent(content -> predicate.test(content) ? operator.apply(content) : content));
-        return Optional.of(HotpotSoups.getSoupOrElseEmpty(key).get());
+        return Optional.of(HotpotSoups.getSoupRegistry().getValue(new ResourceLocation(HotpotModEntry.MODID, key)).createSoup());
     }
 
     protected int range(int from, int to, Predicate<IHotpotContent> predicate, boolean minimal) {
@@ -98,7 +100,7 @@ public class HotpotSoupFactory {
 
     public record HotpotSoupFactoryAssembleContext(HotpotSoupFactory factory, Predicate<IHotpotContent> predicate, int amount) {
         public HotpotSoupFactory consume() {
-            return replace(content -> HotpotContents.getEmptyContent().get());
+            return replace(content -> HotpotContents.getEmptyContent().createContent());
         }
 
         public HotpotSoupFactory replace(UnaryOperator<IHotpotContent> operator) {

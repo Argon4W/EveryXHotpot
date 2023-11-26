@@ -33,8 +33,8 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
     private boolean soupSynchronized = false;
 
-    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotContents.getEmptyContent().get());
-    private IHotpotSoup soup = HotpotSoups.getEmptySoup().get();
+    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotContents.getEmptyContent().createContent());
+    private IHotpotSoup soup = HotpotSoups.getEmptySoup().createSoup();
     public float renderedWaterLevel = -1f;
     private float waterLevel = 0f;
     private int time = 0;
@@ -74,9 +74,9 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
 
     private void placeContent(int section, IHotpotContent content, BlockPosWithLevel pos) {
         Optional<IHotpotContent> remappedContent = soup.remapContent(content, this, pos);
-        contents.set(section, remappedContent.orElseGet(HotpotContents.getEmptyContent()));
+        contents.set(section, remappedContent.orElseGet(() -> HotpotContents.getEmptyContent().createContent()));
 
-        HotpotSoups.ifMatchSoup(this, pos, soup -> setSoup(soup, pos));
+        HotpotSoups.lookupRecipe(this, pos, soup -> setSoup(soup, pos));
         markDataChanged();
     }
 
@@ -86,7 +86,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     }
 
     public void consumeAllContents() {
-        consumeContent(ignored -> HotpotContents.getEmptyContent().get());
+        consumeContent(ignored -> HotpotContents.getEmptyContent().createContent());
     }
 
     private void synchronizeSoup(BlockPosWithLevel selfPos) {
@@ -114,7 +114,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
 
         if (!(content instanceof HotpotEmptyContent)) {
             soup.takeOutContentViaHand(content, soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos), this, pos);
-            contents.set(contentSection, HotpotContents.getEmptyContent().get());
+            contents.set(contentSection, HotpotContents.getEmptyContent().createContent());
 
             markDataChanged();
         }
@@ -128,7 +128,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
         if (!(content instanceof HotpotEmptyContent)) {
             ItemStack itemStack = soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos);
 
-            contents.set(contentSection, HotpotContents.getEmptyContent().get());
+            contents.set(contentSection, HotpotContents.getEmptyContent().createContent());
             markDataChanged();
 
             return itemStack;
@@ -152,7 +152,7 @@ public class HotpotBlockEntity extends AbstractChopstickInteractiveBlockEntity {
             IHotpotContent content = contents.get(i);
 
             soup.takeOutContentViaHand(content, content.takeOut(this, pos), this, pos);
-            contents.set(i, HotpotContents.getEmptyContent().get());
+            contents.set(i, HotpotContents.getEmptyContent().createContent());
         }
 
         markDataChanged();

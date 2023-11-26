@@ -138,6 +138,6 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public String getID() {
-        return "Player";
+        return "player_content";
     }
 }

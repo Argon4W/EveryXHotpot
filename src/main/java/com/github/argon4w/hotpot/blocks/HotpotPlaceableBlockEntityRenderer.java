@@ -5,10 +5,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class HotpotPlateBlockEntityRenderer implements BlockEntityRenderer<HotpotPlaceableBlockEntity> {
+public class HotpotPlaceableBlockEntityRenderer implements BlockEntityRenderer<HotpotPlaceableBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
 
-    public HotpotPlateBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    public HotpotPlaceableBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.context = context;
     }
 

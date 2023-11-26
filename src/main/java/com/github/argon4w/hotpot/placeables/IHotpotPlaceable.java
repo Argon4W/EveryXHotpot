@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.placeables;
 
 import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.IHotpotSavableWIthSlot;
 import com.github.argon4w.hotpot.blocks.HotpotPlaceableBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,15 +11,24 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public interface IHotpotPlaceable extends IHotpotSavableWIthSlot<IHotpotPlaceable> {
+    Map<String, String> ID_FIXES = Map.of(
+            "Empty", "empty_placeable",
+            "LongPlate", "long_plate",
+            "SmallPlate", "small_plate",
+            "PlacedChopstick", "placed_chopstick"
+    );
+
     void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos);
     ItemStack takeOutContent(int pos, HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel selfPos);
     void onRemove(HotpotPlaceableBlockEntity hotpotPlateBlockEntity, BlockPosWithLevel pos);
@@ -46,11 +56,15 @@ public interface IHotpotPlaceable extends IHotpotSavableWIthSlot<IHotpotPlaceabl
     }
 
     static void load(CompoundTag compoundTag, BiConsumer<Integer, IHotpotPlaceable> consumer) {
-        IHotpotPlaceable placeable = HotpotPlaceables.getPlaceableOrElseEmpty(compoundTag.getString("Type")).get();
-        consumer.accept(compoundTag.getByte("Slot") & 255, placeable.loadOrElseGet(compoundTag, HotpotPlaceables.getEmptyPlaceable()));
+        IHotpotPlaceable placeable = HotpotPlaceables.getPlaceableRegistry().getValue(new ResourceLocation(HotpotModEntry.MODID, fixID(compoundTag.getString("Type")))).createPlaceable();
+        consumer.accept(compoundTag.getByte("Slot") & 255, placeable.loadOrElseGet(compoundTag, () -> HotpotPlaceables.getEmptyPlaceable().createPlaceable()));
     }
 
     static ListTag saveAll(NonNullList<IHotpotPlaceable> list) {
         return IHotpotSavableWIthSlot.saveAll(list);
+    }
+
+    static String fixID(String id) {
+        return ID_FIXES.getOrDefault(id, id);
     }
 }

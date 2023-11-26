@@ -19,7 +19,7 @@ public class HotpotClearSoup extends AbstractHotpotWaterBasedSoup {
 
     @Override
     public String getID() {
-        return "ClearSoup";
+        return "clear_soup";
     }
 
     @Override

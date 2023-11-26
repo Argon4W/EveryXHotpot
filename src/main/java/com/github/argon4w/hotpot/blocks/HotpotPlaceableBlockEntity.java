@@ -29,7 +29,7 @@ import java.util.List;
 
 public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBlockEntity {
     private boolean contentChanged = true;
-    private final NonNullList<IHotpotPlaceable> placeables = NonNullList.withSize(4, HotpotPlaceables.getEmptyPlaceable().get());
+    private final NonNullList<IHotpotPlaceable> placeables = NonNullList.withSize(4, HotpotPlaceables.getEmptyPlaceable().createPlaceable());
     private boolean infiniteContent = false;
     private boolean canBeRemoved = true;
 
@@ -86,7 +86,7 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
         if (!(placeable instanceof HotpotEmptyPlaceable)) {
             placeable.onRemove(this, pos);
             pos.dropItemStack(placeable.getCloneItemStack(this, pos));
-            placeables.set(placeable.getAnchorPos(), HotpotPlaceables.getEmptyPlaceable().get());
+            placeables.set(placeable.getAnchorPos(), HotpotPlaceables.getEmptyPlaceable().createPlaceable());
 
             markDataChanged();
         }
@@ -122,14 +122,14 @@ public class HotpotPlaceableBlockEntity extends AbstractChopstickInteractiveBloc
             placeable.onRemove(this, pos);
             pos.dropItemStack(placeable.getCloneItemStack(this, pos));
 
-            placeables.set(i, HotpotPlaceables.getEmptyPlaceable().get());
+            placeables.set(i, HotpotPlaceables.getEmptyPlaceable().createPlaceable());
         }
 
         markDataChanged();
     }
 
     public IHotpotPlaceable getPlaceableInPos(int hitPos) {
-        return placeables.stream().filter(plate -> plate.getPos().contains(hitPos)).findFirst().orElseGet(HotpotPlaceables.getEmptyPlaceable());
+        return placeables.stream().filter(plate -> plate.getPos().contains(hitPos)).findFirst().orElseGet(() -> HotpotPlaceables.getEmptyPlaceable().createPlaceable());
     }
 
     public void markDataChanged() {

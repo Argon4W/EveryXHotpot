@@ -25,6 +25,6 @@ public class HotpotCampfireRecipeContent extends AbstractHotpotCookingRecipeCont
 
     @Override
     public String getID() {
-        return "ItemStack";
+        return "campfire_recipe_content";
     }
 }

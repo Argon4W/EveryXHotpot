@@ -44,7 +44,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel selfPos) {
         if (itemStack.isEmpty()) {
             if (player.isCrouching() && hotpotBlockEntity.canBeRemoved()) {
-                hotpotBlockEntity.setSoup(HotpotSoups.getEmptySoup().get(), selfPos);
+                hotpotBlockEntity.setSoup(HotpotSoups.getEmptySoup().createSoup(), selfPos);
                 hotpotBlockEntity.onRemove(selfPos);
             } else {
                 player.hurt(player.damageSources().onFire(), 5);
