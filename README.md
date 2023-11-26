@@ -10,7 +10,6 @@
   - 1.19.2
   - 1.18.2
   - 1.16.5
-#### 其他版本
 - [Fabric](https://github.com/FishMagic/EveryXHotpot-Fabric)
 ### 已知问题
 - 不兼容Optifine **(无计划在保持完整功能的前提下修复)**
