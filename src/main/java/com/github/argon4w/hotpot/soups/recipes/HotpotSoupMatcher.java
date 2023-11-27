@@ -19,7 +19,6 @@ public class HotpotSoupMatcher {
 
     public HotpotSoupMatcher withSoup(Predicate<IHotpotSoup> predicate) {
         matched = matched && predicate.test(hotpotBlockEntity.getSoup());
-
         return this;
     }
 

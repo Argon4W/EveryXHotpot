@@ -43,14 +43,14 @@ public class HotpotSoups {
     public static final List<BiFunction<HotpotBlockEntity, BlockPosWithLevel, Optional<IHotpotSoup>>> HOTPOT_SOUP_RECIPES = List.of(
             (hotpotBlockEntity, pos) -> new HotpotSoupFactory(hotpotBlockEntity)
                     .withVariant(() -> SINO_FEAST_LOADED)
-                    .withSoup(soup -> soup instanceof HotpotClearSoup)
-                    .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).require(6).consume()
-                    .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).require(2).consume()
+                        .withSoup(soup -> soup instanceof HotpotClearSoup)
+                        .withItem(itemStack -> itemStack.is(HotpotSoups.SPICY_ITEM_TAG)).require(6).consume()
+                        .withItem(itemStack -> itemStack.is(HotpotSoups.ACRID_ITEM_TAG)).require(2).consume()
                     .withVariant(() -> !SINO_FEAST_LOADED)
-                    .withSoup(soup -> soup instanceof HotpotClearSoup)
-                    .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3).consume()
-                    .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).require(3).consume()
-                    .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).require(2).consume()
+                        .withSoup(soup -> soup instanceof HotpotClearSoup)
+                        .withItem(itemStack -> itemStack.is(Items.REDSTONE)).require(3).consume()
+                        .withItem(itemStack -> itemStack.is(Items.BLAZE_POWDER)).require(3).consume()
+                        .withItem(itemStack -> itemStack.is(Items.GUNPOWDER)).require(2).consume()
                     .match("spicy_soup")
     );
 

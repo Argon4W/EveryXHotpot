@@ -30,11 +30,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class HotpotEmptySoup implements IHotpotSoup {
-    public static final ConcurrentHashMap<Predicate<ItemStack>, HotpotEmptyFill> HOTPOT_EMPTY_FILL_TYPES = new ConcurrentHashMap<>(Map.of(
-            (itemStack) -> itemStack.is(Items.WATER_BUCKET), new HotpotEmptyFill(HotpotSoups.CLEAR_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotEmptyFill(HotpotSoups.CLEAR_SOUP.get(), 0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.MILK_BUCKET), new HotpotEmptyFill(HotpotSoups.CHEESE_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
-            (itemStack) -> itemStack.is(Items.LAVA_BUCKET), new HotpotEmptyFill(HotpotSoups.LAVA_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY_LAVA, () -> new ItemStack(Items.BUCKET))
+    public static final ConcurrentHashMap<Predicate<ItemStack>, HotpotInteraction> HOTPOT_INTERACTION_RECIPES = new ConcurrentHashMap<>(Map.of(
+            (itemStack) -> itemStack.is(Items.WATER_BUCKET), new HotpotInteraction(HotpotSoups.CLEAR_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
+            (itemStack) -> itemStack.is(Items.POTION) && PotionUtils.getPotion(itemStack) == Potions.WATER, new HotpotInteraction(HotpotSoups.CLEAR_SOUP.get(), 0.333f, SoundEvents.BOTTLE_FILL, () -> new ItemStack(Items.GLASS_BOTTLE)),
+            (itemStack) -> itemStack.is(Items.MILK_BUCKET), new HotpotInteraction(HotpotSoups.CHEESE_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY, () -> new ItemStack(Items.BUCKET)),
+            (itemStack) -> itemStack.is(Items.LAVA_BUCKET), new HotpotInteraction(HotpotSoups.LAVA_SOUP.get(), 1f, SoundEvents.BUCKET_EMPTY_LAVA, () -> new ItemStack(Items.BUCKET))
     ));
 
     @Override
@@ -59,13 +59,13 @@ public class HotpotEmptySoup implements IHotpotSoup {
 
     @Override
     public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel selfPos) {
-        ifMatchEmptyFill(itemStack, returnable -> {
-            player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, returnable.returned().get()));
+        lookupInteractionRecipe(itemStack, interaction -> {
+            player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, interaction.returned().get()));
 
-            hotpotBlockEntity.setSoup(returnable.soup().createSoup(), selfPos);
-            hotpotBlockEntity.getSoup().setWaterLevel(hotpotBlockEntity, selfPos, returnable.waterLevel());
+            hotpotBlockEntity.setSoup(interaction.soup().createSoup(), selfPos);
+            hotpotBlockEntity.getSoup().setWaterLevel(hotpotBlockEntity, selfPos, interaction.waterLevel());
 
-            selfPos.level().playSound(null, selfPos.pos(), returnable.soundEvent(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            selfPos.level().playSound(null, selfPos.pos(), interaction.soundEvent(), SoundSource.BLOCKS, 1.0F, 1.0F);
         });
 
         return Optional.empty();
@@ -151,10 +151,10 @@ public class HotpotEmptySoup implements IHotpotSoup {
         return List.of();
     }
 
-    public static void ifMatchEmptyFill(ItemStack itemStack, Consumer<HotpotEmptyFill> consumer) {
-        Optional<Predicate<ItemStack>> key = HotpotEmptySoup.HOTPOT_EMPTY_FILL_TYPES.keySet().stream().filter(predicate -> predicate.test(itemStack)).findFirst();
-        key.ifPresent(itemStackPredicate -> consumer.accept(HotpotEmptySoup.HOTPOT_EMPTY_FILL_TYPES.get(itemStackPredicate)));
+    public static void lookupInteractionRecipe(ItemStack itemStack, Consumer<HotpotInteraction> consumer) {
+        Optional<Predicate<ItemStack>> key = HotpotEmptySoup.HOTPOT_INTERACTION_RECIPES.keySet().stream().filter(predicate -> predicate.test(itemStack)).findFirst();
+        key.ifPresent(itemStackPredicate -> consumer.accept(HotpotEmptySoup.HOTPOT_INTERACTION_RECIPES.get(itemStackPredicate)));
     }
 
-    public record HotpotEmptyFill(HotpotSoupType<?> soup, float waterLevel, SoundEvent soundEvent, Supplier<ItemStack> returned) {}
+    public record HotpotInteraction(HotpotSoupType<?> soup, float waterLevel, SoundEvent soundEvent, Supplier<ItemStack> returned) {}
 }
