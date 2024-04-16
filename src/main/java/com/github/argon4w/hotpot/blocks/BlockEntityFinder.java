@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.blocks;
 
-import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.HashMap;
@@ -11,39 +11,37 @@ import java.util.function.BiPredicate;
 public class BlockEntityFinder<T extends BlockEntity> {
     private final BlockPosIterator iterator;
     private final Class<T> targetClass;
+    private final BiPredicate<T, LevelBlockPos> filter;
 
-    public BlockEntityFinder(BlockPosWithLevel selfPos, Class<T> targetClass, BiPredicate<T, BlockPosWithLevel> filter) {
+    public BlockEntityFinder(LevelBlockPos selfPos, Class<T> targetClass, BiPredicate<T, LevelBlockPos> filter) {
         this.targetClass = targetClass;
-
-        this.iterator = new BlockPosIterator(selfPos, pos -> {
-            BlockEntity blockEntity = pos.getBlockEntity();
-            return this.targetClass.isInstance(blockEntity) && filter.test(this.targetClass.cast(blockEntity), pos);
-        });
+        this.filter = filter;
+        this.iterator = new BlockPosIterator(selfPos, this::checkTargetBlock);
     }
 
-    public Map<T, BlockPosWithLevel> getAll(BiPredicate<T, BlockPosWithLevel> predicate) {
-        HashMap<T, BlockPosWithLevel> map = new HashMap<>();
+    private boolean checkTargetBlock(LevelBlockPos pos) {
+        BlockEntity blockEntity = pos.getBlockEntity();
+        return this.targetClass.isInstance(blockEntity) && filter.test(this.targetClass.cast(blockEntity), pos);
+    }
 
-        iterator.forEachRemaining(pos -> {
+    public Map<T, LevelBlockPos> getAll() {
+        HashMap<T, LevelBlockPos> map = new HashMap<>();
+
+        while (iterator.hasNext()) {
+            LevelBlockPos pos = iterator.next();
             T blockEntity = targetClass.cast(pos.getBlockEntity());
 
-            if (predicate.test(blockEntity, pos)) {
-                map.put(blockEntity, pos);
-            }
-        });
+            map.put(blockEntity, pos);
+        }
 
         return map;
     }
 
-    public Map<T, BlockPosWithLevel> getAll() {
-        return getAll((blockEntity, pos) -> true);
-    }
-
-    public void getFirst(int maximumBlocks, BiPredicate<T, BlockPosWithLevel> predicate, BiConsumer<T, BlockPosWithLevel> consumer) {
+    public void getFirst(int maximumBlocks, BiPredicate<T, LevelBlockPos> predicate, BiConsumer<T, LevelBlockPos> consumer) {
         int count = 0;
 
         while (iterator.hasNext() && (count ++) < maximumBlocks) {
-            BlockPosWithLevel pos = iterator.next();
+            LevelBlockPos pos = iterator.next();
 
             T blockEntity = targetClass.cast(pos.getBlockEntity());
 

@@ -1,0 +1,17 @@
+{
+  "type": "everyxhotpot:hotpot_soup_base_recipe",
+  "source_soup": "everyxhotpot:empty_soup",
+  "result_soup": "everyxhotpot:clear_soup",
+  "result_waterlevel": 0.333,
+  "ingredient": {
+    "type": "forge:partial_nbt",
+    "item": "minecraft:potion",
+    "nbt": {
+      "Potion": "minecraft:water"
+    }
+  },
+  "remaining_item": {
+    "item": "minecraft:glass_bottle"
+  },
+  "sound_event": "item.bottle.fill"
+}

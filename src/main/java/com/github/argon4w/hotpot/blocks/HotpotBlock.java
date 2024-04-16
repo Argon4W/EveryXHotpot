@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.blocks;
 
-import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -120,17 +120,17 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return defaultBlockState();
         }
 
-        BlockPosWithLevel selfPos = new BlockPosWithLevel((Level) accessor, pos);
+        LevelBlockPos selfPos = new LevelBlockPos((Level) accessor, pos);
 
-        BlockPosWithLevel north = selfPos.north();
-        BlockPosWithLevel south = selfPos.south();
-        BlockPosWithLevel east = selfPos.east();
-        BlockPosWithLevel west = selfPos.west();
+        LevelBlockPos north = selfPos.north();
+        LevelBlockPos south = selfPos.south();
+        LevelBlockPos east = selfPos.east();
+        LevelBlockPos west = selfPos.west();
 
-        BlockPosWithLevel westNorth = north.west();
-        BlockPosWithLevel northEast = east.north();
-        BlockPosWithLevel eastSouth = south.east();
-        BlockPosWithLevel southWest = west.south();
+        LevelBlockPos westNorth = north.west();
+        LevelBlockPos northEast = east.north();
+        LevelBlockPos eastSouth = south.east();
+        LevelBlockPos southWest = west.south();
 
         boolean northValue = north.is(HotpotModEntry.HOTPOT_BLOCK.get());
         boolean southValue = south.is(HotpotModEntry.HOTPOT_BLOCK.get());
@@ -152,7 +152,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .setValue(SEPARATOR_WEST, westValue && !HotpotBlockEntity.isSameSoup(selfPos, west));
     }
 
-    private int getHitSection(BlockHitResult result) {
+    private int getHitPos(BlockHitResult result) {
         BlockPos blockPos = result.getBlockPos().relative(Direction.UP);
 
         return HotpotBlockEntity.getPosSection(blockPos, result.getLocation());
@@ -180,14 +180,14 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @Override
     @SuppressWarnings("deprecation")
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
+        LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
         if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
             ItemStack itemStack = player.getItemInHand(hand);
-            int hitSection = getHitSection(result);
+            int hitPos = getHitPos(result);
 
             if (levelPos.isServerSide()) {
-                hotpotBlockEntity.interact(hitSection, player, hand, itemStack, levelPos);
+                hotpotBlockEntity.interact(hitPos, player, hand, itemStack, levelPos);
             }
 
             return InteractionResult.SUCCESS;
@@ -200,7 +200,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @SuppressWarnings("deprecation")
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
         if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
-            hotpotBlockEntity.onRemove(new BlockPosWithLevel(level, pos));
+            hotpotBlockEntity.onRemove(new LevelBlockPos(level, pos));
         }
 
         super.onRemove(state, level, pos, newState, b);
@@ -211,7 +211,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         super.entityInside(state, level, pos, entity);
 
-        BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
+        LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
         if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity && levelPos.isServerSide()) {
             hotpotBlockEntity.getSoup().entityInside(hotpotBlockEntity, levelPos, entity);
@@ -220,7 +220,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
     @Override
     public void animateTick(BlockState blockState, Level level, BlockPos pos, RandomSource randomSource) {
-        BlockPosWithLevel levelPos = new BlockPosWithLevel(level, pos);
+        LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
         if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
             hotpotBlockEntity.getSoup().animateTick(hotpotBlockEntity, levelPos, randomSource);

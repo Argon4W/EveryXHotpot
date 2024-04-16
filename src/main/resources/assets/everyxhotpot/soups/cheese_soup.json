@@ -1,0 +1,18 @@
+{
+  "soup_model_resource_location": "everyxhotpot:soup/hotpot_cheese_soup",
+  "custom_elements_renderers": [
+    {
+      "type": "everyxhotpot:bubble_renderer",
+      "spread": 0.35,
+      "max_scale": 0.6,
+      "amount": 55,
+      "bubble_model_location": "everyxhotpot:soup/hotpot_cheese_soup_bubble",
+      "should_render_in_bowl": false
+    }
+  ],
+  "color": {
+    "red": 255,
+    "green": 230,
+    "blue": 0
+  }
+}

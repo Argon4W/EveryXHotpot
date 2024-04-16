@@ -14,6 +14,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class HotpotEffectHelper {
+    public static void saveEffects(ItemStack itemStack, List<MobEffectInstance> effects) {
+        effects.forEach(effect -> saveEffects(itemStack, effect));
+    }
+
     public static void saveEffects(ItemStack itemStack, MobEffectInstance mobEffectInstance) {
         List<MobEffectInstance> effects = new ArrayList<>(HotpotTagsHelper.getHotpotTag(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
                 .map(tag -> (CompoundTag) tag)

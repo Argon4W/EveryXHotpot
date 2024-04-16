@@ -28,7 +28,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     public boolean matches(CraftingContainer craftingContainer, Level level) {
         List<ItemStack> list = new ArrayList<>();
 
-        return new HotpotSpiceMatcher(craftingContainer)
+        return new SimpleRecipeMatcher(craftingContainer)
                 .with(itemStack -> itemStack.is(ItemTags.SMALL_FLOWERS)).collect(list::add).atLeast(1)
                 .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && ((HotpotTagsHelper.hasHotpotTag(itemStack) ? HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).size() : 0) + list.size() <= 4)).once()
                 .withRemaining().empty()
@@ -38,7 +38,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingContainer craftingContainer, RegistryAccess registryAccess) {
-        return new HotpotSpiceAssembler(craftingContainer)
+        return new SimpleRecipeAssembler(craftingContainer)
                 .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()))
                 /*.filter(itemStack -> !HotpotSpicePackRecipe.PREDICATE.test(itemStack))*/
                 .forEach((assembled, itemStack) -> {

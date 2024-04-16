@@ -1,0 +1,46 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "builtin/entity",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "everyxhotpot:item/hotpot_paper_bowl",
+		"particle": "everyxhotpot:item/hotpot_paper_bowl"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [65, 146, 0],
+			"translation": [0, 2.75, 2.25],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [65, 146, 0],
+			"translation": [0, 2.75, 2.25],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -84, -6],
+			"translation": [0.75, 3.75, -0.5],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -84, -6],
+			"translation": [0.75, 3.75, -0.5],
+			"scale": [0.68, 0.68, 0.68]
+		},
+		"ground": {
+			"translation": [0, 2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"translation": [0.25, 0, 0]
+		},
+		"head": {
+			"translation": [0, 14.5, -0.75],
+			"scale": [1.6, 1.6, 1.6]
+		},
+		"fixed": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

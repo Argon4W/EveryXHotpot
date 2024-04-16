@@ -1,0 +1,31 @@
+{
+  "type": "everyxhotpot:hotpot_soup_ingredient_recipe",
+  "source_soup": "everyxhotpot:clear_soup",
+  "result_soup": "everyxhotpot:tomato_soup",
+  "ingredients": [
+    {
+      "amount": 4,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "tag": "forge:crops/tomato"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "tag": "forge:crops/onion"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    }
+  ]
+}

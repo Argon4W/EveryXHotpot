@@ -1,21 +1,22 @@
 package com.github.argon4w.hotpot.items;
 
-import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.client.items.IHotpotSpecialRenderedItem;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
@@ -23,12 +24,11 @@ import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentItem {
+public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentItem, IHotpotSpecialRenderedItem {
     public HotpotSpicePackItem() {
         super(new Properties());
     }
@@ -38,13 +38,13 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         consumer.accept(new IClientItemExtensions() {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return HotpotModEntry.HOTPOT_BEWLR;
+                return HotpotModEntry.HOTPOT_SPECIAL_ITEM_RENDERER;
             }
         });
     }
 
     @Override
-    public ItemStack onOtherContentUpdate(ItemStack selfItemStack, ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+    public ItemStack onOtherContentUpdate(ItemStack selfItemStack, ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         if (itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
             return itemStack;
         }
@@ -60,13 +60,13 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         }
 
         setSpiceAmount(selfItemStack, amount - 1);
-        getSpiceEffects(selfItemStack).forEach(mobEffectInstance -> HotpotEffectHelper.saveEffects(itemStack, mobEffectInstance));
+        HotpotEffectHelper.saveEffects(itemStack, getSpiceEffects(selfItemStack));
 
         return itemStack;
     }
 
     @Override
-    public ItemStack getSelfItemStack(ItemStack selfItemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, BlockPosWithLevel pos) {
+    public ItemStack getSelfItemStack(ItemStack selfItemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return isSpiceTagValid(selfItemStack) && getSpiceAmount(selfItemStack) <= 0 ? new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get()) : selfItemStack;
     }
 
@@ -78,6 +78,27 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
             tooltips.add(Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpiceAmount(itemStack)).withStyle(ChatFormatting.BLUE));
             PotionUtils.addPotionTooltip(HotpotEffectHelper.mergeEffects(getSpiceEffects(itemStack)), tooltips, 1.0F);
         }
+    }
+
+    @Override
+    public boolean isBarVisible(ItemStack itemStack) {
+        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("SpiceAmount");
+    }
+
+    @Override
+    public int getBarWidth(ItemStack itemStack) {
+        return Math.round(((float) getSpiceAmount(itemStack) * 13.0F) / 20f);
+    }
+
+    @Override
+    public int getBarColor(ItemStack itemStack) {
+        float f = Math.max(0.0F, (float) getSpiceAmount(itemStack) / 20f);
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    }
+
+    @Override
+    public ResourceLocation getSpecialRendererResourceLocation() {
+        return new ResourceLocation(HotpotModEntry.MODID, "spice_pack_renderer");
     }
 
     public void setSpiceAmount(ItemStack itemStack, int amount) {

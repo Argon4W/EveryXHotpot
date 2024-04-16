@@ -1,0 +1,12 @@
+{
+  "type": "everyxhotpot:hotpot_soup_recharge_recipe",
+  "target_soup": "everyxhotpot:cheese_soup",
+  "recharge_waterlevel": 1,
+  "ingredient": {
+    "tag": "forge:milk/milk"
+  },
+  "remaining_item": {
+    "item": "minecraft:bucket"
+  },
+  "sound_event": "item.bucket.empty"
+}

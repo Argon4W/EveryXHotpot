@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "everyxhotpot:item/hotpot_tomato_soup_part_1"
+  }
+}

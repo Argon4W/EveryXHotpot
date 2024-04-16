@@ -1,0 +1,37 @@
+{
+  "type": "everyxhotpot:hotpot_soup_ingredient_recipe",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "sinofeast"
+    }
+  ],
+  "source_soup": "everyxhotpot:clear_soup",
+  "result_soup": "everyxhotpot:spicy_soup",
+  "ingredients": [
+    {
+      "amount": 6,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "tag": "sinofeast:tastes/primary/spicy"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "tag": "sinofeast:tastes/primary/acrid"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    }
+  ]
+}

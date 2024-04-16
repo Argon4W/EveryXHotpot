@@ -6,8 +6,8 @@
   "refmap": "mixins.everyxhotpot.refmap.json",
   "client": [
     "BreakingItemParticleMixin",
+    "ItemColorsMixin",
     "ModelBakeryMixin",
-    "SpriteContentsMixin",
     "SpriteLoaderMixin"
   ],
   "mixins": [

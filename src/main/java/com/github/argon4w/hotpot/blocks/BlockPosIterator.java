@@ -1,29 +1,29 @@
 package com.github.argon4w.hotpot.blocks;
 
-import com.github.argon4w.hotpot.BlockPosWithLevel;
+import com.github.argon4w.hotpot.LevelBlockPos;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 
-public class BlockPosIterator implements Iterator<BlockPosWithLevel> {
-    private final LinkedList<BlockPosWithLevel> filtered;
-    private final Predicate<BlockPosWithLevel> filter;
+public class BlockPosIterator implements Iterator<LevelBlockPos> {
+    private final LinkedList<LevelBlockPos> filtered;
+    private final Predicate<LevelBlockPos> filter;
     private Node node;
 
-    public BlockPosIterator(BlockPosWithLevel selfPos, Predicate<BlockPosWithLevel> filter) {
+    public BlockPosIterator(LevelBlockPos selfPos, Predicate<LevelBlockPos> filter) {
         node = new Node(selfPos, null);
         filtered = new LinkedList<>();
         this.filter = filter;
     }
 
     @Override
-    public BlockPosWithLevel next() {
+    public LevelBlockPos next() {
         if (!hasNext()) {
             return null;
         }
 
-        BlockPosWithLevel result = node.getSelfPos();
+        LevelBlockPos result = node.getSelfPos();
         filtered.add(result);
         node = getNode(node);
 
@@ -40,7 +40,7 @@ public class BlockPosIterator implements Iterator<BlockPosWithLevel> {
 
         while (node.hasNextNode()) {
             nextNode = node.getNextNode();
-            BlockPosWithLevel pos = nextNode.getSelfPos();
+            LevelBlockPos pos = nextNode.getSelfPos();
 
             if (!filtered.contains(pos) && filter.test(pos)) {
                 return nextNode;
@@ -51,16 +51,16 @@ public class BlockPosIterator implements Iterator<BlockPosWithLevel> {
     }
 
     public static class Node {
-        private final BlockPosWithLevel[] otherPos;
-        private final BlockPosWithLevel selfPos;
+        private final LevelBlockPos[] otherPos;
+        private final LevelBlockPos selfPos;
         private final Node root;
         private int index;
 
-        public Node(BlockPosWithLevel pos, Node root) {
+        public Node(LevelBlockPos pos, Node root) {
             index = 0;
             selfPos = pos;
             this.root = root;
-            otherPos = new BlockPosWithLevel[] {pos.north(), pos.south(), pos.east(), pos.west()};
+            otherPos = new LevelBlockPos[] {pos.north(), pos.south(), pos.east(), pos.west()};
         }
 
         public boolean hasNextNode() {
@@ -71,7 +71,7 @@ public class BlockPosIterator implements Iterator<BlockPosWithLevel> {
             return new Node(otherPos[index ++], this);
         }
 
-        public BlockPosWithLevel getSelfPos() {
+        public LevelBlockPos getSelfPos() {
             return selfPos;
         }
 

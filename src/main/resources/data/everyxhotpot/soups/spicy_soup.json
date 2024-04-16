@@ -1,0 +1,22 @@
+{
+  "type": "everyxhotpot:cooking_recipe_soup",
+  "sauced_processor": "everyxhotpot:light_sauced_processor",
+  "water_level_drop_rate": 0.04,
+  "saved_effects": [
+    {
+      "forge:id": "everyxhotpot:warm",
+      "Amplifier": 0,
+      "Duration": 300
+    },
+    {
+      "forge:id": "everyxhotpot:acrid",
+      "Amplifier": 1,
+      "Duration": 300
+    },
+    {
+      "forge:id": "minecraft:speed",
+      "Amplifier": 1,
+      "Duration": 200
+    }
+  ]
+}
