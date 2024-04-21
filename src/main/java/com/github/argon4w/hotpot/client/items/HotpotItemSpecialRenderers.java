@@ -1,10 +1,7 @@
 package com.github.argon4w.hotpot.client.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotChopstickRenderer;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotEmptyItemSpecialRenderer;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotPaperBowlRenderer;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotSpicePackRenderer;
+import com.github.argon4w.hotpot.client.items.renderers.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -22,9 +19,10 @@ public class HotpotItemSpecialRenderers {
     public static final DeferredRegister<IHotpotItemSpecialRenderer> ITEM_SPECIAL_RENDERERS = DeferredRegister.create(ITEM_SPECIAL_RENDERER_REGISTRY_KEY, HotpotModEntry.MODID);
     public static final Supplier<IForgeRegistry<IHotpotItemSpecialRenderer>> ITEM_SPECIAL_RENDERER_REGISTRY = ITEM_SPECIAL_RENDERERS.makeRegistry(() -> new RegistryBuilder<IHotpotItemSpecialRenderer>().setDefaultKey(EMPTY_ITEM_SPECIAL_RENDERER_LOCATION));
 
-    public static final RegistryObject<IHotpotItemSpecialRenderer> CHOPSTICK_RENDERER = ITEM_SPECIAL_RENDERERS.register("chopstick_renderer", HotpotChopstickRenderer::new);
-    public static final RegistryObject<IHotpotItemSpecialRenderer> SPICE_PACK_RENDERER = ITEM_SPECIAL_RENDERERS.register("spice_pack_renderer", HotpotSpicePackRenderer::new);
-    public static final RegistryObject<IHotpotItemSpecialRenderer> PAPER_BOWL_RENDERER = ITEM_SPECIAL_RENDERERS.register("paper_bowl_renderer", HotpotPaperBowlRenderer::new);
+    public static final RegistryObject<IHotpotItemSpecialRenderer> CHOPSTICK_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_chopstick", HotpotChopstickRenderer::new);
+    public static final RegistryObject<IHotpotItemSpecialRenderer> SPICE_PACK_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_spice_pack", HotpotSpicePackRenderer::new);
+    public static final RegistryObject<IHotpotItemSpecialRenderer> PAPER_BOWL_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_paper_bowl", HotpotPaperBowlRenderer::new);
+    public static final RegistryObject<IHotpotItemSpecialRenderer> SKEWER_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_skewer", HotpotSkewerRenderer::new);
     public static final RegistryObject<IHotpotItemSpecialRenderer> EMPTY_ITEM_RENDERER = ITEM_SPECIAL_RENDERERS.register("empty_item_renderer", HotpotEmptyItemSpecialRenderer::new);
 
     public static IHotpotItemSpecialRenderer getEmptyItemRenderer() {

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "b": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "pattern": [
+    "  i",
+    "bi ",
+    "b  "
+  ],
+  "result": {
+    "item": "everyxhotpot:hotpot_slotted_spoon"
+  },
+  "show_notification": true
+}

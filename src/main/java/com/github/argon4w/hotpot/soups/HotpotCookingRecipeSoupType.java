@@ -1,18 +1,20 @@
 package com.github.argon4w.hotpot.soups;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.items.HotpotSkewerItem;
+import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -39,14 +41,10 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
     }
 
     @Override
-    public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        ItemStack result = super.takeOutContentViaChopstick(content, itemStack, hotpotBlockEntity, pos);
+    public ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        ItemStack result = super.takeOutContentViaTableware(content, itemStack, hotpotBlockEntity, pos);
 
         if (!(content instanceof HotpotCookingRecipeContent cookingRecipeContent)) {
-            return result;
-        }
-
-        if (cookingRecipeContent.getFoodProperties().isEmpty()) {
             return result;
         }
 
@@ -54,20 +52,32 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
             return result;
         }
 
-        if (HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("Soup", Tag.TAG_STRING)) {
-            return result;
+        if (result.getItem() instanceof HotpotSkewerItem) {
+            return HotpotSkewerItem.applyToSkewerItemStacks(result, this::apply);
         }
 
-        HotpotTagsHelper.updateHotpotTag(result, compoundTag -> compoundTag.putString("Soup", getResourceLocation().toString()));
+        return apply(result);
+    }
+
+    public ItemStack apply(ItemStack itemStack) {
+        if (!itemStack.isEdible()) {
+            return itemStack;
+        }
+
+        if (HotpotTagsHelper.getHotpotTags(itemStack).contains("Soup", Tag.TAG_STRING)) {
+            return itemStack;
+        }
+
+        HotpotTagsHelper.updateHotpotTags(itemStack, "Soup", StringTag.valueOf(getResourceLocation().toString()));
         HotpotEffectHelper.saveEffects(itemStack, savedEffects);
 
         if (processorResourceLocation == HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR_LOCATION) {
-            return result;
+            return itemStack;
         }
 
-        HotpotSpriteProcessors.applyProcessor(processorResourceLocation, result);
+        HotpotSpriteProcessors.applyProcessor(processorResourceLocation, itemStack);
 
-        return result;
+        return itemStack;
     }
 
     @Override

@@ -5,10 +5,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 public class SimpleItemSlot {
-    private ItemStack itemSlot = ItemStack.EMPTY;
+    private ItemStack itemSlot;
+
+    public SimpleItemSlot(ItemStack itemStack) {
+        this.itemSlot = itemStack;
+    }
 
     public SimpleItemSlot() {
-
+        this(ItemStack.EMPTY);
     }
 
     public int getStackCount() {
@@ -28,7 +32,9 @@ public class SimpleItemSlot {
             itemSlot = itemStack.copyAndClear();
 
             return true;
-        } else if (ItemStack.isSameItemSameTags(itemStack, itemSlot)) {
+        }
+
+        if (ItemStack.isSameItemSameTags(itemStack, itemSlot)) {
             moveItemWithCount(itemStack);
 
             return itemStack.isEmpty();

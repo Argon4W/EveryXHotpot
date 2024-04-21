@@ -41,14 +41,14 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     }
 
     @Override
-    public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContent> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         if (itemStack.isEmpty()) {
             if (player.isCrouching() && hotpotBlockEntity.canBeRemoved()) {
                 hotpotBlockEntity.setSoup(HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.buildEmptySoup(), selfPos);
                 hotpotBlockEntity.onRemove(selfPos);
             } else {
                 player.hurt(player.damageSources().onFire(), 5);
-                hotpotBlockEntity.tryTakeOutContentViaHand(hitSection, selfPos);
+                hotpotBlockEntity.tryTakeOutContentViaHand(hitPos, selfPos);
             }
 
             return Optional.empty();
@@ -72,7 +72,7 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     }
 
     @Override
-    public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return itemStack;
     }
 
@@ -92,7 +92,7 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
             ItemStack stack = itemEntity.getItem();
 
             if (!stack.isEmpty()) {
-                remapItemStack(false, stack, selfPos).ifPresent(content -> hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getPosSection(selfPos.pos(), itemEntity.position()), content, selfPos));
+                remapItemStack(false, stack, selfPos).ifPresent(content -> hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getHitPos(selfPos.pos(), itemEntity.position()), content, selfPos));
                 itemEntity.setItem(stack);
             }
 

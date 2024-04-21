@@ -45,15 +45,15 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpot
 
     @Override
     public int processColor(ItemStack itemStack) {
-        if (!HotpotTagsHelper.hasHotpotTag(itemStack)) {
+        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
             return -1;
         }
 
-        if (!HotpotTagsHelper.getHotpotTag(itemStack).contains("Soup", Tag.TAG_STRING)) {
+        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("Soup", Tag.TAG_STRING)) {
             return -1;
         }
 
-        String soup = HotpotTagsHelper.getHotpotTag(itemStack).getString("Soup");
+        String soup = HotpotTagsHelper.getHotpotTags(itemStack).getString("Soup");
 
         if (!ResourceLocation.isValidResourceLocation(soup)) {
             return -1;

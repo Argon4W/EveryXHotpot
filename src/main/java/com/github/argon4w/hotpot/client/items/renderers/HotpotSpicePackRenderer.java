@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.client.items.renderers;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
+import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -13,22 +14,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        if (!HotpotTagsHelper.hasHotpotTag(itemStack)) {
+        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
             return;
         }
 
-        poseStack.pushPose();
-
-        List<ItemStack> itemStacks = HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).stream().map(tag -> ItemStack.of((CompoundTag) tag)).toList();
+        List<ItemStack> itemStacks = HotpotSpicePackItem.getSpicePackItems(itemStack);
         float startX = 0.3f - (0.3f / (itemStacks.size() * 3f)) * Math.max(0, itemStacks.size() - 1);
+
+        poseStack.pushPose();
 
         poseStack.translate(startX + 0.2f, 0.25f, 0.5f);
 

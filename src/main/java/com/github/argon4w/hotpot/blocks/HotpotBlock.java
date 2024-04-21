@@ -155,7 +155,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     private int getHitPos(BlockHitResult result) {
         BlockPos blockPos = result.getBlockPos().relative(Direction.UP);
 
-        return HotpotBlockEntity.getPosSection(blockPos, result.getLocation());
+        return HotpotBlockEntity.getHitPos(blockPos, result.getLocation());
     }
 
     @SuppressWarnings("deprecation")

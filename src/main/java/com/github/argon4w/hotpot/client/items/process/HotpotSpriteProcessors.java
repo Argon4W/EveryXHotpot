@@ -2,16 +2,12 @@ package com.github.argon4w.hotpot.client.items.process;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
-import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpriteProcessor;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotHeavySaucedSpriteProcessor;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotLightSaucedSpriteProcessor;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotChopstickRenderer;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotEmptyItemSpecialRenderer;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotPaperBowlRenderer;
-import com.github.argon4w.hotpot.client.items.renderers.HotpotSpicePackRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -46,10 +42,14 @@ public class HotpotSpriteProcessors {
     }
 
     public static void applyProcessor(ResourceLocation processorResourceLocation, ItemStack itemStack) {
-        HotpotTagsHelper.updateHotpotTag(itemStack, hotpotTags -> {
-            CompoundTag processed = hotpotTags.contains("Processed") ? hotpotTags.getCompound("Processed") : new CompoundTag();
-            processed.putBoolean(processorResourceLocation.toString(), true);
-            hotpotTags.put("Processed", processed);
-        });
+        CompoundTag hotpotTags = HotpotTagsHelper.getHotpotTags(itemStack);
+        CompoundTag processedTag = new CompoundTag();
+
+        if (hotpotTags.contains("Processed", Tag.TAG_COMPOUND)) {
+            processedTag = hotpotTags.getCompound("Processed");
+        }
+
+        processedTag.putBoolean(processorResourceLocation.toString(), true);
+        HotpotTagsHelper.updateHotpotTags(itemStack, "Processed", processedTag);
     }
 }

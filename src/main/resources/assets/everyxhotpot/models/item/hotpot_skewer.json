@@ -1,0 +1,47 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "builtin/entity",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "everyxhotpot:item/hotpot_skewer",
+		"particle": "everyxhotpot:item/hotpot_skewer"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 1.5, 1.75],
+			"scale": [0.35, 0.35, 0.35]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 1.5, 1.75],
+			"scale": [0.35, 0.35, 0.35]
+		},
+		"firstperson_righthand": {
+			"rotation": [-13, 22, 0],
+			"translation": [-0.12, 3.2, 1.13],
+			"scale": [0.38, 0.38, 0.38]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-13, 22, 0],
+			"translation": [-0.12, 3.2, 1.13],
+			"scale": [0.38, 0.38, 0.38]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [-10.25, 0, -45],
+			"translation": [-3.25, -3.25, 0],
+			"scale": [0.525, 0.525, 0.525]
+		},
+		"head": {
+			"rotation": [90, 0, 90],
+			"translation": [6.25, 0, 0]
+		},
+		"fixed": {
+			"rotation": [17.85, -18.1, 45],
+			"translation": [3.25, -3, 0],
+			"scale": [0.7, 0.7, 0.7]
+		}
+	}
+}

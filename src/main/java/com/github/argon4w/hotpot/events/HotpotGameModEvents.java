@@ -4,8 +4,9 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
-import com.github.argon4w.hotpot.items.HotpotChopstickItem;
+import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -38,9 +39,10 @@ public class HotpotGameModEvents {
     @SubscribeEvent
     public static void onLivingFinishUsingItem(LivingEntityUseItemEvent.Finish event) {
         ItemStack itemStack = event.getItem();
+        LivingEntity livingEntity = event.getEntity();
 
-        if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get())) {
-            itemStack = HotpotChopstickItem.getChopstickFoodItemStack(itemStack);
+        if (itemStack.getItem() instanceof IHotpotItemContainer iHotpotItemContainer) {
+            itemStack = iHotpotItemContainer.getContainedItemStack(itemStack);
         }
 
         if (itemStack.isEmpty()) {
@@ -48,7 +50,7 @@ public class HotpotGameModEvents {
         }
 
         if (HotpotEffectHelper.hasEffects(itemStack)) {
-            HotpotEffectHelper.listEffects(itemStack, mobEffectInstance -> event.getEntity().addEffect(mobEffectInstance));
+            HotpotEffectHelper.getListEffects(itemStack).forEach(livingEntity::addEffect);
         }
     }
 
@@ -56,8 +58,8 @@ public class HotpotGameModEvents {
     public static void onItemTooltip(ItemTooltipEvent event) {
         ItemStack itemStack = event.getItemStack();
 
-        if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get())) {
-            itemStack = HotpotChopstickItem.getChopstickFoodItemStack(itemStack);
+        if (itemStack.getItem() instanceof IHotpotItemContainer iHotpotItemContainer) {
+            itemStack = iHotpotItemContainer.getContainedItemStack(itemStack);
         }
 
         if (itemStack.isEmpty()) {

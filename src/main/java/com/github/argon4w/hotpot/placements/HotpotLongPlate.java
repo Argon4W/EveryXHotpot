@@ -22,7 +22,8 @@ import java.util.List;
 
 public class HotpotLongPlate implements IHotpotPlacement {
     private int pos1, pos2;
-    private final SimpleItemSlot itemSlot1 = new SimpleItemSlot(), itemSlot2 = new SimpleItemSlot();
+    private final SimpleItemSlot itemSlot1 = new SimpleItemSlot();
+    private final SimpleItemSlot itemSlot2 = new SimpleItemSlot();
     private Direction direction;
 
     @Override
@@ -83,8 +84,8 @@ public class HotpotLongPlate implements IHotpotPlacement {
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos) {
-        boolean consume = !hotpotPlateBlockEntity.isInfiniteContent();
+    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
+        boolean consume = !hotpotPlacementBlockEntity.isInfiniteContent();
         return pos == pos1 ? (itemSlot1.isEmpty() ? itemSlot2.takeItem(consume) : itemSlot1.takeItem(consume)) : itemSlot2.takeItem(consume);
     }
 
@@ -113,10 +114,6 @@ public class HotpotLongPlate implements IHotpotPlacement {
         return false;
     }
 
-    public boolean isValidPos(int pos1, int pos2) {
-        return 0 <= pos1 && pos1 <= 3 && 0 <= pos2 && pos2 <= 3 && pos1 + pos2 != 3;
-    }
-
     @Override
     public List<Integer> getPos() {
         return List.of(pos1, pos2);
@@ -125,6 +122,10 @@ public class HotpotLongPlate implements IHotpotPlacement {
     @Override
     public boolean isConflict(int pos) {
         return pos1 == pos || pos2 == pos;
+    }
+
+    public boolean isValidPos(int pos1, int pos2) {
+        return 0 <= pos1 && pos1 <= 3 && 0 <= pos2 && pos2 <= 3 && pos1 + pos2 != 3;
     }
 
     public int getPos1() {

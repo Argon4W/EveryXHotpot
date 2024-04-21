@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -27,17 +28,17 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
 
         poseStack.pushPose();
         poseStack.translate(x, 0f, z);
-        poseStack.scale(0.8f, 0.8f, 0.8f);
+        poseStack.scale(0.68f, 0.68f, 0.68f);
 
         BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_small"));
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
+        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
 
         poseStack.popPose();
 
         for (int i = 0; i < smallPlate.getItemSlot().getStackCount(); i ++) {
             poseStack.pushPose();
 
-            poseStack.translate(x, 0.065f + 0.02 * i, z);
+            poseStack.translate(x, 0.05f + 0.02 * i, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(smallPlate.getDirection().toYRot() + (i % 2) * 20));
             poseStack.mulPose(Axis.XP.rotationDegrees(90f));
             poseStack.scale(0.35f, 0.35f, 0.35f);

@@ -78,15 +78,15 @@ public record ProcessedBakedModel(BakedModel originalModel, HashMap<String, Bake
     }
 
     private List<String> getVisibleProcessedModels(ItemStack itemStack) {
-        if (!HotpotTagsHelper.hasHotpotTag(itemStack)) {
+        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
             return List.of();
         }
 
-        if (!HotpotTagsHelper.getHotpotTag(itemStack).contains("Processed", Tag.TAG_COMPOUND)) {
+        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("Processed", Tag.TAG_COMPOUND)) {
             return List.of();
         }
 
-        CompoundTag processed = HotpotTagsHelper.getHotpotTag(itemStack).getCompound("Processed");
+        CompoundTag processed = HotpotTagsHelper.getHotpotTags(itemStack).getCompound("Processed");
 
         return processedModels.keySet().stream()
                 .filter(processed::getBoolean)

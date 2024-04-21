@@ -21,6 +21,7 @@ public class HotpotPlacementRenderers {
 
     public static final RegistryObject<IHotpotPlacementRenderer> SMALL_PLATE_RENDERER = PLACEMENT_RENDERERS.register("small_plate", HotpotSmallPlateRenderer::new);
     public static final RegistryObject<IHotpotPlacementRenderer> LONG_PLATE_RENDERER = PLACEMENT_RENDERERS.register("long_plate", HotpotLongPlateRenderer::new);
+    public static final RegistryObject<IHotpotPlacementRenderer> LARGE_ROUND_PLATE_RENDERER = PLACEMENT_RENDERERS.register("large_round_plate", HotpotLargeRoundPlateRenderer::new);
     public static final RegistryObject<IHotpotPlacementRenderer> PLACED_CHOPSTICK_RENDERER = PLACEMENT_RENDERERS.register("placed_chopstick", HotpotPlacedChopstickRenderer::new);
     public static final RegistryObject<IHotpotPlacementRenderer> PLACED_SPOON_RENDERER = PLACEMENT_RENDERERS.register("placed_spoon", HotpotPlacedSpoonRenderer::new);
     public static final RegistryObject<IHotpotPlacementRenderer> PLACED_PAPER_BOWL_RENDERER = PLACEMENT_RENDERERS.register("placed_paper_bowl", HotpotPlacedPaperBowlRenderer::new);

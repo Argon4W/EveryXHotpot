@@ -19,33 +19,36 @@ public class HotpotEffectHelper {
     }
 
     public static void saveEffects(ItemStack itemStack, MobEffectInstance mobEffectInstance) {
-        List<MobEffectInstance> effects = new ArrayList<>(HotpotTagsHelper.getHotpotTag(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
+        List<MobEffectInstance> effects = new ArrayList<>(HotpotTagsHelper.getHotpotTags(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
                 .map(tag -> (CompoundTag) tag)
                 .map(MobEffectInstance::load)
                 .filter(Objects::nonNull)
                 .toList());
         mergeEffects(effects, mobEffectInstance);
 
-        HotpotTagsHelper.updateHotpotTag(itemStack, compoundTag -> compoundTag.put("HotpotEffects", effects.stream().map(effect -> effect.save(new CompoundTag())).collect(Collectors.toCollection(ListTag::new))));
+        HotpotTagsHelper.updateHotpotTags(itemStack, "HotpotEffects", effects.stream()
+                .map(HotpotEffectHelper::saveEffect)
+                .collect(Collectors.toCollection(ListTag::new))
+        );
+    }
+
+    public static CompoundTag saveEffect(MobEffectInstance mobEffectInstance) {
+        return mobEffectInstance.save(new CompoundTag());
     }
 
     public static boolean hasEffects(ItemStack itemStack) {
-        return HotpotTagsHelper.hasHotpotTag(itemStack) && HotpotTagsHelper.getHotpotTag(itemStack).contains("HotpotEffects", Tag.TAG_LIST);
-    }
-
-    public static void listEffects(ItemStack itemStack, Consumer<MobEffectInstance> consumer) {
-        if (!hasEffects(itemStack)) return;
-
-        HotpotTagsHelper.getHotpotTag(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
-                .map(tag -> MobEffectInstance.load((CompoundTag) tag))
-                .forEach(consumer);
+        return HotpotTagsHelper.hasHotpotTags(itemStack) && HotpotTagsHelper.getHotpotTags(itemStack).contains("HotpotEffects", Tag.TAG_LIST);
     }
 
     public static List<MobEffectInstance> getListEffects(ItemStack itemStack) {
-        List<MobEffectInstance> effects = new ArrayList<>();
-        listEffects(itemStack, effects::add);
+        if (!hasEffects(itemStack)) {
+            return List.of();
+        }
 
-        return effects;
+        return HotpotTagsHelper.getHotpotTags(itemStack).getList("HotpotEffects", Tag.TAG_COMPOUND).stream()
+                .map(tag -> (CompoundTag) tag)
+                .map(MobEffectInstance::load)
+                .toList();
     }
 
     public static List<MobEffectInstance> mergeEffects(List<MobEffectInstance> effects) {
@@ -57,11 +60,12 @@ public class HotpotEffectHelper {
 
     public static void mergeEffects(List<MobEffectInstance> effects, MobEffectInstance mobEffectInstance) {
         for (MobEffectInstance effect : effects) {
-            if (effect.getEffect().equals(mobEffectInstance.getEffect())) {
-                effect.update(mobEffectInstance);
-
-                return;
+            if (!effect.getEffect().equals(mobEffectInstance.getEffect())) {
+                continue;
             }
+
+            effect.update(mobEffectInstance);
+            return;
         }
 
         effects.add(mobEffectInstance);

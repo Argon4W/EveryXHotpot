@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class HotpotEmptyContentRenderer implements IHotpotContentRenderer {
     @Override
-    public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, HotpotBlockEntity hotpotBlockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline) {
+    public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
 
     }
 }

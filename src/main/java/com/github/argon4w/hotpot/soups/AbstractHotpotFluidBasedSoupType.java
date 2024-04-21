@@ -49,12 +49,19 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
         super.contentUpdate(content, hotpotBlockEntity, pos);
 
         if (content instanceof HotpotCookingRecipeContent itemStackContent) {
-            activeness = Math.min(1f, activeness + 0.025f * itemStackContent.getFoodProperties().map(FoodProperties::getNutrition).orElse(1));
+            FoodProperties foodProperties = itemStackContent.getItemStack().getFoodProperties(null);
+            int nutrition = 1;
+
+            if (foodProperties != null) {
+                nutrition = foodProperties.getNutrition();
+            }
+
+            activeness = Math.min(1f, activeness + 0.025f * nutrition);
         }
     }
 
     @Override
-    public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContent> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         for (HotpotSoupRechargeRecipe recipe : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get())) {
             if (recipe.matches(itemStack) && hotpotBlockEntity.getSoup().getResourceLocation().equals(recipe.getTargetSoup())) {
                 setWaterLevel(hotpotBlockEntity, selfPos, getWaterLevel(hotpotBlockEntity, selfPos) + recipe.getRechargeWaterLevel());
@@ -67,7 +74,7 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
             }
         }
 
-        return super.interact(hitSection, player, hand, itemStack, hotpotBlockEntity, selfPos);
+        return super.interact(hitPos, player, hand, itemStack, hotpotBlockEntity, selfPos);
     }
 
     @Override

@@ -17,15 +17,9 @@ import java.util.HashMap;
 
 public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
     public static final HashMap<HotpotPlayerContent, HotpotPlayerModelRenderContext> MODEL_RENDER_CONTEXTS = Maps.newHashMap();
-    public static final float ITEM_ROUND_TRIP_TIME = 60f;
-    public static final float ITEM_RADIUS = 0.325f;
-    public static final float ITEM_START_Y = 0.53f;
-    public static final float ITEM_FLOAT_Y = 0.06f;
-    public static final float ITEM_ROTATION = 25f;
-    public static final float ITEM_SCALE = 0.25f;
 
     @Override
-    public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, HotpotBlockEntity hotpotBlockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline) {
+    public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
         if (!(content instanceof HotpotPlayerContent playerContent)) {
             return;
         }
@@ -38,12 +32,13 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
 
         poseStack.pushPose();
 
-        float f = hotpotBlockEntity.getTime() / 20f / ITEM_ROUND_TRIP_TIME + offset;
+        poseStack.translate(0.5f + x * 0.325f, 0.53f - getFloatingCurve(rotation / 360.0f, 0f) * 0.06f + 0.42f * waterLevel, 0.5f + z * 0.325f);
 
-        poseStack.translate(0.5f + Math.sin(f * 2f * Math.PI) * ITEM_RADIUS, ITEM_START_Y + getFloatingCurve(f, 0f) * ITEM_FLOAT_Y + 0.42f * waterline, 0.5f + Math.cos(f * 2f * Math.PI) * ITEM_RADIUS);
-        poseStack.mulPose(Axis.YP.rotationDegrees(f * 360f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-90f + getFloatingCurve(f, 1f) * ITEM_ROTATION));
-        poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.mulPose(Axis.XP.rotationDegrees( 90.0f));
+        poseStack.mulPose(Axis.XP.rotationDegrees(getFloatingCurve(rotation / 360.0f, 1f) * 25.0f));
+
+        poseStack.scale(0.25f, 0.25f, 0.25f);
 
         renderContext.getModelPart().render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(renderContext.getModelPartTextureResourceLocation())), combinedLight, combinedOverlay);
 

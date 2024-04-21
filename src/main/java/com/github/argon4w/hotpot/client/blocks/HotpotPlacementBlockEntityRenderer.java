@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.phys.Vec3;
 
 public class HotpotPlacementBlockEntityRenderer implements BlockEntityRenderer<HotpotPlacementBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
@@ -21,7 +22,12 @@ public class HotpotPlacementBlockEntityRenderer implements BlockEntityRenderer<H
 
     @Override
     public boolean shouldRenderOffScreen(HotpotPlacementBlockEntity hotpotBlockEntity) {
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean shouldRender(HotpotPlacementBlockEntity p_173568_, Vec3 p_173569_) {
+        return true;
     }
 
     @Override

@@ -5,16 +5,11 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.IHotpotSpecialContentItem;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.IHotpotSoupTypeWithActiveness;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
@@ -36,14 +31,14 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     @Override
     public void create(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         this.itemStack = this.itemStack.split(1);
-        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), itemStack, hotpotBlockEntity, pos);
+        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), itemStack, pos).orElse(-1);
         this.cookingProgress = 0;
         this.experience = 0;
     }
 
-    public abstract int remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    public abstract Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    public abstract Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    public abstract Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
+    public abstract Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
+    public abstract Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
 
     @Override
     public ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
@@ -62,7 +57,7 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     public void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         if (itemStack.getItem() instanceof IHotpotSpecialContentItem iHotpotSpecialContentItem && content instanceof AbstractHotpotItemStackContent itemStackContent) {
             itemStackContent.itemStack = iHotpotSpecialContentItem.onOtherContentUpdate(itemStack, itemStackContent.itemStack, content, hotpotBlockEntity, pos);
-            itemStack = iHotpotSpecialContentItem.getSelfItemStack(itemStack, this, hotpotBlockEntity, pos);
+            itemStack = iHotpotSpecialContentItem.updateSelf(itemStack, this, hotpotBlockEntity, pos);
         }
     }
 
@@ -71,10 +66,10 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         if (cookingTime < 0) return false;
 
         if (cookingProgress >= cookingTime) {
-            Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, hotpotBlockEntity, pos);
+            Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, pos);
 
             if (resultOptional.isPresent()) {
-                experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, hotpotBlockEntity, pos).orElse(0f);
+                experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, pos).orElse(0f);
                 itemStack = resultOptional.get();
                 cookingTime = -1;
 
@@ -85,10 +80,6 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         }
 
         return false;
-    }
-
-    public Optional<FoodProperties> getFoodProperties() {
-        return Optional.ofNullable(itemStack.getFoodProperties(null));
     }
 
     @Override

@@ -1,9 +1,10 @@
-package com.github.argon4w.hotpot.spices;
+package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
+import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -30,9 +31,21 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
 
         return new SimpleRecipeMatcher(craftingContainer)
                 .with(itemStack -> itemStack.is(ItemTags.SMALL_FLOWERS)).collect(list::add).atLeast(1)
-                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()) && ((HotpotTagsHelper.hasHotpotTag(itemStack) ? HotpotTagsHelper.getHotpotTag(itemStack).getList("Spices", Tag.TAG_COMPOUND).size() : 0) + list.size() <= 4)).once()
+                .with(itemStack -> matchSpicePackItem(itemStack, list.size())).once()
                 .withRemaining().empty()
                 .match();
+    }
+
+    private boolean matchSpicePackItem(ItemStack itemStack, int count) {
+        if (!itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
+            return false;
+        }
+
+        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+            return count <= 4;
+        }
+
+        return HotpotSpicePackItem.getSpicePackItems(itemStack).size() + count <= 4;
     }
 
     @NotNull
@@ -40,15 +53,13 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingContainer craftingContainer, RegistryAccess registryAccess) {
         return new SimpleRecipeAssembler(craftingContainer)
                 .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get()))
-                /*.filter(itemStack -> !HotpotSpicePackRecipe.PREDICATE.test(itemStack))*/
-                .forEach((assembled, itemStack) -> {
-                    ListTag list = HotpotTagsHelper.getHotpotTag(assembled).getList("Spices", Tag.TAG_COMPOUND);
-                    list.add(itemStack.copyWithCount(1).save(new CompoundTag()));
-
-                    HotpotTagsHelper.updateHotpotTag(assembled, compoundTag -> compoundTag.put("Spices", list));
-                    HotpotTagsHelper.updateHotpotTag(assembled, compoundTag -> compoundTag.putInt("SpiceAmount", 20));
-                })
+                .feed(this::assembleSpicePack)
                 .assemble();
+    }
+
+    private void assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
+        HotpotSpicePackItem.addSpicePackItems(assembled, ingredient);
+        HotpotSpicePackItem.setSpiceCharges(assembled, 20);
     }
 
     @Override

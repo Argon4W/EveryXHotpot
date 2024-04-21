@@ -17,7 +17,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     private int pos;
     private int directionSlot;
     private Direction direction;
-    private ItemStack paperBowlItemStack;
+    private SimpleItemSlot paperBowlItemSlot = new SimpleItemSlot();
 
     @Override
     public IHotpotPlacement load(CompoundTag compoundTag) {
@@ -25,7 +25,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         directionSlot = compoundTag.getByte("DirectionPos");
         direction = HotpotPlacements.POS_TO_DIRECTION.get(directionSlot - pos);
 
-        paperBowlItemStack = ItemStack.of(compoundTag.getCompound("PaperBowl"));
+        paperBowlItemSlot.load(compoundTag.getCompound("PaperBowl"));
 
         return this;
     }
@@ -35,7 +35,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         compoundTag.putByte("Pos", (byte) pos);
         compoundTag.putByte("DirectionPos", (byte) directionSlot);
 
-        compoundTag.put("PaperBowl", paperBowlItemStack.save(new CompoundTag()));
+        compoundTag.put("PaperBowl", paperBowlItemSlot.save(new CompoundTag()));
 
         return compoundTag;
     }
@@ -52,12 +52,25 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
 
     @Override
     public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
-        return true;
+        if (itemStack.isEmpty()) {
+            if (player.isCrouching()) {
+                return true;
+            }
+
+            hotpotPlacementBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
+
+            return paperBowlItemSlot.isEmpty();
+        }
+
+        paperBowlItemSlot.addItem(itemStack);
+
+        return false;
     }
 
     @Override
     public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
-        return ItemStack.EMPTY;
+        boolean consume = !hotpotPlacementBlockEntity.isInfiniteContent();
+        return paperBowlItemSlot.takeItem(consume);
     }
 
     @Override
@@ -67,7 +80,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
 
     @Override
     public ItemStack getCloneItemStack(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos level) {
-        return paperBowlItemStack;
+        return paperBowlItemSlot.getItemStack();
     }
 
     @Override
@@ -97,11 +110,11 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         return direction;
     }
 
-    public void setPaperBowlItemStack(ItemStack paperBowlItemStack) {
-        this.paperBowlItemStack = paperBowlItemStack;
+    public void setPaperBowlItemSlot(ItemStack paperBowlItemSlot) {
+        this.paperBowlItemSlot = new SimpleItemSlot(paperBowlItemSlot);
     }
 
-    public ItemStack getPaperBowlItemStack() {
-        return paperBowlItemStack;
+    public SimpleItemSlot getPaperBowlItemSlot() {
+        return paperBowlItemSlot;
     }
 }

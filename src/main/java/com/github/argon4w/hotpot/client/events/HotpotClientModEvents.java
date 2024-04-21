@@ -47,10 +47,11 @@ public class HotpotClientModEvents {
         event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_chopstick_model"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_long"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_small"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_large_round"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_chopstick_stand"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_spice_pack_model"));
         event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_packed_hotpot_condiments"));
+        event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_skewer_model"));
     }
 
     @SubscribeEvent

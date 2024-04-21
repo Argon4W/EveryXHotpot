@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.spices;
+package com.github.argon4w.hotpot.recipes;
 
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +65,6 @@ public class SimpleRecipeMatcher {
 
         public SimpleRecipeMatchContext collect(Consumer<ItemStack> consumer) {
             collected.forEach(consumer);
-
             return this;
         }
 

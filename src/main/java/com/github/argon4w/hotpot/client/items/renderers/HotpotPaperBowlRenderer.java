@@ -1,23 +1,21 @@
 package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityRenderer;
 import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
-import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
+import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
+import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
+import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.client.model.data.ModelData;
+import org.joml.Math;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,51 +23,27 @@ import java.util.Optional;
 public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        poseStack.pushPose();
+        Optional<ResourceLocation> soupResourceLocation = HotpotPaperBowlItem.getPaperBowlSoup(itemStack);
 
-        float scale = 9.0f / 16.0f;
-        float step = 3.5f / 16.0f;
-        float pivot = step / scale;
-        boolean hasSoup = itemStack.hasTag() ? itemStack.getTag().getBoolean("HasSoup") : true;
-
-        RandomSource randomSource = RandomSource.create();
-        randomSource.setSeed(42);
-
-        poseStack.scale(scale, scale, scale);
-        poseStack.translate(pivot, 0, pivot);
-
-        poseStack.pushPose();
-
-        List<ItemStack> itemStacks = List.of(new ItemStack(Items.COOKED_BEEF), new ItemStack(Items.COOKED_COD), new ItemStack(Items.COOKED_MUTTON), new ItemStack(Items.COOKED_CHICKEN), new ItemStack(Items.COOKED_BEEF), new ItemStack(Items.COOKED_COD), new ItemStack(Items.COOKED_MUTTON), new ItemStack(Items.COOKED_CHICKEN));
-
-        for (int i = 0; i < 8; i ++) {
-            ItemStack beef = itemStacks.get(i);
-
-            HotpotTagsHelper.updateHotpotTag(beef, compoundTag -> compoundTag.putString("Soup", "everyxhotpot:spicy_soup"));
-            HotpotSpriteProcessors.applyProcessor(new ResourceLocation(HotpotModEntry.MODID, "light_sauced_processor"), beef);
-
-            float startOffset = (i % 2 == 0) ? 0.195f : -0.195f;
-            float position = 0.08f * i;
-
-            poseStack.pushPose();
-
-            poseStack.translate(0.19f, hasSoup ? 0.7f : 0.6f, 0.5f);
-            poseStack.translate(position, 0.0f, hasSoup ? startOffset : - startOffset);
-
-            poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            poseStack.mulPose(Axis.XN.rotationDegrees(65));
-            poseStack.mulPose(Axis.YP.rotationDegrees((i % 2 == 0) ? 180f : 0.0f + (randomSource.nextInt(0, 21) - 10)));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(hasSoup ? 180.0f : 0.0f + (randomSource.nextInt(0, 21) - 10)));
-
-            poseStack.scale(0.6f, 0.6f, 0.6f);
-
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, beef, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
-
-            poseStack.popPose();
+        if (soupResourceLocation.isEmpty()) {
+            return;
         }
 
-        float renderedWaterLevel = hasSoup ? 0.5f : 0.01f;
-        ResourceLocation soupResourceLocation = new ResourceLocation(HotpotModEntry.MODID, "tomato_soup");
+        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(soupResourceLocation.get());
+
+        if (soupRendererConfig == HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG) {
+            return;
+        }
+
+        List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
+        List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);
+
+        int size = bowlItems.size() + bowlSkewers.size();
+        boolean drained = HotpotPaperBowlItem.isPaperBowlDrained(itemStack);
+
+        if (size > 8) {
+            return;
+        }
 
         BlockEntityRendererProvider.Context context = new BlockEntityRendererProvider.Context(
                 Minecraft.getInstance().getBlockEntityRenderDispatcher(),
@@ -80,44 +54,139 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
                 Minecraft.getInstance().font
         );
 
-        HotpotBlockEntityRenderer.renderHotpotSoup(
+        float soupScale = 9.0f / 16.0f;
+        float soupOffset = 3.5f / 16.0f;
+        float soupPivot = soupOffset / soupScale;
+
+        float fullWaterLevel = 0.46f;
+        float minWaterLevelNoLimit = fullWaterLevel * 0.4375f - 0.06f * 8.0f;
+
+        float minWaterLevel = fullWaterLevel * 0.4375f - 0.06f * 6.0f + 0.5625f + 0.04f;
+        float minElementLevel = (fullWaterLevel - (0.06f / 0.4375f) * 6.0f) + 0.13f;
+
+        float waterLevel = minWaterLevelNoLimit + 0.06f * size + 0.5625f;
+        float elementLevel = (fullWaterLevel - (0.06f / 0.4375f) * 8.0f) + (0.06f / 0.4375f) * size;
+
+        if (drained) {
+            waterLevel = minWaterLevel;
+            elementLevel = minElementLevel;
+        }
+
+        RandomSource randomSource = RandomSource.create();
+        randomSource.setSeed(42);
+
+        poseStack.pushPose();
+
+        poseStack.scale(soupScale, soupScale, soupScale);
+        poseStack.translate(soupPivot, 0, soupPivot);
+
+        poseStack.pushPose();
+
+        for (int i = 0; i < Math.min(4, bowlSkewers.size()); i ++) {
+            int skewerIndex = bowlSkewers.size() - i - 1;
+            ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
+
+            poseStack.pushPose();
+
+            poseStack.translate(0.05f, 1.0f, 0.215f + i * 0.19f);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
+
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f));
+            poseStack.mulPose(Axis.XP.rotationDegrees(50.0f));
+            poseStack.mulPose(Axis.YP.rotationDegrees(30.0f));
+
+            poseStack.scale(0.72f, 0.72f, 0.72f);
+
+            Minecraft.getInstance().getItemRenderer().renderStatic(null, skewerItemStack, ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+
+            poseStack.popPose();
+        }
+
+        for (int i = 4; i < bowlSkewers.size(); i ++) {
+            int skewerIndex = bowlSkewers.size() - i - 1;
+            ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
+
+            poseStack.pushPose();
+
+            poseStack.translate(0.2f, 1.02f, 0.29f + (i - 4) * 0.15f);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
+
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f));
+            poseStack.mulPose(Axis.XP.rotationDegrees(50.0f));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-30.0f));
+
+            poseStack.scale(0.72f, 0.72f, 0.72f);
+
+            Minecraft.getInstance().getItemRenderer().renderStatic(null, skewerItemStack, ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+
+            poseStack.popPose();
+        }
+
+        for (int i = 0; i < bowlItems.size(); i ++) {
+            boolean even = (i % 2) == 0;
+            boolean even2 = ((i - i % 2) / 2) % 2 == 0;
+
+            float yMovement = 0.06f * (i + bowlSkewers.size());
+            float zMovement = even ? 0.05f : -0.05f;
+
+            float rotationX = even ? 90.0f : 80.0f;
+            float rotationY = even2 ? 90.0f : 0.0f;
+
+            Axis rotationAxisX = even ? Axis.XN : Axis.XP;
+
+            int contentIndex = bowlItems.size() - i - 1;
+            ItemStack bowlItemStack = bowlItems.get(contentIndex);
+
+            poseStack.pushPose();
+
+            poseStack.translate(0.5f, 0.38f + 0.04f, 0.5f);
+            poseStack.translate(0.0f, yMovement, 0.0f);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
+            poseStack.translate(0.0f , 0.0f, zMovement);
+            poseStack.mulPose(rotationAxisX.rotationDegrees(rotationX));
+
+            poseStack.scale(0.88f, 0.88f, 0.88f);
+
+            Minecraft.getInstance().getItemRenderer().renderStatic(null, bowlItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+
+            poseStack.popPose();
+        }
+
+        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(
+                soupRendererConfig,
                 context,
                 poseStack,
                 bufferSource,
-                soupResourceLocation,
-                50,
                 0,
+                50,
                 combinedLight,
                 combinedOverlay,
-                renderedWaterLevel,
-                true,
+                Math.max(minElementLevel, elementLevel),
                 true
         );
 
         HotpotBlockEntityRenderer.renderHotpotSoup(
+                soupRendererConfig,
                 context,
                 poseStack,
                 bufferSource,
-                soupResourceLocation,
-                50,
-                0,
                 combinedLight,
                 combinedOverlay,
-                0,
-                true,
-                false
+                Math.max(minWaterLevel, waterLevel)
         );
 
-        if (!hasSoup) {
-            poseStack.pushPose();
-            poseStack.translate(0, renderedWaterLevel * 0.4375f + 0.579f, 0);
-
-            ResourceLocation condimentsResourceLocation = new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_packed_hotpot_condiments");
-            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(condimentsResourceLocation);
-            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
-
-            poseStack.popPose();
-        }
+        HotpotBlockEntityRenderer.renderHotpotSoup(
+                soupRendererConfig,
+                context,
+                poseStack,
+                bufferSource,
+                combinedLight,
+                combinedOverlay,
+                Math.max(minWaterLevel, waterLevel)
+        );
 
         poseStack.popPose();
 

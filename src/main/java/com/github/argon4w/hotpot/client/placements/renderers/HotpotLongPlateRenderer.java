@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -33,10 +34,10 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         poseStack.pushPose();
         poseStack.translate((x1 + x2) / 2, 0f, (z1 + z2) / 2);
         poseStack.mulPose(Axis.YP.rotationDegrees(longPlate.getDirection().toYRot()));
-        poseStack.scale(0.8f, 0.8f, 0.8f);
+        poseStack.scale(0.68f, 0.68f, 0.68f);
 
         BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_long"));
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.solid()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.solid());
+        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
 
         poseStack.popPose();
 
@@ -53,9 +54,9 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
 
     public void renderLargePlateItem(HotpotLongPlate longPlate, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, SimpleItemSlot slot, float x, float z, int index) {
         poseStack.pushPose();
-        poseStack.translate(x, 0.12f, z);
+        poseStack.translate(x, 0.08f, z);
         poseStack.mulPose(Axis.YN.rotationDegrees(longPlate.getDirection().toYRot()));
-        poseStack.translate(0f, 0f, -0.14f + index * 0.09f);
+        poseStack.translate(0f, 0f, -0.07f + index * 0.09f);
         poseStack.mulPose(Axis.XN.rotationDegrees(75));
         poseStack.scale(0.35f, 0.35f, 0.35f);
 

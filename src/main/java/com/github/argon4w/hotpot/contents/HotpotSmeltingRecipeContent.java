@@ -31,8 +31,8 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     @Override
-    public int remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return (int) (super.remapCookingTime(soupType, itemStack, hotpotBlockEntity, pos) * 1.5f);
+    public Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
+        return super.remapCookingTime(soupType, itemStack, pos).map(integer -> (int) (integer * 1.5f));
     }
 
     @Override

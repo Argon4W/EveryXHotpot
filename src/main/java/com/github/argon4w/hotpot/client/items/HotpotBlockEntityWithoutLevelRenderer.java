@@ -22,10 +22,12 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,20 +40,24 @@ public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLev
 
     @Override
     public void renderByItem(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        if (itemStack.getItem() instanceof IHotpotSpecialRenderedItem specialRenderedItem) {
-            IHotpotItemSpecialRenderer renderer = HotpotItemSpecialRenderers.getItemSpecialRenderer(specialRenderedItem.getSpecialRendererResourceLocation());
-
-            renderer.getDefaultItemModelResourceLocation().ifPresent(resourceLocation -> {
-                poseStack.pushPose();
-                poseStack.translate(0.5f, 0.5f, 0.5f);
-
-                BakedModel chopstickModel = Minecraft.getInstance().getModelManager().getModel(resourceLocation);
-                Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, true, poseStack, bufferSource, combinedLight, combinedOverlay, chopstickModel);
-
-                poseStack.popPose();
-            });
-
-            renderer.render(itemStack, displayContext, poseStack, bufferSource, combinedLight, combinedOverlay);
+        if (itemStack.isEmpty()) {
+            return;
         }
+
+        Item item = itemStack.getItem();
+        ResourceLocation itemResourceLocation = ForgeRegistries.ITEMS.getKey(item);
+        IHotpotItemSpecialRenderer renderer = HotpotItemSpecialRenderers.getItemSpecialRenderer(itemResourceLocation);
+
+        renderer.getDefaultItemModelResourceLocation().ifPresent(resourceLocation -> {
+            poseStack.pushPose();
+            poseStack.translate(0.5f, 0.5f, 0.5f);
+
+            BakedModel chopstickModel = Minecraft.getInstance().getModelManager().getModel(resourceLocation);
+            Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, true, poseStack, bufferSource, combinedLight, combinedOverlay, chopstickModel);
+
+            poseStack.popPose();
+        });
+
+        renderer.render(itemStack, displayContext, poseStack, bufferSource, combinedLight, combinedOverlay);
     }
 }

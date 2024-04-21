@@ -45,6 +45,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     public float renderedWaterLevel = -1f;
     private float waterLevel = 0f;
     private int time = 0;
+    private int velocity = 0;
     private boolean infiniteWater = false;
     private boolean canBeRemoved = true;
 
@@ -52,17 +53,17 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
     }
 
-    private void tryFindEmptyContent(int hitSection, LevelBlockPos selfPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
+    private void tryFindEmptyContent(int hitPos, LevelBlockPos selfPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
         new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos))
                 .getFirst(10, (hotpotBlockEntity, pos) -> hotpotBlockEntity.hasEmptyContent(), (hotpotBlockEntity, pos) -> {
-                    Stream.of(getContentSection(hitSection), 0, 1, 2, 3, 4, 5, 6, 7)
+                    Stream.of(getContentPos(hitPos), 0, 1, 2, 3, 4, 5, 6, 7)
                             .filter(hotpotBlockEntity::isEmptyContent)
-                            .findFirst().ifPresent(section -> consumer.accept(section, hotpotBlockEntity, pos));
+                            .findFirst().ifPresent(contentPos -> consumer.accept(contentPos, hotpotBlockEntity, pos));
                 });
     }
 
     @Override
-    public ItemStack tryPlaceContentViaChopstick(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public ItemStack tryPlaceContentViaTableware(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         tryPlaceContentViaInteraction(hitPos, player, hand, itemStack, selfPos);
 
         return itemStack;
@@ -84,18 +85,18 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             }
         }
 
-        soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(content -> tryFindEmptyContent(hitPos, selfPos, (section, hotpotBlockEntity, pos) -> {
-            hotpotBlockEntity.placeContent(section, content, pos);
+        soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(content -> tryFindEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> {
+            hotpotBlockEntity.placeContent(p, content, pos);
         }));
     }
 
-    public void tryPlaceContent(int hitSection, IHotpotContent content, LevelBlockPos selfPos) {
-        tryFindEmptyContent(hitSection, selfPos, (section, hotpotBlockEntity, pos) -> hotpotBlockEntity.placeContent(section, content, pos));
+    public void tryPlaceContent(int hitPos, IHotpotContent content, LevelBlockPos selfPos) {
+        tryFindEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> hotpotBlockEntity.placeContent(p, content, pos));
     }
 
-    private void placeContent(int section, IHotpotContent content, LevelBlockPos pos) {
+    private void placeContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
         Optional<IHotpotContent> remappedContent = soup.remapContent(content, this, pos);
-        contents.set(section, remappedContent.orElseGet(() -> HotpotContents.getEmptyContent().build()));
+        contents.set(contentPos, remappedContent.orElseGet(() -> HotpotContents.getEmptyContent().build()));
 
         for (HotpotSoupIngredientRecipe recipe : pos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_INGREDIENT_RECIPE_TYPE.get())) {
             Optional<IHotpotSoupType> optional = recipe.matches(this, pos);
@@ -128,27 +129,27 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         });
     }
 
-    public void tryTakeOutContentViaHand(int hitSection, LevelBlockPos pos) {
-        int contentSection = getContentSection(hitSection);
-        IHotpotContent content = contents.get(contentSection);
+    public void tryTakeOutContentViaHand(int hitPos, LevelBlockPos pos) {
+        int contentPos = getContentPos(hitPos);
+        IHotpotContent content = contents.get(contentPos);
 
         if (!(content instanceof HotpotEmptyContent)) {
-            soup.takeOutContentViaHand(content, soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos), this, pos);
-            contents.set(contentSection, HotpotContents.getEmptyContent().build());
+            soup.takeOutContentViaHand(content, soup.takeOutContentViaTableware(content, content.takeOut(this, pos), this, pos), this, pos);
+            contents.set(contentPos, HotpotContents.getEmptyContent().build());
 
             markDataChanged();
         }
     }
 
     @Override
-    public ItemStack tryTakeOutContentViaChopstick(int hitPos, LevelBlockPos pos) {
-        int contentSection = getContentSection(hitPos);
-        IHotpotContent content = contents.get(contentSection);
+    public ItemStack tryTakeOutContentViaTableware(int hitPos, LevelBlockPos pos) {
+        int contentPos = getContentPos(hitPos);
+        IHotpotContent content = contents.get(contentPos);
 
         if (!(content instanceof HotpotEmptyContent)) {
-            ItemStack itemStack = soup.takeOutContentViaChopstick(content, content.takeOut(this, pos), this, pos);
+            ItemStack itemStack = soup.takeOutContentViaTableware(content, content.takeOut(this, pos), this, pos);
 
-            contents.set(contentSection, HotpotContents.getEmptyContent().build());
+            contents.set(contentPos, HotpotContents.getEmptyContent().build());
             markDataChanged();
 
             return itemStack;
@@ -157,14 +158,14 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         return ItemStack.EMPTY;
     }
 
-    public int getContentSection(int hitSection) {
-        double sectionSize = (360f / 8f);
-        double degree =  (time / 20f / 60f) * 360f + sectionSize / 2f;
+    public int getContentPos(int hitPos) {
+        double size = (360f / 8f);
+        double degree =  (time / 20f / 60f) * 360f + size / 2f;
 
-        int rootSection = (int) Math.floor((degree % 360f) / sectionSize);
-        int contentSection = hitSection - rootSection;
+        int root = (int) Math.floor((degree % 360f) / size);
+        int contentPos = hitPos - root;
 
-        return contentSection < 0 ? 8 + contentSection : contentSection;
+        return contentPos < 0 ? 8 + contentPos : contentPos;
     }
 
     public void onRemove(LevelBlockPos pos) {
@@ -191,6 +192,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         canBeRemoved = !compoundTag.contains("CanBeRemoved", Tag.TAG_ANY_NUMERIC) || compoundTag.getBoolean("CanBeRemoved");
         infiniteWater = compoundTag.contains("InfiniteWater", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteWater");
         time = compoundTag.contains("Time", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Time") : 0;
+        velocity = compoundTag.contains("Velocity", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Velocity") : 0;
         waterLevel = compoundTag.contains("WaterLevel", Tag.TAG_FLOAT) ?compoundTag.getFloat("WaterLevel") : 0f;
 
         if (compoundTag.contains("Soup", Tag.TAG_COMPOUND)) {
@@ -210,6 +212,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
         compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
+        compoundTag.putInt("Velocity", velocity);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
         compoundTag.put("Soup", IHotpotSoupType.save(soup));
@@ -224,6 +227,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
             compoundTag.putBoolean("InfiniteWater", infiniteWater);
             compoundTag.putInt("Time", time);
+            compoundTag.putInt("Velocity", velocity);
             compoundTag.putFloat("WaterLevel", waterLevel);
 
             if (contentChanged) {
@@ -245,6 +249,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
         compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
+        compoundTag.putInt("Velocity", velocity);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
         compoundTag.put("Soup", IHotpotSoupType.save(soup));
@@ -275,12 +280,12 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         return contents.stream().anyMatch(content -> content instanceof HotpotEmptyContent);
     }
 
-    public boolean isEmptyContent(int section) {
-        return getContent(section) instanceof HotpotEmptyContent;
+    public boolean isEmptyContent(int pos) {
+        return getContent(pos) instanceof HotpotEmptyContent;
     }
 
-    public IHotpotContent getContent(int section) {
-        return contents.get(section);
+    public IHotpotContent getContent(int pos) {
+        return contents.get(pos);
     }
 
     public IHotpotSoupType getSoup() {
@@ -293,6 +298,14 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
     public int getTime() {
         return time;
+    }
+
+    public int getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(int velocity) {
+        this.velocity = velocity;
     }
 
     public boolean isInfiniteWater() {
@@ -314,7 +327,8 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity blockEntity) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
 
-        blockEntity.time ++;
+        blockEntity.time += 1 + blockEntity.velocity;
+        blockEntity.velocity = Math.max(0, blockEntity.velocity - 1);
         blockEntity.synchronizeSoup(selfPos);
         blockEntity.soupSynchronized = false;
 
@@ -348,22 +362,26 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     public static boolean isSameSoup(LevelBlockPos selfPos, LevelBlockPos pos) {
-        if (selfPos.getBlockEntity() instanceof HotpotBlockEntity selfBlockEntity && pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-            return selfBlockEntity.getSoup().getResourceLocation().equals(hotpotBlockEntity.getSoup().getResourceLocation());
+        if (!(selfPos.getBlockEntity() instanceof HotpotBlockEntity selfBlockEntity)) {
+            return false;
         }
 
-        return false;
+        if (!(pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
+            return false;
+        }
+
+        return selfBlockEntity.getSoup().getResourceLocation().equals(hotpotBlockEntity.getSoup().getResourceLocation());
     }
 
-    public static int getPosSection(BlockPos blockPos, Vec3 pos) {
+    public static int getHitPos(BlockPos blockPos, Vec3 pos) {
         Vec3 vec = pos.subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         double x = vec.x() - 0.5f;
         double z = vec.z() - 0.5f;
 
-        double sectionSize = (360f / 8f);
-        double degree = Math.atan2(x, z) / Math.PI * 180f + sectionSize / 2f;
+        double size = (360f / 8f);
+        double degree = Math.atan2(x, z) / Math.PI * 180f + size / 2f;
         degree = degree < 0f ? degree + 360f : degree;
 
-        return (int) Math.floor(degree / sectionSize);
+        return (int) Math.floor(degree / size);
     }
 }

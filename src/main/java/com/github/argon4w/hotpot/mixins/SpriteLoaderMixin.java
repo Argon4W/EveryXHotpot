@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Mixin(SpriteLoader.class)
@@ -27,7 +28,7 @@ public abstract class SpriteLoaderMixin {
     @Shadow
     private @Final ResourceLocation location;
 
-    private static final ArrayList<SpriteContents> processedContents = new ArrayList<>();
+    private static final HashMap<ResourceLocation, SpriteContents> processedContents = new HashMap<>();
 
     @Inject(method = "loadSprite", at = @At("RETURN"))
     private static void loadSprite(ResourceLocation p_251630_, Resource resource, CallbackInfoReturnable<SpriteContents> cir) {
@@ -59,7 +60,7 @@ public abstract class SpriteLoaderMixin {
 
             processSpriteImage(original, image, frameSize, processor);
 
-            processedContents.add(new SpriteContents(
+            processedContents.put(content.name().withSuffix(processor.getProcessedSuffix()), new SpriteContents(
                     content.name().withSuffix(processor.getProcessedSuffix()),
                     frameSize,
                     image,
@@ -74,7 +75,11 @@ public abstract class SpriteLoaderMixin {
     private List<SpriteContents> stitch(List<SpriteContents> contents) {
         if (location.equals(TextureAtlas.LOCATION_BLOCKS)) {
             ArrayList<SpriteContents> replacedContents = new ArrayList<>(contents);
-            replacedContents.addAll(processedContents);
+
+            //pls, idea, don't be sad.
+            for (SpriteContents newContents : processedContents.values()) {
+                replacedContents.add(newContents);
+            }
 
             return replacedContents;
         }

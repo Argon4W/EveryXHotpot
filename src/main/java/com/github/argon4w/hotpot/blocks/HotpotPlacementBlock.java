@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class HotpotPlacementBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = box(0, 0, 0, 16, 3, 16);
+    private static final VoxelShape SHAPE = box(0, 0, 0, 16, 2, 16);
 
     public HotpotPlacementBlock() {
         super(Properties.of()

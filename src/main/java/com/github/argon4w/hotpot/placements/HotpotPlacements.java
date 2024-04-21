@@ -35,6 +35,7 @@ public class HotpotPlacements {
 
     public static final RegistryObject<IHotpotPlacementFactory<HotpotSmallPlate>> SMALL_PLATE = PLACEMENTS.register("small_plate", () -> HotpotSmallPlate::new);
     public static final RegistryObject<IHotpotPlacementFactory<HotpotLongPlate>> LONG_PLATE = PLACEMENTS.register("long_plate", () -> HotpotLongPlate::new);
+    public static final RegistryObject<IHotpotPlacementFactory<HotpotLargeRoundPlate>> LARGE_ROUND_PLATE = PLACEMENTS.register("large_round_plate", () -> HotpotLargeRoundPlate::new);
     public static final RegistryObject<IHotpotPlacementFactory<HotpotPlacedChopstick>> PLACED_CHOPSTICK = PLACEMENTS.register("placed_chopstick", () -> HotpotPlacedChopstick::new);
     public static final RegistryObject<IHotpotPlacementFactory<HotpotPlacedSpoon>> PLACED_SPOON = PLACEMENTS.register("placed_spoon", () -> HotpotPlacedSpoon::new);
     public static final RegistryObject<IHotpotPlacementFactory<HotpotPlacedPaperBowl>> PLACED_PAPER_BOWL = PLACEMENTS.register("placed_paper_bowl", () -> HotpotPlacedPaperBowl::new);

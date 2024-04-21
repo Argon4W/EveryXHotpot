@@ -1,7 +1,6 @@
 package com.github.argon4w.hotpot.mixins;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.items.HotpotChopstickItem;
+import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.BreakingItemParticle;
@@ -22,13 +21,17 @@ public abstract class BreakingItemParticleMixin extends TextureSheetParticle {
 
     @Inject(method = "<init>(Lnet/minecraft/client/multiplayer/ClientLevel;DDDLnet/minecraft/world/item/ItemStack;)V", at = @At("RETURN"))
     public void constructor(ClientLevel level, double p_105666_, double p_105667_, double p_105668_, ItemStack itemStack, CallbackInfo ci) {
-        if (itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get())) {
-            ItemStack chopstickFoodItemStack;
-
-            if (!(chopstickFoodItemStack = HotpotChopstickItem.getChopstickFoodItemStack(itemStack)).isEmpty()) {
-                BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(chopstickFoodItemStack, level, null, 0);
-                setSprite(model.getParticleIcon(ModelData.EMPTY));
-            }
+        if (!(itemStack.getItem() instanceof IHotpotItemContainer itemContainer)) {
+            return;
         }
+
+        ItemStack containedItemStack = itemContainer.getContainedItemStack(itemStack);
+
+        if (containedItemStack.isEmpty()) {
+            return;
+        }
+
+        BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(containedItemStack, level, null, 0);
+        setSprite(model.getParticleIcon(ModelData.EMPTY));
     }
 }

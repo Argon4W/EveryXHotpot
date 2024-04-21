@@ -1,6 +1,6 @@
 {
   "render_type": "minecraft:cutout",
   "textures": {
-    "particle": "everyxhotpot:block/hotpot_plate"
+    "particle": "everyxhotpot:block/hotpot_large_round_plate_part_0"
   }
 }

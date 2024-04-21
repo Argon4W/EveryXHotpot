@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "q": {
+      "item": "minecraft:quartz"
+    }
+  },
+  "pattern": [
+    "qqq"
+  ],
+  "result": {
+    "item": "everyxhotpot:hotpot_large_round_plate"
+  },
+  "show_notification": true
+}

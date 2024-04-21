@@ -65,7 +65,7 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public ItemStack takeOutContentViaChopstick(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return itemStack;
     }
 

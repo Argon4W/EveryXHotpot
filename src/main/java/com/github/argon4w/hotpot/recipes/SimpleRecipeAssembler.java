@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.spices;
+package com.github.argon4w.hotpot.recipes;
 
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -18,17 +18,22 @@ public class SimpleRecipeAssembler {
 
     public SimpleRecipeAssembler filter(Predicate<ItemStack> predicate) {
         filter = predicate;
-
         return this;
     }
 
-    public SimpleRecipeAssembler forEach(BiConsumer<ItemStack, ItemStack> consumer) {
+    public SimpleRecipeAssembler feed(BiConsumer<ItemStack, ItemStack> consumer) {
         for (int i = 0; i < craftingContainer.getContainerSize(); i ++) {
             ItemStack itemStack = craftingContainer.getItem(i);
 
-            if (!itemStack.isEmpty() && filter.test(itemStack)) {
-                consumer.accept(assembled, itemStack);
+            if (itemStack.isEmpty()) {
+                continue;
             }
+
+            if (!filter.test(itemStack)) {
+                continue;
+            }
+
+            consumer.accept(assembled, itemStack);
         }
 
         return this;
@@ -38,11 +43,16 @@ public class SimpleRecipeAssembler {
         for (int i = 0; i < craftingContainer.getContainerSize(); i ++) {
             ItemStack itemStack = craftingContainer.getItem(i);
 
-            if (!itemStack.isEmpty() && predicate.test(itemStack)) {
-                assembled = itemStack.copyWithCount(1);
-
-                return filter(itemStack1 -> !predicate.test(itemStack1));
+            if (itemStack.isEmpty()) {
+                continue;
             }
+
+            if (!predicate.test(itemStack)) {
+                continue;
+            }
+
+            assembled = itemStack.copyWithCount(1);
+            return filter(itemStack1 -> !predicate.test(itemStack1));
         }
 
         return this;
@@ -50,7 +60,6 @@ public class SimpleRecipeAssembler {
 
     public SimpleRecipeAssembler with(Supplier<ItemStack> supplier) {
         assembled = supplier.get();
-
         return this;
     }
 

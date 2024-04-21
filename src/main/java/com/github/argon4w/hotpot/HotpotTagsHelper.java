@@ -7,22 +7,26 @@ import net.minecraft.world.item.ItemStack;
 import java.util.function.Consumer;
 
 public class HotpotTagsHelper {
-    public static boolean hasHotpotTag(ItemStack itemStack) {
+    public static boolean hasHotpotTags(ItemStack itemStack) {
         return itemStack.hasTag() && itemStack.getTag().contains(HotpotModEntry.TAG_LOCATION.toString(), Tag.TAG_COMPOUND);
     }
 
-    public static CompoundTag getHotpotTag(ItemStack itemStack) {
-        return hasHotpotTag(itemStack) ? itemStack.getTag().getCompound(HotpotModEntry.TAG_LOCATION.toString()) : new CompoundTag();
+    public static CompoundTag getHotpotTags(ItemStack itemStack) {
+        return hasHotpotTags(itemStack) ? itemStack.getTag().getCompound(HotpotModEntry.TAG_LOCATION.toString()) : new CompoundTag();
     }
 
-    public static void setHotpotTag(ItemStack itemStack, CompoundTag compoundTag) {
+    public static void setHotpotTags(ItemStack itemStack, CompoundTag compoundTag) {
         itemStack.getOrCreateTag().put(HotpotModEntry.TAG_LOCATION.toString(), compoundTag);
     }
 
-    public static void updateHotpotTag(ItemStack itemStack, Consumer<CompoundTag> consumer) {
-        CompoundTag hotpotTag = hasHotpotTag(itemStack) ? getHotpotTag(itemStack) : new CompoundTag();
-        consumer.accept(hotpotTag);
+    public static void updateHotpotTags(ItemStack itemStack, String key, Tag tag){
+        CompoundTag hotpotTag = getHotpotTags(itemStack);
+        hotpotTag.put(key, tag);
 
-        setHotpotTag(itemStack, hotpotTag);
+        setHotpotTags(itemStack, hotpotTag);
+    }
+
+    public static CompoundTag saveItemStack(ItemStack itemStack) {
+        return itemStack.save(new CompoundTag());
     }
 }

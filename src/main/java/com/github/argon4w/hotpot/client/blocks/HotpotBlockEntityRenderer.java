@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
+import org.joml.Math;
 
 public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
@@ -35,9 +36,23 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         blockEntity.renderedWaterLevel = (renderedWaterLevel < 0) ? waterLevel : ((difference < 0.02f) ? waterLevel : renderedWaterLevel + difference * partialTick / 8f);
         blockEntity.renderedWaterLevel = Math.max(0.35f, blockEntity.renderedWaterLevel);
 
+        float interval = 360.0f / 8.0f;
+        float round = blockEntity.getTime() / 20.0f / 60.0f * 360.0f;
+
+        float lastOrbitX = orbitX(interval * 7.0f + round);
+        float lastOrbitY = orbitY(interval * 7.0f + round);
+
         for (int i = 0; i < blockEntity.getContents().size(); i++) {
+            float orbitX = orbitX(interval * i + round);
+            float orbitY = orbitY(interval * i + round);
+
+            float rotation = (float) Math.toDegrees(Math.atan2(lastOrbitY - orbitY, lastOrbitX - orbitX));
+
+            lastOrbitX = orbitX;
+            lastOrbitY = orbitY;
+
             IHotpotContent content = blockEntity.getContents().get(i);
-            HotpotContentRenderers.getContentRenderer(content.getResourceLocation()).render(content, context, blockEntity, poseStack, bufferSource, combinedLight, combinedOverlay, 0.125f * i, renderedWaterLevel);
+            HotpotContentRenderers.getContentRenderer(content.getResourceLocation()).render(content, context, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX);
         }
 
         //Make Oculus Happy
@@ -45,11 +60,14 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         context.getItemRenderer().render(ItemStack.EMPTY, ItemDisplayContext.FIXED, false, poseStack, bufferSource, combinedLight, combinedOverlay, null);
         poseStack.popPose();
 
-        renderHotpotSoup(context, poseStack, bufferSource, blockEntity.getSoup().getResourceLocation(), blockEntity.getTime(), partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false, true);
+        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(blockEntity.getSoup().getResourceLocation());
+
+        renderHotpotSoupCustomElements(soupRendererConfig, context, poseStack, bufferSource, blockEntity.getTime(), partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
+        renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f));
     }
 
     @SuppressWarnings("deprecation")
-    public static void renderHotpotSoup(BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation soupResourceLocation, int time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowl, boolean renderElements) {
+    public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
         boolean isVanillaBufferSource = bufferSource instanceof MultiBufferSource.BufferSource; //Fix crashes when using Rubidium
 
         if (isVanillaBufferSource) {
@@ -62,15 +80,9 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             source.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(soupResourceLocation);
-
-        soupRendererConfig.getCustomElementRenderers().stream()
-                .filter(renderer -> ((!bowl) || renderer.shouldRenderInBowl()) && renderElements)
-                .forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(context, time, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
-
         soupRendererConfig.getSoupModelResourceLocation().ifPresent(soupLocation -> {
             poseStack.pushPose();
-            poseStack.translate(0, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f), 0);
+            poseStack.translate(0, renderedWaterLevel, 0);
 
             BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(soupLocation);
             context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
@@ -88,6 +100,42 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         }
     }
 
+    public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowlOnly) {
+        soupRendererConfig.getCustomElementRenderers().stream()
+                .filter(renderer -> !bowlOnly || renderer.shouldRenderInBowl())
+                .forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(context, time, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
+    }
+
+    private float orbitX(float degree) {
+        return Math.cos(Math.toRadians(degree)) * 0.4f + squareX(degree) * 0.6f;
+    }
+
+    private float orbitY(float degree) {
+        return Math.sin(Math.toRadians(degree)) * 0.4f + squareY(degree) * 0.6f;
+    }
+
+    private float squareX(float degree) {
+        degree = degree % 360;
+        return switch ((int) ((degree - (degree % 45)) / 45)) {
+            case 0, 7 -> 1.0f;
+            case 1, 2 -> 1.0f / Math.tan(Math.toRadians(degree));
+            case 3, 4 -> -1.0f;
+            case 5, 6 -> -1.0f / Math.tan(Math.toRadians(degree));
+            default -> Float.NaN;
+        };
+    }
+
+    private float squareY(float degree) {
+        degree = degree % 360;
+        return switch ((int) ((degree - (degree % 45)) / 45)) {
+            case 0, 7 -> Math.tan(Math.toRadians(degree));
+            case 1, 2 -> 1.0f;
+            case 3, 4 -> -Math.tan(Math.toRadians(degree));
+            case 5, 6 -> -1.0f;
+            default -> Float.NaN;
+        };
+    }
+
     @Override
     public boolean shouldRenderOffScreen(HotpotBlockEntity hotpotBlockEntity) {
         return false;
@@ -97,6 +145,4 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
     public int getViewDistance() {
         return 24;
     }
-
-    public record Bubble(float x, float z, int offset, int startTime) {}
 }

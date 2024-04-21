@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.items.IHotpotSpecialHotpotCookingRecipeItem;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.recipes.HotpotCookingRecipe;
 import net.minecraft.world.Container;
@@ -28,9 +29,24 @@ public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStac
 
     public abstract Optional<? extends AbstractCookingRecipe> getRecipe(ItemStack itemStack, LevelBlockPos pos);
 
-    private Optional<? extends AbstractCookingRecipe> getHotpotCookingRecipe(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
+    @Override
+    public Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
+        return getHotpotCookingRecipe(this, soupType, itemStack, pos).map(AbstractCookingRecipe::getCookingTime);
+    }
+
+    @Override
+    public Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
+        return getHotpotCookingRecipe(this, soupType, itemStack, pos).map(AbstractCookingRecipe::getExperience);
+    }
+
+    @Override
+    public Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
+        return getHotpotCookingRecipe(this, soupType, itemStack, pos).map(recipe -> recipe.assemble(new SimpleContainer(itemStack), pos.level().registryAccess()));
+    }
+
+    public static Optional<? extends AbstractCookingRecipe> getHotpotCookingRecipe(AbstractHotpotRecipeContent content, IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
         Optional<HotpotCookingRecipe> hotpotCookingRecipe = HotpotCookingRecipeContent.HOTPOT_COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
-        Optional<? extends AbstractCookingRecipe> abstractCookingRecipe = getRecipe(itemStack, pos);
+        Optional<? extends AbstractCookingRecipe> abstractCookingRecipe = content.getRecipe(itemStack, pos);
 
         if (hotpotCookingRecipe.isEmpty()) {
             return abstractCookingRecipe;
@@ -41,20 +57,5 @@ public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStac
         }
 
         return hotpotCookingRecipe;
-    }
-
-    @Override
-    public int remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getHotpotCookingRecipe(soupType, itemStack, pos).map(AbstractCookingRecipe::getCookingTime).orElse(-1);
-    }
-
-    @Override
-    public Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getHotpotCookingRecipe(soupType, itemStack, pos).map(AbstractCookingRecipe::getExperience);
-    }
-
-    @Override
-    public Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getHotpotCookingRecipe(soupType, itemStack, pos).map(recipe -> recipe.assemble(new SimpleContainer(itemStack), pos.level().registryAccess()));
     }
 }

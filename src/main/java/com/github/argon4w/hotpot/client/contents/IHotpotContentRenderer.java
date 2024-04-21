@@ -9,5 +9,5 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import java.util.Optional;
 
 public interface IHotpotContentRenderer {
-    void render(IHotpotContent content, BlockEntityRendererProvider.Context context, HotpotBlockEntity blockEntity, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float offset, float waterline);
+    void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z);
 }

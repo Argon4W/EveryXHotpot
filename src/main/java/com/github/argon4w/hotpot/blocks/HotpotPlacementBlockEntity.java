@@ -39,7 +39,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     @Override
-    public ItemStack tryPlaceContentViaChopstick(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public ItemStack tryPlaceContentViaTableware(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         tryPlaceContentViaInteraction(hitPos, player, hand, itemStack, selfPos);
 
         return itemStack;
@@ -60,7 +60,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     @Override
-    public ItemStack tryTakeOutContentViaChopstick(int hitPos, LevelBlockPos pos) {
+    public ItemStack tryTakeOutContentViaTableware(int hitPos, LevelBlockPos pos) {
         if (isEmpty()) {
             pos.level().removeBlock(pos.pos(), true);
         }
@@ -73,7 +73,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     public void tryTakeOutContentViaHand(int hitPos, LevelBlockPos pos) {
-        pos.dropItemStack(tryTakeOutContentViaChopstick(hitPos, pos));
+        pos.dropItemStack(tryTakeOutContentViaTableware(hitPos, pos));
     }
 
     public void tryRemove(int hitPos, LevelBlockPos pos) {

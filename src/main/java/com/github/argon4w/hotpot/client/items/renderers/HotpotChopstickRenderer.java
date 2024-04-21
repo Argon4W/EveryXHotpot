@@ -17,7 +17,7 @@ public class HotpotChopstickRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         ItemStack chopstickFoodItemStack;
-        if (!(chopstickFoodItemStack = HotpotChopstickItem.getChopstickFoodItemStack(itemStack)).isEmpty()) {
+        if (!(chopstickFoodItemStack = HotpotChopstickItem.getHeldItemStack(itemStack)).isEmpty()) {
             poseStack.pushPose();
 
             poseStack.translate(0.5f, 0.1f, 0.5f);

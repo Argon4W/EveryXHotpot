@@ -76,6 +76,11 @@ public class HotpotPlacementBlockItem extends BlockItem {
         return super.useOn(context);
     }
 
+    @Override
+    public String getDescriptionId() {
+        return this.getOrCreateDescriptionId();
+    }
+
     @NotNull
     @Override
     public InteractionResult place(BlockPlaceContext context) {
@@ -115,11 +120,5 @@ public class HotpotPlacementBlockItem extends BlockItem {
         float pitch = soundtype.getPitch() * 0.8F;
 
         pos.level().playSound(player, pos.pos(), soundEvent, SoundSource.BLOCKS, volume, pitch);
-    }
-
-    @NotNull
-    @Override
-    public String getDescriptionId() {
-        return super.getOrCreateDescriptionId();
     }
 }
