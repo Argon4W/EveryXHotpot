@@ -61,7 +61,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem implements IHotpot
             return;
         }
 
-        if (HotpotTagsHelper.hasHotpotTags(itemStack)) {
+        if (HotpotTagsHelper.hasHotpotTags(offhandItemStack)) {
             return;
         }
 
@@ -105,8 +105,15 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem implements IHotpot
         ItemStack bowl = offhandItemStack.split(1);
 
         HotpotPaperBowlItem.setPaperBowlSoup(bowl, soupType);
-        HotpotPaperBowlItem.setPaperBowlItems(bowl, contents);
-        HotpotPaperBowlItem.setPaperBowlSkewers(bowl, skewers);
+
+        if (contents.size() > 0) {
+            HotpotPaperBowlItem.setPaperBowlItems(bowl, contents);
+        }
+
+        if (skewers.size() > 0) {
+            HotpotPaperBowlItem.setPaperBowlSkewers(bowl, skewers);
+        }
+
         HotpotPaperBowlItem.setPaperBowlDrained(bowl, drained);
 
         selfPos.level().playSound(null, selfPos.pos(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);

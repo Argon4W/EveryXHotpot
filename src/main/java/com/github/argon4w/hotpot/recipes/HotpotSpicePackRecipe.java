@@ -58,7 +58,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     }
 
     private void assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
-        HotpotSpicePackItem.addSpicePackItems(assembled, ingredient);
+        HotpotSpicePackItem.addSpicePackItems(assembled, ingredient.copyWithCount(1));
         HotpotSpicePackItem.setSpiceCharges(assembled, 20);
     }
 

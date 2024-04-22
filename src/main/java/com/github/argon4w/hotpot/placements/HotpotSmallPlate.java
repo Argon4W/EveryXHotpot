@@ -59,21 +59,22 @@ public class HotpotSmallPlate implements IHotpotPlacement {
 
     @Override
     public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos) {
-        if (itemStack.isEmpty()) {
-            if (player.isCrouching()) {
-                return true;
-            } else {
-                hotpotPlateBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
-            }
-        } else {
+        if (!itemStack.isEmpty()) {
             itemSlot.addItem(itemStack);
+            return false;
         }
+
+        if (player.isCrouching()) {
+            return true;
+        }
+
+        hotpotPlateBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
 
         return false;
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos) {
+    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos, boolean tableware) {
         return itemSlot.takeItem(!hotpotPlateBlockEntity.isInfiniteContent());
     }
 

@@ -40,7 +40,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
     @Override
     public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placement, ItemStack itemStack) {
         if (placement instanceof HotpotPlacedPaperBowl placedPaperBowl) {
-            placedPaperBowl.setPaperBowlItemSlot(itemStack);
+            placedPaperBowl.setPaperBowlItemSlot(itemStack.copyWithCount(1));
         }
     }
 
@@ -245,11 +245,15 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
             return super.getDescriptionId(itemStack) + ".skewer";
         }
 
+        if (isPaperBowlDrained(itemStack)) {
+            return super.getDescriptionId(itemStack) + ".drained";
+        }
+
         return super.getDescriptionId(itemStack) + ".hotpot";
     }
 
-    public static void setPaperBowlItems(ItemStack itemStack, List<ItemStack> items) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "BowlItems", items.stream()
+    public static void setPaperBowlItems(ItemStack itemStack, List<ItemStack> itemStacks) {
+        HotpotTagsHelper.updateHotpotTags(itemStack, "BowlItems", itemStacks.stream()
                 .filter(item -> !item.isEmpty())
                 .map(HotpotTagsHelper::saveItemStack)
                 .collect(Collectors.toCollection(ListTag::new)));
@@ -355,7 +359,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
     }
 
     public static boolean canEatInBowl(ItemStack itemStack) {
-        return itemStack.isEdible() || itemStack.getItem() instanceof HotpotSkewerItem;
+        return itemStack.isEdible() || (itemStack.getItem() instanceof HotpotSkewerItem && !HotpotSkewerItem.isSkewerEmpty(itemStack));
     }
 
     public static boolean isBowlEmpty(ItemStack itemStack) {

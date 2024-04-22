@@ -157,7 +157,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return 0;
         }
 
-        return (int) (foodItemStack.getUseDuration() * (0.8f / 1.5f));
+        return (int) (foodItemStack.getUseDuration() * (0.5f / 1.5f));
     }
 
     @Override

@@ -54,7 +54,7 @@ public class HotpotSkewerRecipe extends CustomRecipe {
     }
 
     private void assembleSkewerItem(ItemStack assembled, ItemStack ingredient) {
-        HotpotSkewerItem.addSkewerItems(assembled, ingredient);
+        HotpotSkewerItem.addSkewerItems(assembled, ingredient.copyWithCount(1));
     }
 
     @Override

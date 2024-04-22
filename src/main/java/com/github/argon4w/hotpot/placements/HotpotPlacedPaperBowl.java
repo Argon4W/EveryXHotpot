@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -11,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HotpotPlacedPaperBowl implements IHotpotPlacement {
@@ -52,25 +54,72 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
 
     @Override
     public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
-        if (itemStack.isEmpty()) {
-            if (player.isCrouching()) {
-                return true;
-            }
-
-            hotpotPlacementBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
-
-            return paperBowlItemSlot.isEmpty();
+        if (!itemStack.isEmpty()) {
+            paperBowlItemSlot.addItem(itemStack);
+            return false;
         }
 
-        paperBowlItemSlot.addItem(itemStack);
+        if (player.isCrouching()) {
+            return true;
+        }
+
+        hotpotPlacementBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
 
         return false;
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
+    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos, boolean tableware) {
         boolean consume = !hotpotPlacementBlockEntity.isInfiniteContent();
-        return paperBowlItemSlot.takeItem(consume);
+        ItemStack paperBowl = paperBowlItemSlot.getItemStack();
+
+        if (HotpotPaperBowlItem.isBowlClear(paperBowl)) {
+            return ItemStack.EMPTY;
+        }
+
+        if (HotpotPaperBowlItem.isBowlEmpty(paperBowl)) {
+            removePaperBowl(hotpotPlacementBlockEntity, pos, selfPos);
+            return ItemStack.EMPTY;
+        }
+
+        List<ItemStack> itemStacks;
+
+        if (tableware) {
+            itemStacks = new ArrayList<>(HotpotPaperBowlItem.getPaperBowlItems(paperBowl));
+        } else {
+            itemStacks = new ArrayList<>(HotpotPaperBowlItem.getPaperBowlSkewers(paperBowl));
+        }
+
+        if (itemStacks.size() == 0) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack itemStack = itemStacks.get(0);
+
+        if (itemStack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        if (consume) {
+            itemStacks.remove(0);
+        }
+
+        if (tableware) {
+            HotpotPaperBowlItem.setPaperBowlItems(paperBowl, itemStacks);
+        } else {
+            HotpotPaperBowlItem.setPaperBowlSkewers(paperBowl, itemStacks);
+        }
+
+        if (HotpotPaperBowlItem.isBowlEmpty(paperBowl)) {
+            removePaperBowl(hotpotPlacementBlockEntity, pos, selfPos);
+        }
+
+        return itemStack;
+    }
+
+    private void removePaperBowl(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, int pos, LevelBlockPos selfPos) {
+        paperBowlItemSlot = new SimpleItemSlot();
+        hotpotPlacementBlockEntity.tryRemove(pos, selfPos);
     }
 
     @Override

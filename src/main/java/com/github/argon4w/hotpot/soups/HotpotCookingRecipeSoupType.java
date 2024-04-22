@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.soups;
 
+import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -7,8 +8,8 @@ import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.items.HotpotSkewerItem;
-import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,7 +24,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import org.apache.commons.compress.utils.Lists;
 
 import java.util.*;
 
@@ -52,7 +52,7 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
             return result;
         }
 
-        if (result.getItem() instanceof HotpotSkewerItem) {
+        if (result.is(HotpotModEntry.HOTPOT_SKEWER.get())) {
             return HotpotSkewerItem.applyToSkewerItemStacks(result, this::apply);
         }
 

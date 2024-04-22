@@ -62,7 +62,12 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         }
 
         setSpiceCharges(self, charges - 1);
-        HotpotEffectHelper.saveEffects(itemStack, getSpiceEffects(self));
+
+        if (itemStack.is(HotpotModEntry.HOTPOT_SKEWER.get())) {
+            HotpotSkewerItem.applyToSkewerItemStacks(itemStack, skewerItemStack -> HotpotEffectHelper.saveEffects(skewerItemStack, getSpiceEffects(self)));
+        } else {
+            HotpotEffectHelper.saveEffects(itemStack, getSpiceEffects(self));
+        }
 
         return itemStack;
     }

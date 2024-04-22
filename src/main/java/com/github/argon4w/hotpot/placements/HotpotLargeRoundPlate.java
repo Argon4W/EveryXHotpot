@@ -66,7 +66,7 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos) {
+    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos, boolean tableware) {
         return slots[pos].takeItem(!hotpotPlateBlockEntity.isInfiniteContent());
     }
 

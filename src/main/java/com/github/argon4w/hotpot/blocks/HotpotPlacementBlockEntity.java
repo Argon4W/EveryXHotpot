@@ -66,14 +66,21 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
         }
 
         IHotpotPlacement placement = getPlacementInPos(hitPos);
-        ItemStack itemStack = placement.takeOutContent(hitPos, this, pos);
+        ItemStack itemStack = placement.takeOutContent(hitPos, this, pos, true);
         markDataChanged();
 
         return itemStack;
     }
 
     public void tryTakeOutContentViaHand(int hitPos, LevelBlockPos pos) {
-        pos.dropItemStack(tryTakeOutContentViaTableware(hitPos, pos));
+        if (isEmpty()) {
+            pos.level().removeBlock(pos.pos(), true);
+        }
+
+        IHotpotPlacement placement = getPlacementInPos(hitPos);
+        ItemStack itemStack = placement.takeOutContent(hitPos, this, pos, false);
+        pos.dropItemStack(itemStack);
+        markDataChanged();
     }
 
     public void tryRemove(int hitPos, LevelBlockPos pos) {

@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 
 public interface IHotpotPlacement extends IHotpotSavableWIthSlot<IHotpotPlacement> {
     boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos);
-    ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos);
+    ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos, boolean tableware);
     void onRemove(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos pos);
     ItemStack getCloneItemStack(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos level);
     boolean canPlace(int pos, Direction direction);

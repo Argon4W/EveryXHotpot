@@ -46,16 +46,27 @@ public class HotpotPlacementBlockItem extends BlockItem {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         LevelBlockPos selfPos = LevelBlockPos.fromUseOnContext(context);
+        LevelBlockPos placedPos = LevelBlockPos.fromBlockPlaceContext(new BlockPlaceContext(context));
+
         Direction direction = context.getHorizontalDirection();
         int pos = HotpotPlacementBlockEntity.getHitPos(context);
+
         IHotpotPlacement placeable = supplier.get();
         Player player = context.getPlayer();
 
-        if (!canPlace(context.getPlayer(), context.getHand(), selfPos)) {
+        LevelBlockPos blockPos;
+
+        if (selfPos.is(HotpotModEntry.HOTPOT_PLACEMENT.get())) {
+            blockPos = selfPos;
+        } else {
+            blockPos = placedPos;
+        }
+
+        if (!canPlace(context.getPlayer(), context.getHand(), blockPos)) {
             return InteractionResult.PASS;
         }
 
-        if (!selfPos.is(HotpotModEntry.HOTPOT_PLACEMENT.get())) {
+        if (!blockPos.is(HotpotModEntry.HOTPOT_PLACEMENT.get())) {
             return super.useOn(context);
         }
 
@@ -63,8 +74,8 @@ public class HotpotPlacementBlockItem extends BlockItem {
             return super.useOn(context);
         }
 
-        if (place(selfPos, placeable, context.getItemInHand().copy(), pos)) {
-            playSound(selfPos, context.getPlayer());
+        if (place(blockPos, placeable, context.getItemInHand().copy(), pos)) {
+            playSound(blockPos, context.getPlayer());
 
             if (player == null || !player.getAbilities().instabuild) {
                 context.getItemInHand().shrink(1);
@@ -73,7 +84,7 @@ public class HotpotPlacementBlockItem extends BlockItem {
             return InteractionResult.FAIL;
         }
 
-        return super.useOn(context);
+        return InteractionResult.FAIL;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotSoupRecipe {
     }
 
     public ItemStack getRemainingItem() {
-        return remainingItem;
+        return remainingItem.copy();
     }
 
     public ResourceLocation getSourceSoup() {
