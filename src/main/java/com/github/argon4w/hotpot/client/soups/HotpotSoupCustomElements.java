@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.client.soups;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.soups.renderers.HotpotBubbleRenderer;
 import com.github.argon4w.hotpot.client.soups.renderers.HotpotEmptyCustomElementRenderer;
+import com.github.argon4w.hotpot.client.soups.renderers.HotpotShimmerSoupRenderer;
 import com.github.argon4w.hotpot.client.soups.renderers.HotpotSoupFloatingElementRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -23,6 +24,7 @@ public class HotpotSoupCustomElements {
     public static final RegistryObject<HotpotEmptyCustomElementRenderer.Serializer> HOTPOT_EMPTY_CUSTOM_ELEMENT_RENDERER_SERIALIZER = CUSTOM_ELEMENTS.register("empty_custom_element_renderer", HotpotEmptyCustomElementRenderer.Serializer::new);
     public static final RegistryObject<HotpotBubbleRenderer.Serializer> HOTPOT_BUBBLE_RENDERER_SERIALIZER = CUSTOM_ELEMENTS.register("bubble_renderer", HotpotBubbleRenderer.Serializer::new);
     public static final RegistryObject<HotpotSoupFloatingElementRenderer.Serializer> HOTPOT_FLOATING_ELEMENT_RENDERER_SERIALIZER = CUSTOM_ELEMENTS.register("floating_element_renderer", HotpotSoupFloatingElementRenderer.Serializer::new);
+    public static final RegistryObject<HotpotShimmerSoupRenderer.Serializer> HOTPOT_SHIMMER_SOUP_RENDERER_SERIALIZER = CUSTOM_ELEMENTS.register("shimmer_soup_renderer", HotpotShimmerSoupRenderer.Serializer::new);
 
     public static IForgeRegistry<IHotpotSoupCustomElementRendererSerializer<?>> getCustomElementRegistry() {
         return CUSTOM_ELEMENT_REGISTRY.get();

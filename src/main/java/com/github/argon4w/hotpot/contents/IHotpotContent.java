@@ -7,6 +7,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.BiConsumer;
@@ -14,7 +15,8 @@ import java.util.function.BiConsumer;
 public interface IHotpotContent extends IHotpotSavableWIthSlot<IHotpotContent> {
     void create(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
 
     static void loadAll(ListTag listTag, NonNullList<IHotpotContent> list) {

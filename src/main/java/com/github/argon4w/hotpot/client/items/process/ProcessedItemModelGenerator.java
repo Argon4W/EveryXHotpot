@@ -53,7 +53,7 @@ public class ProcessedItemModelGenerator extends ItemModelGenerator {
             SpriteContents processedContents = spriteGetter.apply(processedMaterial).contents();
             boolean processed = !processedContents.name().equals(MissingTextureAtlasSprite.getLocation());
 
-            processedContents = processed ? processedContents: contents;
+            processedContents = processed ? processedContents : contents;
             textureLayers.put(processedLayer, Either.left(processed ? processedMaterial : material));
 
             elements.addAll(this.processFrames(

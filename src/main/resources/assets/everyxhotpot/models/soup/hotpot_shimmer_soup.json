@@ -3,8 +3,8 @@
 	"render_type": "minecraft:translucent",
 	"texture_size": [8, 8],
 	"textures": {
-		"12": "block/water_still",
-		"particle": "block/water_still"
+		"12": "everyxhotpot:block/hotpot_shimmer_soup",
+		"particle": "everyxhotpot:block/hotpot_shimmer_soup"
 	},
 	"elements": [
 		{

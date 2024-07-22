@@ -15,13 +15,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IHotpotSoupType extends IHotpotSavable<IHotpotSoupType> {
     Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos);
     Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, LevelBlockPos pos);
-    Optional<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos);
+    List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos);
     ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void takeOutContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
@@ -33,6 +34,7 @@ public interface IHotpotSoupType extends IHotpotSavable<IHotpotSoupType> {
     int getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void entityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Entity entity);
     void tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    boolean isHotpotLit(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
 
     static IHotpotSoupType loadSoup(CompoundTag compoundTag) {
         return isTagValid(compoundTag) ?

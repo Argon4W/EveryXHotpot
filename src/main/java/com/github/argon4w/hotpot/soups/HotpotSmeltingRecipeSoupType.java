@@ -43,6 +43,11 @@ public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupTy
         return resourceLocation;
     }
 
+    @Override
+    public boolean isHotpotLit(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return true;
+    }
+
     public record Factory(ResourceLocation resourceLocation, float waterLevelDropRate) implements IHotpotSoupFactory<HotpotSmeltingRecipeSoupType> {
         @Override
         public HotpotSmeltingRecipeSoupType build() {

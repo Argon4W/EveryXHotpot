@@ -17,17 +17,23 @@ public class HotpotSoupRendererConfig {
     public static final Serializer SERIALIZER = new Serializer();
 
     private final ResourceLocation soupModelResourceLocation;
+    private final boolean fixedLighting;
     private final List<IHotpotSoupCustomElementRenderer> customElementRenderers;
     private final HotpotSoupColor color;
 
-    public HotpotSoupRendererConfig(ResourceLocation soupModelResourceLocation, List<IHotpotSoupCustomElementRenderer> customElementRenderers, HotpotSoupColor color) {
+    public HotpotSoupRendererConfig(ResourceLocation soupModelResourceLocation, boolean fixedLighting, List<IHotpotSoupCustomElementRenderer> customElementRenderers, HotpotSoupColor color) {
         this.soupModelResourceLocation = soupModelResourceLocation;
+        this.fixedLighting = fixedLighting;
         this.customElementRenderers = customElementRenderers;
         this.color = color;
     }
 
     public Optional<ResourceLocation> getSoupModelResourceLocation() {
         return Optional.ofNullable(soupModelResourceLocation);
+    }
+
+    public boolean isFixedLighting() {
+        return fixedLighting;
     }
 
     public List<IHotpotSoupCustomElementRenderer> getCustomElementRenderers() {
@@ -45,15 +51,16 @@ public class HotpotSoupRendererConfig {
             }
 
             ResourceLocation soupModelResourceLocation = null;
+            boolean fixedLighting = false;
             ArrayList<IHotpotSoupCustomElementRenderer> customElements = Lists.newArrayList();
 
             if (jsonObject.has("soup_model_resource_location")) {
                 soupModelResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "soup_model_resource_location"));
             }
 
-            /*if (!jsonObject.has("custom_elements_renderers")) {
-                return new HotpotSoupRendererConfig(soupModelResourceLocation, customElements);
-            }*/
+            if (jsonObject.has("fixed_lighting")) {
+                fixedLighting = GsonHelper.getAsBoolean(jsonObject, "fixed_lighting");
+            }
 
             for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "custom_elements_renderers", new JsonArray())) {
                 if (!jsonElement.isJsonObject()) {
@@ -77,7 +84,7 @@ public class HotpotSoupRendererConfig {
             }
 
             if (!jsonObject.has("color")) {
-                return new HotpotSoupRendererConfig(soupModelResourceLocation, customElements, null);
+                return new HotpotSoupRendererConfig(soupModelResourceLocation, fixedLighting, customElements, null);
             }
 
             if (!jsonObject.get("color").isJsonObject()) {
@@ -86,7 +93,7 @@ public class HotpotSoupRendererConfig {
 
             HotpotSoupColor color = HotpotSoupColor.SERIALIZER.fromJson(GsonHelper.getAsJsonObject(jsonObject, "color"));
 
-            return new HotpotSoupRendererConfig(soupModelResourceLocation, customElements, color);
+            return new HotpotSoupRendererConfig(soupModelResourceLocation, fixedLighting, customElements, color);
         }
     }
 }

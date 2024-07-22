@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 
 public class HotpotEmptySoupType implements IHotpotSoupType {
@@ -60,8 +61,8 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public Optional<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
-        return Optional.empty();
+    public List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
+        return List.of();
     }
 
     @Override
@@ -117,6 +118,11 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     @Override
     public void tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
 
+    }
+
+    @Override
+    public boolean isHotpotLit(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return true;
     }
 
     public record Factory(ResourceLocation resourceLocation) implements IHotpotSoupFactory<HotpotEmptySoupType> {

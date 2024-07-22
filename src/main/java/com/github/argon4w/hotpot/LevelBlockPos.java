@@ -4,6 +4,8 @@ import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -26,6 +28,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return level.getBlockState(pos);
     }
 
+    public void setBlockState(BlockState blockState) {
+        level.setBlock(pos, blockState, 2);
+    }
+
     public LevelChunk getChunkAt() {
         return level.getChunkAt(pos);
     }
@@ -40,6 +46,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public void dropItemStack(ItemStack itemStack) {
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+    }
+
+    public void dropFloatingItemStack(ItemStack itemStack) {
+        dropFloatingItemStack(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
     }
 
     public void markAndNotifyBlock() {
@@ -107,5 +117,21 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public static LevelBlockPos fromBlockPlaceContext(BlockPlaceContext context) {
         return new LevelBlockPos(context.getLevel(), context.getClickedPos());
+    }
+
+    public static void dropFloatingItemStack(Level level, double x, double y, double z, ItemStack itemStack) {
+        double halfWidth = EntityType.ITEM.getWidth() / 2.0d;
+
+        x = Math.floor(x) + 0.5d + halfWidth * level.random.nextGaussian();
+        y = Math.floor(y) + 0.5d;
+        z = Math.floor(z) + 0.5d + halfWidth * level.random.nextGaussian();
+
+        ItemEntity itementity = new ItemEntity(level, x, y, z, itemStack);
+
+        itementity.setNoGravity(true);
+        itementity.setPickUpDelay(40);
+        itementity.setDeltaMovement(0.0d, 0.025, 0.0d);
+
+        level.addFreshEntity(itementity);
     }
 }

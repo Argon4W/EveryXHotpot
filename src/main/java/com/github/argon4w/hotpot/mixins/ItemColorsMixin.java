@@ -33,7 +33,7 @@ public class ItemColorsMixin {
         }
 
         int hotpotTint = tintIndex - HotpotModEntry.HOTPOT_SPRITE_TINT_INDEX;
-        int index = (hotpotTint - hotpotTint % ItemModelGenerator.LAYERS.size()) / 4;
+        int index = (hotpotTint - hotpotTint % ItemModelGenerator.LAYERS.size()) / ItemModelGenerator.LAYERS.size();
 
         cir.setReturnValue(SPRITE_PROCESSORS_BY_INDEX.getOrDefault(index, HotpotSpriteProcessors.getEmptySpriteProcessor()).processColor(itemStack));
     }

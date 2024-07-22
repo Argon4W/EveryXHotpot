@@ -9,10 +9,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
@@ -41,7 +42,7 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     public abstract Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
 
     @Override
-    public ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         if (pos.level() instanceof ServerLevel serverLevel) {
             if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupTypeWithActiveness withActiveness) {
                 experience *= (1f + withActiveness.getActiveness(hotpotBlockEntity, pos));
@@ -55,30 +56,44 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
 
     @Override
     public void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        if (itemStack.getItem() instanceof IHotpotSpecialContentItem iHotpotSpecialContentItem && content instanceof AbstractHotpotItemStackContent itemStackContent) {
-            itemStackContent.itemStack = iHotpotSpecialContentItem.onOtherContentUpdate(itemStack, itemStackContent.itemStack, content, hotpotBlockEntity, pos);
-            itemStack = iHotpotSpecialContentItem.updateSelf(itemStack, this, hotpotBlockEntity, pos);
+        if (!(itemStack.getItem() instanceof IHotpotSpecialContentItem iHotpotSpecialContentItem)) {
+            return;
         }
+
+        if (!(content instanceof AbstractHotpotItemStackContent itemStackContent)) {
+            return;
+        }
+
+        itemStackContent.itemStack = iHotpotSpecialContentItem.onOtherContentUpdate(itemStack, itemStackContent.itemStack, content, hotpotBlockEntity, pos);
+        itemStack = iHotpotSpecialContentItem.updateSelf(itemStack, this, hotpotBlockEntity, pos);
     }
 
     @Override
     public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        if (cookingTime < 0) return false;
-
-        if (cookingProgress >= cookingTime) {
-            Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, pos);
-
-            if (resultOptional.isPresent()) {
-                experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, pos).orElse(0f);
-                itemStack = resultOptional.get();
-                cookingTime = -1;
-
-                return true;
-            }
-        } else {
-            cookingProgress ++;
+        if (cookingTime < 0) {
+            return false;
         }
 
+        if (cookingProgress < cookingTime) {
+            cookingProgress ++;
+            return false;
+        }
+
+        Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, pos);
+        cookingTime = -1;
+
+        if (resultOptional.isPresent()) {
+            experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, pos).orElse(0f);
+            itemStack = resultOptional.get();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return false;
     }
 

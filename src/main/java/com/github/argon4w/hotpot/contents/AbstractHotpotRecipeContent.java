@@ -45,7 +45,7 @@ public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStac
     }
 
     public static Optional<? extends AbstractCookingRecipe> getHotpotCookingRecipe(AbstractHotpotRecipeContent content, IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {
-        Optional<HotpotCookingRecipe> hotpotCookingRecipe = HotpotCookingRecipeContent.HOTPOT_COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
+        Optional<HotpotCookingRecipe> hotpotCookingRecipe = AbstractHotpotRecipeContent.HOTPOT_COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SimpleContainer(itemStack), pos.level());
         Optional<? extends AbstractCookingRecipe> abstractCookingRecipe = content.getRecipe(itemStack, pos);
 
         if (hotpotCookingRecipe.isEmpty()) {

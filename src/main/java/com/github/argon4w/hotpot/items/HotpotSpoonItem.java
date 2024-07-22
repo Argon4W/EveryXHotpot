@@ -69,7 +69,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem implements IHotpot
         ArrayList<ItemStack> skewers = new ArrayList<>();
 
         for (int i = 0; i < 8; i ++) {
-            ItemStack content = blockEntity.tryTakeOutContentViaTableware(i, selfPos);
+            ItemStack content = blockEntity.tryTakeOutContentViaTableware(player, i, selfPos);
 
             if (content.isEmpty()) {
                 continue;

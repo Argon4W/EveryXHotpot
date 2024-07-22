@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptyContent implements IHotpotContent {
@@ -16,7 +17,7 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return ItemStack.EMPTY;
     }
 
@@ -27,6 +28,11 @@ public class HotpotEmptyContent implements IHotpotContent {
 
     @Override
     public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return false;
     }
 

@@ -52,6 +52,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public static final BooleanProperty SEPARATOR_SOUTH = BooleanProperty.create("separator_south");
     public static final BooleanProperty SEPARATOR_EAST = BooleanProperty.create("separator_east");
     public static final BooleanProperty SEPARATOR_WEST = BooleanProperty.create("separator_west");
+    public static final BooleanProperty HOTPOT_LIT = BooleanProperty.create("hotpot_lit");
 
     private final VoxelShape[] shapesByIndex = makeShapes();
     private final Object2IntMap<BlockState> stateToIndex = new Object2IntOpenHashMap<>();
@@ -63,10 +64,11 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .mapColor(MapColor.METAL)
                 .sound(SoundType.COPPER)
                 .requiresCorrectToolForDrops()
-                .lightLevel((blockState) -> 15)
+                .lightLevel((blockState) -> blockState.getValue(HOTPOT_LIT) ? 15 : 0)
                 .strength(3.0F, 6.0F));
 
         this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(HOTPOT_LIT, true)
                 .setValue(NORTH, false)
                 .setValue(SOUTH, false)
                 .setValue(EAST, false)
@@ -116,11 +118,17 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     }
 
     private BlockState updateState(BlockState state, BlockPos pos, LevelAccessor accessor) {
-        if (!(accessor instanceof Level)) {
+        if (!(accessor instanceof Level level)) {
             return defaultBlockState();
         }
 
-        LevelBlockPos selfPos = new LevelBlockPos((Level) accessor, pos);
+        LevelBlockPos selfPos = new LevelBlockPos(level, pos);
+
+        boolean hotpotLit = true;
+
+        if (selfPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
+            hotpotLit = hotpotBlockEntity.getSoup().isHotpotLit(hotpotBlockEntity, selfPos);
+        }
 
         LevelBlockPos north = selfPos.north();
         LevelBlockPos south = selfPos.south();
@@ -138,6 +146,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         boolean westValue = west.is(HotpotModEntry.HOTPOT_BLOCK.get());
 
         return state
+                .setValue(HOTPOT_LIT, hotpotLit)
                 .setValue(NORTH, northValue)
                 .setValue(SOUTH, southValue)
                 .setValue(EAST, eastValue)
@@ -255,7 +264,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(NORTH, SOUTH, EAST, WEST, WEST_NORTH, NORTH_EAST, EAST_SOUTH, SOUTH_WEST, SEPARATOR_NORTH, SEPARATOR_SOUTH, SEPARATOR_EAST, SEPARATOR_WEST);
+        builder.add(HOTPOT_LIT, NORTH, SOUTH, EAST, WEST, WEST_NORTH, NORTH_EAST, EAST_SOUTH, SOUTH_WEST, SEPARATOR_NORTH, SEPARATOR_SOUTH, SEPARATOR_EAST, SEPARATOR_WEST);
     }
 
     @Nullable

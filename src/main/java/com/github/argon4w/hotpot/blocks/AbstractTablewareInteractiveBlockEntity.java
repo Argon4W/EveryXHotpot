@@ -26,5 +26,5 @@ public abstract class AbstractTablewareInteractiveBlockEntity extends BlockEntit
 
     public abstract ItemStack tryPlaceContentViaTableware(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
     public abstract void tryPlaceContentViaInteraction(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
-    public abstract ItemStack tryTakeOutContentViaTableware(int hitPos, LevelBlockPos pos);
+    public abstract ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, LevelBlockPos pos);
 }

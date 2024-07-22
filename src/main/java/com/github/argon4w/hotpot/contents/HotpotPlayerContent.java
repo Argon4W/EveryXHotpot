@@ -33,15 +33,15 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public ItemStack takeOut(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         if (partIndex == 0) {
             ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
             itemStack.addTagElement("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), profile));
 
             return itemStack;
-        } else {
-            return new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2));
         }
+
+        return new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2));
     }
 
     public GameProfile getProfile() {
@@ -59,6 +59,11 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return false;
     }
 

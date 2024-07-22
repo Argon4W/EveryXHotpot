@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
@@ -21,7 +23,6 @@ import org.joml.Math;
 
 public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
-
 
     public HotpotBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.context = context;
@@ -33,7 +34,19 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
         float renderedWaterLevel = blockEntity.renderedWaterLevel;
         float difference = (waterLevel - renderedWaterLevel);
-        blockEntity.renderedWaterLevel = (renderedWaterLevel < 0) ? waterLevel : ((difference < 0.02f) ? waterLevel : renderedWaterLevel + difference * partialTick / 8f);
+
+        float newRenderedWaterLevel = renderedWaterLevel + difference * partialTick / 8f;
+
+        if (Math.abs(difference) < 0.02f) {
+            newRenderedWaterLevel = waterLevel;
+        }
+
+        if (renderedWaterLevel < 0) {
+            blockEntity.renderedWaterLevel = waterLevel;
+        } else {
+            blockEntity.renderedWaterLevel = newRenderedWaterLevel;
+        }
+
         blockEntity.renderedWaterLevel = Math.max(0.35f, blockEntity.renderedWaterLevel);
 
         float interval = 360.0f / 8.0f;
@@ -66,38 +79,26 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f));
     }
 
-    @SuppressWarnings("deprecation")
     public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
-        boolean isVanillaBufferSource = bufferSource instanceof MultiBufferSource.BufferSource; //Fix crashes when using Rubidium
-
-        if (isVanillaBufferSource) {
-            MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
-
-            //FIXME: Probably UNSAFE FOR RENDERING!
-            source.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
-            source.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
-            source.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
-            source.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
-        }
-
         soupRendererConfig.getSoupModelResourceLocation().ifPresent(soupLocation -> {
             poseStack.pushPose();
             poseStack.translate(0, renderedWaterLevel, 0);
 
+            int lighting = combinedLight;
+
+            if (soupRendererConfig.isFixedLighting()) {
+                lighting = 14680304;
+            }
+
             BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(soupLocation);
-            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
+            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
+
+            if (bufferSource instanceof MultiBufferSource.BufferSource source) {
+                source.endBatch(Sheets.translucentCullBlockSheet());
+            }
 
             poseStack.popPose();
         });
-
-        //Fix crashes when using Rubidium
-        if (isVanillaBufferSource) {
-            MultiBufferSource.BufferSource source = (MultiBufferSource.BufferSource) bufferSource;
-
-            //FIXME: Probably UNSAFE FOR RENDERING!
-            source.endBatch(Sheets.translucentCullBlockSheet());
-            source.endBatch(RenderType.glintTranslucent());
-        }
     }
 
     public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowlOnly) {

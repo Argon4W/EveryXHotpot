@@ -13,7 +13,7 @@ import java.util.*;
 
 public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadListener {
     public static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-    public static final HotpotSoupRendererConfig EMPTY_SOUP_RENDER_CONFIG = new HotpotSoupRendererConfig(null, List.of(), null);
+    public static final HotpotSoupRendererConfig EMPTY_SOUP_RENDER_CONFIG = new HotpotSoupRendererConfig(null, false, List.of(), null);
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final HashMap<ResourceLocation, HotpotSoupRendererConfig> soupRendererConfigs;

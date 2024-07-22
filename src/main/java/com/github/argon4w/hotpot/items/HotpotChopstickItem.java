@@ -130,7 +130,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
         ItemStack heldItemStack = HotpotChopstickItem.getHeldItemStack(itemStack);
 
         if (heldItemStack.isEmpty()) {
-            heldItemStack = blockEntity.tryTakeOutContentViaTableware(hitPos, selfPos);
+            heldItemStack = blockEntity.tryTakeOutContentViaTableware(player, hitPos, selfPos);
         } else {
             heldItemStack = blockEntity.tryPlaceContentViaTableware(hitPos, player, hand, heldItemStack, selfPos);
         }

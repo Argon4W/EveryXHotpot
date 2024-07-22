@@ -4,6 +4,8 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupDiscardOverflowSynchronizer;
+import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupTickSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupWaterLevelSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import net.minecraft.nbt.CompoundTag;
@@ -15,11 +17,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     private float waterLevel = 1f;
     private float overflowWaterLevel = 0f;
+
+    public abstract boolean canItemEnter(ItemEntity itemEntity);
 
     @Override
     public IHotpotSoupType load(CompoundTag compoundTag) {
@@ -48,7 +53,7 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
                 hotpotBlockEntity.onRemove(selfPos);
             } else {
                 player.hurt(player.damageSources().onFire(), 5);
-                hotpotBlockEntity.tryTakeOutContentViaHand(hitPos, selfPos);
+                hotpotBlockEntity.tryTakeOutContentViaHand(player, hitPos, selfPos);
             }
 
             return Optional.empty();
@@ -89,6 +94,10 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     @Override
     public void entityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos, Entity entity) {
         if (entity instanceof ItemEntity itemEntity) {
+            if (!canItemEnter(itemEntity)) {
+                return;
+            }
+
             ItemStack stack = itemEntity.getItem();
 
             if (!stack.isEmpty()) {
@@ -105,11 +114,8 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     }
 
     @Override
-    public Optional<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
-        return IHotpotSoupSynchronizer
-                .collectOnly((hotpotBlockEntity, pos) -> hotpotBlockEntity.getSoup().tick(hotpotBlockEntity, pos))
-                .andThen(new HotpotSoupWaterLevelSynchronizer())
-                .andThen((hotpotBlockEntity, pos) -> hotpotBlockEntity.getSoup().discardOverflowWaterLevel(hotpotBlockEntity, pos)).ofOptional();
+    public List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
+        return List.of(new HotpotSoupTickSynchronizer(), new HotpotSoupWaterLevelSynchronizer(), new HotpotSoupDiscardOverflowSynchronizer());
     }
 
     @Override

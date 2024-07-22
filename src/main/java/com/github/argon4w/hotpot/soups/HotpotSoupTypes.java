@@ -18,6 +18,7 @@ public class HotpotSoupTypes {
     public static final DeferredRegister<IHotpotSoupTypeSerializer<?>> SOUPS = DeferredRegister.create(SOUP_REGISTRY_KEY, HotpotModEntry.MODID);
     public static final Supplier<IForgeRegistry<IHotpotSoupTypeSerializer<?>>> SOUP_REGISTRY = SOUPS.makeRegistry(() -> new RegistryBuilder<IHotpotSoupTypeSerializer<?>>().setDefaultKey(EMPTY_SOUP_LOCATION));
 
+    public static final RegistryObject<HotpotDisassemblingRecipeSoupTypeRecipeSoupType.Serializer> DISASSEMBLING_RECIPE_SOUP_SERIALIZER = SOUPS.register("disassembling_recipe_soup", HotpotDisassemblingRecipeSoupTypeRecipeSoupType.Serializer::new);
     public static final RegistryObject<HotpotCookingRecipeSoupType.Serializer> COOKING_RECIPE_SOUP_SERIALIZER = SOUPS.register("cooking_recipe_soup", HotpotCookingRecipeSoupType.Serializer::new);
     public static final RegistryObject<HotpotSmeltingRecipeSoupType.Serializer> SMELTING_RECIPE_SOUP_SERIALIZER = SOUPS.register("smelting_recipe_soup", HotpotSmeltingRecipeSoupType.Serializer::new);
     public static final RegistryObject<HotpotEmptySoupType.Serializer> EMPTY_SOUP_SERIALIZER = SOUPS.register("empty_soup", HotpotEmptySoupType.Serializer::new);

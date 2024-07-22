@@ -52,6 +52,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
         }
 
         IHotpotPlacement placement = getPlacementInPos(hitPos);
+
         if (placement.interact(player, hand, itemStack, hitPos, this, selfPos) && canBeRemoved()) {
             tryRemove(hitPos, selfPos);
         }
@@ -60,7 +61,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     @Override
-    public ItemStack tryTakeOutContentViaTableware(int hitPos, LevelBlockPos pos) {
+    public ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, LevelBlockPos pos) {
         if (isEmpty()) {
             pos.level().removeBlock(pos.pos(), true);
         }
