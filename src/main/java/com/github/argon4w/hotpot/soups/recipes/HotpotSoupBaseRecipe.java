@@ -2,22 +2,18 @@ package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.crafting.*;
 
 public class HotpotSoupBaseRecipe extends AbstractHotpotSoupRecipe {
-    private final ResourceLocation location;
     private final ResourceLocation sourceSoup;
     private final ResourceLocation resultSoup;
     private final float resultWaterLevel;
@@ -25,8 +21,7 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotSoupRecipe {
     private final ItemStack remainingItem;
     private final ResourceLocation soundEvent;
 
-    public HotpotSoupBaseRecipe(ResourceLocation location, ResourceLocation sourceSoup, ResourceLocation resultSoup, float resultWaterLevel, Ingredient ingredient, ItemStack remainingItem, ResourceLocation soundEvent) {
-        this.location = location;
+    public HotpotSoupBaseRecipe(ResourceLocation sourceSoup, ResourceLocation resultSoup, float resultWaterLevel, Ingredient ingredient, ItemStack remainingItem, ResourceLocation soundEvent) {
         this.sourceSoup = sourceSoup;
         this.resultSoup = resultSoup;
         this.resultWaterLevel = resultWaterLevel;
@@ -43,8 +38,21 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotSoupRecipe {
         return remainingItem.copy();
     }
 
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider access) {
+        return super.getResultItem(access);
+    }
+
+    public Ingredient getIngredient() {
+        return ingredient;
+    }
+
     public ResourceLocation getSourceSoup() {
         return sourceSoup;
+    }
+
+    public ResourceLocation getResultSoup() {
+        return resultSoup;
     }
 
     public IHotpotSoupType createResultSoup() {
@@ -60,11 +68,6 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotSoupRecipe {
     }
 
     @Override
-    public ResourceLocation getId() {
-        return location;
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return HotpotModEntry.HOTPOT_SOUP_BASE_RECIPE_SERIALIZER.get();
     }
@@ -75,85 +78,33 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotSoupRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<HotpotSoupBaseRecipe> {
+        public static final MapCodec<HotpotSoupBaseRecipe> CODEC = RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                ResourceLocation.CODEC.fieldOf("source_soup").forGetter(HotpotSoupBaseRecipe::getSourceSoup),
+                ResourceLocation.CODEC.fieldOf("target_soup").forGetter(HotpotSoupBaseRecipe::getResultSoup),
+                Codec.FLOAT.fieldOf("result_waterlevel").forGetter(HotpotSoupBaseRecipe::getResultWaterLevel),
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupBaseRecipe::getIngredient),
+                ItemStack.CODEC.fieldOf("HotpotSoupBaseRecipe").forGetter(HotpotSoupBaseRecipe::getRemainingItem),
+                ResourceLocation.CODEC.fieldOf("sound_event").forGetter(HotpotSoupBaseRecipe::getSoundEvent)
+        ).apply(recipe, HotpotSoupBaseRecipe::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupBaseRecipe> STREAM_CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, HotpotSoupBaseRecipe::getSourceSoup,
+                ResourceLocation.STREAM_CODEC, HotpotSoupBaseRecipe::getResultSoup,
+                ByteBufCodecs.FLOAT, HotpotSoupBaseRecipe::getResultWaterLevel,
+                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupBaseRecipe::getIngredient,
+                ItemStack.STREAM_CODEC, HotpotSoupBaseRecipe::getRemainingItem,
+                ResourceLocation.STREAM_CODEC, HotpotSoupBaseRecipe::getSoundEvent,
+                HotpotSoupBaseRecipe::new
+        );
+
         @Override
-        public HotpotSoupBaseRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            if (!jsonObject.has("source_soup")) {
-                throw new JsonParseException("Base soup recipe must have a \"source_soup\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "source_soup"))) {
-                throw new JsonSyntaxException("\"source_soup\" in the base soup recipe must be a valid resource location");
-            }
-
-            if (!jsonObject.has("result_soup")) {
-                throw new JsonParseException("Base soup recipe must have a \"result_soup\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "result_soup"))) {
-                throw new JsonSyntaxException("\"result_soup\" in the base soup recipe must be a valid resource location");
-            }
-
-            if (!jsonObject.has("result_waterlevel")) {
-                throw new JsonParseException("Base soup recipe must have a \"result_waterlevel\"");
-            }
-
-            if (!jsonObject.has("ingredient")) {
-                throw new JsonParseException("Base soup recipe must have a \"ingredient\"");
-            }
-
-            if (!jsonObject.has("sound_event")) {
-                throw new JsonParseException("Base soup recipe must have a \"remaining_item\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "sound_event"))) {
-                throw new JsonSyntaxException("\"sound_event\" in the base soup recipe must be a valid resource location");
-            }
-
-            ResourceLocation sourceSoup = new ResourceLocation(GsonHelper.getAsString(jsonObject, "source_soup"));
-            ResourceLocation resultSoup = new ResourceLocation(GsonHelper.getAsString(jsonObject, "result_soup"));
-            float waterLevel = GsonHelper.getAsFloat(jsonObject, "result_waterlevel");
-            Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObject, "ingredient"));
-            ResourceLocation soundEvent = ResourceLocation.tryParse(GsonHelper.getAsString(jsonObject, "sound_event"));
-
-            if (!jsonObject.has("remaining_item")) {
-                return new HotpotSoupBaseRecipe(resourceLocation, sourceSoup, resultSoup, waterLevel, ingredient, ItemStack.EMPTY, soundEvent);
-            }
-
-            if (jsonObject.get("remaining_item").isJsonObject()) {
-                ItemStack remainingItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "remaining_item"));
-                return new HotpotSoupBaseRecipe(resourceLocation, sourceSoup, resultSoup, waterLevel, ingredient, remainingItem, soundEvent);
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "remaining_item"))) {
-                throw new JsonSyntaxException("\"remaining_item\" in the base soup recipe must be a valid resource location");
-            }
-
-            ResourceLocation itemResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "remaining_item"));
-            ItemStack remainingItem = new ItemStack(ForgeRegistries.ITEMS.getDelegateOrThrow(itemResourceLocation));
-
-            return new HotpotSoupBaseRecipe(resourceLocation, sourceSoup, resultSoup, waterLevel, ingredient, remainingItem, soundEvent);
+        public MapCodec<HotpotSoupBaseRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable HotpotSoupBaseRecipe fromNetwork(ResourceLocation location, FriendlyByteBuf byteBuf) {
-            ResourceLocation sourceSoup = byteBuf.readResourceLocation();
-            ResourceLocation resultSoup = byteBuf.readResourceLocation();
-            float resultWaterLevel = byteBuf.readFloat();
-            Ingredient ingredient = Ingredient.fromNetwork(byteBuf);
-            ItemStack remainingItem = byteBuf.readItem();
-            ResourceLocation soundEvent = byteBuf.readResourceLocation();
-
-            return new HotpotSoupBaseRecipe(location, sourceSoup, resultSoup, resultWaterLevel, ingredient, remainingItem, soundEvent);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf byteBuf, HotpotSoupBaseRecipe recipe) {
-            byteBuf.writeResourceLocation(recipe.sourceSoup);
-            byteBuf.writeResourceLocation(recipe.resultSoup);
-            byteBuf.writeFloat(recipe.resultWaterLevel);
-            recipe.ingredient.toNetwork(byteBuf);
-            byteBuf.writeItem(recipe.remainingItem);
-            byteBuf.writeResourceLocation(recipe.soundEvent);
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupBaseRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

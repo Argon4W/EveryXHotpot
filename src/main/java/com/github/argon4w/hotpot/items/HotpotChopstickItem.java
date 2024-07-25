@@ -1,16 +1,15 @@
 package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
+import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacements;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,14 +17,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHotpotTablewareItem, IHotpotItemContainer {
     public HotpotChopstickItem() {
-        super(() -> HotpotPlacements.PLACED_CHOPSTICK.get().build(), new Properties().stacksTo(1));
+        super(HotpotPlacements.PLACED_CHOPSTICK, new Properties().stacksTo(1).component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, new HotpotChopstickDataComponent(ItemStack.EMPTY)));
     }
 
     @Override
@@ -36,7 +35,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
     @Override
     public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placement, ItemStack itemStack) {
         if (placement instanceof HotpotPlacedChopstick placedChopstick) {
-            placedChopstick.setChopstickItemStack(itemStack);
+            placedChopstick.setChopstickItemSlot(itemStack);
         }
     }
 
@@ -50,7 +49,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
 
-        if (heldItemStack.isEdible() && player.canEat(true)) {
+        if (heldItemStack.has(DataComponents.FOOD) && player.canEat(true)) {
             player.startUsingItem(hand);
             return InteractionResultHolder.consume(itemStack);
         }
@@ -73,7 +72,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return itemStack;
         }
 
-        if (heldItemStack.isEdible()) {
+        if (heldItemStack.has(DataComponents.FOOD)) {
             setHeldItemStack(itemStack, heldItemStack.finishUsingItem(level, livingEntity));
         }
 
@@ -89,7 +88,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return UseAnim.NONE;
         }
 
-        if (heldItemStack.isEdible()) {
+        if (heldItemStack.has(DataComponents.FOOD)) {
             return heldItemStack.getUseAnimation();
         }
 
@@ -97,14 +96,14 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
     }
 
     @Override
-    public int getUseDuration(ItemStack itemStack) {
+    public int getUseDuration(ItemStack itemStack, LivingEntity livingEntity) {
         ItemStack heldItemStack = getHeldItemStack(itemStack);
 
         if (heldItemStack.isEmpty()) {
             return 0;
         }
 
-        if (heldItemStack.isEdible()) {
+        if (heldItemStack.has(DataComponents.FOOD)) {
             return 8;
         }
 
@@ -145,26 +144,22 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
 
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
-        return getHeldItemStack(itemStack);
+        return getHeldItemStack(itemStack.copy());
     }
 
     public static void setHeldItemStack(ItemStack chopstick, ItemStack itemStack) {
-        HotpotTagsHelper.updateHotpotTags(chopstick, "ChopstickHeldItem", itemStack.save(new CompoundTag()));
+        itemStack.set(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, new HotpotChopstickDataComponent(itemStack));
     }
 
     public static ItemStack getHeldItemStack(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK.get())) {
+        if (!itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK)) {
             return ItemStack.EMPTY;
         }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+        if (!itemStack.has(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT)) {
             return ItemStack.EMPTY;
         }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("ChopstickHeldItem", Tag.TAG_COMPOUND)) {
-            return ItemStack.EMPTY;
-        }
-
-        return ItemStack.of(HotpotTagsHelper.getHotpotTags(itemStack).getCompound("ChopstickHeldItem"));
+        return itemStack.get(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT).itemStack().copy();
     }
 }

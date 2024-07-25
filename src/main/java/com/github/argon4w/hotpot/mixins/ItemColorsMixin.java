@@ -21,7 +21,7 @@ public class ItemColorsMixin {
     static {
         SPRITE_PROCESSORS_BY_INDEX = Maps.newHashMap();
 
-        for (IHotpotSpriteProcessor processor : HotpotSpriteProcessors.getSpriteProcessorRegistry().getValues()) {
+        for (IHotpotSpriteProcessor processor : HotpotSpriteProcessors.getSpriteProcessorRegistry()) {
             SPRITE_PROCESSORS_BY_INDEX.put(processor.getIndex(), processor);
         }
     }

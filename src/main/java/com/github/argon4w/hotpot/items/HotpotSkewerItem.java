@@ -3,11 +3,12 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
+import com.github.argon4w.hotpot.items.components.HotpotSkewerDataComponent;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,16 +18,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHotpotSpecialHotpotCookingRecipeItem {
     public HotpotSkewerItem() {
-        super(new Properties());
+        super(new Properties().component(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT, new HotpotSkewerDataComponent(List.of())));
     }
 
     @NotNull
@@ -45,7 +45,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
 
-        if (firstItemStack.isEdible() && player.canEat(true)) {
+        if (firstItemStack.has(DataComponents.FOOD) && player.canEat(true)) {
             player.startUsingItem(hand);
             return InteractionResultHolder.consume(itemStack);
         }
@@ -91,11 +91,11 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return itemStack;
         }
 
-        if (foodItemStack.isEdible()) {
+        if (foodItemStack.has(DataComponents.FOOD)) {
             itemStacks.set(0, foodItemStack.finishUsingItem(level, livingEntity));
         }
 
-        if (!itemStacks.get(0).isEdible()) {
+        if (!itemStacks.get(0).has(DataComponents.FOOD)) {
             addToInventory(player, itemStacks.get(0));
             itemStacks.set(0, ItemStack.EMPTY);
         }
@@ -132,7 +132,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return UseAnim.NONE;
         }
 
-        if (foodItemStack.isEdible()) {
+        if (foodItemStack.has(DataComponents.FOOD)) {
             return foodItemStack.getUseAnimation();
         }
 
@@ -140,7 +140,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     @Override
-    public int getUseDuration(ItemStack itemStack) {
+    public int getUseDuration(ItemStack itemStack, LivingEntity livingEntity) {
         List<ItemStack> itemStacks = getSkewerItems(itemStack);
 
         if (itemStacks.isEmpty()) {
@@ -153,11 +153,11 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return 0;
         }
 
-        if (!foodItemStack.isEdible()) {
+        if (!foodItemStack.has(DataComponents.FOOD)) {
             return 0;
         }
 
-        return (int) (foodItemStack.getUseDuration() * (0.5f / 1.5f));
+        return (int) (foodItemStack.getUseDuration(livingEntity) * (0.5f / 1.5f));
     }
 
     @Override
@@ -173,24 +173,19 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
         List<ItemStack> itemStacks = getSkewerItems(itemStack);
-
-        if (itemStacks.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-
-        return itemStacks.get(0);
+        return itemStacks.isEmpty() ? ItemStack.EMPTY : itemStacks.get(0);
     }
 
     @Override
-    public int getCookingTime(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos) {
-        List<HotpotCookingRecipeContent> recipeContents = getSkewerItemRecipes(itemStack);
+    public int getCookingTime(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+        List<HotpotCookingRecipeContent> recipeContents = getSkewerItemRecipes(itemStack, hotpotBlockEntity);
 
         if (recipeContents.isEmpty()) {
             return -1;
         }
 
-        return getSkewerItemRecipes(itemStack).stream()
-                .map(recipeContent -> recipeContent.remapCookingTime(soupType, recipeContent.getItemStack(), pos))
+        return getSkewerItemRecipes(itemStack, hotpotBlockEntity).stream()
+                .map(recipeContent -> recipeContent.remapCookingTime(soupType, recipeContent.getItemStack(), pos, hotpotBlockEntity))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .max(Comparator.naturalOrder())
@@ -198,24 +193,24 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     @Override
-    public float getExperience(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos) {
-        List<HotpotCookingRecipeContent> skewerItemRecipes = getSkewerItemRecipes(itemStack);
+    public float getExperience(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+        List<HotpotCookingRecipeContent> skewerItemRecipes = getSkewerItemRecipes(itemStack, hotpotBlockEntity);
         float totalExperience = 0.0f;
 
         for (HotpotCookingRecipeContent recipeContent : skewerItemRecipes) {
-            totalExperience = recipeContent.remapExperience(soupType, recipeContent.getItemStack(), pos).orElse(0.0f);
+            totalExperience = recipeContent.remapExperience(soupType, recipeContent.getItemStack(), pos, hotpotBlockEntity).orElse(0.0f);
         }
 
         return totalExperience;
     }
 
     @Override
-    public ItemStack getResult(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos) {
-        List<HotpotCookingRecipeContent> skewerItemRecipes = getSkewerItemRecipes(itemStack);
+    public ItemStack getResult(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+        List<HotpotCookingRecipeContent> skewerItemRecipes = getSkewerItemRecipes(itemStack, hotpotBlockEntity);
         List<ItemStack> resultItemStacks = new ArrayList<>();
 
         for (HotpotCookingRecipeContent recipeContent : skewerItemRecipes) {
-            Optional<ItemStack> result = recipeContent.remapResult(soupType, recipeContent.getItemStack(), pos);
+            Optional<ItemStack> result = recipeContent.remapResult(soupType, recipeContent.getItemStack(), pos, hotpotBlockEntity);
             resultItemStacks.add(result.orElse(recipeContent.getItemStack()));
         }
 
@@ -269,10 +264,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     public static void setSkewerItems(ItemStack itemStack, List<ItemStack> itemStacks) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "SkewerItems", itemStacks.stream()
-                .filter(item -> !item.isEmpty())
-                .map(HotpotTagsHelper::saveItemStack)
-                .collect(Collectors.toCollection(ListTag::new)));
+        itemStack.set(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT, new HotpotSkewerDataComponent(List.copyOf(itemStacks)));
     }
 
     public static List<ItemStack> getSkewerItems(ItemStack itemStack) {
@@ -280,22 +272,14 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return List.of();
         }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+        if (!itemStack.has(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT)) {
             return List.of();
         }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("SkewerItems", Tag.TAG_LIST)) {
-            return List.of();
-        }
-
-        return HotpotTagsHelper.getHotpotTags(itemStack).getList("SkewerItems", Tag.TAG_COMPOUND)
-                .stream()
-                .map(tag -> ItemStack.of((CompoundTag) tag))
-                .filter(item -> !item.isEmpty())
-                .toList();
+        return List.copyOf(itemStack.get(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT).itemStacks());
     }
 
-    public static List<HotpotCookingRecipeContent> getSkewerItemRecipes(ItemStack itemStack) {
+    public static List<HotpotCookingRecipeContent> getSkewerItemRecipes(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
         List<ItemStack> skewerItemStacks = getSkewerItems(itemStack);
 
         if (skewerItemStacks.isEmpty()) {
@@ -303,7 +287,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
         }
 
         return skewerItemStacks.stream()
-                .map(HotpotCookingRecipeContent::new)
+                .map(skewerItemStack -> new HotpotCookingRecipeContent(skewerItemStack, hotpotBlockEntity))
                 .toList();
     }
 
@@ -314,6 +298,6 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     public static boolean isSkewerEmpty(ItemStack itemStack) {
-        return getSkewerItems(itemStack).size() == 0;
+        return getSkewerItems(itemStack).isEmpty();
     }
 }

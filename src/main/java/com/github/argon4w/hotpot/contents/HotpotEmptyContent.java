@@ -3,19 +3,14 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptyContent implements IHotpotContent {
-    public HotpotEmptyContent() {}
-
-    @Override
-    public void create(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-
-    }
-
     @Override
     public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return ItemStack.EMPTY;
@@ -37,27 +32,29 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public IHotpotContent load(CompoundTag compoundTag) {
-        return this;
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag) {
-        return compoundTag;
-    }
-
-    @Override
-    public boolean isValid(CompoundTag compoundTag) {
-        return true;
-    }
-
-    @Override
     public ResourceLocation getResourceLocation() {
-        return new ResourceLocation(HotpotModEntry.MODID, "empty_content");
+        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_content");
     }
 
     @Override
-    public String toString() {
-        return getResourceLocation().toString();
+    public IHotpotContentFactory<?> getFactory() {
+        return HotpotContents.EMPTY_CONTENT.get();
+    }
+
+    public static class Factory implements IHotpotContentFactory<HotpotEmptyContent> {
+
+        @Override
+        public HotpotEmptyContent buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
+            return build();
+        }
+
+        @Override
+        public MapCodec<HotpotEmptyContent> buildFromCodec() {
+            return MapCodec.unit(this::build);
+        }
+
+        public HotpotEmptyContent build() {
+            return new HotpotEmptyContent();
+        }
     }
 }

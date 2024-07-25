@@ -1,8 +1,7 @@
-package com.github.argon4w.hotpot.soups;
+package com.github.argon4w.hotpot.client.soups;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 
 public record HotpotSoupColor(int red, int green, int blue) {

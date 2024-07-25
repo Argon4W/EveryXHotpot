@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.client.soups;
 
-import com.github.argon4w.hotpot.soups.HotpotSoupColor;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

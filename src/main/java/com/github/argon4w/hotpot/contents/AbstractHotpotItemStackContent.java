@@ -5,6 +5,10 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.IHotpotSpecialContentItem;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.IHotpotSoupTypeWithActiveness;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
-import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
@@ -22,34 +25,35 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     private int cookingProgress;
     private float experience;
 
-    public AbstractHotpotItemStackContent(ItemStack itemStack) {
+    public AbstractHotpotItemStackContent(ItemStack itemStack, int cookingTime, int cookingProgress, float experience) {
         this.itemStack = itemStack;
+        this.cookingTime = cookingTime;
+        this.cookingProgress = cookingProgress;
+        this.experience = experience;
     }
 
-    public AbstractHotpotItemStackContent() {
-    }
-
-    @Override
-    public void create(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        this.itemStack = this.itemStack.split(1);
-        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), itemStack, pos).orElse(-1);
+    public AbstractHotpotItemStackContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
+        this.itemStack = itemStack.split(1);
+        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), itemStack, hotpotBlockEntity.getPos(), hotpotBlockEntity).orElse(-1);
         this.cookingProgress = 0;
         this.experience = 0;
     }
 
-    public abstract Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
-    public abstract Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
-    public abstract Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos);
+    public abstract Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
 
     @Override
     public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        if (pos.level() instanceof ServerLevel serverLevel) {
-            if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupTypeWithActiveness withActiveness) {
-                experience *= (1f + withActiveness.getActiveness(hotpotBlockEntity, pos));
-            }
-
-            ExperienceOrb.award(serverLevel, pos.toVec3(), Math.round(experience * 1.5f));
+        if (!(pos.level() instanceof ServerLevel serverLevel)) {
+            return itemStack;
         }
+
+        if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupTypeWithActiveness withActiveness) {
+            experience *= (1f + withActiveness.getActiveness());
+        }
+
+        ExperienceOrb.award(serverLevel, pos.toVec3(), Math.round(experience * 1.5f));
 
         return itemStack;
     }
@@ -79,11 +83,11 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
             return false;
         }
 
-        Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, pos);
+        Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, pos, hotpotBlockEntity);
         cookingTime = -1;
 
         if (resultOptional.isPresent()) {
-            experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, pos).orElse(0f);
+            experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, pos, hotpotBlockEntity).orElse(0f);
             itemStack = resultOptional.get();
 
             return true;
@@ -97,43 +101,33 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         return false;
     }
 
-    @Override
-    public IHotpotContent load(CompoundTag compoundTag) {
-        itemStack = ItemStack.of(compoundTag);
-
-        cookingTime = compoundTag.getInt("CookingTime");
-        cookingProgress = compoundTag.getInt("CookingProgress");
-        experience = compoundTag.getFloat("Experience");
-
-        return this;
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag) {
-        itemStack.save(compoundTag);
-
-        compoundTag.putInt("CookingTime", cookingTime);
-        compoundTag.putInt("CookingProgress", cookingProgress);
-        compoundTag.putFloat("Experience", experience);
-
-        return compoundTag;
-    }
-
-    @Override
-    public boolean isValid(CompoundTag tag) {
-        return ItemStack.of(tag) != ItemStack.EMPTY && tag.contains("CookingTime", Tag.TAG_ANY_NUMERIC) && tag.contains("CookingProgress", Tag.TAG_ANY_NUMERIC) && tag.contains("Experience", Tag.TAG_FLOAT);
-    }
-
-    @Override
-    public String toString() {
-        return itemStack.toString();
-    }
-
     public ItemStack getItemStack() {
         return itemStack;
     }
 
     public int getCookingTime() {
         return cookingTime;
+    }
+
+    public int getCookingProgress() {
+        return cookingProgress;
+    }
+
+    public float getExperience() {
+        return experience;
+    }
+
+    public abstract static class Factory<T extends AbstractHotpotItemStackContent> implements IHotpotContentFactory<T> {
+        public abstract T buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, float experience);
+
+        @Override
+        public MapCodec<T> buildFromCodec() {
+            return RecordCodecBuilder.mapCodec(content -> content.group(
+                    ItemStack.CODEC.fieldOf("ItemStack").forGetter(AbstractHotpotItemStackContent::getItemStack),
+                    Codec.INT.fieldOf("CookingTime").forGetter(AbstractHotpotItemStackContent::getCookingTime),
+                    Codec.INT.fieldOf("CookingProgress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
+                    Codec.FLOAT.fieldOf("Experience").forGetter(AbstractHotpotItemStackContent::getExperience)
+            ).apply(content, this::buildFromData));
+        }
     }
 }

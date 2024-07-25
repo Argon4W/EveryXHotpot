@@ -3,13 +3,16 @@ package com.github.argon4w.hotpot.blocks;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.items.HotpotPlacementBlockItem;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -43,16 +46,13 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
         return SHAPE;
     }
 
-    @NotNull
     @Override
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
-        ItemStack itemStack = player.getItemInHand(hand);
 
         if (selfPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity) {
-            if (itemStack.is(itemHolder -> itemHolder.get() instanceof HotpotPlacementBlockItem hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, selfPos))) {
-                return InteractionResult.PASS;
+            if (itemStack.is(item -> item.value() instanceof HotpotPlacementBlockItem hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, selfPos))) {
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
 
             if (selfPos.isServerSide()) {
@@ -60,17 +60,17 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
                 hotpotPlacementBlockEntity.interact(hitPos, player, hand, itemStack, selfPos);
             }
 
-            return InteractionResult.sidedSuccess(!selfPos.isServerSide());
+            return ItemInteractionResult.sidedSuccess(!selfPos.isServerSide());
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter blockGetter, BlockPos pos, Player player) {
-        if (!(blockGetter instanceof Level)) return super.getCloneItemStack(state, target, blockGetter, pos, player);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader levelReader, BlockPos pos, Player player) {
+        if (!(levelReader instanceof Level)) return super.getCloneItemStack(state, target, levelReader, pos, player);
 
-        LevelBlockPos selfPos = new LevelBlockPos((Level) blockGetter, pos);
+        LevelBlockPos selfPos = new LevelBlockPos((Level) levelReader, pos);
 
         if (selfPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity) {
             int hitPos = HotpotPlacementBlockEntity.getHitPos(pos, target.getLocation());
@@ -78,7 +78,7 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
             return hotpotPlacementBlockEntity.getPlacementInPos(hitPos).getCloneItemStack(hotpotPlacementBlockEntity, selfPos);
         }
 
-        return super.getCloneItemStack(state, target, blockGetter, pos, player);
+        return super.getCloneItemStack(state, target, levelReader, pos, player);
     }
 
     @Override
@@ -95,6 +95,11 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState blockState) {
         return new HotpotPlacementBlockEntity(pos, blockState);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return MapCodec.unit(HotpotPlacementBlock::new);
     }
 
     @Nullable

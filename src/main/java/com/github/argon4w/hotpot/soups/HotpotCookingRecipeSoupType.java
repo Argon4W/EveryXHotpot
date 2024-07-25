@@ -5,25 +5,25 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
+import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.items.HotpotSkewerItem;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.crafting.CraftingHelper;
 
 import java.util.*;
 
@@ -38,6 +38,21 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
         this.waterLevelDropRate = waterLevelDropRate;
         this.savedEffects = savedEffects;
         this.processorResourceLocation = processorResourceLocation;
+
+        this.waterLevel = 0.0f;
+        this.overflowWaterLevel = 0.0f;
+        this.activeness = 0.0f;
+    }
+
+    public HotpotCookingRecipeSoupType(ResourceLocation resourceLocation, float waterLevelDropRate, List<MobEffectInstance> savedEffects, ResourceLocation processorResourceLocation, float waterLevel, float overflowWaterLevel, float activeness) {
+        this.resourceLocation = resourceLocation;
+        this.waterLevelDropRate = waterLevelDropRate;
+        this.savedEffects = savedEffects;
+        this.processorResourceLocation = processorResourceLocation;
+
+        this.waterLevel = waterLevel;
+        this.overflowWaterLevel = overflowWaterLevel;
+        this.activeness = activeness;
     }
 
     @Override
@@ -60,7 +75,7 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
     }
 
     public ItemStack apply(ItemStack itemStack) {
-        if (!itemStack.isEdible()) {
+        if (!itemStack.has(DataComponents.FOOD)) {
             return itemStack;
         }
 
@@ -86,8 +101,8 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
     }
 
     @Override
-    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, LevelBlockPos pos) {
-        return Optional.of(new HotpotCookingRecipeContent((copy ? itemStack.copy() : itemStack)));
+    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return Optional.of(HotpotContents.COOKING_RECIPE_CONTENT.get().buildFromItem(itemStack, hotpotBlockEntity));
     }
 
     @Override
@@ -105,76 +120,67 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
         return true;
     }
 
-    public record Factory(ResourceLocation resourceLocation, float waterLevelDropRate, List<MobEffectInstance> savedEffects, ResourceLocation processorResourceLocation) implements IHotpotSoupFactory<HotpotCookingRecipeSoupType> {
+    public static class Factory extends AbstractHotpotFluidBasedSoupType.Factory<HotpotCookingRecipeSoupType> {
+        private final float waterLevelDropRate;
+        private final List<MobEffectInstance> savedEffects;
+        private final ResourceLocation processorResourceLocation;
+
+        public Factory(float waterLevelDropRate, List<MobEffectInstance> savedEffects, ResourceLocation processorResourceLocation) {
+            this.waterLevelDropRate = waterLevelDropRate;
+            this.savedEffects = savedEffects;
+            this.processorResourceLocation = processorResourceLocation;
+        }
+
         @Override
-        public HotpotCookingRecipeSoupType build() {
+        public HotpotCookingRecipeSoupType buildFrom(ResourceLocation resourceLocation, float waterLevel, float overflowWaterLevel, float activeness) {
+            return new HotpotCookingRecipeSoupType(resourceLocation, waterLevelDropRate, savedEffects, processorResourceLocation, waterLevel, overflowWaterLevel, activeness);
+        }
+
+        @Override
+        public HotpotCookingRecipeSoupType buildFromScratch(ResourceLocation resourceLocation) {
             return new HotpotCookingRecipeSoupType(resourceLocation, waterLevelDropRate, savedEffects, processorResourceLocation);
         }
 
         @Override
-        public IHotpotSoupTypeSerializer<HotpotCookingRecipeSoupType> getSerializer() {
+        public IHotpotSoupFactorySerializer<HotpotCookingRecipeSoupType> getSerializer() {
             return HotpotSoupTypes.COOKING_RECIPE_SOUP_SERIALIZER.get();
         }
 
-        @Override
-        public ResourceLocation getResourceLocation() {
-            return resourceLocation;
+        public float getWaterLevelDropRate() {
+            return waterLevelDropRate;
+        }
+
+        public List<MobEffectInstance> getSavedEffects() {
+            return savedEffects;
+        }
+
+        public ResourceLocation getProcessorResourceLocation() {
+            return processorResourceLocation;
         }
     }
 
-    public static class Serializer implements IHotpotSoupTypeSerializer<HotpotCookingRecipeSoupType> {
+    public static class Serializer implements IHotpotSoupFactorySerializer<HotpotCookingRecipeSoupType> {
+        public static final StreamCodec<RegistryFriendlyByteBuf, Factory> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.FLOAT, Factory::getWaterLevelDropRate,
+                ByteBufCodecs.collection(ArrayList::new, MobEffectInstance.STREAM_CODEC), Factory::getSavedEffects,
+                ResourceLocation.STREAM_CODEC, Factory::getProcessorResourceLocation,
+                Factory::new
+        );
+
+        public static final MapCodec<Factory> CODEC = RecordCodecBuilder.mapCodec(factory -> factory.group(
+                Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(Factory::getWaterLevelDropRate),
+                MobEffectInstance.CODEC.listOf().optionalFieldOf("saved_effects", List.of()).forGetter(Factory::getSavedEffects),
+                ResourceLocation.CODEC.optionalFieldOf("sauced_processor", HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR_LOCATION).forGetter(Factory::getProcessorResourceLocation)
+        ).apply(factory, Factory::new));
+
         @Override
-        public Factory fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            if (!jsonObject.has("water_level_drop_rate")) {
-                throw new JsonParseException("Cooking recipe soup must have a \"water_level_drop_rate\"");
-            }
-
-            float waterLevelDropRate = GsonHelper.getAsFloat(jsonObject, "water_level_drop_rate");
-            ArrayList<MobEffectInstance> savedEffects = Lists.newArrayList();
-
-            for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "saved_effects", new JsonArray())) {
-                if (!jsonElement.isJsonObject()) {
-                    throw new JsonParseException("Mob effect must be a JSON object");
-                }
-
-                JsonObject mobEffectJsonObject = jsonElement.getAsJsonObject();
-                savedEffects.add(MobEffectInstance.load(CraftingHelper.getNBT(mobEffectJsonObject)));
-            }
-
-            if (!jsonObject.has("sauced_processor")) {
-                return new Factory(resourceLocation, waterLevelDropRate, savedEffects, HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR_LOCATION);
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "sauced_processor"))) {
-                throw new JsonParseException("\"sauced_processor\" in the cooking recipe soup must be a valid resource location");
-            }
-
-            ResourceLocation processorResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "sauced_processor"));
-
-            return new Factory(resourceLocation, waterLevelDropRate, savedEffects, processorResourceLocation);
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupFactory<HotpotCookingRecipeSoupType>> getStreamCodec() {
+            return STREAM_CODEC;
         }
 
         @Override
-        public Factory fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf byteBuf) {
-            float waterLevelDropRate = byteBuf.readFloat();
-            List<CompoundTag> tagList = byteBuf.readList(FriendlyByteBuf::readNbt);
-            List<MobEffectInstance> savedEffects = tagList.stream().map(MobEffectInstance::load).toList();
-            ResourceLocation processorResourceLocation = byteBuf.readResourceLocation();
-
-            return new Factory(resourceLocation, waterLevelDropRate, savedEffects, processorResourceLocation);
-        }
-
-        @Override
-        public void toNetwork(IHotpotSoupFactory<HotpotCookingRecipeSoupType> factory, FriendlyByteBuf byteBuf) {
-            HotpotCookingRecipeSoupType cookingRecipeSoupType = factory.build();
-
-            byteBuf.writeFloat(cookingRecipeSoupType.waterLevelDropRate);
-            byteBuf.writeCollection(cookingRecipeSoupType.savedEffects, this::writeSingleEffect);
-            byteBuf.writeResourceLocation(cookingRecipeSoupType.processorResourceLocation);
-        }
-
-        private void writeSingleEffect(FriendlyByteBuf byteBuf, MobEffectInstance effect) {
-            byteBuf.writeNbt(effect.save(new CompoundTag()));
+        public MapCodec<? extends IHotpotSoupFactory<HotpotCookingRecipeSoupType>> getCodec() {
+            return CODEC;
         }
     }
 }

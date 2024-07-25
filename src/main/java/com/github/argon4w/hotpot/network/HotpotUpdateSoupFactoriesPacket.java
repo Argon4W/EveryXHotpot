@@ -3,50 +3,26 @@ package com.github.argon4w.hotpot.network;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import com.github.argon4w.hotpot.soups.IHotpotSoupFactory;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.github.argon4w.hotpot.soups.IHotpotSoupTypeSerializer;
-import com.google.common.collect.Maps;
-import net.minecraft.network.FriendlyByteBuf;
+import com.github.argon4w.hotpot.soups.IHotpotSoupFactorySerializer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 
-public record HotpotUpdateSoupFactoriesPacket(Map<ResourceLocation, IHotpotSoupFactory<?>> soups) {
-    public void encoder(FriendlyByteBuf byteBuf) {
-        byteBuf.writeCollection(soups.values(), this::writeSingleSoup);
-    }
+public record HotpotUpdateSoupFactoriesPacket(HashMap<ResourceLocation, IHotpotSoupFactory<?>> byName) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<HotpotUpdateSoupFactoriesPacket> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "update_soup_factories"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, IHotpotSoupFactory<?>> FACTORY_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.registry(HotpotSoupTypes.SOUP_REGISTRY_KEY).dispatch(IHotpotSoupFactory::getSerializer, IHotpotSoupFactorySerializer::getStreamCodec));
+    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotUpdateSoupFactoriesPacket> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+            ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, FACTORY_STREAM_CODEC), HotpotUpdateSoupFactoriesPacket::byName,
+            HotpotUpdateSoupFactoriesPacket::new
+    ));
 
-    private <T extends IHotpotSoupType> void writeSingleSoup(FriendlyByteBuf byteBuf, IHotpotSoupFactory<T> factory) {
-        IHotpotSoupTypeSerializer<T> serializer = factory.getSerializer();
-        ResourceLocation resourceLocation = factory.getResourceLocation();
-
-        byteBuf.writeResourceLocation(resourceLocation);
-        byteBuf.writeRegistryId(HotpotSoupTypes.getSoupTypeRegistry(), serializer);
-        serializer.toNetwork(factory, byteBuf);
-    }
-
-    public static HotpotUpdateSoupFactoriesPacket decoder(FriendlyByteBuf byteBuf) {
-        int length = byteBuf.readVarInt();
-        HashMap<ResourceLocation, IHotpotSoupFactory<?>> soups = Maps.newHashMap();
-
-        for (int i = 0; i < length; i ++) {
-            ResourceLocation resourceLocation = byteBuf.readResourceLocation();
-            IHotpotSoupTypeSerializer<?> serializer = byteBuf.readRegistryIdSafe(IHotpotSoupTypeSerializer.class);
-            soups.computeIfAbsent(resourceLocation, location -> serializer.fromNetwork(resourceLocation, byteBuf));
-        }
-
-        return new HotpotUpdateSoupFactoriesPacket(soups);
-    }
-
-    public void handler(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() ->
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.replaceFactories(soups))
-        );
-        ctx.get().setPacketHandled(true);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

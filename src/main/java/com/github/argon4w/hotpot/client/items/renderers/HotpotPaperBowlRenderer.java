@@ -11,6 +11,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -194,7 +195,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
     }
 
     @Override
-    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
-        return Optional.of(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
+    public Optional<ModelResourceLocation> getDefaultItemModelResourceLocation() {
+        return Optional.of(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model")));
     }
 }

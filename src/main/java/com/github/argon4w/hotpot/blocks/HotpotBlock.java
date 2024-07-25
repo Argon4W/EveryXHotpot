@@ -2,13 +2,14 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -58,7 +58,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     private final Object2IntMap<BlockState> stateToIndex = new Object2IntOpenHashMap<>();
 
     public HotpotBlock() {
-        super(BlockBehaviour.Properties.of()
+        super(Properties.of()
                 .forceSolidOn()
                 .noOcclusion()
                 .mapColor(MapColor.METAL)
@@ -185,24 +185,21 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         return 1 << direction.get2DDataValue();
     }
 
-    @NotNull
     @Override
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
         if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-            ItemStack itemStack = player.getItemInHand(hand);
-            int hitPos = getHitPos(result);
+            int hitPos = getHitPos(hitResult);
 
             if (levelPos.isServerSide()) {
                 hotpotBlockEntity.interact(hitPos, player, hand, itemStack, levelPos);
             }
 
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -271,6 +268,11 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new HotpotBlockEntity(pos, state);
+    }
+
+    @Override
+    protected MapCodec<HotpotBlock> codec() {
+        return MapCodec.unit(HotpotBlock::new);
     }
 
     @NotNull

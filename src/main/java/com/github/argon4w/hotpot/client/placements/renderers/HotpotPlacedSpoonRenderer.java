@@ -2,7 +2,6 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,7 +30,7 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees(137));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        context.getItemRenderer().renderStatic(null, placedSpoon.getSpoonItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+        context.getItemRenderer().renderStatic(null, placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
 
         poseStack.popPose();
     }

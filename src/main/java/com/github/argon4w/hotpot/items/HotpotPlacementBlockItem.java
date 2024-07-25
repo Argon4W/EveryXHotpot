@@ -4,7 +4,9 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.placements.IHotpotPlacementFactory;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -20,25 +22,23 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
 
 public class HotpotPlacementBlockItem extends BlockItem {
-    private final Supplier<IHotpotPlacement> supplier;
+    private final Holder<IHotpotPlacementFactory<?>> holder;
 
-    public HotpotPlacementBlockItem(Supplier<IHotpotPlacement> supplier) {
+    public HotpotPlacementBlockItem(Holder<IHotpotPlacementFactory<?>> holder) {
         super(HotpotModEntry.HOTPOT_PLACEMENT.get(), new Properties().stacksTo(64));
-
-        this.supplier = supplier;
+        this.holder = holder;
     }
 
-    public HotpotPlacementBlockItem(Supplier<IHotpotPlacement> supplier, Properties properties) {
+    public HotpotPlacementBlockItem(Holder<IHotpotPlacementFactory<?>> holder, Properties properties) {
         super(HotpotModEntry.HOTPOT_PLACEMENT.get(), properties);
-
-        this.supplier = supplier;
+        this.holder = holder;
     }
 
     public boolean canPlace(Player player, InteractionHand hand, LevelBlockPos pos) {
         return true;
     }
 
-    public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placeable, ItemStack itemStack) {
+    public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placement, ItemStack itemStack) {
 
     }
 
@@ -51,7 +51,7 @@ public class HotpotPlacementBlockItem extends BlockItem {
         Direction direction = context.getHorizontalDirection();
         int pos = HotpotPlacementBlockEntity.getHitPos(context);
 
-        IHotpotPlacement placeable = supplier.get();
+        IHotpotPlacementFactory<?> factory = holder.value();
         Player player = context.getPlayer();
 
         LevelBlockPos blockPos;
@@ -70,11 +70,11 @@ public class HotpotPlacementBlockItem extends BlockItem {
             return super.useOn(context);
         }
 
-        if (!placeable.canPlace(pos, direction)) {
+        if (!factory.canPlace(pos, direction)) {
             return super.useOn(context);
         }
 
-        if (place(blockPos, placeable, context.getItemInHand().copy(), pos)) {
+        if (place(blockPos, factory.buildFromSlots(pos, direction, selfPos.registryAccess()), context.getItemInHand().copy(), pos)) {
             playSound(blockPos, context.getPlayer());
 
             if (player == null || !player.getAbilities().instabuild) {
@@ -99,11 +99,11 @@ public class HotpotPlacementBlockItem extends BlockItem {
         Direction direction = context.getHorizontalDirection();
         int pos = HotpotPlacementBlockEntity.getHitPos(context);
         ItemStack itemStack = context.getItemInHand().copy();
-        IHotpotPlacement placeable = supplier.get();
+        IHotpotPlacementFactory<?> factory = holder.value();
 
-        if (placeable.canPlace(pos, direction)) {
+        if (factory.canPlace(pos, direction)) {
             InteractionResult result = super.place(context);
-            place(selfPos, placeable, itemStack, pos);
+            place(selfPos, factory.buildFromSlots(pos, direction, selfPos.registryAccess()), itemStack, pos);
 
             return result;
         }
@@ -111,7 +111,7 @@ public class HotpotPlacementBlockItem extends BlockItem {
         return InteractionResult.FAIL;
     }
 
-    public boolean place(LevelBlockPos selfPos, IHotpotPlacement placeable, ItemStack itemStack, int pos) {
+    public boolean place(LevelBlockPos selfPos, IHotpotPlacement placement, ItemStack itemStack, int pos) {
         if (!selfPos.isServerSide()) {
             return false;
         }
@@ -120,8 +120,12 @@ public class HotpotPlacementBlockItem extends BlockItem {
             return false;
         }
 
-        fillPlacementData(hotpotPlacementBlockEntity, selfPos, placeable, itemStack);
-        return hotpotPlacementBlockEntity.place(placeable, pos);
+        if (!hotpotPlacementBlockEntity.place(placement, pos)) {
+            return false;
+        }
+
+        fillPlacementData(hotpotPlacementBlockEntity, selfPos, placement, itemStack);
+        return true;
     }
 
     public void playSound(LevelBlockPos pos, Player player) {

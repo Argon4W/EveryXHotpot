@@ -8,16 +8,18 @@ import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-@Mod.EventBusSubscriber(modid = HotpotModEntry.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class HotpotGameModEvents {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
@@ -28,9 +30,11 @@ public class HotpotGameModEvents {
                 LevelBlockPos pos = LevelBlockPos.fromVec3(event.getEntity().level(), vec);
 
                 if (pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, true), pos);
-                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, false), pos);
-                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(player, false), pos);
+                    ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
+
+                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(profile, true), pos);
+                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(profile, false), pos);
+                    hotpotBlockEntity.tryPlaceContent(0, new HotpotPlayerContent(profile, false), pos);
                 }
             }
         }
@@ -57,6 +61,7 @@ public class HotpotGameModEvents {
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
         ItemStack itemStack = event.getItemStack();
+        Item.TooltipContext context = event.getContext();
 
         if (itemStack.getItem() instanceof IHotpotItemContainer iHotpotItemContainer) {
             itemStack = iHotpotItemContainer.getContainedItemStack(itemStack);
@@ -66,8 +71,10 @@ public class HotpotGameModEvents {
             return;
         }
 
-        if (HotpotEffectHelper.hasEffects(itemStack)) {
-            PotionUtils.addPotionTooltip(HotpotEffectHelper.mergeEffects(HotpotEffectHelper.getListEffects(itemStack)), event.getToolTip(), 1.0f);
+        if (!HotpotEffectHelper.hasEffects(itemStack)) {
+            return;
         }
+
+        PotionContents.addPotionTooltip(HotpotEffectHelper.mergeEffects(HotpotEffectHelper.getListEffects(itemStack)), event.getToolTip()::add, 1.0f, context.tickRate());
     }
 }

@@ -7,6 +7,7 @@ import com.github.argon4w.hotpot.placements.HotpotEmptyPlacement;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -30,7 +31,7 @@ import java.util.List;
 
 public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBlockEntity implements Clearable {
     private boolean contentChanged = true;
-    private final NonNullList<IHotpotPlacement> placements = NonNullList.withSize(4, HotpotPlacements.getEmptyPlacement().build());
+    private final NonNullList<IHotpotPlacement> placements = NonNullList.withSize(4, HotpotPlacements.buildEmptyPlacement());
     private boolean infiniteContent = false;
     private boolean canBeRemoved = true;
 
@@ -91,7 +92,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
         if (!(placement instanceof HotpotEmptyPlacement)) {
             placement.onRemove(this, pos);
             pos.dropItemStack(placement.getCloneItemStack(this, pos));
-            placements.set(index, HotpotPlacements.getEmptyPlacement().build());
+            placements.set(index, HotpotPlacements.getEmptyPlacementFactory().build());
 
             markDataChanged();
         }
@@ -106,18 +107,20 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     public boolean place(IHotpotPlacement placement, int pos) {
-        if (isConflict(placement)) {
-            IHotpotPlacement toReplace = placements.get(pos);
-
-            if (toReplace instanceof HotpotEmptyPlacement) {
-                placements.set(pos, placement);
-                markDataChanged();
-
-                return true;
-            }
+        if (!isNotConflict(placement)) {
+            return false;
         }
 
-        return false;
+        IHotpotPlacement toReplace = placements.get(pos);
+
+        if (!(toReplace instanceof HotpotEmptyPlacement)) {
+            return false;
+        }
+
+        placements.set(pos, placement);
+        markDataChanged();
+
+        return true;
     }
 
     public void onRemove(LevelBlockPos pos) {
@@ -127,7 +130,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
             placement.onRemove(this, pos);
             pos.dropItemStack(placement.getCloneItemStack(this, pos));
 
-            placements.set(i, HotpotPlacements.getEmptyPlacement().build());
+            placements.set(i, HotpotPlacements.getEmptyPlacementFactory().build());
         }
 
         markDataChanged();
@@ -145,7 +148,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
 
     public IHotpotPlacement getPlacementInPos(int hitPos) {
         int i = getPlacementIndexInPos(hitPos);
-        return i < 0 ? HotpotPlacements.getEmptyPlacement().build() : placements.get(i);
+        return i < 0 ? HotpotPlacements.getEmptyPlacementFactory().build() : placements.get(i);
     }
 
     public void markDataChanged() {
@@ -153,40 +156,40 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
         setChanged();
     }
 
-    @Override //Load
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    @Override
+    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+        super.loadAdditional(compoundTag, registryAccess);
 
         canBeRemoved = !compoundTag.contains("CanBeRemoved", Tag.TAG_ANY_NUMERIC) || compoundTag.getBoolean("CanBeRemoved");
         infiniteContent = compoundTag.contains("InfiniteContent", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteContent");
 
         if (compoundTag.contains("Placements", Tag.TAG_LIST)) {
             placements.clear();
-            IHotpotPlacement.loadAll(compoundTag.getList("Placements", Tag.TAG_COMPOUND), placements);
+            HotpotPlacements.loadPlacements(compoundTag.getList("Placements", Tag.TAG_COMPOUND), registryAccess, placements);
         }
     }
 
-    @Override //Save
-    protected void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    @Override
+    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+        super.saveAdditional(compoundTag, registryAccess);
 
         compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
         compoundTag.putBoolean("InfiniteContent", infiniteContent);
 
-        compoundTag.put("Placements", IHotpotPlacement.saveAll(placements));
+        compoundTag.put("Placements", HotpotPlacements.savePlacements(placements, registryAccess));
     }
 
     @Nullable
     @Override //Game Tick
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
+        return ClientboundBlockEntityDataPacket.create(this, (entity, access) -> {
             CompoundTag compoundTag = new CompoundTag();
 
             compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
             compoundTag.putBoolean("InfiniteContent", infiniteContent);
 
             if (contentChanged) {
-                compoundTag.put("Placements", IHotpotPlacement.saveAll(placements));
+                compoundTag.put("Placements", HotpotPlacements.savePlacements(placements, access));
 
                 contentChanged = false;
             }
@@ -197,12 +200,12 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
 
     @NotNull
     @Override //Chunk Load
-    public CompoundTag getUpdateTag() {
-        CompoundTag compoundTag = super.getUpdateTag();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryAccess) {
+        CompoundTag compoundTag = super.getUpdateTag(registryAccess);
 
         compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
         compoundTag.putBoolean("InfiniteContent", infiniteContent);
-        compoundTag.put("Placements", IHotpotPlacement.saveAll(placements));
+        compoundTag.put("Placements", HotpotPlacements.savePlacements(placements, registryAccess));
 
         return compoundTag;
     }
@@ -217,7 +220,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
         }
     }
 
-    public boolean isConflict(IHotpotPlacement another) {
+    public boolean isNotConflict(IHotpotPlacement another) {
         return placements.stream().noneMatch(plate -> another.getPos().stream().anyMatch(plate::isConflict));
     }
 

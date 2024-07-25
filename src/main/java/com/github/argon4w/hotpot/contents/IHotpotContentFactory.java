@@ -1,9 +1,10 @@
 package com.github.argon4w.hotpot.contents;
 
-import org.jetbrains.annotations.NotNull;
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.item.ItemStack;
 
-@FunctionalInterface
 public interface IHotpotContentFactory<T extends IHotpotContent> {
-    @NotNull
-    T build();
+    T buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity);
+    MapCodec<T> buildFromCodec();
 }

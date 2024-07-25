@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.client.contents.renderers;
 
-import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.client.contents.player.HotpotPlayerModelRenderContext;
 import com.github.argon4w.hotpot.client.contents.IHotpotContentRenderer;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
@@ -24,7 +23,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
             return;
         }
 
-        HotpotPlayerModelRenderContext renderContext = HotpotPlayerContentRenderer.MODEL_RENDER_CONTEXTS.computeIfAbsent(playerContent, p -> new HotpotPlayerModelRenderContext(p.getProfile(), p.getPartIndex()));
+        HotpotPlayerModelRenderContext renderContext = HotpotPlayerContentRenderer.MODEL_RENDER_CONTEXTS.computeIfAbsent(playerContent, p -> new HotpotPlayerModelRenderContext(p.getProfile(), p.getModelPartIndex()));
 
         if (!renderContext.isModelPartLoaded()) {
             renderContext.updateModelPartWithTexture();

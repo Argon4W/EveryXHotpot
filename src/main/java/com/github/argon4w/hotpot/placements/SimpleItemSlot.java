@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -34,13 +35,12 @@ public class SimpleItemSlot {
             return true;
         }
 
-        if (ItemStack.isSameItemSameTags(itemStack, itemSlot)) {
-            moveItemWithCount(itemStack);
-
-            return itemStack.isEmpty();
+        if (!isSame(itemStack)) {
+            return false;
         }
 
-        return false;
+        moveItemWithCount(itemStack);
+        return itemStack.isEmpty();
     }
 
     private void moveItemWithCount(ItemStack itemStack) {
@@ -51,6 +51,10 @@ public class SimpleItemSlot {
         }
     }
 
+    public boolean isSame(ItemStack itemStack) {
+        return ItemStack.isSameItemSameComponents(itemSlot, itemStack);
+    }
+
     public ItemStack takeItem(boolean consume) {
         return consume ?  itemSlot.split(1) : itemSlot.copyWithCount(1);
     }
@@ -59,18 +63,25 @@ public class SimpleItemSlot {
         return itemSlot.isEmpty();
     }
 
+    public void set(ItemStack itemStack) {
+        this.itemSlot = itemStack;
+    }
+
+    public void clear() {
+        itemSlot = ItemStack.EMPTY;
+    }
+
     public void dropItem(LevelBlockPos pos) {
         pos.dropItemStack(itemSlot.copyAndClear());
     }
 
-    public CompoundTag save(CompoundTag compoundTag) {
-        itemSlot.save(compoundTag);
-
+    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+        itemSlot.save(registryAccess, compoundTag);
         return compoundTag;
     }
 
-    public void load(CompoundTag compoundTag) {
-        itemSlot = ItemStack.of(compoundTag);
+    public void load(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+        itemSlot = ItemStack.parseOptional(registryAccess, compoundTag);
     }
 
     public ItemStack getItemStack() {

@@ -2,18 +2,19 @@ package com.github.argon4w.hotpot.recipes;
 
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class SimpleRecipeAssembler {
-    private final CraftingContainer craftingContainer;
+    private final CraftingInput input;
     private ItemStack assembled = ItemStack.EMPTY;
     private Predicate<ItemStack> filter = itemStack -> true;
 
-    public SimpleRecipeAssembler(CraftingContainer craftingContainer) {
-        this.craftingContainer = craftingContainer;
+    public SimpleRecipeAssembler(CraftingInput input) {
+        this.input = input;
     }
 
     public SimpleRecipeAssembler filter(Predicate<ItemStack> predicate) {
@@ -22,8 +23,8 @@ public class SimpleRecipeAssembler {
     }
 
     public SimpleRecipeAssembler feed(BiConsumer<ItemStack, ItemStack> consumer) {
-        for (int i = 0; i < craftingContainer.getContainerSize(); i ++) {
-            ItemStack itemStack = craftingContainer.getItem(i);
+        for (int i = 0; i < input.size(); i ++) {
+            ItemStack itemStack = input.getItem(i);
 
             if (itemStack.isEmpty()) {
                 continue;
@@ -40,8 +41,8 @@ public class SimpleRecipeAssembler {
     }
 
     public SimpleRecipeAssembler with(Predicate<ItemStack> predicate) {
-        for (int i = 0; i < craftingContainer.getContainerSize(); i ++) {
-            ItemStack itemStack = craftingContainer.getItem(i);
+        for (int i = 0; i < input.size(); i ++) {
+            ItemStack itemStack = input.getItem(i);
 
             if (itemStack.isEmpty()) {
                 continue;

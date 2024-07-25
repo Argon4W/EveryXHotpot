@@ -3,58 +3,49 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.data.ModelData;
 
 import java.util.List;
 
 public class HotpotSmallPlate implements IHotpotPlacement {
-    private int pos;
-    private int directionSlot;
-    private Direction direction;
+    private final int pos;
+    private final int directionPos;
+    private final Direction direction;
     private final SimpleItemSlot itemSlot = new SimpleItemSlot();
 
-    @Override
-    public IHotpotPlacement load(CompoundTag compoundTag) {
-        pos = compoundTag.getByte("Pos");
-        directionSlot = compoundTag.getByte("DirectionPos");
-        direction = HotpotPlacements.POS_TO_DIRECTION.get(directionSlot - pos);
+    public HotpotSmallPlate(int pos, Direction direction) {
+        this.pos = pos;
+        this.directionPos = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
+        this.direction = direction;
+    }
 
-        itemSlot.load(compoundTag.getCompound("ItemSlot"));
-
-        return this;
+    public HotpotSmallPlate(int pos, int directionPos, CompoundTag itemSlotTag, HolderLookup.Provider registryAccess) {
+        this.pos = pos;
+        this.directionPos = directionPos;
+        this.direction = HotpotPlacements.POS_TO_DIRECTION.get(directionPos - pos);
+        this.itemSlot.load(itemSlotTag, registryAccess);
     }
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag) {
+    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
         compoundTag.putByte("Pos", (byte) pos);
-        compoundTag.putByte("DirectionPos", (byte) directionSlot);
+        compoundTag.putByte("DirectionPos", (byte) directionPos);
 
-        compoundTag.put("ItemSlot", itemSlot.save(new CompoundTag()));
+        compoundTag.put("ItemSlot", itemSlot.save(new CompoundTag(), registryAccess));
 
         return compoundTag;
     }
 
     @Override
-    public boolean isValid(CompoundTag compoundTag) {
-        return compoundTag.contains("Pos", Tag.TAG_BYTE) && compoundTag.contains("DirectionPos", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot", Tag.TAG_COMPOUND);
-    }
-
-    @Override
     public ResourceLocation getResourceLocation() {
-        return new ResourceLocation(HotpotModEntry.MODID, "small_plate");
+        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "small_plate");
     }
 
     @Override
@@ -89,15 +80,6 @@ public class HotpotSmallPlate implements IHotpotPlacement {
     }
 
     @Override
-    public boolean canPlace(int pos, Direction direction) {
-        this.pos = pos;
-        this.directionSlot = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
-        this.direction = direction;
-
-        return true;
-    }
-
-    @Override
     public List<Integer> getPos() {
         return List.of(pos);
     }
@@ -117,5 +99,28 @@ public class HotpotSmallPlate implements IHotpotPlacement {
 
     public SimpleItemSlot getItemSlot() {
         return itemSlot;
+    }
+
+    public static class Factory implements IHotpotPlacementFactory<HotpotSmallPlate> {
+
+        @Override
+        public HotpotSmallPlate buildFromSlots(int pos, Direction direction, HolderLookup.Provider registryAccess) {
+            return new HotpotSmallPlate(pos, direction);
+        }
+
+        @Override
+        public HotpotSmallPlate buildFromTag(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+            return new HotpotSmallPlate(compoundTag.getByte("Pos"), compoundTag.getByte("DirectionPos"), compoundTag.getCompound("ItemSlot"), registryAccess);
+        }
+
+        @Override
+        public boolean canPlace(int pos, Direction direction) {
+            return true;
+        }
+
+        @Override
+        public boolean isValid(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+            return compoundTag.contains("Pos", Tag.TAG_BYTE) && compoundTag.contains("DirectionPos", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot", Tag.TAG_COMPOUND);
+        }
     }
 }

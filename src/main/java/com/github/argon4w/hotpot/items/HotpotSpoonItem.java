@@ -22,7 +22,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem implements IHotpot
     private final boolean drained;
 
     public HotpotSpoonItem(boolean drained) {
-        super(() -> HotpotPlacements.PLACED_SPOON.get().build(), new Properties().stacksTo(1));
+        super(HotpotPlacements.PLACED_SPOON, new Properties().stacksTo(1));
         this.drained = drained;
     }
 
@@ -34,7 +34,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem implements IHotpot
     @Override
     public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placement, ItemStack itemStack) {
         if (placement instanceof HotpotPlacedSpoon placedSpoon) {
-            placedSpoon.setSpoonItemStack(itemStack);
+            placedSpoon.setSpoonItemSlot(itemStack);
         }
     }
 

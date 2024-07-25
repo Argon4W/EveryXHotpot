@@ -2,27 +2,24 @@ package com.github.argon4w.hotpot.soups.recipes.ingredients.actions;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRechargeRecipe;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientAction;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientActionSerializer;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
     @Override
-    public IHotpotContent action(LevelBlockPos pos, IHotpotContent content, IHotpotSoupType source, IHotpotSoupType target) {
-        return target.remapItemStack(true, itemStack, pos).orElse(HotpotContents.getEmptyContent().build());
+    public IHotpotContent action(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, IHotpotSoupType source, IHotpotSoupType target) {
+        return target.remapItemStack(true, itemStack, hotpotBlockEntity, pos).orElse(HotpotContents.buildEmptyContent());
     }
 
     @Override
@@ -31,40 +28,28 @@ public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpo
     }
 
     public static class Serializer implements IHotpotSoupIngredientActionSerializer<HotpotSoupReplaceItemAction> {
+        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC = RecordCodecBuilder.mapCodec(action -> action.group(
+                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupReplaceItemAction::itemStack)
+        ).apply(action, HotpotSoupReplaceItemAction::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC = StreamCodec.composite(
+                ItemStack.STREAM_CODEC, HotpotSoupReplaceItemAction::itemStack,
+                HotpotSoupReplaceItemAction::new
+        );
+
         @Override
-        public HotpotSoupReplaceItemAction fromJson(JsonObject jsonObject) {
-            if (!jsonObject.has("result")) {
-                throw new JsonParseException("Replace action must have a \"result\"");
-            }
-
-            if (jsonObject.get("result").isJsonObject()) {
-                ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "result"));
-                return new HotpotSoupReplaceItemAction(result.copyWithCount(1));
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "result"))) {
-                throw new JsonSyntaxException("\"result\" in the replace action must be a valid resource location");
-            }
-
-            ResourceLocation itemResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "result"));
-            ItemStack result = new ItemStack(ForgeRegistries.ITEMS.getDelegateOrThrow(itemResourceLocation));
-
-            return new HotpotSoupReplaceItemAction(result.copyWithCount(1));
+        public MapCodec<HotpotSoupReplaceItemAction> getCodec() {
+            return CODEC;
         }
 
         @Override
-        public HotpotSoupReplaceItemAction fromNetwork(FriendlyByteBuf byteBuf) {
-            return new HotpotSoupReplaceItemAction(byteBuf.readItem());
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf byteBuf, HotpotSoupReplaceItemAction action) {
-            byteBuf.writeItem(action.itemStack);
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> getStreamCodec() {
+            return STREAM_CODEC;
         }
 
         @Override
         public ResourceLocation getType() {
-            return new ResourceLocation(HotpotModEntry.MODID, "replace");
+            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "replace");
         }
     }
 }

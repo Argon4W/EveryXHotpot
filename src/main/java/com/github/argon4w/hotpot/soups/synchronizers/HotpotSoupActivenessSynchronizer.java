@@ -13,7 +13,7 @@ public class HotpotSoupActivenessSynchronizer implements IHotpotSoupSynchronizer
         IHotpotSoupType soup = hotpotBlockEntity.getSoup();
 
         if (soup instanceof IHotpotSoupTypeWithActiveness withActiveness) {
-            collectedActiveness += withActiveness.getActiveness(hotpotBlockEntity, pos);
+            collectedActiveness += withActiveness.getActiveness();
         }
     }
 
@@ -22,7 +22,7 @@ public class HotpotSoupActivenessSynchronizer implements IHotpotSoupSynchronizer
         float averageActiveness = Math.max(0f, Math.min(1f, collectedActiveness / size));
 
         if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupTypeWithActiveness withActiveness) {
-            withActiveness.setActiveness(hotpotBlockEntity, pos, averageActiveness);
+            withActiveness.setActiveness(averageActiveness);
         }
     }
 }

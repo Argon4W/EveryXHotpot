@@ -6,16 +6,17 @@ import com.github.argon4w.hotpot.client.blocks.HotpotPlacementBlockEntityRendere
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.soups.HotpotSoupFactoryManager;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
 public class HotpotClientModEvents {
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent event) {
@@ -30,29 +31,29 @@ public class HotpotClientModEvents {
 
     @SubscribeEvent
     public static void onRegisterAdditional(ModelEvent.RegisterAdditional event) {
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_clear_soup_bubble"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_clear_soup"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_bubble_small"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_bubble_large"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_floating_pepper_1"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_floating_pepper_2"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_spicy_soup"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_cheese_soup_bubble"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_cheese_soup"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_lava_soup"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_tomato_soup"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_tomato_soup_bubble"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_tomato_soup_floating_tomato_1"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_tomato_soup_floating_tomato_2"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "soup/hotpot_shimmer_soup"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_chopstick_model"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_long"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_small"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_large_round"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_chopstick_stand"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_spice_pack_model"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
-        event.register(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_skewer_model"));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_clear_soup_bubble")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_clear_soup")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_bubble_small")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_bubble_large")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_floating_pepper_1")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_spicy_soup_floating_pepper_2")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_spicy_soup")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_cheese_soup_bubble")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_cheese_soup")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_lava_soup")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_tomato_soup")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_tomato_soup_bubble")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_tomato_soup_floating_tomato_1")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_tomato_soup_floating_tomato_2")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup/hotpot_shimmer_soup")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_chopstick_model")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_long")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_large_round")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_spice_pack_model")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_skewer_model")));
     }
 
     @SubscribeEvent

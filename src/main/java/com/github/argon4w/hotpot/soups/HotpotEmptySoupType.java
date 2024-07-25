@@ -5,9 +5,11 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class HotpotEmptySoupType implements IHotpotSoupType {
@@ -23,21 +26,6 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
 
     public HotpotEmptySoupType(ResourceLocation resourceLocation) {
         this.resourceLocation = resourceLocation;
-    }
-
-    @Override
-    public IHotpotSoupType load(CompoundTag compoundTag) {
-        return this;
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag) {
-        return compoundTag;
-    }
-
-    @Override
-    public boolean isValid(CompoundTag compoundTag) {
-        return true;
     }
 
     @Override
@@ -51,13 +39,8 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public Optional<IHotpotContent> remapContent(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return Optional.of(HotpotContents.getEmptyContent().build());
-    }
-
-    @Override
-    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, LevelBlockPos pos) {
-        return Optional.empty();
+    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return Optional.of(HotpotContents.buildEmptyContent());
     }
 
     @Override
@@ -86,12 +69,12 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public float getWaterLevel(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return 0;
+    public float getWaterLevel() {
+        return 0f;
     }
 
     @Override
-    public float getOverflowWaterLevel(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public float getOverflowWaterLevel() {
         return 0f;
     }
 
@@ -125,37 +108,35 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
         return true;
     }
 
-    public record Factory(ResourceLocation resourceLocation) implements IHotpotSoupFactory<HotpotEmptySoupType> {
+    public record Factory() implements IHotpotSoupFactory<HotpotEmptySoupType> {
         @Override
-        public HotpotEmptySoupType build() {
+        public MapCodec<HotpotEmptySoupType> buildFromCodec(ResourceLocation resourceLocation) {
+            return MapCodec.unit(() -> new HotpotEmptySoupType(resourceLocation));
+        }
+
+        @Override
+        public HotpotEmptySoupType buildFromScratch(ResourceLocation resourceLocation) {
             return new HotpotEmptySoupType(resourceLocation);
         }
 
         @Override
-        public IHotpotSoupTypeSerializer<HotpotEmptySoupType> getSerializer() {
+        public IHotpotSoupFactorySerializer<HotpotEmptySoupType> getSerializer() {
             return HotpotSoupTypes.EMPTY_SOUP_SERIALIZER.get();
-        }
-
-        @Override
-        public ResourceLocation getResourceLocation() {
-            return resourceLocation;
         }
     }
 
-    public static class Serializer implements IHotpotSoupTypeSerializer<HotpotEmptySoupType> {
+    public static class Serializer implements IHotpotSoupFactorySerializer<HotpotEmptySoupType> {
+        public static final StreamCodec<RegistryFriendlyByteBuf, Factory> STREAM_CODEC = StreamCodec.of((buffer, value) -> {}, buffer -> new Factory());
+        public static final MapCodec<Factory> CODEC = MapCodec.unit(Factory::new);
+
         @Override
-        public Factory fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            return new Factory(resourceLocation);
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupFactory<HotpotEmptySoupType>> getStreamCodec() {
+            return STREAM_CODEC;
         }
 
         @Override
-        public Factory fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf byteBuf) {
-            return new Factory(resourceLocation);
-        }
-
-        @Override
-        public void toNetwork(IHotpotSoupFactory<HotpotEmptySoupType> factory, FriendlyByteBuf byteBuf) {
-
+        public MapCodec<? extends IHotpotSoupFactory<HotpotEmptySoupType>> getCodec() {
+            return CODEC;
         }
     }
 }

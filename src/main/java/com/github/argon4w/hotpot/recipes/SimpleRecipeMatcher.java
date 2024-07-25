@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.recipes;
 
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,8 @@ public class SimpleRecipeMatcher {
     private final List<ItemStack> items;
     private boolean matched = true;
 
-    public SimpleRecipeMatcher(CraftingContainer craftingContainer) {
-        this(craftingContainer.getItems());
+    public SimpleRecipeMatcher(CraftingInput input) {
+        this(input.items());
     }
 
     public SimpleRecipeMatcher(List<ItemStack> list) {
@@ -44,12 +44,11 @@ public class SimpleRecipeMatcher {
 
     public SimpleRecipeMatcher mismatch() {
         this.matched = false;
-
         return this;
     }
 
     public boolean match() {
-        return items.size() == 0 && matched;
+        return items.isEmpty() && matched;
     }
 
     public static class SimpleRecipeMatchContext {

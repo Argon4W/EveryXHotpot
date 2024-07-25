@@ -1,9 +1,10 @@
 package com.github.argon4w.hotpot.soups;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public interface IHotpotSoupFactory<T extends IHotpotSoupType> {
-    T build();
-    IHotpotSoupTypeSerializer<T> getSerializer();
-    ResourceLocation getResourceLocation();
+    MapCodec<T> buildFromCodec(ResourceLocation resourceLocation);
+    T buildFromScratch(ResourceLocation resourceLocation);
+    IHotpotSoupFactorySerializer<T> getSerializer();
 }

@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
@@ -12,6 +13,7 @@ public class HotpotTagsHelper {
     }
 
     public static CompoundTag getHotpotTags(ItemStack itemStack) {
+        Registries.DATA_COMPONENT_TYPE
         return hasHotpotTags(itemStack) ? itemStack.getTag().getCompound(HotpotModEntry.TAG_LOCATION.toString()) : new CompoundTag();
     }
 

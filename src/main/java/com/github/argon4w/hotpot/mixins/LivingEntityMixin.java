@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.mixins;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,10 +17,10 @@ import java.util.function.Consumer;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @Shadow public abstract boolean hasEffect(MobEffect p_21024_);
+    @Shadow public abstract boolean hasEffect(Holder<MobEffect> p_21024_);
 
     @Inject(method = "canFreeze", at = @At("RETURN"), cancellable = true)
     public void canFreeze(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(!hasEffect(HotpotModEntry.HOTPOT_WARM.get()) && cir.getReturnValue());
+        cir.setReturnValue(!hasEffect(HotpotModEntry.HOTPOT_WARM) && cir.getReturnValue());
     }
 }

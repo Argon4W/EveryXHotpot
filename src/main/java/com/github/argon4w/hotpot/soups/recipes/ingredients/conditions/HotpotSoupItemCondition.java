@@ -7,11 +7,11 @@ import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotSoupIngredientCondition {
@@ -26,28 +26,28 @@ public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotS
     }
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupItemCondition> {
-        @Override
-        public HotpotSoupItemCondition fromJson(JsonObject jsonObject) {
-            if (!jsonObject.has("predicate")) {
-                throw new JsonParseException("Item condition must have a \"predicate\"");
-            }
+        public static final MapCodec<HotpotSoupItemCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
+                Ingredient.CODEC.fieldOf("predicate").forGetter(HotpotSoupItemCondition::ingredient)
+        ).apply(condition, HotpotSoupItemCondition::new));
 
-            return new HotpotSoupItemCondition(Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObject, "predicate")));
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> STREAM_CODEC = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupItemCondition::ingredient,
+                HotpotSoupItemCondition::new
+        );
+
+        @Override
+        public MapCodec<HotpotSoupItemCondition> getCodec() {
+            return CODEC;
         }
 
         @Override
-        public HotpotSoupItemCondition fromNetwork(FriendlyByteBuf byteBuf) {
-            return new HotpotSoupItemCondition(Ingredient.fromNetwork(byteBuf));
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf byteBuf, HotpotSoupItemCondition condition) {
-            condition.ingredient.toNetwork(byteBuf);
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> getStreamCodec() {
+            return STREAM_CODEC;
         }
 
         @Override
         public ResourceLocation getType() {
-            return new ResourceLocation(HotpotModEntry.MODID, "item");
+            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item");
         }
     }
 }

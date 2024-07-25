@@ -8,11 +8,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +44,7 @@ public class HotpotSkewerRenderer implements IHotpotItemSpecialRenderer {
     }
 
     @Override
-    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
-        return Optional.of(new ResourceLocation(HotpotModEntry.MODID, "item/hotpot_skewer_model"));
+    public Optional<ModelResourceLocation> getDefaultItemModelResourceLocation() {
+        return Optional.of(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_skewer_model")));
     }
 }

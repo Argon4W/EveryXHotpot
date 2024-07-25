@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHotpotItemContainer {
     public HotpotPaperBowlItem() {
-        super(() -> HotpotPlacements.PLACED_PAPER_BOWL.get().build());
+        super(HotpotPlacements.PLACED_PAPER_BOWL);
     }
 
     @Override

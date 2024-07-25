@@ -11,34 +11,32 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
 public class HotpotSpriteProcessors {
-    public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_LOCATION = new ResourceLocation(HotpotModEntry.MODID, "empty_sprite_processor");
+    public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor");
 
-    public static final ResourceKey<Registry<IHotpotSpriteProcessor>> SPRITE_PROCESSOR_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(HotpotModEntry.MODID, "sprite_processor"));
+    public static final ResourceKey<Registry<IHotpotSpriteProcessor>> SPRITE_PROCESSOR_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "sprite_processor"));
     public static final DeferredRegister<IHotpotSpriteProcessor> SPRITE_PROCESSORS = DeferredRegister.create(SPRITE_PROCESSOR_REGISTRY_KEY, HotpotModEntry.MODID);
-    public static final Supplier<IForgeRegistry<IHotpotSpriteProcessor>> SPRITE_PROCESSOR_REGISTRY = SPRITE_PROCESSORS.makeRegistry(() -> new RegistryBuilder<IHotpotSpriteProcessor>().setDefaultKey(EMPTY_SPRITE_PROCESSOR_LOCATION));
+    public static final Registry<IHotpotSpriteProcessor> SPRITE_PROCESSOR_REGISTRY = SPRITE_PROCESSORS.makeRegistry(builder -> builder.defaultKey(EMPTY_SPRITE_PROCESSOR_LOCATION));
 
-    public static final RegistryObject<IHotpotSpriteProcessor> LIGHT_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("light_sauced_processor", HotpotLightSaucedSpriteProcessor::new);
-    public static final RegistryObject<IHotpotSpriteProcessor> HEAVY_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("heavy_sauced_processor", HotpotHeavySaucedSpriteProcessor::new);
-    public static final RegistryObject<IHotpotSpriteProcessor> EMPTY_SPRITE_PROCESSOR = SPRITE_PROCESSORS.register("empty_sprite_processor", HotpotEmptySpriteProcessor::new);
+    public static final DeferredHolder<IHotpotSpriteProcessor, HotpotLightSaucedSpriteProcessor> LIGHT_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("light_sauced_processor", HotpotLightSaucedSpriteProcessor::new);
+    public static final DeferredHolder<IHotpotSpriteProcessor, HotpotHeavySaucedSpriteProcessor> HEAVY_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("heavy_sauced_processor", HotpotHeavySaucedSpriteProcessor::new);
+    public static final DeferredHolder<IHotpotSpriteProcessor, HotpotEmptySpriteProcessor> EMPTY_SPRITE_PROCESSOR = SPRITE_PROCESSORS.register("empty_sprite_processor", HotpotEmptySpriteProcessor::new);
 
     public static IHotpotSpriteProcessor getEmptySpriteProcessor() {
         return EMPTY_SPRITE_PROCESSOR.get();
     }
 
-    public static IForgeRegistry<IHotpotSpriteProcessor> getSpriteProcessorRegistry() {
-        return SPRITE_PROCESSOR_REGISTRY.get();
+    public static Registry<IHotpotSpriteProcessor> getSpriteProcessorRegistry() {
+        return SPRITE_PROCESSOR_REGISTRY;
     }
 
     public static IHotpotSpriteProcessor getSpriteProcessor(ResourceLocation resourceLocation) {
-        return getSpriteProcessorRegistry().getValue(resourceLocation);
+        return getSpriteProcessorRegistry().get(resourceLocation);
     }
 
     public static void applyProcessor(ResourceLocation processorResourceLocation, ItemStack itemStack) {

@@ -32,8 +32,8 @@ public class HotpotEffectHelper {
         );
     }
 
-    public static CompoundTag saveEffect(MobEffectInstance mobEffectInstance) {
-        return mobEffectInstance.save(new CompoundTag());
+    public static Tag saveEffect(MobEffectInstance mobEffectInstance) {
+        return mobEffectInstance.save();
     }
 
     public static boolean hasEffects(ItemStack itemStack) {

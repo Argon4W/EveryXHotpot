@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public interface IHotpotSpecialHotpotCookingRecipeItem {
-    int getCookingTime(ItemStack itemStack,IHotpotSoupType soupType, LevelBlockPos pos);
-    float getExperience(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos);
-    ItemStack getResult(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos);
+    int getCookingTime(ItemStack itemStack,IHotpotSoupType soupType, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    float getExperience(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    ItemStack getResult(ItemStack itemStack, IHotpotSoupType soupType, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
 }

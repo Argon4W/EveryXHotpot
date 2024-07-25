@@ -6,12 +6,11 @@ import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 
 public record HotpotSoupContentCondition(ResourceLocation resourceLocation) implements IHotpotSoupIngredientCondition {
     @Override
@@ -25,33 +24,28 @@ public record HotpotSoupContentCondition(ResourceLocation resourceLocation) impl
     }
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupContentCondition> {
+        public static final MapCodec<HotpotSoupContentCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
+                ResourceLocation.CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::resourceLocation)
+        ).apply(condition, HotpotSoupContentCondition::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, HotpotSoupContentCondition::resourceLocation,
+                HotpotSoupContentCondition::new
+        );
+
         @Override
-        public HotpotSoupContentCondition fromJson(JsonObject jsonObject) {
-            if (!jsonObject.has("content")) {
-                throw new JsonParseException("Content condition must have a \"content\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "content"))) {
-                throw new JsonSyntaxException("\"content\" in the content action must be a valid resource location");
-            }
-
-            ResourceLocation resourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "content"));
-            return new HotpotSoupContentCondition(resourceLocation);
+        public MapCodec<HotpotSoupContentCondition> getCodec() {
+            return CODEC;
         }
 
         @Override
-        public HotpotSoupContentCondition fromNetwork(FriendlyByteBuf byteBuf) {
-            return new HotpotSoupContentCondition(byteBuf.readResourceLocation());
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf byteBuf, HotpotSoupContentCondition condition) {
-            byteBuf.writeResourceLocation(condition.resourceLocation);
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> getStreamCodec() {
+            return STREAM_CODEC;
         }
 
         @Override
         public ResourceLocation getType() {
-            return new ResourceLocation(HotpotModEntry.MODID, "content");
+            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "content");
         }
     }
 }

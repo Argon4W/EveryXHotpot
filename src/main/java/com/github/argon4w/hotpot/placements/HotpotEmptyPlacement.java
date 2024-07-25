@@ -3,10 +3,8 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -16,24 +14,15 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class HotpotEmptyPlacement implements IHotpotPlacement {
-    @Override
-    public IHotpotPlacement load(CompoundTag compoundTag) {
-        return this;
-    }
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag) {
+    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
         return compoundTag;
     }
 
     @Override
-    public boolean isValid(CompoundTag compoundTag) {
-        return true;
-    }
-
-    @Override
     public ResourceLocation getResourceLocation() {
-        return new ResourceLocation(HotpotModEntry.MODID, "empty_placement");
+        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_placement");
     }
 
     @Override
@@ -57,11 +46,6 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     }
 
     @Override
-    public boolean canPlace(int pos, Direction direction) {
-        return false;
-    }
-
-    @Override
     public List<Integer> getPos() {
         return List.of();
     }
@@ -69,5 +53,31 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     @Override
     public boolean isConflict(int pos) {
         return false;
+    }
+
+    public static class Factory implements IHotpotPlacementFactory<HotpotEmptyPlacement> {
+        @Override
+        public HotpotEmptyPlacement buildFromSlots(int pos, Direction direction, HolderLookup.Provider registryAccess) {
+            return build();
+        }
+
+        @Override
+        public HotpotEmptyPlacement buildFromTag(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+            return build();
+        }
+
+        @Override
+        public boolean canPlace(int pos, Direction direction) {
+            return false;
+        }
+
+        @Override
+        public boolean isValid(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+            return true;
+        }
+
+        public HotpotEmptyPlacement build() {
+            return new HotpotEmptyPlacement();
+        }
     }
 }

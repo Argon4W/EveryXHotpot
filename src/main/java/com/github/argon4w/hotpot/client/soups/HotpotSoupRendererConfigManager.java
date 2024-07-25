@@ -19,7 +19,7 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
     private final HashMap<ResourceLocation, HotpotSoupRendererConfig> soupRendererConfigs;
 
     public HotpotSoupRendererConfigManager() {
-        super(HotpotSoupRendererConfigManager.GSON, "soups");
+        super(HotpotSoupRendererConfigManager.GSON, "byName");
         this.soupRendererConfigs = Maps.newHashMap();
     }
 

@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot;
 
 import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -56,6 +57,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         level.markAndNotifyBlock(pos, getChunkAt(), getBlockState(), getBlockState(), 3, 512);
     }
 
+    public RegistryAccess registryAccess() {
+        return level.registryAccess();
+    }
+
     public Vec3 toVec3() {
         return new Vec3(pos.getX(), pos.getY(), pos.getZ());
     }
@@ -99,12 +104,6 @@ public record LevelBlockPos(Level level, BlockPos pos) {
     @Override
     public int hashCode() {
         return Objects.hashCode(level, pos);
-    }
-
-    public record Builder(Level level) {
-        public LevelBlockPos of(BlockPos pos) {
-            return new LevelBlockPos(level, pos);
-        }
     }
 
     public static LevelBlockPos fromVec3(Level level, Vec3 vec) {

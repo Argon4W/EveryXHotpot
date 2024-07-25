@@ -10,7 +10,7 @@ public class HotpotSoupWaterLevelSynchronizer implements IHotpotSoupSynchronizer
     @Override
     public void collect(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         IHotpotSoupType soup = hotpotBlockEntity.getSoup();
-        collectedWaterLevel += soup.getWaterLevel(hotpotBlockEntity, pos) + soup.getOverflowWaterLevel(hotpotBlockEntity, pos);
+        collectedWaterLevel += soup.getWaterLevel() + soup.getOverflowWaterLevel();
     }
 
     @Override

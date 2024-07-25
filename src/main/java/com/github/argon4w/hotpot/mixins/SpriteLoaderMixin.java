@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpriteProcessor;
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -11,6 +12,7 @@ import net.minecraft.client.resources.metadata.animation.AnimationMetadataSectio
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,71 +22,45 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 @Mixin(SpriteLoader.class)
 public abstract class SpriteLoaderMixin {
     @Shadow
     private @Final ResourceLocation location;
 
-    private static final HashMap<ResourceLocation, SpriteContents> processedContents = new HashMap<>();
-
-    @Inject(method = "loadSprite", at = @At("RETURN"))
-    private static void loadSprite(ResourceLocation p_251630_, Resource resource, CallbackInfoReturnable<SpriteContents> cir) {
-        if (cir.getReturnValue() == null) {
-            return;
-        }
-
-        if (!cir.getReturnValue().name().getPath().startsWith("item/") && !cir.getReturnValue().name().getPath().startsWith("items/")) {
-            return;
-        }
-
-        AnimationMetadataSection section;
-        try {
-            section = resource.metadata().getSection(AnimationMetadataSection.SERIALIZER).orElse(AnimationMetadataSection.EMPTY);
-        } catch (Throwable throwable) {
-            return;
-        }
-
-        SpriteContents content = cir.getReturnValue();
-        NativeImage original = content.getOriginalImage();
-        FrameSize frameSize = section.calculateFrameSize(original.getWidth(), original.getHeight());
-
-        for (IHotpotSpriteProcessor processor : HotpotSpriteProcessors.getSpriteProcessorRegistry().getValues()) {
-            if (processor instanceof HotpotEmptySpriteProcessor) {
-                continue;
-            }
-
-            NativeImage image = new NativeImage(content.getOriginalImage().format(), content.getOriginalImage().getWidth(), content.getOriginalImage().getHeight(), true);
-
-            processSpriteImage(original, image, frameSize, processor);
-
-            processedContents.put(content.name().withSuffix(processor.getProcessedSuffix()), new SpriteContents(
-                    content.name().withSuffix(processor.getProcessedSuffix()),
-                    frameSize,
-                    image,
-                    section,
-                    content.forgeMeta
-            ));
-        }
-    }
-
     @SuppressWarnings("deprecation")
     @ModifyVariable(method = "stitch", argsOnly = true, index = 1, at = @At("HEAD"))
     private List<SpriteContents> stitch(List<SpriteContents> contents) {
         if (location.equals(TextureAtlas.LOCATION_BLOCKS)) {
-            ArrayList<SpriteContents> replacedContents = new ArrayList<>(contents);
-
-            //pls, idea, don't be sad.
-            for (SpriteContents newContents : processedContents.values()) {
-                replacedContents.add(newContents);
-            }
-
-            return replacedContents;
+            return contents;
         }
 
-        return contents;
+        ArrayList<SpriteContents> results = new ArrayList<>(contents);
+        results.addAll(Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().flatMap(processor -> contents.stream().map(content -> CompletableFuture.supplyAsync(() -> getProcessedSpriteContents(processor, content)))).toList()).thenApply(l -> l).join());
+
+        return results;
+    }
+
+    private static SpriteContents getProcessedSpriteContents(IHotpotSpriteProcessor processor, SpriteContents contents) {
+        ResourceLocation name = contents.name();
+        ResourceMetadata metadata = contents.metadata();
+        NativeImage original = contents.getOriginalImage();
+        FrameSize frameSize = new FrameSize(original.getWidth(), original.getHeight());
+        NativeImage image = new NativeImage(contents.getOriginalImage().format(), contents.getOriginalImage().getWidth(), contents.getOriginalImage().getHeight(), true);
+
+        processSpriteImage(original, image, frameSize, processor);
+
+        return new SpriteContents(
+                name.withSuffix(processor.getProcessedSuffix()),
+                frameSize,
+                image,
+                metadata
+        );
     }
 
     private static void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, IHotpotSpriteProcessor processor) {

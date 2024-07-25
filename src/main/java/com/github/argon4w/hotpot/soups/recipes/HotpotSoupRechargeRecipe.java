@@ -1,30 +1,26 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
 public class HotpotSoupRechargeRecipe extends AbstractHotpotSoupRecipe {
-    private final ResourceLocation location;
     private final ResourceLocation targetSoup;
     private final float rechargeWaterLevel;
     private final Ingredient ingredient;
     private final ItemStack remainingItem;
     private final ResourceLocation soundEvent;
 
-    public HotpotSoupRechargeRecipe(ResourceLocation location, ResourceLocation targetSoup, float rechargeWaterLevel, Ingredient ingredient, ItemStack remainingItem, ResourceLocation soundEvent) {
-        this.location = location;
+    public HotpotSoupRechargeRecipe(ResourceLocation targetSoup, float rechargeWaterLevel, Ingredient ingredient, ItemStack remainingItem, ResourceLocation soundEvent) {
         this.targetSoup = targetSoup;
         this.rechargeWaterLevel = rechargeWaterLevel;
         this.ingredient = ingredient;
@@ -48,13 +44,12 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotSoupRecipe {
         return soundEvent;
     }
 
-    public float getRechargeWaterLevel() {
-        return rechargeWaterLevel;
+    public Ingredient getIngredient() {
+        return ingredient;
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return location;
+    public float getRechargeWaterLevel() {
+        return rechargeWaterLevel;
     }
 
     @Override
@@ -68,74 +63,31 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotSoupRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<HotpotSoupRechargeRecipe> {
+        public static final MapCodec<HotpotSoupRechargeRecipe> CODEC = RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                ResourceLocation.CODEC.fieldOf("target_soup").forGetter(HotpotSoupRechargeRecipe::getTargetSoup),
+                Codec.FLOAT.fieldOf("recharge_waterlevel").forGetter(HotpotSoupRechargeRecipe::getRechargeWaterLevel),
+                Ingredient.CODEC.fieldOf("ingredient").forGetter(HotpotSoupRechargeRecipe::getIngredient),
+                ItemStack.CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupRechargeRecipe::getRemainingItem),
+                ResourceLocation.CODEC.fieldOf("soundEvent").forGetter(HotpotSoupRechargeRecipe::getSoundEvent)
+        ).apply(recipe, HotpotSoupRechargeRecipe::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRechargeRecipe> STREAM_CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, HotpotSoupRechargeRecipe::getTargetSoup,
+                ByteBufCodecs.FLOAT, HotpotSoupRechargeRecipe::getRechargeWaterLevel,
+                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupRechargeRecipe::getIngredient,
+                ItemStack.STREAM_CODEC, HotpotSoupRechargeRecipe::getRemainingItem,
+                ResourceLocation.STREAM_CODEC, HotpotSoupRechargeRecipe::getSoundEvent,
+                HotpotSoupRechargeRecipe::new
+        );
+
         @Override
-        public HotpotSoupRechargeRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            if (!jsonObject.has("target_soup")) {
-                throw new JsonParseException("Soup recharge recipe must have a \"soup\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "target_soup"))) {
-                throw new JsonSyntaxException("\"target_soup\" in the soup recharge recipe must be a valid resource location");
-            }
-
-            if (!jsonObject.has("recharge_waterlevel")) {
-                throw new JsonParseException("Soup recharge recipe must have a \"recharge_waterlevel\"");
-            }
-
-            if (!jsonObject.has("ingredient")) {
-                throw new JsonParseException("Soup recharge recipe must have a \"ingredient\"");
-            }
-
-            if (!jsonObject.has("sound_event")) {
-                throw new JsonParseException("Soup recharge recipe must have a \"sound_event\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "sound_event"))) {
-                throw new JsonSyntaxException("\"sound_event\" in the soup recharge recipe must be a valid resource location");
-            }
-
-            ResourceLocation targetSoup = new ResourceLocation(GsonHelper.getAsString(jsonObject, "target_soup"));
-            float waterLevel = GsonHelper.getAsFloat(jsonObject, "recharge_waterlevel");
-            Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObject, "ingredient"));
-            ResourceLocation soundEvent = new ResourceLocation(GsonHelper.getAsString(jsonObject, "sound_event"));
-
-            if (!jsonObject.has("remaining_item")) {
-                return new HotpotSoupRechargeRecipe(resourceLocation, targetSoup, waterLevel, ingredient, ItemStack.EMPTY, soundEvent);
-            }
-
-            if (jsonObject.get("remaining_item").isJsonObject()) {
-                ItemStack remainingItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonObject, "remaining_item"));
-                return new HotpotSoupRechargeRecipe(resourceLocation, targetSoup, waterLevel, ingredient, remainingItem, soundEvent);
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "remaining_item"))) {
-                throw new JsonSyntaxException("\"remaining_item\" in the soup recharge recipe must be a valid resource location");
-            }
-
-            ResourceLocation itemResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "remaining_item"));
-            ItemStack remainingItem = new ItemStack(ForgeRegistries.ITEMS.getDelegateOrThrow(itemResourceLocation));
-
-            return new HotpotSoupRechargeRecipe(resourceLocation, targetSoup, waterLevel, ingredient, remainingItem, soundEvent);
+        public MapCodec<HotpotSoupRechargeRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable HotpotSoupRechargeRecipe fromNetwork(ResourceLocation location, FriendlyByteBuf byteBuf) {
-            ResourceLocation targetSoup = byteBuf.readResourceLocation();
-            float resultWaterLevel = byteBuf.readFloat();
-            Ingredient ingredient = Ingredient.fromNetwork(byteBuf);
-            ItemStack remainingItem = byteBuf.readItem();
-            ResourceLocation soundEvent = byteBuf.readResourceLocation();
-
-            return new HotpotSoupRechargeRecipe(location, targetSoup, resultWaterLevel, ingredient, remainingItem, soundEvent);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf byteBuf, HotpotSoupRechargeRecipe recipe) {
-            byteBuf.writeResourceLocation(recipe.targetSoup);
-            byteBuf.writeFloat(recipe.rechargeWaterLevel);
-            recipe.ingredient.toNetwork(byteBuf);
-            byteBuf.writeItem(recipe.remainingItem);
-            byteBuf.writeResourceLocation(recipe.soundEvent);
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRechargeRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }
