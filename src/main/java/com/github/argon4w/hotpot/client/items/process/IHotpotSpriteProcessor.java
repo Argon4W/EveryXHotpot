@@ -10,5 +10,5 @@ public interface IHotpotSpriteProcessor {
     String getProcessedSuffix();
     ResourceLocation getResourceLocation();
     int getIndex();
-    int processColor(ItemStack itemStack);
+    int getColor(ItemStack itemStack);
 }

@@ -1,17 +1,20 @@
 package com.github.argon4w.hotpot.client.items.process.processors;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
+import com.github.argon4w.hotpot.items.components.HotpotSoupDataComponent;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.joml.Math;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpotSpriteProcessor {
     @Override
@@ -44,29 +47,18 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpot
     }
 
     @Override
-    public int processColor(ItemStack itemStack) {
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+    public int getColor(ItemStack itemStack) {
+        if (!HotpotSoupDataComponent.hasDataComponent(itemStack)) {
             return -1;
         }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("Soup", Tag.TAG_STRING)) {
+        HotpotSoupRendererConfig rendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(HotpotSoupDataComponent.getSoupTypeResourceLocation(itemStack));
+
+        if (rendererConfig.color().isEmpty()) {
             return -1;
         }
 
-        String soup = HotpotTagsHelper.getHotpotTags(itemStack).getString("Soup");
-
-        if (!ResourceLocation.isValidResourceLocation(soup)) {
-            return -1;
-        }
-
-        ResourceLocation soupResourceLocation = new ResourceLocation(soup);
-        HotpotSoupRendererConfig rendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(soupResourceLocation);
-
-        if (rendererConfig.getColor().isEmpty()) {
-            return -1;
-        }
-
-        return rendererConfig.getColor().get().toInt();
+        return rendererConfig.color().get().toInt();
     }
 
     private float getAverageGrayScale(NativeImage image, FrameSize frameSize, int frame) {

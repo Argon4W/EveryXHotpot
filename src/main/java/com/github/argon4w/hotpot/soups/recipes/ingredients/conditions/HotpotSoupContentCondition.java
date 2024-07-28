@@ -1,7 +1,9 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.conditions;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
@@ -12,10 +14,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
-public record HotpotSoupContentCondition(ResourceLocation resourceLocation) implements IHotpotSoupIngredientCondition {
+public record HotpotSoupContentCondition(IHotpotContentFactory<?> contentFactory) implements IHotpotSoupIngredientCondition {
     @Override
     public boolean matches(IHotpotContent content, IHotpotSoupType soup) {
-        return content.getResourceLocation().equals(resourceLocation);
+        return content.getFactory().equals(contentFactory);
     }
 
     @Override
@@ -25,11 +27,11 @@ public record HotpotSoupContentCondition(ResourceLocation resourceLocation) impl
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupContentCondition> {
         public static final MapCodec<HotpotSoupContentCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
-                ResourceLocation.CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::resourceLocation)
+                HotpotContents.FACTORY_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentFactory)
         ).apply(condition, HotpotSoupContentCondition::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC, HotpotSoupContentCondition::resourceLocation,
+                HotpotContents.STREAM_CODEC, HotpotSoupContentCondition::contentFactory,
                 HotpotSoupContentCondition::new
         );
 

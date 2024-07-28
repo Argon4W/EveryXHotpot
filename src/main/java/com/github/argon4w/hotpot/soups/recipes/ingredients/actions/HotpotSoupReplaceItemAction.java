@@ -1,7 +1,8 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.actions;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
@@ -15,11 +16,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
     @Override
-    public IHotpotContent action(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, IHotpotSoupType source, IHotpotSoupType target) {
-        return target.remapItemStack(true, itemStack, hotpotBlockEntity, pos).orElse(HotpotContents.buildEmptyContent());
+    public IHotpotContent action(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, IHotpotSoupType sourceSoup, IHotpotSoupType resultSoup) {
+        return resultSoup.remapItemStack(true, itemStack, hotpotBlockEntity, pos).orElse(HotpotContents.getEmptyContentFactory()).buildFromItem(itemStack, hotpotBlockEntity);
     }
 
     @Override
@@ -28,13 +30,17 @@ public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpo
     }
 
     public static class Serializer implements IHotpotSoupIngredientActionSerializer<HotpotSoupReplaceItemAction> {
-        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC = RecordCodecBuilder.mapCodec(action -> action.group(
-                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupReplaceItemAction::itemStack)
-        ).apply(action, HotpotSoupReplaceItemAction::new));
+        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(action -> action.group(
+                        ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupReplaceItemAction::itemStack)
+                ).apply(action, HotpotSoupReplaceItemAction::new))
+        );
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC = StreamCodec.composite(
-                ItemStack.STREAM_CODEC, HotpotSoupReplaceItemAction::itemStack,
-                HotpotSoupReplaceItemAction::new
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
+                StreamCodec.composite(
+                        ItemStack.STREAM_CODEC, HotpotSoupReplaceItemAction::itemStack,
+                        HotpotSoupReplaceItemAction::new
+                )
         );
 
         @Override

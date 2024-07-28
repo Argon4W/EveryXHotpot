@@ -8,13 +8,13 @@ import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
     @Override
@@ -23,14 +23,14 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
             return;
         }
 
-        float x = IHotpotPlacement.getSlotX(smallPlate.getPos1()) + 0.25f;
-        float z = IHotpotPlacement.getSlotZ(smallPlate.getPos1()) + 0.25f;
+        float x = IHotpotPlacement.getSlotX(smallPlate.getPos()) + 0.25f;
+        float z = IHotpotPlacement.getSlotZ(smallPlate.getPos()) + 0.25f;
 
         poseStack.pushPose();
         poseStack.translate(x, 0f, z);
         poseStack.scale(0.68f, 0.68f, 0.68f);
 
-        BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(new ResourceLocation(HotpotModEntry.MODID, "block/hotpot_plate_small"));
+        BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
         context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
 
         poseStack.popPose();

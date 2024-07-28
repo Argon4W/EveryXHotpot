@@ -1,11 +1,14 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
 import net.minecraft.world.item.ItemStack;
 
 public class SimpleItemSlot {
+    public static final Codec<SimpleItemSlot> CODEC = Codec.lazyInitialized(() ->
+            ItemStack.OPTIONAL_CODEC.xmap(SimpleItemSlot::new, SimpleItemSlot::getItemStack)
+    );
+
     private ItemStack itemSlot;
 
     public SimpleItemSlot(ItemStack itemStack) {
@@ -73,15 +76,6 @@ public class SimpleItemSlot {
 
     public void dropItem(LevelBlockPos pos) {
         pos.dropItemStack(itemSlot.copyAndClear());
-    }
-
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        itemSlot.save(registryAccess, compoundTag);
-        return compoundTag;
-    }
-
-    public void load(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        itemSlot = ItemStack.parseOptional(registryAccess, compoundTag);
     }
 
     public ItemStack getItemStack() {

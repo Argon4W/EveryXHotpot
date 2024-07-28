@@ -1,12 +1,13 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -18,28 +19,20 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     private final int pos1;
     public final int pos2;
     private final Direction direction;
-    private final SimpleItemSlot spoonItemSlot = new SimpleItemSlot();
+    private final SimpleItemSlot spoonItemSlot;
 
     public HotpotPlacedSpoon(int pos, Direction direction) {
         this.pos1 = pos;
         this.pos2 = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
+        this.spoonItemSlot = new SimpleItemSlot();
     }
 
-    public HotpotPlacedSpoon(int pos1, int pos2, CompoundTag itemSlotTag, HolderLookup.Provider registryAccess) {
+    public HotpotPlacedSpoon(int pos1, int pos2, SimpleItemSlot spoonItemSlot) {
         this.pos1 = pos1;
         this.pos2 = pos2;
+        this.spoonItemSlot = spoonItemSlot;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(pos2 - pos1);
-        this.spoonItemSlot.load(itemSlotTag, registryAccess);
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        compoundTag.putByte("Pos1", (byte) pos1);
-        compoundTag.putByte("Pos2", (byte) pos2);
-        compoundTag.put("Spoon", spoonItemSlot.save(new CompoundTag(), registryAccess));
-
-        return compoundTag;
     }
 
     @Override
@@ -68,13 +61,18 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPos() {
+    public List<Integer> getPoslist() {
         return List.of(pos1, pos2);
     }
 
     @Override
     public boolean isConflict(int pos) {
         return pos1 == pos || pos2 == pos;
+    }
+
+    @Override
+    public IHotpotPlacementFactory<?> getFactory() {
+        return HotpotPlacements.PLACED_SPOON.get();
     }
 
     public void setSpoonItemSlot(ItemStack spoonItemSlot) {
@@ -98,20 +96,22 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     public static class Factory implements IHotpotPlacementFactory<HotpotPlacedSpoon> {
+        public static final MapCodec<HotpotPlacedSpoon> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(spoon -> spoon.group(
+                        Codec.INT.fieldOf("Pos1").forGetter(HotpotPlacedSpoon::getPos1),
+                        Codec.INT.fieldOf("Pos2").forGetter(HotpotPlacedSpoon::getPos2),
+                        SimpleItemSlot.CODEC.fieldOf("Spoon").forGetter(HotpotPlacedSpoon::getSpoonItemSlot)
+                ).apply(spoon, HotpotPlacedSpoon::new))
+        );
 
         @Override
-        public HotpotPlacedSpoon buildFromSlots(int pos, Direction direction, HolderLookup.Provider registryAccess) {
+        public HotpotPlacedSpoon buildFromSlots(int pos, Direction direction) {
             return new HotpotPlacedSpoon(pos, direction);
         }
 
         @Override
-        public HotpotPlacedSpoon buildFromTag(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return new HotpotPlacedSpoon(compoundTag.getByte("Pos1"), compoundTag.getByte("Pos2"), compoundTag.getCompound("Spoon"), registryAccess);
-        }
-
-        @Override
-        public boolean isValid(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return compoundTag.contains("Pos1", Tag.TAG_BYTE) && compoundTag.contains("Pos2", Tag.TAG_BYTE) && compoundTag.contains("Spoon", Tag.TAG_COMPOUND);
+        public MapCodec<HotpotPlacedSpoon> buildFromCodec() {
+            return CODEC;
         }
 
         @Override

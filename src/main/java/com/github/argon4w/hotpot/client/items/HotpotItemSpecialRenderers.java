@@ -8,8 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.function.Supplier;
-
 public class HotpotItemSpecialRenderers {
     public static final ResourceLocation EMPTY_ITEM_SPECIAL_RENDERER_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_item_renderer");
 

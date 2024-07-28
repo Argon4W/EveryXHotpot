@@ -19,12 +19,12 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
             return;
         }
 
-        float x = IHotpotPlacement.getSlotX(placedPaperBowl.getPos1()) + 0.25f;
-        float z = IHotpotPlacement.getSlotZ(placedPaperBowl.getPos1()) + 0.25f;
+        float x = IHotpotPlacement.getSlotX(placedPaperBowl.getPos()) + 0.25f;
+        float z = IHotpotPlacement.getSlotZ(placedPaperBowl.getPos()) + 0.25f;
 
         ItemStack paperBowlItemStack = placedPaperBowl.getPaperBowlItemSlot().getItemStack();
 
-        int renderCount = HotpotPaperBowlItem.isBowlClear(paperBowlItemStack) ? Math.max(1, (paperBowlItemStack.getCount() * 4 / paperBowlItemStack.getMaxStackSize())) : 1;
+        int renderCount = HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemStack) ? Math.max(1, (paperBowlItemStack.getCount() * 4 / paperBowlItemStack.getMaxStackSize())) : 1;
 
         for (int i = 0; i < renderCount; i ++) {
             float scale = (i % 2 == 0) ? 0.6f : (0.6f - 0.0001f);

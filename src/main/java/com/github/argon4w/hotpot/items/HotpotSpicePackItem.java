@@ -1,208 +1,125 @@
 package com.github.argon4w.hotpot.items;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.effects.HotpotEffectHelper;
+import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
+import com.github.argon4w.hotpot.items.components.HotpotSpicePackDataComponent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.alchemy.PotionContents;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentItem {
     public HotpotSpicePackItem() {
-        super(new Properties());
+        super(new Properties().component(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY));
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return HotpotModEntry.HOTPOT_SPECIAL_ITEM_RENDERER;
-            }
-        });
+    public boolean isBarVisible(ItemStack itemStack) {
+        return hasSpicePackCharges(itemStack);
+    }
+
+    @Override
+    public int getBarWidth(ItemStack itemStack) {
+        return Math.round(((float) getSpicePackCharges(itemStack) * 13.0F) / 20f);
+    }
+
+    @Override
+    public int getBarColor(ItemStack itemStack) {
+        float f = Math.max(0.0F, (float) getSpicePackCharges(itemStack) / 20f);
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    }
+
+    @Override
+    public ItemStack updateSelf(ItemStack self, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return getSpicePackCharges(self) > 0 ? self : new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get());
     }
 
     @Override
     public ItemStack onOtherContentUpdate(ItemStack self, ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        if (itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
+        if (!hasSpicePackCharges(itemStack)) {
             return itemStack;
         }
 
-        if (!isSpicePackValid(self)) {
+        if (isSpicePackEmpty(itemStack)) {
             return itemStack;
         }
 
-        int charges = getSpiceCharges(self);
-
-        if (charges <= 0) {
-            return itemStack;
+        if (!HotpotSkewerItem.isSkewerEmpty(itemStack)) {
+            return HotpotSkewerItem.applyToSkewerItemStacks(itemStack, skewerItemStack -> HotpotFoodEffectsDataComponent.addEffects(skewerItemStack, getSpicePackEffects(self)));
         }
 
-        setSpiceCharges(self, charges - 1);
-
-        if (itemStack.is(HotpotModEntry.HOTPOT_SKEWER.get())) {
-            HotpotSkewerItem.applyToSkewerItemStacks(itemStack, skewerItemStack -> HotpotEffectHelper.saveEffects(skewerItemStack, getSpiceEffects(self)));
-        } else {
-            HotpotEffectHelper.saveEffects(itemStack, getSpiceEffects(self));
-        }
+        decreaseSpicePackCharges(itemStack);
+        HotpotFoodEffectsDataComponent.addEffects(itemStack, getSpicePackEffects(self));
 
         return itemStack;
     }
 
     @Override
-    public ItemStack updateSelf(ItemStack self, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        if (!isSpicePackValid(self)) {
-            return self;
-        }
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> components, TooltipFlag flag) {
+        super.appendHoverText(itemStack, context, components, flag);
 
-        if (getSpiceCharges(self) > 0) {
-            return self;
-        }
-
-        return new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get());
-    }
-
-    @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> tooltips, TooltipFlag flag) {
-        super.appendHoverText(itemStack, level, tooltips, flag);
-
-        if (isSpicePackValid(itemStack)) {
-            tooltips.add(Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpiceCharges(itemStack)).withStyle(ChatFormatting.BLUE));
-            PotionUtils.addPotionTooltip(HotpotEffectHelper.mergeEffects(getSpiceEffects(itemStack)), tooltips, 1.0F);
-        }
-    }
-
-    @Override
-    public boolean isBarVisible(ItemStack itemStack) {
-        return HotpotTagsHelper.hasHotpotTags(itemStack) && HotpotTagsHelper.getHotpotTags(itemStack).contains("SpicePackCharges");
-    }
-
-    @Override
-    public int getBarWidth(ItemStack itemStack) {
-        return Math.round(((float) getSpiceCharges(itemStack) * 13.0F) / 20f);
-    }
-
-    @Override
-    public int getBarColor(ItemStack itemStack) {
-        float f = Math.max(0.0F, (float) getSpiceCharges(itemStack) / 20f);
-        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
-    }
-
-    public static void setSpiceCharges(ItemStack itemStack, int amount) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "SpicePackCharges", IntTag.valueOf(amount));
-    }
-
-    public static void addSpicePackItems(ItemStack itemStack, ItemStack added) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
+        if (isSpicePackEmpty(itemStack)) {
             return;
         }
 
-        if (added.isEmpty()) {
+        if (!hasSpicePackCharges(itemStack)) {
             return;
         }
 
-        ArrayList<ItemStack> itemStacks = new ArrayList<>(getSpicePackItems(itemStack));
-        itemStacks.add(added);
-        setSpicePackItems(itemStack, itemStacks);
+        components.add(Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpicePackCharges(itemStack)).withStyle(ChatFormatting.BLUE));
+        PotionContents.addPotionTooltip(getSpicePackEffects(itemStack), components::add, 1.0f, context.tickRate());
     }
 
-    public static void setSpicePackItems(ItemStack itemStack, List<ItemStack> itemStacks) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "SpicePackItems", itemStacks.stream()
-                .filter(item -> !item.isEmpty())
-                .map(HotpotTagsHelper::saveItemStack)
-                .collect(Collectors.toCollection(ListTag::new)));
+    public static HotpotSpicePackDataComponent getDataComponent(ItemStack itemStack) {
+        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY);
     }
 
-    public static int getSpiceCharges(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
-            return 0;
-        }
-
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return 0;
-        }
-
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("SpicePackCharges", Tag.TAG_ANY_NUMERIC)) {
-            return 0;
-        }
-
-        return HotpotTagsHelper.getHotpotTags(itemStack).getInt("SpicePackCharges");
+    public static void setDataComponent(ItemStack itemStack, HotpotSpicePackDataComponent dataComponent) {
+        itemStack.set(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, dataComponent);
     }
 
     public static List<ItemStack> getSpicePackItems(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
-            return List.of();
-        }
-
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return List.of();
-        }
-
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("SpicePackItems", Tag.TAG_LIST)) {
-            return List.of();
-        }
-
-        return HotpotTagsHelper.getHotpotTags(itemStack).getList("SpicePackItems", Tag.TAG_COMPOUND).stream()
-                .map(tag -> (CompoundTag) tag)
-                .map(ItemStack::of)
-                .filter(item -> !item.isEmpty())
-                .toList();
+        return List.copyOf(getDataComponent(itemStack).itemStacks());
     }
 
-    public static List<MobEffectInstance> getSpiceEffects(ItemStack itemStack) {
-        List<ItemStack> spicePackItems = getSpicePackItems(itemStack);
-
-        if (spicePackItems.isEmpty()) {
-            return List.of();
-        }
-
-        return spicePackItems.stream()
-                .map(ItemStack::getItem)
-                .map(SuspiciousEffectHolder::tryGet)
-                .filter(Objects::nonNull)
-                .map(suspiciousEffectHolder -> new MobEffectInstance(suspiciousEffectHolder.getSuspiciousEffect(), suspiciousEffectHolder.getEffectDuration() * 2, 1))
-                .toList();
+    public static int getSpicePackCharges(ItemStack itemStack) {
+        return getDataComponent(itemStack).charges();
     }
 
-    public static boolean isSpicePackValid(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK.get())) {
-            return false;
-        }
+    public static boolean hasSpicePackCharges(ItemStack itemStack) {
+        return getSpicePackCharges(itemStack) > 0;
+    }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return false;
-        }
+    public static boolean isSpicePackEmpty(ItemStack itemStack) {
+        return getSpicePackItems(itemStack).isEmpty();
+    }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("SpicePackItems", Tag.TAG_LIST)) {
-            return false;
-        }
+    public static void decreaseSpicePackCharges(ItemStack itemStack) {
+        setSpicePackCharges(itemStack, Math.max(0, getSpicePackCharges(itemStack) - 1));
+    }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("SpicePackCharges", Tag.TAG_ANY_NUMERIC)) {
-            return false;
-        }
+    public static void addSpicePackItems(ItemStack itemStack, ItemStack added) {
+        setDataComponent(itemStack, getDataComponent(itemStack).addItemStack(added));
+    }
 
-        return true;
+    public static void setSpicePackCharges(ItemStack itemStack, int charges) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setCharges(charges));
+    }
+
+    public static void setSpicePackItems(ItemStack itemStack, List<ItemStack> itemStacks) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setItemStacks(itemStacks));
+    }
+
+    public static List<MobEffectInstance> getSpicePackEffects(ItemStack itemStack) {
+        return getDataComponent(itemStack).getFoodEffects();
     }
 }

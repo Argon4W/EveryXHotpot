@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.github.argon4w.hotpot.mixins",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "refmap": "mixins.everyxhotpot.refmap.json",
   "client": [
     "BreakingItemParticleMixin",
@@ -11,7 +11,9 @@
     "SpriteLoaderMixin"
   ],
   "mixins": [
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    ,
+    "ReloadableServerResourcesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

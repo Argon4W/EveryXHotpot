@@ -1,11 +1,9 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -15,7 +13,7 @@ import java.util.Optional;
 public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
     public static final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> SMELTING_RECIPE_QUICK_CHECK = RecipeManager.createCheck(RecipeType.BLASTING);
 
-    public HotpotSmeltingRecipeContent(ItemStack itemStack, int cookingTime, int cookingProgress, float experience) {
+    public HotpotSmeltingRecipeContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
@@ -49,7 +47,7 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
 
     public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotSmeltingRecipeContent> {
         @Override
-        public HotpotSmeltingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, float experience) {
+        public HotpotSmeltingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
             return new HotpotSmeltingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
         }
 

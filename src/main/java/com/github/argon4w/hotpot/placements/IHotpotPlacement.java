@@ -2,8 +2,6 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -16,10 +14,10 @@ public interface IHotpotPlacement {
     ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos, boolean tableware);
     void onRemove(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos pos);
     ItemStack getCloneItemStack(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos level);
-    List<Integer> getPos();
+    List<Integer> getPoslist();
     boolean isConflict(int pos);
-    CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess);
     ResourceLocation getResourceLocation();
+    IHotpotPlacementFactory<?> getFactory();
 
     static float getSlotX(int slot) {
         return ((2 & slot) > 0 ? 0.5f : 0f);

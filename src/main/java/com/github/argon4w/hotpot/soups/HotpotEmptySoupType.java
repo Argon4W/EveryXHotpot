@@ -4,10 +4,9 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class HotpotEmptySoupType implements IHotpotSoupType {
@@ -34,13 +32,13 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public Optional<IHotpotContent> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContentFactory<?>> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return Optional.of(HotpotContents.buildEmptyContent());
+    public Optional<IHotpotContentFactory<?>> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return Optional.of(HotpotContents.getEmptyContentFactory());
     }
 
     @Override
@@ -108,7 +106,7 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
         return true;
     }
 
-    public record Factory() implements IHotpotSoupFactory<HotpotEmptySoupType> {
+    public record Factory() implements IHotpotSoupTypeFactory<HotpotEmptySoupType> {
         @Override
         public MapCodec<HotpotEmptySoupType> buildFromCodec(ResourceLocation resourceLocation) {
             return MapCodec.unit(() -> new HotpotEmptySoupType(resourceLocation));
@@ -130,12 +128,12 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
         public static final MapCodec<Factory> CODEC = MapCodec.unit(Factory::new);
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupFactory<HotpotEmptySoupType>> getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupTypeFactory<HotpotEmptySoupType>> getStreamCodec() {
             return STREAM_CODEC;
         }
 
         @Override
-        public MapCodec<? extends IHotpotSoupFactory<HotpotEmptySoupType>> getCodec() {
+        public MapCodec<? extends IHotpotSoupTypeFactory<HotpotEmptySoupType>> getCodec() {
             return CODEC;
         }
     }

@@ -1,7 +1,5 @@
 package com.github.argon4w.hotpot.items.components;
 
-import com.github.argon4w.hotpot.contents.HotpotContents;
-import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -12,20 +10,44 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public record HotpotSkewerDataComponent(List<ItemStack> itemStacks, Optional<List<HotpotCookingRecipeContent>> skewerRecipes) {
-    public static final Codec<HotpotSkewerDataComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(
-            ItemStack.CODEC.listOf().fieldOf("item_stacks").forGetter(HotpotSkewerDataComponent::itemStacks),
-            HotpotContents.COOKING_RECIPE_CONTENT.get().buildFromCodec().codec().listOf().optionalFieldOf("skewer_recipes").forGetter(HotpotSkewerDataComponent::skewerRecipes)
-    ).apply(data, HotpotSkewerDataComponent::new)));
+public record HotpotSkewerDataComponent(List<ItemStack> itemStacks) {
+    public static final HotpotSkewerDataComponent EMPTY = new HotpotSkewerDataComponent(new ArrayList<>());
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSkewerDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-            ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC), HotpotSkewerDataComponent::itemStacks,
-            HotpotSkewerDataComponent::new
-    ));
+    public static final Codec<HotpotSkewerDataComponent> CODEC = Codec.lazyInitialized(() ->
+            RecordCodecBuilder.create(data -> data.group(
+                    ItemStack.CODEC.listOf().fieldOf("item_stacks").forGetter(HotpotSkewerDataComponent::itemStacks)
+            ).apply(data, HotpotSkewerDataComponent::new))
+    );
 
-    public HotpotSkewerDataComponent(List<ItemStack> itemStacks) {
-        this(itemStacks, Optional.empty());
+    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSkewerDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
+            StreamCodec.composite(
+                    ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC), HotpotSkewerDataComponent::itemStacks,
+                    HotpotSkewerDataComponent::new
+            )
+    );
+
+    public HotpotSkewerDataComponent setItemStacks(List<ItemStack> itemStacks) {
+        return new HotpotSkewerDataComponent(List.copyOf(itemStacks));
+    }
+
+    public HotpotSkewerDataComponent applyToItemStacks(UnaryOperator<ItemStack> operator) {
+        return new HotpotSkewerDataComponent(itemStacks.stream().map(operator).toList());
+    }
+
+    public HotpotSkewerDataComponent addItemStack(ItemStack itemStack) {
+        return itemStack.isEmpty() ? this : new HotpotSkewerDataComponent(Stream.concat(itemStacks.stream(), Stream.of(itemStack)).toList());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof HotpotSkewerDataComponent data && equalsItemStacks(data);
+    }
+
+    public boolean equalsItemStacks(HotpotSkewerDataComponent another) {
+        return itemStacks.size() == another.itemStacks.size() && IntStream.range(0, itemStacks.size()).allMatch(i -> ItemStack.isSameItemSameComponents(itemStacks.get(i), another.itemStacks.get(i)));
     }
 }

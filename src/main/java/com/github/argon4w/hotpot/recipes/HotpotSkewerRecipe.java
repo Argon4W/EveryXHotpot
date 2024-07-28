@@ -1,18 +1,11 @@
 package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.items.HotpotSkewerItem;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,33 +20,21 @@ public class HotpotSkewerRecipe extends CustomRecipe {
     @Override
     public boolean matches(CraftingInput input, Level level) {
         List<ItemStack> list = new ArrayList<>();
-
-        return new SimpleRecipeMatcher(input)
-                .with(itemStack -> itemStack.has(DataComponents.FOOD)).collect(list::add).atLeast(1)
-                .with(itemStack -> matchSkewerItem(itemStack, list.size())).once()
-                .withRemaining().empty()
-                .match();
+        return new SimpleRecipeMatcher(input).with(this::isFood).collect(list::add).atLeast(1).with(itemStack -> matchSkewerItem(itemStack, list.size())).once().withRemaining().empty().match();
     }
 
     private boolean matchSkewerItem(ItemStack itemStack, int count) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_SKEWER.get())) {
-            return false;
-        }
+        return itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && HotpotSkewerItem.getSkewerItems(itemStack).size() + count <= 3;
+    }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return count <= 3;
-        }
-
-        return HotpotSkewerItem.getSkewerItems(itemStack).size() + count <= 3;
+    private boolean isFood(ItemStack itemStack) {
+        return itemStack.has(DataComponents.FOOD);
     }
 
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input)
-                .with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER.get()))
-                .feed(this::assembleSkewerItem)
-                .assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).feed(this::assembleSkewerItem).assemble();
     }
 
     private void assembleSkewerItem(ItemStack assembled, ItemStack ingredient) {

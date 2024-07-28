@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.recipes;
 
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
@@ -10,11 +9,14 @@ import java.util.function.Supplier;
 
 public class SimpleRecipeAssembler {
     private final CraftingInput input;
-    private ItemStack assembled = ItemStack.EMPTY;
-    private Predicate<ItemStack> filter = itemStack -> true;
+
+    private ItemStack assembled;
+    private Predicate<ItemStack> filter;
 
     public SimpleRecipeAssembler(CraftingInput input) {
         this.input = input;
+        this.assembled = ItemStack.EMPTY;
+        this.filter = itemStack -> true;
     }
 
     public SimpleRecipeAssembler filter(Predicate<ItemStack> predicate) {

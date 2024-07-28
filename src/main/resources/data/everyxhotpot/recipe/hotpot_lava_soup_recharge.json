@@ -1,0 +1,12 @@
+{
+  "type": "everyxhotpot:hotpot_soup_recharge_recipe",
+  "target_soup": "everyxhotpot:lava_soup",
+  "recharge_waterlevel": 1,
+  "ingredient": {
+    "item": "minecraft:lava_bucket"
+  },
+  "remaining_item": {
+    "id": "minecraft:bucket"
+  },
+  "sound_event": "item.bucket.empty_lava"
+}

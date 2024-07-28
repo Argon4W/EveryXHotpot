@@ -1,11 +1,10 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -14,12 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class HotpotEmptyPlacement implements IHotpotPlacement {
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        return compoundTag;
-    }
-
     @Override
     public ResourceLocation getResourceLocation() {
         return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_placement");
@@ -46,7 +39,7 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPos() {
+    public List<Integer> getPoslist() {
         return List.of();
     }
 
@@ -55,25 +48,25 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
         return false;
     }
 
+    @Override
+    public IHotpotPlacementFactory<?> getFactory() {
+        return HotpotPlacements.getEmptyPlacementFactory();
+    }
+
     public static class Factory implements IHotpotPlacementFactory<HotpotEmptyPlacement> {
         @Override
-        public HotpotEmptyPlacement buildFromSlots(int pos, Direction direction, HolderLookup.Provider registryAccess) {
+        public HotpotEmptyPlacement buildFromSlots(int pos, Direction direction) {
             return build();
         }
 
         @Override
-        public HotpotEmptyPlacement buildFromTag(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return build();
+        public MapCodec<HotpotEmptyPlacement> buildFromCodec() {
+            return MapCodec.unit(this::build);
         }
 
         @Override
         public boolean canPlace(int pos, Direction direction) {
             return false;
-        }
-
-        @Override
-        public boolean isValid(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return true;
         }
 
         public HotpotEmptyPlacement build() {

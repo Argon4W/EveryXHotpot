@@ -11,7 +11,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -24,13 +23,11 @@ import java.util.Optional;
 public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        Optional<ResourceLocation> soupResourceLocation = HotpotPaperBowlItem.getPaperBowlSoup(itemStack);
-
-        if (soupResourceLocation.isEmpty()) {
+        if (HotpotPaperBowlItem.isPaperBowlEmpty(itemStack)) {
             return;
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(soupResourceLocation.get());
+        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoup(itemStack).resourceLocation());
 
         if (soupRendererConfig == HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG) {
             return;
@@ -195,7 +192,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
     }
 
     @Override
-    public Optional<ModelResourceLocation> getDefaultItemModelResourceLocation() {
-        return Optional.of(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model")));
+    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
     }
 }

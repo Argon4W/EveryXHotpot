@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.soups;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
@@ -9,13 +9,6 @@ import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupDiscardOverflowSy
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupTickSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupWaterLevelSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -33,13 +26,13 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     public abstract boolean canItemEnter(ItemEntity itemEntity);
 
     @Override
-    public Optional<IHotpotContent> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContentFactory<?>> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         if (!itemStack.isEmpty()) {
             return remapItemStack(player.getAbilities().instabuild, itemStack, hotpotBlockEntity, selfPos);
         }
 
         if (player.isCrouching() && hotpotBlockEntity.canBeRemoved()) {
-            hotpotBlockEntity.setSoup(HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.buildEmptySoup(), selfPos);
+            hotpotBlockEntity.setSoup(HotpotSoupTypes.buildEmptySoup(), selfPos);
             hotpotBlockEntity.onRemove(selfPos);
 
             return Optional.empty();
@@ -86,7 +79,7 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
                 return;
             }
 
-            remapItemStack(false, stack, hotpotBlockEntity, selfPos).ifPresent(content -> hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getHitPos(selfPos.pos(), itemEntity.position()), content, selfPos));
+            remapItemStack(false, stack, hotpotBlockEntity, selfPos).ifPresent(factory -> hotpotBlockEntity.tryPlaceContent(HotpotBlockEntity.getHitPos(selfPos.pos(), itemEntity.position()), () -> factory.buildFromItem(stack, hotpotBlockEntity), selfPos));
             itemEntity.setItem(stack);
 
             return;

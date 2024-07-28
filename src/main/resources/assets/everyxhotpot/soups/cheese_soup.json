@@ -6,7 +6,7 @@
       "spread": 0.35,
       "max_scale": 0.6,
       "amount": 55,
-      "bubble_model_location": "everyxhotpot:soup/hotpot_cheese_soup_bubble",
+      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_cheese_soup_bubble",
       "should_render_in_bowl": false
     }
   ],

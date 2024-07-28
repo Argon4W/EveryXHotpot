@@ -1,12 +1,13 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -19,33 +20,24 @@ public class HotpotLongPlate implements IHotpotPlacement {
     private final int pos2;
     private final Direction direction;
 
-    private final SimpleItemSlot itemSlot1 = new SimpleItemSlot();
-    private final SimpleItemSlot itemSlot2 = new SimpleItemSlot();
+    private final SimpleItemSlot itemSlot1;
+    private final SimpleItemSlot itemSlot2;
 
     public HotpotLongPlate(int pos, Direction direction) {
         this.pos1 = pos;
         this.pos2 = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
+        this.itemSlot1 = new SimpleItemSlot();
+        this.itemSlot2 = new SimpleItemSlot();
     }
 
-    public HotpotLongPlate(int pos1, int pos2, CompoundTag itemSlotTag1, CompoundTag itemSlotTag2, HolderLookup.Provider registryAccess) {
+    public HotpotLongPlate(int pos1, int pos2, SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2) {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(pos2 - pos1);
 
-        itemSlot1.load(itemSlotTag1, registryAccess);
-        itemSlot2.load(itemSlotTag2, registryAccess);
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        compoundTag.putByte("Pos1", (byte) pos1);
-        compoundTag.putByte("Pos2", (byte) pos2);
-
-        compoundTag.put("ItemSlot1", itemSlot1.save(new CompoundTag(), registryAccess));
-        compoundTag.put("ItemSlot2", itemSlot2.save(new CompoundTag(), registryAccess));
-
-        return compoundTag;
+        this.itemSlot1 = itemSlot1;
+        this.itemSlot2 = itemSlot2;
     }
 
     @Override
@@ -96,13 +88,18 @@ public class HotpotLongPlate implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPos() {
+    public List<Integer> getPoslist() {
         return List.of(pos1, pos2);
     }
 
     @Override
     public boolean isConflict(int pos) {
         return pos1 == pos || pos2 == pos;
+    }
+
+    @Override
+    public IHotpotPlacementFactory<?> getFactory() {
+        return HotpotPlacements.LONG_PLATE.get();
     }
 
     public int getPos1() {
@@ -126,20 +123,23 @@ public class HotpotLongPlate implements IHotpotPlacement {
     }
 
     public static class Factory implements IHotpotPlacementFactory<HotpotLongPlate> {
+        public static final MapCodec<HotpotLongPlate> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(plate -> plate.group(
+                        Codec.INT.fieldOf("Pos1").forGetter(HotpotLongPlate::getPos1),
+                        Codec.INT.fieldOf("Pos2").forGetter(HotpotLongPlate::getPos2),
+                        SimpleItemSlot.CODEC.fieldOf("ItemSlot1").forGetter(HotpotLongPlate::getItemSlot1),
+                        SimpleItemSlot.CODEC.fieldOf("ItemSlot1").forGetter(HotpotLongPlate::getItemSlot2)
+                ).apply(plate, HotpotLongPlate::new))
+        );
 
         @Override
-        public HotpotLongPlate buildFromSlots(int pos, Direction direction, HolderLookup.Provider registryAccess) {
+        public HotpotLongPlate buildFromSlots(int pos, Direction direction) {
             return new HotpotLongPlate(pos, direction);
         }
 
         @Override
-        public HotpotLongPlate buildFromTag(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return new HotpotLongPlate(compoundTag.getByte("Pos1"), compoundTag.getByte("Pos2"), compoundTag.getCompound("ItemSlot1"), compoundTag.getCompound("ItemSlot2"), registryAccess);
-        }
-
-        @Override
-        public boolean isValid(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return compoundTag.contains("Pos1", Tag.TAG_BYTE) && compoundTag.contains("Pos2", Tag.TAG_BYTE) && compoundTag.contains("ItemSlot1", Tag.TAG_COMPOUND) && compoundTag.contains("ItemSlot2", Tag.TAG_COMPOUND);
+        public MapCodec<HotpotLongPlate> buildFromCodec() {
+            return CODEC;
         }
 
         @Override

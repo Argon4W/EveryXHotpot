@@ -3,21 +3,18 @@ package com.github.argon4w.hotpot.soups;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
-import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
 import java.util.Optional;
 
 public class HotpotDisassemblingRecipeSoupTypeRecipeSoupType extends AbstractHotpotFluidBasedSoupType {
@@ -49,8 +46,8 @@ public class HotpotDisassemblingRecipeSoupTypeRecipeSoupType extends AbstractHot
     }
 
     @Override
-    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return Optional.of(HotpotContents.DISASSEMBLING_RECIPE_CONTENT.get().buildFromItem(itemStack, hotpotBlockEntity));
+    public Optional<IHotpotContentFactory<?>> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return Optional.of(HotpotContents.DISASSEMBLING_RECIPE_CONTENT.get());
     }
 
     @Override
@@ -102,21 +99,21 @@ public class HotpotDisassemblingRecipeSoupTypeRecipeSoupType extends AbstractHot
 
     public static class Serializer implements IHotpotSoupFactorySerializer<HotpotDisassemblingRecipeSoupTypeRecipeSoupType> {
         public static final StreamCodec<RegistryFriendlyByteBuf, Factory> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.FLOAT, Factory::waterLevelDropRate,
-                Factory::new
+                ByteBufCodecs.FLOAT, HotpotDisassemblingRecipeSoupTypeRecipeSoupType.Factory::waterLevelDropRate,
+                HotpotDisassemblingRecipeSoupTypeRecipeSoupType.Factory::new
         );
 
         public static final MapCodec<Factory> CODEC = RecordCodecBuilder.mapCodec(factory -> factory.group(
-                Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(Factory::waterLevelDropRate)
-        ).apply(factory, Factory::new));
+                Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(HotpotDisassemblingRecipeSoupTypeRecipeSoupType.Factory::waterLevelDropRate)
+        ).apply(factory, HotpotDisassemblingRecipeSoupTypeRecipeSoupType.Factory::new));
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupFactory<HotpotDisassemblingRecipeSoupTypeRecipeSoupType>> getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupTypeFactory<HotpotDisassemblingRecipeSoupTypeRecipeSoupType>> getStreamCodec() {
             return STREAM_CODEC;
         }
 
         @Override
-        public MapCodec<? extends IHotpotSoupFactory<HotpotDisassemblingRecipeSoupTypeRecipeSoupType>> getCodec() {
+        public MapCodec<? extends IHotpotSoupTypeFactory<HotpotDisassemblingRecipeSoupTypeRecipeSoupType>> getCodec() {
             return CODEC;
         }
     }

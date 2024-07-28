@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.actions;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class HotpotSoupConsumeAction implements IHotpotSoupIngredientAction {
     @Override
-    public IHotpotContent action(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, IHotpotSoupType source, IHotpotSoupType target) {
+    public IHotpotContent action(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, IHotpotSoupType sourceSoup, IHotpotSoupType resultSoup) {
         return HotpotContents.buildEmptyContent();
     }
 

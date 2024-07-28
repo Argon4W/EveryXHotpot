@@ -1,0 +1,22 @@
+{
+  "type": "everyxhotpot:cooking_recipe_soup",
+  "sprite_processor": "everyxhotpot:heavy_sauced_processor",
+  "water_level_drop_rate": 0.03,
+  "saved_effects": [
+    {
+      "id": "everyxhotpot:warm",
+      "amplifier": 0,
+      "duration": 300
+    },
+    {
+      "id": "minecraft:absorption",
+      "amplifier": 2,
+      "duration": 400
+    },
+    {
+      "id": "minecraft:strength",
+      "amplifier": 2,
+      "duration": 400
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "everyxhotpot:hotpot_soup_base_recipe",
+  "source_soup": "everyxhotpot:empty_soup",
+  "result_soup": "everyxhotpot:lava_soup",
+  "result_waterlevel": 1,
+  "ingredient": {
+    "item": "minecraft:lava_bucket"
+  },
+  "remaining_item": {
+    "id": "minecraft:bucket"
+  },
+  "sound_event": "item.bucket.empty_lava"
+}

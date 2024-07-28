@@ -20,7 +20,7 @@ public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return new ResourceLocation(HotpotModEntry.MODID, "empty_sprite_processor");
+        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
     }
 
     @Override
-    public int processColor(ItemStack itemStack) {
+    public int getColor(ItemStack itemStack) {
         return -1;
     }
 }

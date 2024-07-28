@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.conditions;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
@@ -13,6 +14,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotSoupIngredientCondition {
     @Override
@@ -26,13 +28,17 @@ public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotS
     }
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupItemCondition> {
-        public static final MapCodec<HotpotSoupItemCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
-                Ingredient.CODEC.fieldOf("predicate").forGetter(HotpotSoupItemCondition::ingredient)
-        ).apply(condition, HotpotSoupItemCondition::new));
+        public static final MapCodec<HotpotSoupItemCondition> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(condition -> condition.group(
+                        Ingredient.CODEC.fieldOf("predicate").forGetter(HotpotSoupItemCondition::ingredient)
+                ).apply(condition, HotpotSoupItemCondition::new))
+        );
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> STREAM_CODEC = StreamCodec.composite(
-                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupItemCondition::ingredient,
-                HotpotSoupItemCondition::new
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
+                StreamCodec.composite(
+                        Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupItemCondition::ingredient,
+                        HotpotSoupItemCondition::new
+                )
         );
 
         @Override

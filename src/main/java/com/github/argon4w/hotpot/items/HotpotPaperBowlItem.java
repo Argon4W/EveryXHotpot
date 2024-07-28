@@ -1,16 +1,16 @@
 package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
+import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacements;
-import com.github.argon4w.hotpot.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.soups.HotpotEmptySoupType;
+import com.github.argon4w.hotpot.soups.HotpotWrappedSoupTypeTypeFactory;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.nbt.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,13 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHotpotItemContainer {
+public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPaperBowl> implements IHotpotItemContainer {
     public HotpotPaperBowlItem() {
-        super(HotpotPlacements.PLACED_PAPER_BOWL);
+        super(HotpotPlacements.PLACED_PAPER_BOWL, new Properties().stacksTo(64).component(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
     }
 
     @Override
@@ -38,111 +36,90 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
     }
 
     @Override
-    public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placement, ItemStack itemStack) {
-        if (placement instanceof HotpotPlacedPaperBowl placedPaperBowl) {
-            placedPaperBowl.setPaperBowlItemSlot(itemStack.copyWithCount(1));
-        }
+    public void loadPlacement(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, HotpotPlacedPaperBowl placement, ItemStack itemStack) {
+        placement.setPaperBowlItemSlot(itemStack.copyWithCount(1));
+    }
+
+    @Override
+    public int getMaxStackSize(ItemStack itemStack) {
+        return isPaperBowlClear(itemStack) ? super.getMaxStackSize(itemStack) : 1;
     }
 
     @NotNull
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-        ArrayList<ItemStack> itemStacks = new ArrayList<>(getPaperBowlItems(itemStack));
-        boolean skewer = false;
 
-        if (itemStacks.isEmpty()) {
-            skewer = true;
-            itemStacks = new ArrayList<>(getPaperBowlSkewers(itemStack));
+        if (isPaperBowlClear(itemStack)) {
+            return InteractionResultHolder.success(itemStack);
         }
+
+        ArrayList<ItemStack> items = new ArrayList<>(getPaperBowlItems(itemStack));
+        ArrayList<ItemStack> skewers = new ArrayList<>(getPaperBowlSkewers(itemStack));
+
+        List<ItemStack> itemStacks = skewers.isEmpty() ? items : skewers;
 
         if (itemStacks.isEmpty()) {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
 
-        ItemStack firstItemStack = itemStacks.get(0);
+        ItemStack firstItemStack = itemStacks.getFirst();
 
-        if (firstItemStack.isEmpty()) {
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
-        }
-
-        if (canEatInBowl(firstItemStack) && player.canEat(true)) {
+        if (canEatInPaperBowl(firstItemStack) && player.canEat(true)) {
             player.startUsingItem(hand);
             return InteractionResultHolder.consume(itemStack);
         }
 
         addToInventory(player, firstItemStack);
-        itemStacks.remove(0);
+        itemStacks.removeFirst();
 
-        if (skewer) {
-            setPaperBowlSkewers(itemStack, itemStacks);
-        } else {
-            setPaperBowlItems(itemStack, itemStacks);
-        }
+        setPaperBowlItems(itemStack, items);
+        setPaperBowlSkewers(itemStack, skewers);
 
-        if (isBowlEmpty(itemStack)) {
+        if (isPaperBowlEmpty(itemStack)) {
             itemStack.shrink(1);
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
-
 
         return InteractionResultHolder.pass(player.getItemInHand(hand));
-    }
-
-    @Override
-    public int getMaxStackSize(ItemStack itemStack) {
-        if (isBowlClear(itemStack)) {
-            return super.getMaxStackSize(itemStack);
-        }
-
-        return  1;
     }
 
     @NotNull
     @Override
     public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity) {
-        ArrayList<ItemStack> itemStacks = new ArrayList<>(getPaperBowlItems(itemStack));
-        boolean skewer = false;
-
         if (!(livingEntity instanceof Player player)) {
             return itemStack;
         }
 
-        if (itemStacks.isEmpty()) {
-            skewer = true;
-            itemStacks = new ArrayList<>(getPaperBowlSkewers(itemStack));
+        if (isPaperBowlClear(itemStack)) {
+            return itemStack;
         }
+
+        ArrayList<ItemStack> items = new ArrayList<>(getPaperBowlItems(itemStack));
+        ArrayList<ItemStack> skewers = new ArrayList<>(getPaperBowlSkewers(itemStack));
+
+        List<ItemStack> itemStacks = skewers.isEmpty() ? items : skewers;
 
         if (itemStacks.isEmpty()) {
             return itemStack;
         }
 
-        ItemStack foodItemStack = itemStacks.get(0);
+        ItemStack firstItemStack = itemStacks.getFirst();
 
-        if (foodItemStack.isEmpty()) {
-            return itemStack;
+        if (canEatInPaperBowl(firstItemStack)) {
+            itemStacks.set(0, firstItemStack.finishUsingItem(level, player));
         }
 
-        if (canEatInBowl(foodItemStack)) {
-            itemStacks.set(0, foodItemStack.finishUsingItem(level, livingEntity));
+        firstItemStack = itemStacks.getFirst();
+
+        if (!canEatInPaperBowl(firstItemStack)) {
+            addToInventory(player, firstItemStack);
+            itemStacks.removeFirst();
         }
 
-        if (!canEatInBowl(itemStacks.get(0))) {
-            addToInventory(player, itemStacks.get(0));
-            itemStacks.set(0, ItemStack.EMPTY);
-        }
+        setPaperBowlItems(itemStack, items);
+        setPaperBowlSkewers(itemStack, skewers);
 
-        if (itemStacks.get(0).isEmpty()) {
-            itemStacks.remove(0);
-        }
-
-        if (skewer) {
-            setPaperBowlSkewers(itemStack, itemStacks);
-        } else {
-            setPaperBowlItems(itemStack, itemStacks);
-        }
-
-        if (isBowlEmpty(itemStack)) {
+        if (isPaperBowlEmpty(itemStack)) {
             return ItemStack.EMPTY;
         }
 
@@ -162,13 +139,13 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
             return UseAnim.NONE;
         }
 
-        ItemStack foodItemStack = itemStacks.get(0);
+        ItemStack foodItemStack = itemStacks.getFirst();
 
         if (foodItemStack.isEmpty()) {
             return UseAnim.NONE;
         }
 
-        if (canEatInBowl(foodItemStack)) {
+        if (canEatInPaperBowl(foodItemStack)) {
             return foodItemStack.getUseAnimation();
         }
 
@@ -176,7 +153,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
     }
 
     @Override
-    public int getUseDuration(ItemStack itemStack) {
+    public int getUseDuration(ItemStack itemStack, LivingEntity livingEntity) {
         List<ItemStack> itemStacks = getPaperBowlItems(itemStack);
 
         if (itemStacks.isEmpty()) {
@@ -187,31 +164,21 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
             return 0;
         }
 
-        ItemStack foodItemStack = itemStacks.get(0);
+        ItemStack foodItemStack = itemStacks.getFirst();
 
         if (foodItemStack.isEmpty()) {
             return 0;
         }
 
-        if (!canEatInBowl(foodItemStack)) {
+        if (!canEatInPaperBowl(foodItemStack)) {
             return 0;
         }
 
         if (isPaperBowlDrained(itemStack)) {
-            return foodItemStack.getUseDuration();
+            return foodItemStack.getUseDuration(livingEntity);
         }
 
-        return (int) (foodItemStack.getUseDuration() * 1.5f);
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return HotpotModEntry.HOTPOT_SPECIAL_ITEM_RENDERER;
-            }
-        });
+        return (int) (foodItemStack.getUseDuration(livingEntity) * 1.5f);
     }
 
     @Override
@@ -226,7 +193,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
             return ItemStack.EMPTY;
         }
 
-        ItemStack containedItemStack = itemStacks.get(0);
+        ItemStack containedItemStack = itemStacks.getFirst();
 
         if (containedItemStack.getItem() instanceof IHotpotItemContainer itemContainer) {
             return itemContainer.getContainedItemStack(containedItemStack);
@@ -237,11 +204,11 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
 
     @Override
     public String getDescriptionId(ItemStack itemStack) {
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+        if (isPaperBowlEmpty(itemStack)) {
             return super.getDescriptionId(itemStack);
         }
 
-        if (HotpotTagsHelper.getHotpotTags(itemStack).contains("BowlSkewers")) {
+        if (!getPaperBowlSkewers(itemStack).isEmpty()) {
             return super.getDescriptionId(itemStack) + ".skewer";
         }
 
@@ -252,121 +219,81 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem implements IHo
         return super.getDescriptionId(itemStack) + ".hotpot";
     }
 
-    public static void setPaperBowlItems(ItemStack itemStack, List<ItemStack> itemStacks) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "BowlItems", itemStacks.stream()
-                .filter(item -> !item.isEmpty())
-                .map(HotpotTagsHelper::saveItemStack)
-                .collect(Collectors.toCollection(ListTag::new)));
+    public static boolean isFood(ItemStack itemStack) {
+        return itemStack.has(DataComponents.FOOD);
     }
 
-    public static void setPaperBowlSkewers(ItemStack itemStack, List<ItemStack> itemStacks) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "BowlSkewers", itemStacks.stream()
-                .filter(item -> !item.isEmpty())
-                .map(HotpotTagsHelper::saveItemStack)
-                .collect(Collectors.toCollection(ListTag::new)));
+    public static boolean canEatInPaperBowl(ItemStack itemStack) {
+        return isFood(itemStack) || (itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && !HotpotSkewerItem.isSkewerEmpty(itemStack));
     }
 
-    public static void setPaperBowlSoup(ItemStack itemStack, IHotpotSoupType soupType) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "BowlSoup", StringTag.valueOf(soupType.getResourceLocation().toString()));
+    public static boolean isPaperBowlEmpty(ItemStack itemStack) {
+        return getDataComponent(itemStack).isPaperBowlEmpty();
     }
 
-    public static void setPaperBowlDrained(ItemStack itemStack, boolean drained) {
-        HotpotTagsHelper.updateHotpotTags(itemStack, "BowlSoupDrained", ByteTag.valueOf(drained));
+    public static boolean isPaperBowlUsed(ItemStack itemStack) {
+        return itemStack.isEmpty() || ( isPaperBowlEmpty(itemStack) && !isPaperBowlSoupEmpty(itemStack));
+    }
+
+    public static boolean isPaperBowlClear(ItemStack itemStack) {
+        return isPaperBowlEmpty(itemStack) && isPaperBowlSoupEmpty(itemStack);
     }
 
     public static List<ItemStack> getPaperBowlItems(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_PAPER_BOWL.get())) {
-            return List.of();
-        }
+        return List.copyOf(getDataComponent(itemStack).items());
+    }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return List.of();
-        }
-
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("BowlItems", Tag.TAG_LIST)) {
-            return List.of();
-        }
-
-        return HotpotTagsHelper.getHotpotTags(itemStack).getList("BowlItems", Tag.TAG_COMPOUND)
-                .stream()
-                .map(tag -> ItemStack.of((CompoundTag) tag))
-                .filter(item -> !item.isEmpty())
-                .toList();
+    public static boolean isPaperBowlItemsClear(ItemStack itemStack) {
+        return getDataComponent(itemStack).items().isEmpty();
     }
 
     public static List<ItemStack> getPaperBowlSkewers(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_PAPER_BOWL.get())) {
-            return List.of();
-        }
-
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return List.of();
-        }
-
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("BowlSkewers", Tag.TAG_LIST)) {
-            return List.of();
-        }
-
-        return HotpotTagsHelper.getHotpotTags(itemStack).getList("BowlSkewers", Tag.TAG_COMPOUND)
-                .stream()
-                .map(tag -> ItemStack.of((CompoundTag) tag))
-                .filter(item -> !item.isEmpty())
-                .toList();
+        return List.copyOf(getDataComponent(itemStack).skewers());
     }
 
-    public static Optional<ResourceLocation> getPaperBowlSoup(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_PAPER_BOWL.get())) {
-            return Optional.empty();
-        }
+    public static boolean isPaperBowlSkewersClear(ItemStack itemStack) {
+        return getDataComponent(itemStack).skewers().isEmpty();
+    }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return Optional.empty();
-        }
+    public static boolean isPaperBowlSoupEmpty(ItemStack itemStack) {
+        return getPaperBowlSoup(itemStack).factory() instanceof HotpotEmptySoupType.Factory;
+    }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("BowlSoup", Tag.TAG_STRING)) {
-            return Optional.empty();
-        }
-
-        String bowlSoup = HotpotTagsHelper.getHotpotTags(itemStack).getString("BowlSoup");
-
-        if (!ResourceLocation.isValidResourceLocation(bowlSoup)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(new ResourceLocation(bowlSoup));
+    public static HotpotWrappedSoupTypeTypeFactory<?> getPaperBowlSoup(ItemStack itemStack) {
+        return getDataComponent(itemStack).soupTypeFactory();
     }
 
     public static boolean isPaperBowlDrained(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_PAPER_BOWL.get())) {
-            return false;
-        }
+        return getDataComponent(itemStack).drained();
+    }
 
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
-            return false;
-        }
+    public static HotpotPaperBowlDataComponent getDataComponent(ItemStack itemStack) {
+        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY);
+    }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("BowlSoupDrained", Tag.TAG_ANY_NUMERIC)) {
-            return false;
-        }
+    public static void setDataComponent(ItemStack itemStack, HotpotPaperBowlDataComponent dataComponent) {
+        itemStack.set(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, dataComponent);
+    }
 
-        return HotpotTagsHelper.getHotpotTags(itemStack).getBoolean("BowlSoupDrained");
+    public static void setPaperBowlItems(ItemStack itemStack, List<ItemStack> items) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setItems(items));
+    }
+
+    public static void setPaperBowlSkewers(ItemStack itemStack, List<ItemStack> skewers) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setSkewers(skewers));
+    }
+
+    public static void setPaperBowlSoup(ItemStack itemStack, IHotpotSoupType soupType) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setSoupType(soupType));
+    }
+
+    public static void setPaperBowlDrained(ItemStack itemStack, boolean drained) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setDrained(drained));
     }
 
     public static void addToInventory(Player player, ItemStack itemStack) {
         if (!player.getInventory().add(itemStack)) {
             player.drop(itemStack, false);
         }
-    }
-
-    public static boolean canEatInBowl(ItemStack itemStack) {
-        return itemStack.isEdible() || (itemStack.getItem() instanceof HotpotSkewerItem && !HotpotSkewerItem.isSkewerEmpty(itemStack));
-    }
-
-    public static boolean isBowlEmpty(ItemStack itemStack) {
-        return (getPaperBowlItems(itemStack).size() + getPaperBowlSkewers(itemStack).size()) == 0;
-    }
-
-    public static boolean isBowlClear(ItemStack itemStack) {
-        return isBowlEmpty(itemStack) && getPaperBowlSoup(itemStack).isEmpty();
     }
 }

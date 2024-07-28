@@ -1,12 +1,13 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -18,28 +19,20 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     private final int pos1;
     private final int pos2;
     private final Direction direction;
-    private final SimpleItemSlot chopstickItemSlot = new SimpleItemSlot();
+    private final SimpleItemSlot chopstickItemSlot;
 
     public HotpotPlacedChopstick(int pos, Direction direction) {
         this.pos1 = pos;
         this.pos2 = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
+        this.chopstickItemSlot = new SimpleItemSlot();
     }
 
-    public HotpotPlacedChopstick(int pos1, int pos2, CompoundTag itemSlotTag, HolderLookup.Provider registryAccess) {
+    public HotpotPlacedChopstick(int pos1, int pos2, SimpleItemSlot chopstickItemSlot) {
         this.pos1 = pos1;
         this.pos2 = pos2;
+        this.chopstickItemSlot = chopstickItemSlot;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(pos2 - pos1);
-        this.chopstickItemSlot.load(itemSlotTag, registryAccess);
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        compoundTag.putByte("Pos1", (byte) pos1);
-        compoundTag.putByte("Pos2", (byte) pos2);
-        compoundTag.put("Chopstick", chopstickItemSlot.save(new CompoundTag(), registryAccess));
-
-        return compoundTag;
     }
 
     @Override
@@ -68,13 +61,18 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPos() {
+    public List<Integer> getPoslist() {
         return List.of(pos1, pos2);
     }
 
     @Override
     public boolean isConflict(int pos) {
         return pos1 == pos || pos2 == pos;
+    }
+
+    @Override
+    public IHotpotPlacementFactory<?> getFactory() {
+        return HotpotPlacements.PLACED_CHOPSTICK.get();
     }
 
     public void setChopstickItemSlot(ItemStack chopstickItemSlot) {
@@ -98,20 +96,22 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     public static class Factory implements IHotpotPlacementFactory<HotpotPlacedChopstick> {
+        public static final MapCodec<HotpotPlacedChopstick> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(chopstick -> chopstick.group(
+                        Codec.INT.fieldOf("Pos1").forGetter(HotpotPlacedChopstick::getPos1),
+                        Codec.INT.fieldOf("Pos2").forGetter(HotpotPlacedChopstick::getPos2),
+                        SimpleItemSlot.CODEC.fieldOf("Chopstick").forGetter(HotpotPlacedChopstick::getChopstickItemSlot)
+                ).apply(chopstick, HotpotPlacedChopstick::new))
+        );
 
         @Override
-        public HotpotPlacedChopstick buildFromSlots(int pos, Direction direction, HolderLookup.Provider registryAccess) {
+        public HotpotPlacedChopstick buildFromSlots(int pos, Direction direction) {
             return new HotpotPlacedChopstick(pos, direction);
         }
 
         @Override
-        public HotpotPlacedChopstick buildFromTag(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return new HotpotPlacedChopstick(compoundTag.getByte("Pos1"), compoundTag.getByte("Pos2"), compoundTag.getCompound("Chopstick"), registryAccess);
-        }
-
-        @Override
-        public boolean isValid(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-            return compoundTag.contains("Pos1", Tag.TAG_BYTE) && compoundTag.contains("Pos2", Tag.TAG_BYTE) && compoundTag.contains("Chopstick", Tag.TAG_COMPOUND);
+        public MapCodec<HotpotPlacedChopstick> buildFromCodec() {
+            return CODEC;
         }
 
         @Override

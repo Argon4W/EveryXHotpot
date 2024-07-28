@@ -5,6 +5,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
 public interface IHotpotSoupFactorySerializer<T extends IHotpotSoupType> {
-    MapCodec<? extends IHotpotSoupFactory<T>> getCodec();
-    StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupFactory<T>> getStreamCodec();
+    MapCodec<? extends IHotpotSoupTypeFactory<T>> getCodec();
+    StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupTypeFactory<T>> getStreamCodec();
 }

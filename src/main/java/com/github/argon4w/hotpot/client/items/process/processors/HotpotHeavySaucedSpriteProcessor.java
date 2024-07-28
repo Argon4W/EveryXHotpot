@@ -16,7 +16,7 @@ public class HotpotHeavySaucedSpriteProcessor extends AbstractHotpotHalfSaucedSp
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return new ResourceLocation(HotpotModEntry.MODID, "heavy_sauced_processor");
+        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "heavy_sauced_processor");
     }
 
     @Override

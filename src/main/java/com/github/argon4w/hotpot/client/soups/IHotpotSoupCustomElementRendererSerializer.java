@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.soups;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
 
 public interface IHotpotSoupCustomElementRendererSerializer<T extends IHotpotSoupCustomElementRenderer> {
-    T fromJson(JsonObject jsonObject);
+    MapCodec<T> getCodec();
 }

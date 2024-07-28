@@ -1,16 +1,16 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
-import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
-import com.github.argon4w.hotpot.placements.HotpotPlacements;
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
+import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
-import com.github.argon4w.hotpot.placements.IHotpotPlacement;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import com.github.argon4w.hotpot.placements.HotpotPlacements;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHotpotTablewareItem, IHotpotItemContainer {
+public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedChopstick> implements IHotpotTablewareItem, IHotpotItemContainer {
     public HotpotChopstickItem() {
-        super(HotpotPlacements.PLACED_CHOPSTICK, new Properties().stacksTo(1).component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, new HotpotChopstickDataComponent(ItemStack.EMPTY)));
+        super(HotpotPlacements.PLACED_CHOPSTICK, new Properties().stacksTo(1).component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY));
     }
 
     @Override
@@ -33,10 +33,18 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
     }
 
     @Override
-    public void fillPlacementData(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, IHotpotPlacement placement, ItemStack itemStack) {
-        if (placement instanceof HotpotPlacedChopstick placedChopstick) {
-            placedChopstick.setChopstickItemSlot(itemStack);
-        }
+    public void loadPlacement(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, HotpotPlacedChopstick placement, ItemStack itemStack) {
+        placement.setChopstickItemSlot(itemStack);
+    }
+
+    @Override
+    public ItemStack getContainedItemStack(ItemStack itemStack) {
+        return getHeldItemStack(itemStack.copy());
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack pStack, Player pPlayer, LivingEntity pInteractionTarget, InteractionHand pUsedHand) {
+        return super.interactLivingEntity(pStack, pPlayer, pInteractionTarget, pUsedHand);
     }
 
     @NotNull
@@ -49,7 +57,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
 
-        if (heldItemStack.has(DataComponents.FOOD) && player.canEat(true)) {
+        if (isFood(heldItemStack) && player.canEat(true)) {
             player.startUsingItem(hand);
             return InteractionResultHolder.consume(itemStack);
         }
@@ -72,7 +80,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return itemStack;
         }
 
-        if (heldItemStack.has(DataComponents.FOOD)) {
+        if (isFood(heldItemStack)) {
             setHeldItemStack(itemStack, heldItemStack.finishUsingItem(level, livingEntity));
         }
 
@@ -88,7 +96,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return UseAnim.NONE;
         }
 
-        if (heldItemStack.has(DataComponents.FOOD)) {
+        if (isFood(heldItemStack)) {
             return heldItemStack.getUseAnimation();
         }
 
@@ -103,21 +111,11 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
             return 0;
         }
 
-        if (heldItemStack.has(DataComponents.FOOD)) {
+        if (isFood(heldItemStack)) {
             return 8;
         }
 
         return 0;
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return HotpotModEntry.HOTPOT_SPECIAL_ITEM_RENDERER;
-            }
-        });
     }
 
     @Override
@@ -127,39 +125,38 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem implements IHo
         }
 
         ItemStack heldItemStack = HotpotChopstickItem.getHeldItemStack(itemStack);
-
-        if (heldItemStack.isEmpty()) {
-            heldItemStack = blockEntity.tryTakeOutContentViaTableware(player, hitPos, selfPos);
-        } else {
-            heldItemStack = blockEntity.tryPlaceContentViaTableware(hitPos, player, hand, heldItemStack, selfPos);
-        }
+        heldItemStack = heldItemStack.isEmpty() ? blockEntity.tryTakeOutContentViaTableware(player, hitPos, selfPos) : blockEntity.tryPlaceContentViaTableware(hitPos, player, hand, heldItemStack, selfPos);
 
         if (heldItemStack.getItem().canFitInsideContainerItems()) {
             HotpotChopstickItem.setHeldItemStack(itemStack, heldItemStack);
-        } else {
-            selfPos.dropItemStack(heldItemStack);
-            HotpotChopstickItem.setHeldItemStack(itemStack, ItemStack.EMPTY);
+            return;
         }
+
+        selfPos.dropItemStack(heldItemStack);
+        HotpotChopstickItem.setHeldItemStack(itemStack, ItemStack.EMPTY);
     }
 
-    @Override
-    public ItemStack getContainedItemStack(ItemStack itemStack) {
-        return getHeldItemStack(itemStack.copy());
+    public static boolean isFood(ItemStack itemStack) {
+        return itemStack.has(DataComponents.FOOD);
+    }
+
+    public static boolean hasDataComponent(ItemStack itemStack) {
+        return itemStack.has(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT);
+    }
+
+    public static HotpotChopstickDataComponent getDataComponent(ItemStack itemStack) {
+        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY);
+    }
+
+    public static void setDataComponent(ItemStack itemStack, HotpotChopstickDataComponent dataComponent) {
+        itemStack.set(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, dataComponent);
     }
 
     public static void setHeldItemStack(ItemStack chopstick, ItemStack itemStack) {
-        itemStack.set(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, new HotpotChopstickDataComponent(itemStack));
+        setDataComponent(chopstick, new HotpotChopstickDataComponent(itemStack.copy()));
     }
 
     public static ItemStack getHeldItemStack(ItemStack itemStack) {
-        if (!itemStack.is(HotpotModEntry.HOTPOT_CHOPSTICK)) {
-            return ItemStack.EMPTY;
-        }
-
-        if (!itemStack.has(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT)) {
-            return ItemStack.EMPTY;
-        }
-
-        return itemStack.get(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT).itemStack().copy();
+        return getDataComponent(itemStack).itemStack().copy();
     }
 }

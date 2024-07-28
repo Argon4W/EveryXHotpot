@@ -3,8 +3,8 @@
   "custom_elements_renderers": [
     {
       "type": "everyxhotpot:floating_element_renderer",
-      "element1_resource_location": "everyxhotpot:soup/hotpot_tomato_soup_floating_tomato_1",
-      "element2_resource_location": "everyxhotpot:soup/hotpot_tomato_soup_floating_tomato_2",
+      "element1_model_resource_location": "everyxhotpot:soup/hotpot_tomato_soup_floating_tomato_1",
+      "element2_model_resource_location": "everyxhotpot:soup/hotpot_tomato_soup_floating_tomato_2",
       "should_render_in_bowl": true
     },
     {
@@ -12,7 +12,7 @@
       "spread": 0.3,
       "max_scale": 0.85,
       "amount": 50,
-      "bubble_model_location": "everyxhotpot:soup/hotpot_tomato_soup_bubble",
+      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_tomato_soup_bubble",
       "should_render_in_bowl": false
     }
   ]

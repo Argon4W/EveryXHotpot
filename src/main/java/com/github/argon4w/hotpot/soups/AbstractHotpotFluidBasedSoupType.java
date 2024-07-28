@@ -1,20 +1,19 @@
 package com.github.argon4w.hotpot.soups;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRechargeRecipe;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupActivenessSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -55,7 +54,7 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
     }
 
     @Override
-    public Optional<IHotpotContent> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContentFactory<?>> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         for (RecipeHolder<HotpotSoupRechargeRecipe> holder : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get())) {
             HotpotSoupRechargeRecipe recipe = holder.value();
 
@@ -111,7 +110,7 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
         return list;
     }
 
-    public static abstract class Factory<T extends AbstractHotpotFluidBasedSoupType> implements IHotpotSoupFactory<T> {
+    public static abstract class Factory<T extends AbstractHotpotFluidBasedSoupType> implements IHotpotSoupTypeFactory<T> {
         public abstract T buildFrom(ResourceLocation resourceLocation, float waterLevel, float overflowWaterLevel, float activeness);
 
         @Override

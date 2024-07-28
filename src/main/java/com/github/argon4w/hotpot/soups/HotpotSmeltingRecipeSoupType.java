@@ -3,11 +3,10 @@ package com.github.argon4w.hotpot.soups;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
-import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -40,8 +39,8 @@ public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupTy
     }
 
     @Override
-    public Optional<IHotpotContent> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return Optional.of(HotpotContents.SMELTING_RECIPE_CONTENT.get().buildFromItem(itemStack, hotpotBlockEntity));
+    public Optional<IHotpotContentFactory<?>> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return Optional.of(HotpotContents.SMELTING_RECIPE_CONTENT.get());
     }
 
     @Override
@@ -93,21 +92,21 @@ public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupTy
 
     public static class Serializer implements IHotpotSoupFactorySerializer<HotpotSmeltingRecipeSoupType> {
         public static final StreamCodec<RegistryFriendlyByteBuf, Factory> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.FLOAT, Factory::getWaterLevelDropRate,
-                Factory::new
+                ByteBufCodecs.FLOAT, HotpotSmeltingRecipeSoupType.Factory::getWaterLevelDropRate,
+                HotpotSmeltingRecipeSoupType.Factory::new
         );
 
         public static final MapCodec<Factory> CODEC = RecordCodecBuilder.mapCodec(factory -> factory.group(
-                Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(Factory::getWaterLevelDropRate)
-        ).apply(factory, Factory::new));
+                Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(HotpotSmeltingRecipeSoupType.Factory::getWaterLevelDropRate)
+        ).apply(factory, HotpotSmeltingRecipeSoupType.Factory::new));
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupFactory<HotpotSmeltingRecipeSoupType>> getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupTypeFactory<HotpotSmeltingRecipeSoupType>> getStreamCodec() {
             return STREAM_CODEC;
         }
 
         @Override
-        public MapCodec<? extends IHotpotSoupFactory<HotpotSmeltingRecipeSoupType>> getCodec() {
+        public MapCodec<? extends IHotpotSoupTypeFactory<HotpotSmeltingRecipeSoupType>> getCodec() {
             return CODEC;
         }
     }

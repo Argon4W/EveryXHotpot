@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -11,6 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotCookingRecipe extends AbstractCookingRecipe {
     private final ResourceLocation targetSoup;
@@ -45,23 +47,27 @@ public class HotpotCookingRecipe extends AbstractCookingRecipe {
         public static final int DEFAULT_COOKING_TIME = 100;
         public static final float DEFAULT_EXPERIENCE = 0f;
 
-        public static final MapCodec<HotpotCookingRecipe> CODEC = RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                ResourceLocation.CODEC.fieldOf("target_soup").forGetter(HotpotCookingRecipe::getTargetSoup),
-                Codec.STRING.fieldOf("group").forGetter(HotpotCookingRecipe::getGroup),
-                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotCookingRecipe::getIngredient),
-                ItemStack.CODEC.fieldOf("result").forGetter(HotpotCookingRecipe::getResult),
-                Codec.FLOAT.optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE).forGetter(AbstractCookingRecipe::getExperience),
-                Codec.INT.optionalFieldOf("cooking_time", Serializer.DEFAULT_COOKING_TIME).forGetter(AbstractCookingRecipe::getCookingTime)
-        ).apply(recipe, HotpotCookingRecipe::new));
+        public static final MapCodec<HotpotCookingRecipe> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                        ResourceLocation.CODEC.fieldOf("target_soup").forGetter(HotpotCookingRecipe::getTargetSoup),
+                        Codec.STRING.fieldOf("group").forGetter(HotpotCookingRecipe::getGroup),
+                        Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotCookingRecipe::getIngredient),
+                        ItemStack.CODEC.fieldOf("result").forGetter(HotpotCookingRecipe::getResult),
+                        Codec.FLOAT.optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE).forGetter(AbstractCookingRecipe::getExperience),
+                        Codec.INT.optionalFieldOf("cooking_time", Serializer.DEFAULT_COOKING_TIME).forGetter(AbstractCookingRecipe::getCookingTime)
+                ).apply(recipe, HotpotCookingRecipe::new))
+        );
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotCookingRecipe> STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC, HotpotCookingRecipe::getTargetSoup,
-                ByteBufCodecs.STRING_UTF8, Recipe::getGroup,
-                Ingredient.CONTENTS_STREAM_CODEC, HotpotCookingRecipe::getIngredient,
-                ItemStack.STREAM_CODEC, HotpotCookingRecipe::getResult,
-                ByteBufCodecs.FLOAT, AbstractCookingRecipe::getExperience,
-                ByteBufCodecs.INT, AbstractCookingRecipe::getCookingTime,
-                HotpotCookingRecipe::new
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotCookingRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
+                StreamCodec.composite(
+                        ResourceLocation.STREAM_CODEC, HotpotCookingRecipe::getTargetSoup,
+                        ByteBufCodecs.STRING_UTF8, Recipe::getGroup,
+                        Ingredient.CONTENTS_STREAM_CODEC, HotpotCookingRecipe::getIngredient,
+                        ItemStack.STREAM_CODEC, HotpotCookingRecipe::getResult,
+                        ByteBufCodecs.FLOAT, AbstractCookingRecipe::getExperience,
+                        ByteBufCodecs.INT, AbstractCookingRecipe::getCookingTime,
+                        HotpotCookingRecipe::new
+                )
         );
 
         @Override

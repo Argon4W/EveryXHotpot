@@ -1,0 +1,11 @@
+{
+  "type": "everyxhotpot:cooking_recipe_soup",
+  "water_level_drop_rate": 0.04,
+  "saved_effects": [
+    {
+      "id": "everyxhotpot:warm",
+      "amplifier": 0,
+      "duration": 300
+    }
+  ]
+}

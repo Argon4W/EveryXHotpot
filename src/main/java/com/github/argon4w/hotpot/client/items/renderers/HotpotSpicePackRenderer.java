@@ -1,14 +1,12 @@
 package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.HotpotTagsHelper;
 import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +17,7 @@ import java.util.Optional;
 public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+        if (HotpotSpicePackItem.isSpicePackEmpty(itemStack)) {
             return;
         }
 
@@ -46,7 +44,7 @@ public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
     }
 
     @Override
-    public Optional<ModelResourceLocation> getDefaultItemModelResourceLocation() {
-        return Optional.of(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_spice_pack_model")));
+    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_spice_pack_model"));
     }
 }

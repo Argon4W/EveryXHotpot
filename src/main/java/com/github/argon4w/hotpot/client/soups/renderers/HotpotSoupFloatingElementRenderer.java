@@ -1,30 +1,28 @@
 package com.github.argon4w.hotpot.client.soups.renderers;
 
+import com.github.argon4w.hotpot.client.soups.HotpotSoupCustomElements;
 import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRenderer;
 import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRendererSerializer;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Math;
 
 public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomElementRenderer {
-    private final ResourceLocation element1ResourceLocation;
-    private final ResourceLocation element2ResourceLocation;
-    private final boolean shouldRenderInBowl;
+    private final ResourceLocation element1ModelResourceLocation;
+    private final ResourceLocation element2ModelResourceLocation;
 
-    public HotpotSoupFloatingElementRenderer(ResourceLocation element1ResourceLocation, ResourceLocation element2ResourceLocation, boolean shouldRenderInBowl) {
-        this.element1ResourceLocation = element1ResourceLocation;
-        this.element2ResourceLocation = element2ResourceLocation;
-        this.shouldRenderInBowl = shouldRenderInBowl;
+    public HotpotSoupFloatingElementRenderer(ResourceLocation element1ModelResourceLocation, ResourceLocation element2ModelResourceLocation) {
+        this.element1ModelResourceLocation = element1ModelResourceLocation;
+        this.element2ModelResourceLocation = element2ModelResourceLocation;
     }
 
     @Override
@@ -41,7 +39,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         poseStack.translate(0f, part1Position, 0f);
         poseStack.mulPose(Axis.XP.rotationDegrees(part1Rotation));
 
-        BakedModel part1Model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(element1ResourceLocation);
+        BakedModel part1Model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(element1ModelResourceLocation));
         context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, part1Model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
 
         poseStack.popPose();
@@ -50,7 +48,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         poseStack.translate(0f, part2Position, 0f);
         poseStack.mulPose(Axis.ZP.rotationDegrees(part2Rotation));
 
-        BakedModel part2Model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(element2ResourceLocation);
+        BakedModel part2Model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(element2ModelResourceLocation));
         context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, part2Model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
 
         poseStack.popPose();
@@ -58,37 +56,31 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     @Override
     public boolean shouldRenderInBowl() {
-        return shouldRenderInBowl;
+        return true;
+    }
+
+    @Override
+    public IHotpotSoupCustomElementRendererSerializer<?> getSerializer() {
+        return HotpotSoupCustomElements.HOTPOT_FLOATING_ELEMENT_RENDERER_SERIALIZER.get();
+    }
+
+    public ResourceLocation getElement1ModelResourceLocation() {
+        return element1ModelResourceLocation;
+    }
+
+    public ResourceLocation getElement2ModelResourceLocation() {
+        return element2ModelResourceLocation;
     }
 
     public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
+        public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
+                ResourceLocation.CODEC.fieldOf("element1_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElement1ModelResourceLocation),
+                ResourceLocation.CODEC.fieldOf("element2_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElement2ModelResourceLocation)
+        ).apply(renderer, HotpotSoupFloatingElementRenderer::new));
+
         @Override
-        public HotpotSoupFloatingElementRenderer fromJson(JsonObject jsonObject) {
-            if (!jsonObject.has("element1_resource_location")) {
-                throw new JsonParseException("Floating element renderer must have a \"element1_resource_location\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "element1_resource_location"))) {
-                throw new JsonParseException("\"element1_resource_location\" in the floating element renderer must be a valid resource location");
-            }
-
-            if (!jsonObject.has("element2_resource_location")) {
-                throw new JsonParseException("Floating element renderer must have a \"element2_resource_location\"");
-            }
-
-            if (!ResourceLocation.isValidResourceLocation(GsonHelper.getAsString(jsonObject, "element2_resource_location"))) {
-                throw new JsonParseException("\"element2_resource_location\" in the floating element renderer must be a valid resource location");
-            }
-
-            if (!jsonObject.has("should_render_in_bowl")) {
-                throw new JsonParseException("Floating element renderer must have a \"should_render_in_bowl\"");
-            }
-
-            ResourceLocation element1ResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "element1_resource_location"));
-            ResourceLocation element2ResourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "element2_resource_location"));
-            boolean shouldRenderInBowl = GsonHelper.getAsBoolean(jsonObject, "should_render_in_bowl");
-
-            return new HotpotSoupFloatingElementRenderer(element1ResourceLocation, element2ResourceLocation, shouldRenderInBowl);
+        public MapCodec<HotpotSoupFloatingElementRenderer> getCodec() {
+            return CODEC;
         }
     }
 }

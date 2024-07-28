@@ -57,6 +57,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         level.markAndNotifyBlock(pos, getChunkAt(), getBlockState(), getBlockState(), 3, 512);
     }
 
+    public void removeBlock(boolean isMoving) {
+        level.removeBlock(pos, isMoving);
+    }
+
     public RegistryAccess registryAccess() {
         return level.registryAccess();
     }

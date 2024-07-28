@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -30,7 +31,7 @@ public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLev
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.5f, 0.5f);
 
-            BakedModel chopstickModel = Minecraft.getInstance().getModelManager().getModel(resourceLocation);
+            BakedModel chopstickModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(resourceLocation));
             Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, true, poseStack, bufferSource, combinedLight, combinedOverlay, chopstickModel);
 
             poseStack.popPose();

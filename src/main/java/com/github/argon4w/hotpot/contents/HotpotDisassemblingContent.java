@@ -4,13 +4,14 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.function.Predicate;
 public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
 
-    public HotpotDisassemblingContent(ItemStack itemStack, int cookingTime, int cookingProgress, float experience) {
+    public HotpotDisassemblingContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
@@ -39,8 +40,8 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     }
 
     @Override
-    public Optional<Float> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return Optional.of(0.0f);
+    public Optional<Double> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+        return Optional.of(0d);
     }
 
     @Override
@@ -135,7 +136,7 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
 
     public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotDisassemblingContent> {
         @Override
-        public HotpotDisassemblingContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, float experience) {
+        public HotpotDisassemblingContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
             return new HotpotDisassemblingContent(itemStack, cookingTime, cookingProgress, experience);
         }
 

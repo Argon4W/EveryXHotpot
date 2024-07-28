@@ -1,17 +1,13 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.LazyMapCodec;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
@@ -82,10 +78,12 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     public static class Factory implements IHotpotContentFactory<HotpotPlayerContent> {
-        public static final MapCodec<HotpotPlayerContent> CODEC = RecordCodecBuilder.mapCodec(content -> content.group(
-                ResolvableProfile.CODEC.fieldOf("Profile").forGetter(HotpotPlayerContent::getProfile),
-                Codec.INT.fieldOf("ModelPartIndex").forGetter(HotpotPlayerContent::getModelPartIndex)
-        ).apply(content, HotpotPlayerContent::new));
+        public static final MapCodec<HotpotPlayerContent> CODEC = LazyMapCodec.of(() ->
+                RecordCodecBuilder.mapCodec(content -> content.group(
+                        ResolvableProfile.CODEC.fieldOf("Profile").forGetter(HotpotPlayerContent::getProfile),
+                        Codec.INT.fieldOf("ModelPartIndex").forGetter(HotpotPlayerContent::getModelPartIndex)
+                ).apply(content, HotpotPlayerContent::new))
+        );
 
         @Override
         public HotpotPlayerContent buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {

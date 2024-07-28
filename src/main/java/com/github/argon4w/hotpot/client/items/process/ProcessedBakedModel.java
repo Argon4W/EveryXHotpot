@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.client.items.process;
 
-import com.github.argon4w.hotpot.HotpotTagsHelper;
+import com.github.argon4w.hotpot.items.components.HotpotSpriteProcessorDataComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -8,8 +8,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public record ProcessedBakedModel(BakedModel originalModel, HashMap<String, BakedModel> processedModels) implements BakedModel {
+public record ProcessedBakedModel(BakedModel originalModel, HashMap<ResourceLocation, BakedModel> processedModels) implements BakedModel {
     @NotNull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, RandomSource randomSource) {
@@ -74,23 +73,16 @@ public record ProcessedBakedModel(BakedModel originalModel, HashMap<String, Bake
     }
 
     private boolean isProcessed(ItemStack itemStack) {
-        return getVisibleProcessedModels(itemStack).size() > 0;
+        return !getVisibleProcessedModels(itemStack).isEmpty();
     }
 
-    private List<String> getVisibleProcessedModels(ItemStack itemStack) {
-        if (!HotpotTagsHelper.hasHotpotTags(itemStack)) {
+    private List<ResourceLocation> getVisibleProcessedModels(ItemStack itemStack) {
+        if (!HotpotSpriteProcessorDataComponent.hasDataComponent(itemStack)) {
             return List.of();
         }
 
-        if (!HotpotTagsHelper.getHotpotTags(itemStack).contains("Processed", Tag.TAG_COMPOUND)) {
-            return List.of();
-        }
-
-        CompoundTag processed = HotpotTagsHelper.getHotpotTags(itemStack).getCompound("Processed");
-
-        return processedModels.keySet().stream()
-                .filter(processed::getBoolean)
-                .toList();
+        List<ResourceLocation> processors = HotpotSpriteProcessorDataComponent.getProcessors(itemStack).stream().map(IHotpotSpriteProcessor::getResourceLocation).toList();
+        return processedModels.keySet().stream().filter(processors::contains).toList();
     }
 
     private class ProcessedOverrides extends ItemOverrides {
@@ -98,11 +90,6 @@ public record ProcessedBakedModel(BakedModel originalModel, HashMap<String, Bake
         @Override
         public BakedModel resolve(BakedModel bakedModel, ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int p_173469_) {
             BakedModel resolved = originalModel.getOverrides().resolve(bakedModel, itemStack, clientLevel, livingEntity, p_173469_);
-            List<BakedModel> resolvedProcessedModels = getVisibleProcessedModels(itemStack).stream()
-                    .filter(processedModels::containsKey)
-                    .map(processedModels::get)
-                    .map(processedModel -> processedModel.getOverrides().resolve(processedModel, itemStack, clientLevel, livingEntity, p_173469_))
-                    .toList();
 
             if (!isProcessed(itemStack)) {
                 return resolved;
@@ -111,6 +98,8 @@ public record ProcessedBakedModel(BakedModel originalModel, HashMap<String, Bake
             if (resolved == null) {
                 return null;
             }
+
+            List<BakedModel> resolvedProcessedModels = getVisibleProcessedModels(itemStack).stream().map(processedModels::get).map(processedModel -> processedModel.getOverrides().resolve(processedModel, itemStack, clientLevel, livingEntity, p_173469_)).toList();
 
             return new BakedModel() {
                 @Override

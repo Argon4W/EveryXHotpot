@@ -8,9 +8,9 @@ import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class HotpotItemContentRenderer implements IHotpotContentRenderer {
     @Override
@@ -20,7 +20,7 @@ public class HotpotItemContentRenderer implements IHotpotContentRenderer {
         }
 
         Item item = itemStackContent.getItemStack().getItem();
-        ResourceLocation resourceLocation = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation resourceLocation = BuiltInRegistries.ITEM.getKey(item);
         IHotpotItemContentSpecialRenderer itemContentSpecialRenderer = HotpotItemContentSpecialRenderers.getItemContentSpecialRenderer(resourceLocation);
 
         itemContentSpecialRenderer.render(itemStackContent, context, poseStack, bufferSource, combinedLight, combinedOverlay, waterLevel, rotation, x, z);

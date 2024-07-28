@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.contents.renderers;
 
-import com.github.argon4w.hotpot.client.contents.player.HotpotPlayerModelRenderContext;
 import com.github.argon4w.hotpot.client.contents.IHotpotContentRenderer;
+import com.github.argon4w.hotpot.client.contents.player.HotpotPlayerModelRenderContext;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.google.common.collect.Maps;

@@ -8,23 +8,20 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Mixin(ItemColors.class)
 public class ItemColorsMixin {
-    private static final HashMap<Integer, IHotpotSpriteProcessor> SPRITE_PROCESSORS_BY_INDEX;
-
-    static {
-        SPRITE_PROCESSORS_BY_INDEX = Maps.newHashMap();
-
-        for (IHotpotSpriteProcessor processor : HotpotSpriteProcessors.getSpriteProcessorRegistry()) {
-            SPRITE_PROCESSORS_BY_INDEX.put(processor.getIndex(), processor);
-        }
-    }
+    @Unique
+    private static final Map<Integer, IHotpotSpriteProcessor> SPRITE_PROCESSORS_BY_INDEX = HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().collect(Collectors.toUnmodifiableMap(IHotpotSpriteProcessor::getIndex, Function.identity()));
 
     @Inject(method = "getColor", at = @At("RETURN"), cancellable = true)
     public void getColor(ItemStack itemStack, int tintIndex, CallbackInfoReturnable<Integer> cir) {
@@ -35,6 +32,6 @@ public class ItemColorsMixin {
         int hotpotTint = tintIndex - HotpotModEntry.HOTPOT_SPRITE_TINT_INDEX;
         int index = (hotpotTint - hotpotTint % ItemModelGenerator.LAYERS.size()) / ItemModelGenerator.LAYERS.size();
 
-        cir.setReturnValue(SPRITE_PROCESSORS_BY_INDEX.getOrDefault(index, HotpotSpriteProcessors.getEmptySpriteProcessor()).processColor(itemStack));
+        cir.setReturnValue(SPRITE_PROCESSORS_BY_INDEX.getOrDefault(index, HotpotSpriteProcessors.getEmptySpriteProcessor()).getColor(itemStack));
     }
 }

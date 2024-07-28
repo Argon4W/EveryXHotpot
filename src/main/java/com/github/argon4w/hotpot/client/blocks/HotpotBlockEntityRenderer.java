@@ -6,19 +6,16 @@ import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Math;
 
 public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBlockEntity> {
@@ -80,17 +77,17 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
     }
 
     public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
-        soupRendererConfig.getSoupModelResourceLocation().ifPresent(soupLocation -> {
+        soupRendererConfig.soupModelResourceLocation().ifPresent(soupLocation -> {
             poseStack.pushPose();
             poseStack.translate(0, renderedWaterLevel, 0);
 
             int lighting = combinedLight;
 
-            if (soupRendererConfig.isFixedLighting()) {
+            if (soupRendererConfig.fixedLighting()) {
                 lighting = 14680304;
             }
 
-            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(soupLocation);
+            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(soupLocation));
             context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
             if (bufferSource instanceof MultiBufferSource.BufferSource source) {
@@ -102,7 +99,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
     }
 
     public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowlOnly) {
-        soupRendererConfig.getCustomElementRenderers().stream()
+        soupRendererConfig.customElementRenderers().stream()
                 .filter(renderer -> !bowlOnly || renderer.shouldRenderInBowl())
                 .forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(context, time, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
     }

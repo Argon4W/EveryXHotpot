@@ -3,9 +3,10 @@ package com.github.argon4w.hotpot.client.events;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityRenderer;
 import com.github.argon4w.hotpot.client.blocks.HotpotPlacementBlockEntityRenderer;
-import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
-import com.github.argon4w.hotpot.soups.HotpotSoupFactoryManager;
+import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
+import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -15,6 +16,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
 public class HotpotClientModEvents {
@@ -25,8 +27,15 @@ public class HotpotClientModEvents {
 
     @SubscribeEvent
     public static void onRegisterClientReloadListener(RegisterClientReloadListenersEvent event) {
-        HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER = new HotpotSoupFactoryManager();
         event.registerReloadListener(HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER = new HotpotSoupRendererConfigManager());
+    }
+
+    @SubscribeEvent
+    public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_CHOPSTICK.get());
+        event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_PAPER_BOWL.get());
+        event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_SKEWER.get());
+        event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_SPICE_PACK.get());
     }
 
     @SubscribeEvent
