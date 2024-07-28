@@ -2,18 +2,24 @@ package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.mojang.serialization.Codec;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Function;
+
 public class HotpotSoupTypes {
-    //public static final ResourceKey<Registry<IHotpotSoupTypeFactory<?>>> SOUP_FACTORY_DATA_PACK_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soups"));
-    //public static final Codec<IHotpotSoupTypeFactory<?>> CODEC = Codec.lazyInitialized(() -> getSoupTypeRegistry().byNameCodec().dispatch(IHotpotSoupTypeFactory::getSerializer, IHotpotSoupFactorySerializer::getCodec));
+    public static final ResourceKey<Registry<IHotpotSoupTypeFactory<?>>> SOUP_FACTORY_DATA_PACK_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soups"));
+    public static final Codec<IHotpotSoupTypeFactory<?>> CODEC = Codec.lazyInitialized(() -> getSoupTypeRegistry().byNameCodec().dispatch(IHotpotSoupTypeFactory::getSerializer, IHotpotSoupFactorySerializer::getCodec));
+    public static final Codec<Holder<IHotpotSoupTypeFactory<?>>> HOLDER_CODEC = Codec.lazyInitialized(() -> RegistryFixedCodec.create(SOUP_FACTORY_DATA_PACK_REGISTRY_KEY));
+    public static final Codec<HotpotHolderSoupTypeTypeFactory<?>> HOLDER_FACTORY_CODEC = Codec.lazyInitialized(() -> HOLDER_CODEC.xmap(HotpotHolderSoupTypeTypeFactory::new, HotpotHolderSoupTypeTypeFactory::holder));
 
     public static final ResourceLocation EMPTY_SOUP_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_soup");
 
