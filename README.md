@@ -1,27 +1,59 @@
+![logo](/src/main/resources/logo.png)
+# EveryXHotpot: 一起火锅
+## 基本信息:
+### 支持版本 [(下载链接)](https://www.mcmod.cn/download/12735.html):
+- NeoForge
+  - 1.20.2
+  - 1.21
+- LexForge
+  - 1.20.1 
+  - 1.19.3
+  - 1.19.2
+  - 1.18.2
+  - 1.16.5
+- [Fabric](https://github.com/FishMagic/EveryXHotpot-Fabric)
+### 已知问题
+- 不兼容Optifine **(无计划在保持完整功能的前提下修复)**
+### 交流群号(QQ): 
+- 608309578
+### 赞助支持:
+- https://afdian.net/a/argon4w
+***
+## 概述
+### TeaCon 2023
+这次 TeaCon 的主题是热闹, 于是AR就顺理成章地想到了在自己印象中最能代表热闹的东西: 火锅.
+咕噜咕噜的冒泡泡, 热气腾腾的, 和朋友们一起大快朵颐, 好不热闹.
+所以AR决定做一个大家一起都能吃火锅的 Mod, 在 Minecraft 的世界里, 把大家聚在一起, 一起热闹地说笑, 一起吃暖暖的火锅.
+无论大家的朋友在哪, 哪怕没办法见面, 都能在 Minecraft 里, 升起炉灶, 围在一桌, 一起享用美味的火锅.
 
-Installation information
-=======
+### TeaCon 甲辰
+虽然说是去年的参赛模组了, 但是要说起朋友, 那还得是火锅最符合这个题材; 
+在餐桌上或结交新的友谊, 或重温旧的友情; 与朋友们聚在一起, 一起热闹地说笑, 一起吃着暖心的火锅, 畅想着未来友谊的美好; 
+无论大家的朋友在哪, 哪怕没办法见面, 都能在Minecraft里, 升起炉灶, 围在一桌
+与§l所有§r朋友, 在§l所有§r时间, 享受§l所有§r§m(甚至可以是荒诞的)§r美食, 一起开开心心地吃上火锅!
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions at [github](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+在这次的 Mod 中, 添加了火锅, 火锅配套的筷子, 碟子与可以放在火锅中提供药水效果的香料包.
+玩家可以将食物放入火锅进入烹饪, 根据不同锅底得到不同的效果, 还可以将不同锅底组合为鸳鸯锅.
+总共有清汤, 麻辣, 奶酪, 还有冶炼矿石的岩浆锅底, 其中麻辣锅底是与华夏工艺联动的锅底.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
-
-> **Note**: For Eclipse, use tasks in `Launch Group` instead of ones founds in `Java Application`. A preparation task must run before launching the game. NeoGradle uses launch groups to do these subsequently.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
-
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## 更新日志:
+### 2023-11-19 1.1.1-TeaCon2023:
+1. 新增了1.16.5支持
+2. 修复了食物一放入火锅就会获得火锅药水效果的问题
+3. 新增了在没有SinoSeries下麻辣锅的配方
+### 2023-11-20 1.1.2-TeaCon2023:
+1. 修复了与AE2一起安装时客户端崩溃的问题
+2. 新增了1.19.3支持
+3. 新增了1.19.2支持
+4. 新增了1.18.2支持
+### 2023-11-22 1.1.2BF1-TeaCon2023:
+1. 修复了使用Oculus时无法看到锅底的问题
+2. 新增了1.20.2 **(NeoForge)** 支持
+### 2023-11-27 1.1.2BF2-TeaCon2023:
+1. **(严重)** 修复了在使用水瓶向空锅交互时返回物品为水桶的问题
+### 2024-04-22 2.0-pre1-TeaCon2023 **(1.20)**
+1. 更新了纸碗, 麻辣烫, 串串香
+2. 更新了汤勺和漏勺
+3. 改善了芝士贴图与其他模组的兼容性
+### 2024-07-38 2.0-TeaCon2024 **(1.21)**
+1. 将2.0-pre1中的内容完善, 修复相关问题并更新至NeoForge1.21版本
