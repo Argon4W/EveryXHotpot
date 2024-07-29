@@ -9,12 +9,7 @@ import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import org.joml.Math;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 
 public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpotSpriteProcessor {
     @Override
@@ -52,7 +47,7 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpot
             return -1;
         }
 
-        HotpotSoupRendererConfig rendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(HotpotSoupDataComponent.getSoupTypeResourceLocation(itemStack));
+        HotpotSoupRendererConfig rendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(HotpotSoupDataComponent.getDataComponent(itemStack).soupTypeFactory().key());
 
         if (rendererConfig.color().isEmpty()) {
             return -1;

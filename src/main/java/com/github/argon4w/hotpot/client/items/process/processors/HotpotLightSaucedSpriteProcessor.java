@@ -15,11 +15,6 @@ public class HotpotLightSaucedSpriteProcessor extends AbstractHotpotHalfSaucedSp
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "light_sauced_processor");
-    }
-
-    @Override
     public int getIndex() {
         return 1;
     }

@@ -9,13 +9,12 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Mixin(ReloadableServerResources.class)
 public class ReloadableServerResourcesMixin {
     @ModifyReturnValue(method = "listeners", at = @At("RETURN"))
     public List<PreparableReloadListener> listeners(List<PreparableReloadListener> original) {
-        ArrayList<PreparableReloadListener> listeners = new ArrayList<>(original);
-        listeners.add(1, HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER);
-        return listeners;
+        return Stream.concat(Stream.of(HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER), original.stream()).toList();
     }
 }

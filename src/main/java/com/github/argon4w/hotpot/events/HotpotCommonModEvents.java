@@ -3,12 +3,8 @@ package com.github.argon4w.hotpot.events;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.network.HotpotUpdateSoupFactoriesHandler;
 import com.github.argon4w.hotpot.network.HotpotUpdateSoupFactoriesPacket;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryManager;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
 

@@ -8,7 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,11 +33,6 @@ public class HotpotSmallPlate implements IHotpotPlacement {
         this.directionPos = directionPos;
         this.itemSlot = itemSlot;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(directionPos - pos);
-    }
-
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "small_plate");
     }
 
     @Override
@@ -82,8 +77,8 @@ public class HotpotSmallPlate implements IHotpotPlacement {
     }
 
     @Override
-    public IHotpotPlacementFactory<?> getFactory() {
-        return HotpotPlacements.SMALL_PLATE.get();
+    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
+        return HotpotPlacements.SMALL_PLATE;
     }
 
     public int getPos() {

@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
@@ -9,7 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,11 +34,6 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         this.directionPos = directionPos;
         this.paperBowlItemSlot = paperBowlItemSlot;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(directionPos - pos);
-    }
-
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "placed_paper_bowl");
     }
 
     @Override
@@ -116,8 +110,8 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public IHotpotPlacementFactory<?> getFactory() {
-        return HotpotPlacements.PLACED_PAPER_BOWL.get();
+    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
+        return HotpotPlacements.PLACED_PAPER_BOWL;
     }
 
     public int getPos() {

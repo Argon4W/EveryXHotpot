@@ -5,7 +5,6 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +28,7 @@ public interface IHotpotSoupType {
     void entityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Entity entity);
     void tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     boolean isHotpotLit(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    ResourceLocation getResourceLocation();
+    HotpotSoupTypeFactoryHolder<?> getSoupTypeFactoryHolder();
     float getWaterLevel();
     float getOverflowWaterLevel();
 }

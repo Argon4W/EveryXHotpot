@@ -1,9 +1,9 @@
 package com.github.argon4w.hotpot.network;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import com.github.argon4w.hotpot.soups.IHotpotSoupFactorySerializer;
 import com.github.argon4w.hotpot.soups.IHotpotSoupTypeFactory;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

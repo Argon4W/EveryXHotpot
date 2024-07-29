@@ -1,15 +1,15 @@
-package com.github.argon4w.hotpot.soups;
+package com.github.argon4w.hotpot.soups.types;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
+import com.github.argon4w.hotpot.soups.*;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -20,15 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class HotpotEmptySoupType implements IHotpotSoupType {
-    private final ResourceLocation resourceLocation;
+    private final HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder;
 
-    public HotpotEmptySoupType(ResourceLocation resourceLocation) {
-        this.resourceLocation = resourceLocation;
-    }
-
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return resourceLocation;
+    public HotpotEmptySoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder) {
+        this.soupTypeFactoryHolder = soupTypeFactoryHolder;
     }
 
     @Override
@@ -106,15 +101,20 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
         return true;
     }
 
+    @Override
+    public HotpotSoupTypeFactoryHolder<?> getSoupTypeFactoryHolder() {
+        return HotpotSoupTypes.getEmptySoupFactoryHolder();
+    }
+
     public record Factory() implements IHotpotSoupTypeFactory<HotpotEmptySoupType> {
         @Override
-        public MapCodec<HotpotEmptySoupType> buildFromCodec(ResourceLocation resourceLocation) {
-            return MapCodec.unit(() -> new HotpotEmptySoupType(resourceLocation));
+        public MapCodec<HotpotEmptySoupType> buildFromCodec(HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> soupTypeFactoryHolder) {
+            return MapCodec.unit(() -> new HotpotEmptySoupType(soupTypeFactoryHolder));
         }
 
         @Override
-        public HotpotEmptySoupType buildFromScratch(ResourceLocation resourceLocation) {
-            return new HotpotEmptySoupType(resourceLocation);
+        public HotpotEmptySoupType buildFromScratch(HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> soupTypeFactoryHolder) {
+            return new HotpotEmptySoupType(soupTypeFactoryHolder);
         }
 
         @Override

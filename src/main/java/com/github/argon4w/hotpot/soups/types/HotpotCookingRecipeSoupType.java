@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.soups;
+package com.github.argon4w.hotpot.soups.types;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
@@ -14,14 +14,18 @@ import com.github.argon4w.hotpot.items.HotpotSkewerItem;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotSoupDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteProcessorDataComponent;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
+import com.github.argon4w.hotpot.soups.IHotpotSoupFactorySerializer;
+import com.github.argon4w.hotpot.soups.IHotpotSoupTypeFactory;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -32,13 +36,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupType {
-    private final ResourceLocation resourceLocation;
+    private final HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder;
     private final float waterLevelDropRate;
     private final List<MobEffectInstance> savedEffects;
-    private final Optional<IHotpotSpriteProcessor> spriteProcessor;
+    private final Holder<IHotpotSpriteProcessor> spriteProcessor;
 
-    public HotpotCookingRecipeSoupType(ResourceLocation resourceLocation, float waterLevelDropRate, List<MobEffectInstance> savedEffects, Optional<IHotpotSpriteProcessor> spriteProcessor) {
-        this.resourceLocation = resourceLocation;
+    public HotpotCookingRecipeSoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder, float waterLevelDropRate, List<MobEffectInstance> savedEffects, Holder<IHotpotSpriteProcessor> spriteProcessor) {
+        this.soupTypeFactoryHolder = soupTypeFactoryHolder;
         this.waterLevelDropRate = waterLevelDropRate;
         this.savedEffects = savedEffects;
         this.spriteProcessor = spriteProcessor;
@@ -48,8 +52,8 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
         this.activeness = 0.0f;
     }
 
-    public HotpotCookingRecipeSoupType(ResourceLocation resourceLocation, float waterLevelDropRate, List<MobEffectInstance> savedEffects, Optional<IHotpotSpriteProcessor> spriteProcessor, float waterLevel, float overflowWaterLevel, float activeness) {
-        this.resourceLocation = resourceLocation;
+    public HotpotCookingRecipeSoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder, float waterLevelDropRate, List<MobEffectInstance> savedEffects, Holder<IHotpotSpriteProcessor> spriteProcessor, float waterLevel, float overflowWaterLevel, float activeness) {
+        this.soupTypeFactoryHolder = soupTypeFactoryHolder;
         this.waterLevelDropRate = waterLevelDropRate;
         this.savedEffects = savedEffects;
         this.spriteProcessor = spriteProcessor;
@@ -89,7 +93,7 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
 
         HotpotSoupDataComponent.setSoup(itemStack, this);
         HotpotFoodEffectsDataComponent.addEffects(itemStack, savedEffects);
-        spriteProcessor.ifPresent(spriteProcessor -> HotpotSpriteProcessorDataComponent.addProcessor(itemStack, spriteProcessor));
+        HotpotSpriteProcessorDataComponent.addProcessor(itemStack, spriteProcessor);
 
         return itemStack;
     }
@@ -105,8 +109,8 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return resourceLocation;
+    public HotpotSoupTypeFactoryHolder<?> getSoupTypeFactoryHolder() {
+        return soupTypeFactoryHolder;
     }
 
     @Override
@@ -122,22 +126,22 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
     public static class Factory extends AbstractHotpotFluidBasedSoupType.Factory<HotpotCookingRecipeSoupType> {
         private final float waterLevelDropRate;
         private final List<MobEffectInstance> savedEffects;
-        private final Optional<IHotpotSpriteProcessor> spriteProcessor;
+        private final Holder<IHotpotSpriteProcessor> spriteProcessor;
 
-        public Factory(float waterLevelDropRate, List<MobEffectInstance> savedEffects, Optional<IHotpotSpriteProcessor> spriteProcessor) {
+        public Factory(float waterLevelDropRate, List<MobEffectInstance> savedEffects, Holder<IHotpotSpriteProcessor> spriteProcessor) {
             this.waterLevelDropRate = waterLevelDropRate;
             this.savedEffects = savedEffects;
             this.spriteProcessor = spriteProcessor;
         }
 
         @Override
-        public HotpotCookingRecipeSoupType buildFrom(ResourceLocation resourceLocation, float waterLevel, float overflowWaterLevel, float activeness) {
-            return new HotpotCookingRecipeSoupType(resourceLocation, waterLevelDropRate, savedEffects, spriteProcessor, waterLevel, overflowWaterLevel, activeness);
+        public HotpotCookingRecipeSoupType buildFrom(HotpotSoupTypeFactoryHolder<HotpotCookingRecipeSoupType> soupTypeFactoryHolder, float waterLevel, float overflowWaterLevel, float activeness) {
+            return new HotpotCookingRecipeSoupType(soupTypeFactoryHolder, waterLevelDropRate, savedEffects, spriteProcessor, waterLevel, overflowWaterLevel, activeness);
         }
 
         @Override
-        public HotpotCookingRecipeSoupType buildFromScratch(ResourceLocation resourceLocation) {
-            return new HotpotCookingRecipeSoupType(resourceLocation, waterLevelDropRate, savedEffects, spriteProcessor);
+        public HotpotCookingRecipeSoupType buildFromScratch(HotpotSoupTypeFactoryHolder<HotpotCookingRecipeSoupType> soupTypeFactoryHolder) {
+            return new HotpotCookingRecipeSoupType(soupTypeFactoryHolder, waterLevelDropRate, savedEffects, spriteProcessor);
         }
 
         @Override
@@ -153,7 +157,7 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
             return savedEffects;
         }
 
-        public Optional<IHotpotSpriteProcessor> getSpriteProcessor() {
+        public Holder<IHotpotSpriteProcessor> getSpriteProcessor() {
             return spriteProcessor;
         }
     }
@@ -163,7 +167,7 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
                 StreamCodec.composite(
                         ByteBufCodecs.FLOAT, HotpotCookingRecipeSoupType.Factory::getWaterLevelDropRate,
                         ByteBufCodecs.collection(ArrayList::new, MobEffectInstance.STREAM_CODEC), HotpotCookingRecipeSoupType.Factory::getSavedEffects,
-                        ByteBufCodecs.optional(HotpotSpriteProcessors.STREAM_CODEC), HotpotCookingRecipeSoupType.Factory::getSpriteProcessor,
+                        HotpotSpriteProcessors.STREAM_CODEC, HotpotCookingRecipeSoupType.Factory::getSpriteProcessor,
                         HotpotCookingRecipeSoupType.Factory::new
                 )
         );
@@ -172,7 +176,7 @@ public class HotpotCookingRecipeSoupType extends AbstractHotpotFluidBasedSoupTyp
                 RecordCodecBuilder.mapCodec(factory -> factory.group(
                         Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(HotpotCookingRecipeSoupType.Factory::getWaterLevelDropRate),
                         MobEffectInstance.CODEC.listOf().optionalFieldOf("saved_effects", List.of()).forGetter(HotpotCookingRecipeSoupType.Factory::getSavedEffects),
-                        HotpotSpriteProcessors.CODEC.optionalFieldOf("sprite_processor").forGetter(HotpotCookingRecipeSoupType.Factory::getSpriteProcessor)
+                        HotpotSpriteProcessors.CODEC.optionalFieldOf("sprite_processor", HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR).forGetter(HotpotCookingRecipeSoupType.Factory::getSpriteProcessor)
                 ).apply(factory, HotpotCookingRecipeSoupType.Factory::new))
         );
 

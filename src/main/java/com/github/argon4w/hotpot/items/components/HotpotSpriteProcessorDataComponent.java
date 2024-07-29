@@ -3,8 +3,10 @@ package com.github.argon4w.hotpot.items.components;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
+import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpriteProcessor;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public record HotpotSpriteProcessorDataComponent(List<IHotpotSpriteProcessor> processors) {
+public record HotpotSpriteProcessorDataComponent(List<Holder<IHotpotSpriteProcessor>> processors) {
     public static final HotpotSpriteProcessorDataComponent EMPTY = new HotpotSpriteProcessorDataComponent(new ArrayList<>());
 
     public static final Codec<HotpotSpriteProcessorDataComponent> CODEC = Codec.lazyInitialized(() ->
@@ -32,8 +34,8 @@ public record HotpotSpriteProcessorDataComponent(List<IHotpotSpriteProcessor> pr
             )
     );
 
-    public HotpotSpriteProcessorDataComponent addProcessor(IHotpotSpriteProcessor processor) {
-        return new HotpotSpriteProcessorDataComponent(Stream.concat(processors.stream(), Stream.of(processor)).toList());
+    public HotpotSpriteProcessorDataComponent addProcessor(Holder<IHotpotSpriteProcessor> processor) {
+        return processor.value() instanceof HotpotEmptySpriteProcessor ? this : new HotpotSpriteProcessorDataComponent(Stream.concat(processors.stream(), Stream.of(processor)).toList());
     }
 
     public static boolean hasDataComponent(ItemStack itemStack) {
@@ -48,20 +50,16 @@ public record HotpotSpriteProcessorDataComponent(List<IHotpotSpriteProcessor> pr
         itemStack.set(HotpotModEntry.HOTPOT_SPRITE_PROCESSOR_DATA_COMPONENT, dataComponent);
     }
 
-    public static List<IHotpotSpriteProcessor> getProcessors(ItemStack itemStack) {
+    public static List<Holder<IHotpotSpriteProcessor>> getProcessors(ItemStack itemStack) {
         return getDataComponent(itemStack).processors;
     }
 
-    public static void addProcessor(ItemStack itemStack, IHotpotSpriteProcessor processor) {
+    public static void addProcessor(ItemStack itemStack, Holder<IHotpotSpriteProcessor> processor) {
         setDataComponent(itemStack, getDataComponent(itemStack).addProcessor(processor));
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HotpotSpriteProcessorDataComponent data && equalsProcessors(data);
-    }
-
-    public boolean equalsProcessors(HotpotSpriteProcessorDataComponent another) {
-        return processors.size() == another.processors.size() && IntStream.range(0, processors.size()).allMatch(i -> processors.get(i).getResourceLocation().equals(another.processors.get(i).getResourceLocation()));
+        return obj instanceof HotpotSpriteProcessorDataComponent data && processors.equals(data.processors);
     }
 }

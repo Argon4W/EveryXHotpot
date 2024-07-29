@@ -2,7 +2,10 @@ package com.github.argon4w.hotpot;
 
 import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -55,6 +58,22 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public void markAndNotifyBlock() {
         level.markAndNotifyBlock(pos, getChunkAt(), getBlockState(), getBlockState(), 3, 512);
+    }
+
+    public void playSound(Holder<SoundEvent> soundEventHolder) {
+        playSound(soundEventHolder, 1.0f, 1.0f);
+    }
+
+    public void playSound(Holder<SoundEvent> soundEventHolder, float volume, float pitch) {
+        playSound(soundEventHolder.value(), volume, pitch);
+    }
+
+    public void playSound(SoundEvent soundEvent) {
+        playSound(soundEvent, 1.0f, 1.0f);
+    }
+
+    public void playSound(SoundEvent soundEvent, float volume, float pitch) {
+        level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, volume, pitch);
     }
 
     public void removeBlock(boolean isMoving) {

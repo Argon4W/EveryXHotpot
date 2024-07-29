@@ -7,7 +7,7 @@ import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,11 +35,6 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
         this.itemSlot3 = itemSlot3;
         this.itemSlot4 = itemSlot4;
         slots = new SimpleItemSlot[] {itemSlot1, itemSlot2, itemSlot3, itemSlot4};
-    }
-
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "large_round_plate");
     }
 
     @Override
@@ -106,8 +101,8 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
     }
 
     @Override
-    public IHotpotPlacementFactory<?> getFactory() {
-        return HotpotPlacements.LARGE_ROUND_PLATE.get();
+    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
+        return HotpotPlacements.LARGE_ROUND_PLATE;
     }
 
     public static class Factory implements IHotpotPlacementFactory<HotpotLargeRoundPlate> {

@@ -130,7 +130,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
 
     public void removePlacement(int index, LevelBlockPos pos) {
         removePlacement(placements.get(index), pos);
-        placements.set(index, HotpotPlacements.getEmptyPlacementFactory().build());
+        placements.set(index, HotpotPlacements.buildEmptyPlacement());
         markDataChanged();
     }
 
@@ -145,7 +145,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
 
     public IHotpotPlacement getPlacementInPos(int hitPos) {
         int i = getPlacementIndexInPos(hitPos);
-        return i < 0 ? HotpotPlacements.getEmptyPlacementFactory().build() : placements.get(i);
+        return i < 0 ? HotpotPlacements.buildEmptyPlacement() : placements.get(i);
     }
 
     public void markDataChanged() {

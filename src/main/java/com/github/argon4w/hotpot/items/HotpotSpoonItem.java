@@ -7,7 +7,7 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacements;
-import com.github.argon4w.hotpot.soups.HotpotCookingRecipeSoupType;
+import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoupType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;

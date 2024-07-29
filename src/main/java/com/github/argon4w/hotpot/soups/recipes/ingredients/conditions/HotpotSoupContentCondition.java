@@ -10,14 +10,15 @@ import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredient
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
-public record HotpotSoupContentCondition(IHotpotContentFactory<?> contentFactory) implements IHotpotSoupIngredientCondition {
+public record HotpotSoupContentCondition(Holder<IHotpotContentFactory<?>> contentFactoryHolder) implements IHotpotSoupIngredientCondition {
     @Override
     public boolean matches(IHotpotContent content, IHotpotSoupType soup) {
-        return content.getFactory().equals(contentFactory);
+        return content.getContentFactoryHolder().equals(contentFactoryHolder);
     }
 
     @Override
@@ -27,11 +28,11 @@ public record HotpotSoupContentCondition(IHotpotContentFactory<?> contentFactory
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupContentCondition> {
         public static final MapCodec<HotpotSoupContentCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
-                HotpotContents.FACTORY_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentFactory)
+                HotpotContents.FACTORY_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentFactoryHolder)
         ).apply(condition, HotpotSoupContentCondition::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC = StreamCodec.composite(
-                HotpotContents.STREAM_CODEC, HotpotSoupContentCondition::contentFactory,
+                HotpotContents.STREAM_CODEC, HotpotSoupContentCondition::contentFactoryHolder,
                 HotpotSoupContentCondition::new
         );
 

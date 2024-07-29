@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpri
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotHeavySaucedSpriteProcessor;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotLightSaucedSpriteProcessor;
 import com.mojang.serialization.Codec;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -18,8 +19,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class HotpotSpriteProcessors {
     public static final ResourceKey<Registry<IHotpotSpriteProcessor>> SPRITE_PROCESSOR_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "sprite_processor"));
 
-    public static final Codec<IHotpotSpriteProcessor> CODEC = Codec.lazyInitialized(() -> getSpriteProcessorRegistry().byNameCodec());
-    public static final StreamCodec<RegistryFriendlyByteBuf, IHotpotSpriteProcessor> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.registry(SPRITE_PROCESSOR_REGISTRY_KEY));
+    public static final Codec<Holder<IHotpotSpriteProcessor>> CODEC = Codec.lazyInitialized(() -> getSpriteProcessorRegistry().holderByNameCodec());
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<IHotpotSpriteProcessor>> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holderRegistry(SPRITE_PROCESSOR_REGISTRY_KEY));
 
     public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor");
     public static final DeferredRegister<IHotpotSpriteProcessor> SPRITE_PROCESSORS = DeferredRegister.create(SPRITE_PROCESSOR_REGISTRY_KEY, HotpotModEntry.MODID);
@@ -35,9 +36,5 @@ public class HotpotSpriteProcessors {
 
     public static Registry<IHotpotSpriteProcessor> getSpriteProcessorRegistry() {
         return SPRITE_PROCESSOR_REGISTRY;
-    }
-
-    public static IHotpotSpriteProcessor getSpriteProcessor(ResourceLocation resourceLocation) {
-        return getSpriteProcessorRegistry().get(resourceLocation);
     }
 }

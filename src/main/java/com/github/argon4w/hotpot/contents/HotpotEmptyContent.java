@@ -1,10 +1,9 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,13 +29,8 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_content");
-    }
-
-    @Override
-    public IHotpotContentFactory<?> getFactory() {
-        return HotpotContents.EMPTY_CONTENT.get();
+    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
+        return HotpotContents.EMPTY_CONTENT;
     }
 
     public static class Factory implements IHotpotContentFactory<HotpotEmptyContent> {

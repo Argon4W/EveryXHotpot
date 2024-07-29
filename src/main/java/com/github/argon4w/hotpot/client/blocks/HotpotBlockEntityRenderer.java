@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -62,7 +63,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             lastOrbitY = orbitY;
 
             IHotpotContent content = blockEntity.getContents().get(i);
-            HotpotContentRenderers.getContentRenderer(content.getResourceLocation()).render(content, context, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX);
+            content.getContentFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, context, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
         }
 
         //Make Oculus Happy
@@ -70,7 +71,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         context.getItemRenderer().render(ItemStack.EMPTY, ItemDisplayContext.FIXED, false, poseStack, bufferSource, combinedLight, combinedOverlay, null);
         poseStack.popPose();
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(blockEntity.getSoup().getResourceLocation());
+        HotpotSoupRendererConfig soupRendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(blockEntity.getSoup().getSoupTypeFactoryHolder().key());
 
         renderHotpotSoupCustomElements(soupRendererConfig, context, poseStack, bufferSource, blockEntity.getTime(), partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
         renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f));

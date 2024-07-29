@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
@@ -8,7 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,11 +32,6 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         this.pos2 = pos2;
         this.spoonItemSlot = spoonItemSlot;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(pos2 - pos1);
-    }
-
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "placed_spoon");
     }
 
     @Override
@@ -71,8 +65,8 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     @Override
-    public IHotpotPlacementFactory<?> getFactory() {
-        return HotpotPlacements.PLACED_SPOON.get();
+    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
+        return HotpotPlacements.PLACED_SPOON;
     }
 
     public void setSpoonItemSlot(ItemStack spoonItemSlot) {

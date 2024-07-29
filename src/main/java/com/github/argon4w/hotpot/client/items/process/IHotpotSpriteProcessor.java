@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack;
 public interface IHotpotSpriteProcessor {
     void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, int frame);
     String getProcessedSuffix();
-    ResourceLocation getResourceLocation();
     int getIndex();
     int getColor(ItemStack itemStack);
 }

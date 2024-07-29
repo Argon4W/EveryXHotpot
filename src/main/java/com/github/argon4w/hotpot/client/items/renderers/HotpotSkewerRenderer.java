@@ -24,9 +24,6 @@ public class HotpotSkewerRenderer implements IHotpotItemSpecialRenderer {
 
         List<ItemStack> skewerItems = HotpotSkewerItem.getSkewerItems(itemStack);
 
-        RandomSource randomSource = RandomSource.create();
-        randomSource.setSeed(42);
-
         for (int i = 0; i < Math.min(3, skewerItems.size()); i ++) {
             ItemStack skewerItemStack = skewerItems.get(skewerItems.size() - 1 - i);
 

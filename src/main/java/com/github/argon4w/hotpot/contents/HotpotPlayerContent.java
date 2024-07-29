@@ -1,14 +1,13 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -53,13 +52,8 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "player_content");
-    }
-
-    @Override
-    public IHotpotContentFactory<?> getFactory() {
-        return HotpotContents.PLAYER_CONTENT.get();
+    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
+        return HotpotContents.PLAYER_CONTENT;
     }
 
     public ResolvableProfile getProfile() {

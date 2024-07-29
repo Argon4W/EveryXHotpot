@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.phys.Vec3;
 
 public class HotpotPlacementBlockEntityRenderer implements BlockEntityRenderer<HotpotPlacementBlockEntity> {
@@ -17,7 +18,7 @@ public class HotpotPlacementBlockEntityRenderer implements BlockEntityRenderer<H
 
     @Override
     public void render(HotpotPlacementBlockEntity hotpotPlateBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        hotpotPlateBlockEntity.getPlacements().forEach(placement -> HotpotPlacementRenderers.getPlacementRenderer(placement.getResourceLocation()).render(placement, context, hotpotPlateBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay));
+        hotpotPlateBlockEntity.getPlacements().forEach(placement -> placement.getPlacementFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlateBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay)));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.soups.types.HotpotEmptySoupType;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +21,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.slf4j.Logger;
 
@@ -30,7 +30,7 @@ import java.util.Optional;
 
 public class HotpotSoupTypeFactoryManager extends SimpleJsonResourceReloadListener {
     public static final ResourceLocation EMPTY_SOUP_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_soup");
-    public static final HotpotWrappedSoupTypeTypeFactory<HotpotEmptySoupType> EMPTY_SOUP_FACTORY = new HotpotWrappedSoupTypeTypeFactory<>(EMPTY_SOUP_LOCATION, new HotpotEmptySoupType.Factory());
+    public static final HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> EMPTY_SOUP_FACTORY = new HotpotSoupTypeFactoryHolder<>(EMPTY_SOUP_LOCATION, new HotpotEmptySoupType.Factory());
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -38,15 +38,14 @@ public class HotpotSoupTypeFactoryManager extends SimpleJsonResourceReloadListen
     public static final Codec<IHotpotSoupTypeFactory<?>> CODEC = Codec.lazyInitialized(() -> HotpotSoupTypes.getSoupTypeRegistry().byNameCodec().dispatch(IHotpotSoupTypeFactory::getSerializer, IHotpotSoupFactorySerializer::getCodec));
     public static final Codec<Optional<WithConditions<IHotpotSoupTypeFactory<?>>>> CONDITIONAL_CODEC = Codec.lazyInitialized(() -> ConditionalOps.createConditionalCodecWithConditions(CODEC));
 
+    private final Codec<HotpotSoupTypeFactoryHolder<?>> holderCodec = ResourceLocation.CODEC.xmap(this::getSoupFactory, HotpotSoupTypeFactoryHolder::key);
+    private final StreamCodec<ByteBuf, HotpotSoupTypeFactoryHolder<?>> streamHolderCodec = ResourceLocation.STREAM_CODEC.map(this::getSoupFactory, HotpotSoupTypeFactoryHolder::key);
+
+    private final Codec<IHotpotSoupType> soupTypeCodec = holderCodec.dispatch(IHotpotSoupType::getSoupTypeFactoryHolder, HotpotSoupTypeFactoryHolder::buildFromCodec);
     private final HashMap<ResourceLocation, IHotpotSoupTypeFactory<?>> byName;
 
-    public final Codec<HotpotWrappedSoupTypeTypeFactory<?>> wrappedCodec = ResourceLocation.CODEC.xmap(this::getSoupFactory, HotpotWrappedSoupTypeTypeFactory::resourceLocation);
-    public final Codec<IHotpotSoupType> soupTypeCodec = wrappedCodec.dispatch(this::getSoupFactoryFromSoupType, HotpotWrappedSoupTypeTypeFactory::buildFromCodec);
-
-    public final StreamCodec<ByteBuf, HotpotWrappedSoupTypeTypeFactory<?>> streamWrappedCodec = ResourceLocation.STREAM_CODEC.map(this::getSoupFactory, HotpotWrappedSoupTypeTypeFactory::resourceLocation);
-
     public HotpotSoupTypeFactoryManager() {
-        super(HotpotSoupTypeFactoryManager.GSON, "soup");
+        super(GSON, "soup");
         this.byName = Maps.newHashMap();
     }
 
@@ -81,27 +80,27 @@ public class HotpotSoupTypeFactoryManager extends SimpleJsonResourceReloadListen
         return soupTypeCodec.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), soupType).resultOrPartial().orElse(new CompoundTag());
     }
 
-    public IHotpotSoupType buildSoup(CompoundTag tag) {
-        return soupTypeCodec.parse(NbtOps.INSTANCE, tag).resultOrPartial().orElse(buildEmptySoup());
-    }
-
-    public IHotpotSoupType buildSoup(ResourceLocation resourceLocation) {
-        return getSoupFactory(resourceLocation).buildFromScratch(resourceLocation);
+    public IHotpotSoupType buildSoup(CompoundTag tag, HolderLookup.Provider registryAccess) {
+        return soupTypeCodec.parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), tag).resultOrPartial().orElse(buildEmptySoup());
     }
 
     public HotpotEmptySoupType buildEmptySoup() {
-        return HotpotSoupTypeFactoryManager.EMPTY_SOUP_FACTORY.buildFromScratch();
+        return EMPTY_SOUP_FACTORY.buildFromScratch();
     }
 
-    public HotpotWrappedSoupTypeTypeFactory<?> getSoupFactoryFromSoupType(IHotpotSoupType soupType) {
-        return new HotpotWrappedSoupTypeTypeFactory<>(soupType.getResourceLocation(), byName.get(soupType.getResourceLocation()));
-    }
-
-    public HotpotWrappedSoupTypeTypeFactory<?> getSoupFactory(ResourceLocation resourceLocation) {
-        return byName.containsKey(resourceLocation) ? new HotpotWrappedSoupTypeTypeFactory<>(resourceLocation, byName.get(resourceLocation)) : EMPTY_SOUP_FACTORY;
+    public HotpotSoupTypeFactoryHolder<?> getSoupFactory(ResourceLocation resourceLocation) {
+        return byName.containsKey(resourceLocation) ? new HotpotSoupTypeFactoryHolder<>(resourceLocation, byName.get(resourceLocation)) : EMPTY_SOUP_FACTORY;
     }
 
     public HashMap<ResourceLocation, IHotpotSoupTypeFactory<?>> getAllFactoriesByName() {
         return byName;
+    }
+
+    public Codec<HotpotSoupTypeFactoryHolder<?>> getHolderCodec() {
+        return holderCodec;
+    }
+
+    public StreamCodec<ByteBuf, HotpotSoupTypeFactoryHolder<?>> getStreamHolderCodec() {
+        return streamHolderCodec;
     }
 }

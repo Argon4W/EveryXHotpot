@@ -43,7 +43,7 @@ public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStac
     }
 
     public static Optional<AbstractCookingRecipe> getHotpotCookingRecipe(ItemStack itemStack, LevelBlockPos pos, IHotpotSoupType soupType) {
-        return AbstractHotpotRecipeContent.HOTPOT_COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).filter(holder -> holder.value().matchesTargetSoup(soupType)).map(RecipeHolder::value);
+        return AbstractHotpotRecipeContent.HOTPOT_COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).filter(holder -> holder.value().matches(soupType)).map(RecipeHolder::value);
     }
 
     public static Optional<AbstractCookingRecipe> getAllCookingRecipe(BiFunction<ItemStack, LevelBlockPos, Optional<AbstractCookingRecipe>> recipeGetter , IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos) {

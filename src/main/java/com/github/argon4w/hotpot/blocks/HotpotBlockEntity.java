@@ -5,23 +5,19 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupBaseRecipe;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupIngredientRecipe;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotIngredientActionExecutor;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -83,7 +79,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         for (RecipeHolder<HotpotSoupBaseRecipe> holder : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_BASE_RECIPE_TYPE.get())) {
             HotpotSoupBaseRecipe recipe = holder.value();
 
-            if (!recipe.matches(itemStack) || !getSoup().getResourceLocation().equals(recipe.getSourceSoup())) {
+            if (!recipe.matches(itemStack, getSoup())) {
                 continue;
             }
 
@@ -91,9 +87,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
             setSoup(recipe.createResultSoup(), selfPos);
             setWaterLevel(recipe.getResultWaterLevel());
-
-            SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(recipe.getSoundEvent());
-            selfPos.level().playSound(null, selfPos.pos(), soundEvent == null ? SoundEvents.EMPTY : soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+            selfPos.playSound(recipe.getSoundEvent());
 
             return;
         }
@@ -212,7 +206,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         waterLevel = compoundTag.contains("WaterLevel", Tag.TAG_FLOAT) ?compoundTag.getFloat("WaterLevel") : 0f;
 
         if (compoundTag.contains("Soup", Tag.TAG_COMPOUND)) {
-            soup = HotpotSoupTypes.loadSoup(compoundTag.getCompound("Soup"));
+            soup = HotpotSoupTypes.loadSoup(compoundTag.getCompound("Soup"), registryAccess);
         }
 
         if (compoundTag.contains("Contents", Tag.TAG_LIST)) {
@@ -398,7 +392,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             return false;
         }
 
-        return selfBlockEntity.getSoup().getResourceLocation().equals(hotpotBlockEntity.getSoup().getResourceLocation());
+        return selfBlockEntity.getSoup().getSoupTypeFactoryHolder().equals(hotpotBlockEntity.getSoup().getSoupTypeFactoryHolder());
     }
 
     public static int getHitPos(BlockPos blockPos, Vec3 pos) {

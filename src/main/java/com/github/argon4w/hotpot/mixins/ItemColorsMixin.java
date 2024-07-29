@@ -3,7 +3,6 @@ package com.github.argon4w.hotpot.mixins;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
-import com.google.common.collect.Maps;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.world.item.ItemStack;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;

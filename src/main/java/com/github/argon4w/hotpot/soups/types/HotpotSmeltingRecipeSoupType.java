@@ -1,27 +1,30 @@
-package com.github.argon4w.hotpot.soups;
+package com.github.argon4w.hotpot.soups.types;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
+import com.github.argon4w.hotpot.soups.IHotpotSoupFactorySerializer;
+import com.github.argon4w.hotpot.soups.IHotpotSoupTypeFactory;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
 public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupType {
-    private final ResourceLocation resourceLocation;
+    private final HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder;
     private final float waterLevelDropRate;
 
-    public HotpotSmeltingRecipeSoupType(ResourceLocation resourceLocation, float waterLevelDropRate) {
-        this.resourceLocation = resourceLocation;
+    public HotpotSmeltingRecipeSoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder, float waterLevelDropRate) {
+        this.soupTypeFactoryHolder = soupTypeFactoryHolder;
         this.waterLevelDropRate = waterLevelDropRate;
 
         this.waterLevel = 0.0f;
@@ -29,8 +32,8 @@ public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupTy
         this.activeness = 0.0f;
     }
 
-    public HotpotSmeltingRecipeSoupType(ResourceLocation resourceLocation, float waterLevelDropRate, float waterLevel, float overflowWaterLevel, float activeness) {
-        this.resourceLocation = resourceLocation;
+    public HotpotSmeltingRecipeSoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder, float waterLevelDropRate, float waterLevel, float overflowWaterLevel, float activeness) {
+        this.soupTypeFactoryHolder = soupTypeFactoryHolder;
         this.waterLevelDropRate = waterLevelDropRate;
 
         this.waterLevel = waterLevel;
@@ -54,8 +57,8 @@ public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupTy
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return resourceLocation;
+    public HotpotSoupTypeFactoryHolder<?> getSoupTypeFactoryHolder() {
+        return soupTypeFactoryHolder;
     }
 
     @Override
@@ -71,13 +74,13 @@ public class HotpotSmeltingRecipeSoupType extends AbstractHotpotFluidBasedSoupTy
         }
 
         @Override
-        public HotpotSmeltingRecipeSoupType buildFrom(ResourceLocation resourceLocation, float waterLevel, float overflowWaterLevel, float activeness) {
-            return new HotpotSmeltingRecipeSoupType(resourceLocation, waterLevelDropRate, waterLevel, overflowWaterLevel, activeness);
+        public HotpotSmeltingRecipeSoupType buildFrom(HotpotSoupTypeFactoryHolder<HotpotSmeltingRecipeSoupType> soupTypeFactoryHolder, float waterLevel, float overflowWaterLevel, float activeness) {
+            return new HotpotSmeltingRecipeSoupType(soupTypeFactoryHolder, waterLevelDropRate, waterLevel, overflowWaterLevel, activeness);
         }
 
         @Override
-        public HotpotSmeltingRecipeSoupType buildFromScratch(ResourceLocation resourceLocation) {
-            return new HotpotSmeltingRecipeSoupType(resourceLocation, waterLevelDropRate);
+        public HotpotSmeltingRecipeSoupType buildFromScratch(HotpotSoupTypeFactoryHolder<HotpotSmeltingRecipeSoupType> soupTypeFactoryHolder) {
+            return new HotpotSmeltingRecipeSoupType(soupTypeFactoryHolder, waterLevelDropRate);
         }
 
         @Override

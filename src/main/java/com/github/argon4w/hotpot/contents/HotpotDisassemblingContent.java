@@ -1,10 +1,9 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -50,13 +49,8 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "disassembling_recipe_content");
-    }
-
-    @Override
-    public IHotpotContentFactory<?> getFactory() {
-        return HotpotContents.DISASSEMBLING_RECIPE_CONTENT.get();
+    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
+        return HotpotContents.DISASSEMBLING_RECIPE_CONTENT;
     }
 
     @Override

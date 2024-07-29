@@ -1,10 +1,9 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 
@@ -31,18 +30,13 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
         return super.remapCookingTime(soupType, itemStack, pos, hotpotBlockEntity).map(integer -> (int) (integer * 1.5f));
     }
 
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "smelting_recipe_content");
-    }
-
     public static boolean hasSmeltingRecipe(ItemStack itemStack, LevelBlockPos pos) {
         return HotpotSmeltingRecipeContent.SMELTING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).isPresent();
     }
 
     @Override
-    public IHotpotContentFactory<?> getFactory() {
-        return null;
+    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
+        return HotpotContents.SMELTING_RECIPE_CONTENT;
     }
 
     public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotSmeltingRecipeContent> {

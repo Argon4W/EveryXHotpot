@@ -1,11 +1,10 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,11 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class HotpotEmptyPlacement implements IHotpotPlacement {
-    @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_placement");
-    }
-
     @Override
     public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos) {
         return false;
@@ -49,8 +43,8 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     }
 
     @Override
-    public IHotpotPlacementFactory<?> getFactory() {
-        return HotpotPlacements.getEmptyPlacementFactory();
+    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
+        return HotpotPlacements.EMPTY_PLACEMENT;
     }
 
     public static class Factory implements IHotpotPlacementFactory<HotpotEmptyPlacement> {

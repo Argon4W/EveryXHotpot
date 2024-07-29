@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("deprecation")
 public record ProcessedBakedModel(BakedModel originalModel, HashMap<ResourceLocation, BakedModel> processedModels) implements BakedModel {
@@ -77,12 +80,7 @@ public record ProcessedBakedModel(BakedModel originalModel, HashMap<ResourceLoca
     }
 
     private List<ResourceLocation> getVisibleProcessedModels(ItemStack itemStack) {
-        if (!HotpotSpriteProcessorDataComponent.hasDataComponent(itemStack)) {
-            return List.of();
-        }
-
-        List<ResourceLocation> processors = HotpotSpriteProcessorDataComponent.getProcessors(itemStack).stream().map(IHotpotSpriteProcessor::getResourceLocation).toList();
-        return processedModels.keySet().stream().filter(processors::contains).toList();
+        return HotpotSpriteProcessorDataComponent.hasDataComponent(itemStack) ? processedModels.keySet().stream().filter(HotpotSpriteProcessorDataComponent.getProcessors(itemStack).stream().map(Holder::getKey).filter(Objects::nonNull).map(ResourceKey::location).toList()::contains).toList() : List.of();
     }
 
     private class ProcessedOverrides extends ItemOverrides {

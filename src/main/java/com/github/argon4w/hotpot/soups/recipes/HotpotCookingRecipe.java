@@ -2,6 +2,8 @@ package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -9,15 +11,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotCookingRecipe extends AbstractCookingRecipe {
-    private final ResourceLocation targetSoup;
+    private final HotpotSoupTypeFactoryHolder<?> targetSoup;
 
-    public HotpotCookingRecipe(ResourceLocation targetSoup, String group, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
+    public HotpotCookingRecipe(HotpotSoupTypeFactoryHolder<?> targetSoup, String group, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
         super(HotpotModEntry.HOTPOT_COOKING_RECIPE.get(), group, CookingBookCategory.FOOD, ingredient, result, experience, cookingTime);
         this.targetSoup = targetSoup;
     }
@@ -27,11 +28,11 @@ public class HotpotCookingRecipe extends AbstractCookingRecipe {
         return HotpotModEntry.HOTPOT_COOKING_RECIPE_SERIALIZER.get();
     }
 
-    public boolean matchesTargetSoup(IHotpotSoupType soupType) {
-        return soupType.getResourceLocation().equals(getTargetSoup());
+    public boolean matches(IHotpotSoupType soupType) {
+        return soupType.getSoupTypeFactoryHolder().equals(targetSoup);
     }
 
-    public ResourceLocation getTargetSoup() {
+    public HotpotSoupTypeFactoryHolder<?> getTargetSoup() {
         return targetSoup;
     }
 
@@ -49,7 +50,7 @@ public class HotpotCookingRecipe extends AbstractCookingRecipe {
 
         public static final MapCodec<HotpotCookingRecipe> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                        ResourceLocation.CODEC.fieldOf("target_soup").forGetter(HotpotCookingRecipe::getTargetSoup),
+                        HotpotSoupTypes.getHolderCodec().fieldOf("target_soup").forGetter(HotpotCookingRecipe::getTargetSoup),
                         Codec.STRING.fieldOf("group").forGetter(HotpotCookingRecipe::getGroup),
                         Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotCookingRecipe::getIngredient),
                         ItemStack.CODEC.fieldOf("result").forGetter(HotpotCookingRecipe::getResult),
@@ -60,7 +61,7 @@ public class HotpotCookingRecipe extends AbstractCookingRecipe {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotCookingRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
                 StreamCodec.composite(
-                        ResourceLocation.STREAM_CODEC, HotpotCookingRecipe::getTargetSoup,
+                        HotpotSoupTypes.getStreamHolderCodec(), HotpotCookingRecipe::getTargetSoup,
                         ByteBufCodecs.STRING_UTF8, Recipe::getGroup,
                         Ingredient.CONTENTS_STREAM_CODEC, HotpotCookingRecipe::getIngredient,
                         ItemStack.STREAM_CODEC, HotpotCookingRecipe::getResult,

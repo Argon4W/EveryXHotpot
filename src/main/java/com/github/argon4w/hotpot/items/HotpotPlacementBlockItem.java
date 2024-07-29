@@ -7,7 +7,6 @@ import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.IHotpotPlacementFactory;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -127,6 +126,6 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         float volume = (soundtype.getVolume() + 1.0F) / 2.0F;
         float pitch = soundtype.getPitch() * 0.8F;
 
-        pos.level().playSound(player, pos.pos(), soundEvent, SoundSource.BLOCKS, volume, pitch);
+        pos.playSound(soundEvent, volume, pitch);
     }
 }

@@ -1,9 +1,9 @@
 package com.github.argon4w.hotpot.items.components;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
-import com.github.argon4w.hotpot.soups.HotpotWrappedSoupTypeTypeFactory;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
 import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -13,16 +13,15 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public record HotpotPaperBowlDataComponent(HotpotWrappedSoupTypeTypeFactory<?> soupTypeFactory, boolean drained, List<ItemStack> items, List<ItemStack> skewers) {
-    public static final HotpotPaperBowlDataComponent EMPTY = new HotpotPaperBowlDataComponent(HotpotSoupTypes.getEmptySoupFactory(), false, List.of(), List.of());
+public record HotpotPaperBowlDataComponent(HotpotSoupTypeFactoryHolder<?> soupTypeFactory, boolean drained, List<ItemStack> items, List<ItemStack> skewers) {
+    public static final HotpotPaperBowlDataComponent EMPTY = new HotpotPaperBowlDataComponent(HotpotSoupTypes.getEmptySoupFactoryHolder(), false, List.of(), List.of());
 
     public static final Codec<HotpotPaperBowlDataComponent> CODEC = Codec.lazyInitialized(() ->
             RecordCodecBuilder.create(data -> data.group(
-                    HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.wrappedCodec.fieldOf("soup_type").forGetter(HotpotPaperBowlDataComponent::soupTypeFactory),
+                    HotpotSoupTypes.getHolderCodec().fieldOf("soup_type").forGetter(HotpotPaperBowlDataComponent::soupTypeFactory),
                     Codec.BOOL.fieldOf("soup_drained").forGetter(HotpotPaperBowlDataComponent::drained),
                     ItemStack.CODEC.listOf().fieldOf("items").forGetter(HotpotPaperBowlDataComponent::items),
                     ItemStack.CODEC.listOf().fieldOf("skewers").forGetter(HotpotPaperBowlDataComponent::skewers)
@@ -31,7 +30,7 @@ public record HotpotPaperBowlDataComponent(HotpotWrappedSoupTypeTypeFactory<?> s
 
     public static final StreamCodec<RegistryFriendlyByteBuf, HotpotPaperBowlDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
             StreamCodec.composite(
-                    HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.streamWrappedCodec, HotpotPaperBowlDataComponent::soupTypeFactory,
+                    HotpotSoupTypes.getStreamHolderCodec(), HotpotPaperBowlDataComponent::soupTypeFactory,
                     ByteBufCodecs.BOOL, HotpotPaperBowlDataComponent::drained,
                     ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC), HotpotPaperBowlDataComponent::items,
                     ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC), HotpotPaperBowlDataComponent::skewers,
@@ -40,7 +39,7 @@ public record HotpotPaperBowlDataComponent(HotpotWrappedSoupTypeTypeFactory<?> s
     );
 
     public HotpotPaperBowlDataComponent setSoupType(IHotpotSoupType soupType) {
-        return new HotpotPaperBowlDataComponent(HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.getSoupFactoryFromSoupType(soupType), drained, List.copyOf(items), List.copyOf(skewers));
+        return new HotpotPaperBowlDataComponent(soupType.getSoupTypeFactoryHolder(), drained, List.copyOf(items), List.copyOf(skewers));
     }
 
     public HotpotPaperBowlDataComponent setDrained(boolean drained) {

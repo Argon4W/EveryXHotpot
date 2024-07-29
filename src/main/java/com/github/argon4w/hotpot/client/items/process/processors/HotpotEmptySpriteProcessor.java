@@ -19,11 +19,6 @@ public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor");
-    }
-
-    @Override
     public int getIndex() {
         return -1;
     }

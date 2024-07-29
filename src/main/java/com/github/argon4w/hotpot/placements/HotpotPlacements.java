@@ -35,7 +35,7 @@ public class HotpotPlacements {
             Direction.WEST, - 2
     );
 
-    public static final MapCodec<IHotpotPlacement> CODEC =LazyMapCodec.of(() -> getPlacementRegistry().byNameCodec().dispatchMap(IHotpotPlacement::getFactory, IHotpotPlacementFactory::buildFromCodec));
+    public static final MapCodec<IHotpotPlacement> CODEC =LazyMapCodec.of(() -> getPlacementRegistry().holderByNameCodec().dispatchMap(IHotpotPlacement::getPlacementFactoryHolder, holder -> holder.value().buildFromCodec()));
     public static final Codec<List<HotpotPlacementWithSlot>> SLOT_CODEC = Codec.lazyInitialized(() -> Codec.INT.dispatch("slot", HotpotPlacementWithSlot::slot, i -> CODEC.xmap(p -> new HotpotPlacementWithSlot(i, p), HotpotPlacementWithSlot::placement)).listOf());
 
     public static final ResourceLocation EMPTY_PLACEMENT_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_placement");
@@ -62,10 +62,6 @@ public class HotpotPlacements {
 
     public static Registry<IHotpotPlacementFactory<?>> getPlacementRegistry() {
         return PLACEMENT_REGISTRY;
-    }
-
-    public static IHotpotPlacementFactory<?> getPlacementFactory(ResourceLocation resourceLocation) {
-        return getPlacementRegistry().get(resourceLocation);
     }
 
     public static void loadPlacements(ListTag listTag, HolderLookup.Provider registryAccess, NonNullList<IHotpotPlacement> placements) {

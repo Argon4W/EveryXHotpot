@@ -1,10 +1,17 @@
 package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoupType;
+import com.github.argon4w.hotpot.soups.types.HotpotDisassemblingRecipeSoupTypeRecipeSoupType;
+import com.github.argon4w.hotpot.soups.types.HotpotEmptySoupType;
+import com.github.argon4w.hotpot.soups.types.HotpotSmeltingRecipeSoupType;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -26,7 +33,7 @@ public class HotpotSoupTypes {
         return SOUP_REGISTRY;
     }
 
-    public static HotpotWrappedSoupTypeTypeFactory<HotpotEmptySoupType> getEmptySoupFactory() {
+    public static HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> getEmptySoupFactoryHolder() {
         return HotpotSoupTypeFactoryManager.EMPTY_SOUP_FACTORY;
     }
 
@@ -34,11 +41,19 @@ public class HotpotSoupTypes {
         return HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.buildEmptySoup();
     }
 
-    public static IHotpotSoupType loadSoup(CompoundTag compoundTag) {
-        return HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.buildSoup(compoundTag);
+    public static IHotpotSoupType loadSoup(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
+        return HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.buildSoup(compoundTag, registryAccess);
     }
 
     public static Tag saveSoup(IHotpotSoupType soupType, HolderLookup.Provider registryAccess) {
         return HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.saveSoup(soupType, registryAccess);
+    }
+
+    public static Codec<HotpotSoupTypeFactoryHolder<?>> getHolderCodec() {
+        return HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.getHolderCodec();
+    }
+
+    public static StreamCodec<ByteBuf, HotpotSoupTypeFactoryHolder<?>> getStreamHolderCodec() {
+        return HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.getStreamHolderCodec();
     }
 }

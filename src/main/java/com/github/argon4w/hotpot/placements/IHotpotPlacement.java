@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,8 +16,7 @@ public interface IHotpotPlacement {
     ItemStack getCloneItemStack(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos level);
     List<Integer> getPoslist();
     boolean isConflict(int pos);
-    ResourceLocation getResourceLocation();
-    IHotpotPlacementFactory<?> getFactory();
+    Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder();
 
     static float getSlotX(int slot) {
         return ((2 & slot) > 0 ? 0.5f : 0f);

@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.soups;
+package com.github.argon4w.hotpot.soups.types;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
@@ -6,6 +6,8 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
+import com.github.argon4w.hotpot.soups.IHotpotSoupTypeFactory;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRechargeRecipe;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupActivenessSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
@@ -13,11 +15,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -58,19 +55,13 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
         for (RecipeHolder<HotpotSoupRechargeRecipe> holder : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get())) {
             HotpotSoupRechargeRecipe recipe = holder.value();
 
-            if (!recipe.matches(itemStack)) {
-                continue;
-            }
-
-            if (!hotpotBlockEntity.getSoup().getResourceLocation().equals(recipe.getTargetSoup())) {
+            if (!recipe.matches(itemStack, hotpotBlockEntity.getSoup())) {
                 continue;
             }
 
             setWaterLevel(hotpotBlockEntity, selfPos, getWaterLevel() + recipe.getRechargeWaterLevel());
             player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
-
-            SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(recipe.getSoundEvent());
-            selfPos.level().playSound(null, selfPos.pos(), soundEvent == null ? SoundEvents.EMPTY : soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
+            selfPos.playSound(recipe.getSoundEvent());
 
             return Optional.empty();
         }
@@ -111,15 +102,15 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
     }
 
     public static abstract class Factory<T extends AbstractHotpotFluidBasedSoupType> implements IHotpotSoupTypeFactory<T> {
-        public abstract T buildFrom(ResourceLocation resourceLocation, float waterLevel, float overflowWaterLevel, float activeness);
+        public abstract T buildFrom(HotpotSoupTypeFactoryHolder<T> soupTypeFactoryHolder, float waterLevel, float overflowWaterLevel, float activeness);
 
         @Override
-        public MapCodec<T> buildFromCodec(ResourceLocation resourceLocation) {
+        public MapCodec<T> buildFromCodec(HotpotSoupTypeFactoryHolder<T> soupTypeFactoryHolder) {
             return RecordCodecBuilder.mapCodec(soupType -> soupType.group(
                     Codec.FLOAT.fieldOf("WaterLevel").forGetter(AbstractHotpotSoupType::getWaterLevel),
                     Codec.FLOAT.fieldOf("OverflowWaterLevel").forGetter(AbstractHotpotSoupType::getOverflowWaterLevel),
                     Codec.FLOAT.fieldOf("Activeness").forGetter(AbstractHotpotFluidBasedSoupType::getActiveness)
-            ).apply(soupType, (waterLevel, overflowWaterLevel, activeness) -> buildFrom(resourceLocation, waterLevel, overflowWaterLevel, activeness)));
+            ).apply(soupType, (waterLevel, overflowWaterLevel, activeness) -> buildFrom(soupTypeFactoryHolder, waterLevel, overflowWaterLevel, activeness)));
         }
     }
 }
