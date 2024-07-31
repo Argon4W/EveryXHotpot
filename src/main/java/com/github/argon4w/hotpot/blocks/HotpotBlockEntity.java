@@ -11,6 +11,7 @@ import com.github.argon4w.hotpot.soups.recipes.HotpotSoupIngredientRecipe;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotIngredientActionExecutor;
 import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -69,13 +71,13 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     @Override
-    public ItemStack tryPlaceContentViaTableware(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        tryPlaceContentViaInteraction(hitPos, player, hand, itemStack, selfPos);
+    public ItemStack tryPlaceContentViaTableware(int hitPos, int hitLayer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        tryPlaceContentViaInteraction(hitPos, hitLayer, player, hand, itemStack, selfPos);
         return itemStack;
     }
 
     @Override
-    public void tryPlaceContentViaInteraction(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public void tryPlaceContentViaInteraction(int hitPos, int hitLayer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         for (RecipeHolder<HotpotSoupBaseRecipe> holder : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_BASE_RECIPE_TYPE.get())) {
             HotpotSoupBaseRecipe recipe = holder.value();
 
@@ -98,7 +100,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     @Override
-    public ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, LevelBlockPos pos) {
+    public ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, int hitLayer, LevelBlockPos pos) {
         int contentPos = getContentPos(hitPos);
         IHotpotContent content = contents.get(contentPos);
 
@@ -271,12 +273,12 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         setChanged();
     }
 
-    public NonNullList<IHotpotContent> getContents() {
-        return contents;
-    }
-
     public boolean hasEmptyContent() {
         return contents.stream().anyMatch(content -> content instanceof HotpotEmptyContent);
+    }
+
+    public static boolean hasEmptyContent(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return hotpotBlockEntity.hasEmptyContent();
     }
 
     public boolean isEmptyContent(int pos) {
@@ -285,6 +287,10 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
     public void setContent(int i, IHotpotContent content) {
         contents.set(i, content);
+    }
+
+    public NonNullList<IHotpotContent> getContents() {
+        return contents;
     }
 
     public IHotpotContent getContent(int pos) {
@@ -335,10 +341,6 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         this.canBeRemoved = canBeRemoved;
     }
 
-    public static boolean hasEmptyContent(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return hotpotBlockEntity.hasEmptyContent();
-    }
-
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity blockEntity) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
 
@@ -352,7 +354,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         int tickSpeed = blockEntity.soup.getContentTickSpeed(blockEntity, selfPos);
 
         if (tickSpeed < 0) {
-            if (blockEntity.time % (- tickSpeed) == 0) {
+            if (blockEntity.time % (- tickSpeed * 2) == 0) {
                 tickContent(blockEntity, selfPos);
             }
         } else {
@@ -396,6 +398,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     public static int getHitPos(BlockPos blockPos, Vec3 pos) {
+        blockPos = blockPos.relative(Direction.UP);
         Vec3 vec = pos.subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         double x = vec.x() - 0.5f;
         double z = vec.z() - 0.5f;
@@ -405,5 +408,9 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         degree = degree < 0f ? degree + 360f : degree;
 
         return (int) Math.floor(degree / size);
+    }
+
+    public static int getHitPos(BlockHitResult result) {
+        return HotpotBlockEntity.getHitPos(result.getBlockPos(), result.getLocation());
     }
 }

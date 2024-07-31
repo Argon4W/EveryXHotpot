@@ -12,20 +12,14 @@ public record HotpotChopstickDataComponent(ItemStack itemStack) {
 
     public static final Codec<HotpotChopstickDataComponent> CODEC = Codec.lazyInitialized(() ->
             RecordCodecBuilder.create(data -> data.group(
-                    ItemStack.CODEC.fieldOf("item_stack").forGetter(HotpotChopstickDataComponent::itemStack)
-            ).apply(data, itemStack1 -> {
-                System.out.println("decode chopstick");
-                return new HotpotChopstickDataComponent(itemStack1);
-            }))
+                    ItemStack.OPTIONAL_CODEC.fieldOf("item_stack").forGetter(HotpotChopstickDataComponent::itemStack)
+            ).apply(data, HotpotChopstickDataComponent::new))
     );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, HotpotChopstickDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
             StreamCodec.composite(
                     ItemStack.STREAM_CODEC, HotpotChopstickDataComponent::itemStack,
-                    itemStack1 -> {
-                        System.out.println("decode chopstick");
-                        return new HotpotChopstickDataComponent(itemStack1);
-                    }
+                    HotpotChopstickDataComponent::new
             )
     );
 

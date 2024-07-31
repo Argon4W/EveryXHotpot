@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "everyxhotpot:block/hotpot_placement_rack",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "everyxhotpot:block/hotpot_placement_rack"
+    },
+    "facing=south": {
+      "model": "everyxhotpot:block/hotpot_placement_rack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "everyxhotpot:block/hotpot_placement_rack",
+      "y": 270
+    }
+  }
+}

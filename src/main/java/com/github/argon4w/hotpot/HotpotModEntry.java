@@ -1,9 +1,6 @@
 package com.github.argon4w.hotpot;
 
-import com.github.argon4w.hotpot.blocks.HotpotBlock;
-import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlock;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.*;
 import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.contents.HotpotItemContentSpecialRenderers;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
@@ -49,6 +46,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -66,25 +64,26 @@ public class HotpotModEntry {
     public static final String HOTPOT_NETWORK_PROTOCOL_VERSION = "3";
     public static final int HOTPOT_SPRITE_TINT_INDEX = 6;
 
-    public static final Logger LOGGER = LogUtils.getLogger();
-    public static final ResourceLocation TAG_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_tags");
-
     public static final DeferredBlock<HotpotBlock> HOTPOT_BLOCK = HotpotRegistries.BLOCKS.register("hotpot", HotpotBlock::new);
     public static final DeferredBlock<HotpotPlacementBlock> HOTPOT_PLACEMENT = HotpotRegistries.BLOCKS.register("hotpot_placement", HotpotPlacementBlock::new);
+    public static final DeferredBlock<Block> HOTPOT_PLACEMENT_RACK = HotpotRegistries.BLOCKS.register("hotpot_placement_rack", HotpotPlacementRackBlock::new);
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotBlockEntity>> HOTPOT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot",
             () -> BlockEntityType.Builder.of(HotpotBlockEntity::new, HOTPOT_BLOCK.get()).build(DSL.remainderType()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotPlacementBlockEntity>> HOTPOT_PLACEMENT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_placement",
             () -> BlockEntityType.Builder.of(HotpotPlacementBlockEntity::new, HOTPOT_PLACEMENT.get()).build(DSL.remainderType()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotPlacementRackBlockEntity>> HOTPOT_PLACEMENT_RACK_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_placement_rack",
+            () -> BlockEntityType.Builder.of(HotpotPlacementRackBlockEntity::new, HOTPOT_PLACEMENT_RACK.get()).build(DSL.remainderType()));
 
     public static final DeferredItem<HotpotPaperBowlItem> HOTPOT_PAPER_BOWL = HotpotRegistries.ITEMS.register("hotpot_paper_bowl", HotpotPaperBowlItem::new);
     public static final DeferredItem<HotpotSkewerItem> HOTPOT_SKEWER = HotpotRegistries.ITEMS.register("hotpot_skewer", HotpotSkewerItem::new);
     public static final DeferredItem<HotpotSpoonItem> HOTPOT_SLOTTED_SPOON = HotpotRegistries.ITEMS.register("hotpot_slotted_spoon", () -> new HotpotSpoonItem(true));
     public static final DeferredItem<HotpotSpoonItem> HOTPOT_SOUP_SPOON = HotpotRegistries.ITEMS.register("hotpot_soup_spoon", () -> new HotpotSpoonItem(false));
     public static final DeferredItem<BlockItem> HOTPOT_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot", () -> new BlockItem(HOTPOT_BLOCK.get(), new Item.Properties()));
-    public static final DeferredItem<HotpotPlacementBlockItem<HotpotSmallPlate>> HOTPOT_SMALL_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlacementBlockItem<>(HotpotPlacements.SMALL_PLATE));
-    public static final DeferredItem<HotpotPlacementBlockItem<HotpotLongPlate>> HOTPOT_LONG_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlacementBlockItem<>(HotpotPlacements.LONG_PLATE));
-    public static final DeferredItem<HotpotPlacementBlockItem<HotpotLargeRoundPlate>> HOTPOT_LARGE_ROUND_PLATE_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_large_round_plate", () -> new HotpotPlacementBlockItem<>(HotpotPlacements.LARGE_ROUND_PLATE));
+    public static final DeferredItem<BlockItem> HOTPOT_PLACEMENT_RACK_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_placement_rack", () -> new BlockItem(HOTPOT_PLACEMENT_RACK.get(), new Item.Properties()));
+    public static final DeferredItem<HotpotPlateItem<HotpotSmallPlate>> HOTPOT_SMALL_PLATE = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlateItem<>(HotpotPlacements.SMALL_PLATE));
+    public static final DeferredItem<HotpotPlateItem<HotpotLongPlate>> HOTPOT_LONG_PLATE = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlateItem<>(HotpotPlacements.LONG_PLATE));
+    public static final DeferredItem<HotpotPlateItem<HotpotLargeRoundPlate>> HOTPOT_LARGE_ROUND_PLATE = HotpotRegistries.ITEMS.register("hotpot_large_round_plate", () -> new HotpotPlateItem<>(HotpotPlacements.LARGE_ROUND_PLATE));
     public static final DeferredItem<HotpotChopstickItem> HOTPOT_CHOPSTICK = HotpotRegistries.ITEMS.register("hotpot_chopstick", HotpotChopstickItem::new);
     public static final DeferredItem<HotpotSpicePackItem> HOTPOT_SPICE_PACK = HotpotRegistries.ITEMS.register("hotpot_spice_pack", HotpotSpicePackItem::new);
 
@@ -117,10 +116,11 @@ public class HotpotModEntry {
             .title(Component.translatable("itemGroup.EveryXHotpot"))
             .displayItems((parameters, output) -> {
                 output.accept(HOTPOT_BLOCK_ITEM.get());
+                output.accept(HOTPOT_PLACEMENT_RACK_BLOCK_ITEM.get());
                 output.accept(HOTPOT_CHOPSTICK.get());
-                output.accept(HOTPOT_SMALL_PLATE_BLOCK_ITEM.get());
-                output.accept(HOTPOT_LONG_PLATE_BLOCK_ITEM.get());
-                output.accept(HOTPOT_LARGE_ROUND_PLATE_BLOCK_ITEM.get());
+                output.accept(HOTPOT_SMALL_PLATE.get());
+                output.accept(HOTPOT_LONG_PLATE.get());
+                output.accept(HOTPOT_LARGE_ROUND_PLATE.get());
                 output.accept(HOTPOT_SPICE_PACK.get());
                 output.accept(HOTPOT_SLOTTED_SPOON.get());
                 output.accept(HOTPOT_SOUP_SPOON.get());

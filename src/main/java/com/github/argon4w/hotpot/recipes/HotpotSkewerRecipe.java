@@ -31,7 +31,7 @@ public class HotpotSkewerRecipe extends CustomRecipe {
     }
 
     private boolean isFood(ItemStack itemStack) {
-        return itemStack.has(DataComponents.FOOD);
+        return itemStack.has(DataComponents.FOOD) && !itemStack.hasCraftingRemainingItem();
     }
 
     @NotNull

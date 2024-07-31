@@ -3,8 +3,10 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.IHotpotPlacementFactory;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +39,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         return true;
     }
 
-    public void loadPlacement(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, T placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, T placement, ItemStack itemStack) {
 
     }
 
@@ -44,12 +48,15 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
     public InteractionResult useOn(UseOnContext context) {
         LevelBlockPos selfPos = LevelBlockPos.fromUseOnContext(context);
         Direction direction = context.getHorizontalDirection();
-        int pos = HotpotPlacementBlockEntity.getHitPos(context);
+        int pos = getHitPos(context);
+        int layer = getLayer(context);
 
         IHotpotPlacementFactory<T> factory = holder.value();
         Player player = context.getPlayer();
+        InteractionHand hand = context.getHand();
+        ItemStack itemStack = context.getItemInHand();
 
-        if (!selfPos.is(HotpotModEntry.HOTPOT_PLACEMENT.get())) {
+        if (!(selfPos.getBlockEntity() instanceof IHotpotPlacementContainerBlockEntity)) {
             selfPos = LevelBlockPos.fromBlockPlaceContext(new BlockPlaceContext(context));
         }
 
@@ -57,7 +64,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
             return InteractionResult.PASS;
         }
 
-        if (!selfPos.is(HotpotModEntry.HOTPOT_PLACEMENT.get())) {
+        if (!(selfPos.getBlockEntity() instanceof IHotpotPlacementContainerBlockEntity container)) {
             return super.useOn(context);
         }
 
@@ -65,14 +72,15 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
             return super.useOn(context);
         }
 
-        if (!place(selfPos, factory.buildFromSlots(pos, direction), context.getItemInHand().copy(), pos)) {
-            return InteractionResult.FAIL;
+        if (!place(selfPos, factory.buildFromSlots(pos, direction), itemStack.copy(), pos, layer)) {
+            container.interact(pos, layer, player, hand, itemStack, selfPos);
+            return InteractionResult.SUCCESS_NO_ITEM_USED;
         }
 
         playSound(selfPos, context.getPlayer());
 
         if (player == null || !player.getAbilities().instabuild) {
-            context.getItemInHand().shrink(1);
+            itemStack.shrink(1);
         }
 
         return InteractionResult.SUCCESS;
@@ -90,7 +98,9 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         ItemStack itemStack = context.getItemInHand().copy();
         Direction direction = context.getHorizontalDirection();
 
-        int pos = HotpotPlacementBlockEntity.getHitPos(context);
+        int pos = getHitPos(context);
+        int layer = getLayer(context);
+
         IHotpotPlacementFactory<T> factory = holder.value();
 
         if (!factory.canPlace(pos, direction)) {
@@ -98,25 +108,25 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         }
 
         InteractionResult result = super.place(context);
-        place(selfPos, factory.buildFromSlots(pos, direction), itemStack, pos);
+        place(selfPos, factory.buildFromSlots(pos, direction), itemStack, pos, layer);
 
         return result;
     }
 
-    public boolean place(LevelBlockPos selfPos, T placement, ItemStack itemStack, int pos) {
+    public boolean place(LevelBlockPos selfPos, T placement, ItemStack itemStack, int pos, int layer) {
         if (!selfPos.isServerSide()) {
             return false;
         }
 
-        if (!(selfPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity)) {
+        if (!(selfPos.getBlockEntity() instanceof IHotpotPlacementContainerBlockEntity container)) {
             return false;
         }
 
-        if (!hotpotPlacementBlockEntity.place(placement, pos)) {
+        if (!container.place(placement, pos, layer)) {
             return false;
         }
 
-        loadPlacement(hotpotPlacementBlockEntity, selfPos, placement, itemStack);
+        loadPlacement(container, selfPos, placement, itemStack);
         return true;
     }
 
@@ -127,5 +137,39 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         float pitch = soundtype.getPitch() * 0.8F;
 
         pos.playSound(soundEvent, volume, pitch);
+    }
+
+    public static int getLayer(BlockPos pos , Vec3 location) {
+        Vec3 vec = location.subtract(pos.getX(), pos.getY(), pos.getZ());
+        return vec.y() < 0.5 ? 0 : 1;
+    }
+
+    public static int getHitPos(BlockPos pos, Vec3 location) {
+        Vec3 vec = location.subtract(pos.getX(), pos.getY(), pos.getZ());
+        return (vec.z() < 0.5 ? 0 : 1) | (vec.x() < 0.5 ? 0 : 2);
+    }
+
+    public static int getLayer(BlockHitResult result) {
+        return getLayer(result.getBlockPos(), result.getLocation());
+    }
+
+    public static int getLayer(BlockPlaceContext context) {
+        return getLayer(context.getClickedPos(), context.getClickLocation());
+    }
+
+    public static int getLayer(UseOnContext context) {
+        return getLayer(context.getClickedPos(), context.getClickLocation());
+    }
+
+    public static int getHitPos(BlockHitResult result) {
+        return getHitPos(result.getBlockPos(), result.getLocation());
+    }
+
+    public static int getHitPos(BlockPlaceContext context) {
+        return getHitPos(context.getClickedPos(), context.getClickLocation());
+    }
+
+    public static int getHitPos(UseOnContext context) {
+        return getHitPos(context.getClickedPos(), context.getClickLocation());
     }
 }

@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotLargeRoundPlate;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
@@ -19,20 +20,24 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, HotpotPlacementBlockEntity hotpotBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainerBlockEntity container, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         if (!(placement instanceof HotpotLargeRoundPlate largeRoundPlate)) {
             return;
         }
 
-        poseStack.pushPose();
+        int plateCount = 0;
 
-        poseStack.translate(0.5f, 0.0f, 0.5f);
-        poseStack.scale(0.66f, 0.66f, 0.66f);
+        for (; plateCount < largeRoundPlate.getPlateItemSlot().getStackCount(8); plateCount++) {
+            poseStack.pushPose();
 
-        BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_large_round")));
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
+            poseStack.translate(0.5f, plateCount * 0.0625f, 0.5f);
+            poseStack.scale(0.66f, 0.66f, 0.66f);
 
-        poseStack.popPose();
+            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_large_round")));
+            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
+
+            poseStack.popPose();
+        }
 
         int[] mapped = {0, 1, 3, 2};
 
@@ -45,7 +50,7 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
 
                 poseStack.pushPose();
 
-                poseStack.translate(0.5f, 0.08f, 0.5f);
+                poseStack.translate(0.5f, 0.0175f + 0.0625f * plateCount, 0.5f);
                 poseStack.mulPose(Axis.YP.rotationDegrees(90.0f + startDegree + stepDegree));
                 poseStack.translate(0.25f, 0.0f, 0.0f);
                 poseStack.mulPose(Axis.XP.rotationDegrees(75));

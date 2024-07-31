@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Direction;
@@ -14,11 +14,12 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class HotpotLargeRoundPlate implements IHotpotPlacement {
+public class HotpotLargeRoundPlate implements IHotpotPlate {
     private final SimpleItemSlot itemSlot1;
     private final SimpleItemSlot itemSlot2;
     private final SimpleItemSlot itemSlot3;
     private final SimpleItemSlot itemSlot4;
+    private final SimpleItemSlot plateItemSlot;
     private final SimpleItemSlot[] slots;
 
     public HotpotLargeRoundPlate() {
@@ -26,39 +27,48 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
         this.itemSlot2 = new SimpleItemSlot();
         this.itemSlot3 = new SimpleItemSlot();
         this.itemSlot4 = new SimpleItemSlot();
+        this.plateItemSlot = new SimpleItemSlot();
         slots = new SimpleItemSlot[] {itemSlot1, itemSlot2, itemSlot3, itemSlot4};
     }
 
-    public HotpotLargeRoundPlate(SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2, SimpleItemSlot itemSlot3, SimpleItemSlot itemSlot4) {
+    public HotpotLargeRoundPlate(SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2, SimpleItemSlot itemSlot3, SimpleItemSlot itemSlot4, SimpleItemSlot plateItemSlot) {
         this.itemSlot1 = itemSlot1;
         this.itemSlot2 = itemSlot2;
         this.itemSlot3 = itemSlot3;
         this.itemSlot4 = itemSlot4;
+        this.plateItemSlot = plateItemSlot;
         slots = new SimpleItemSlot[] {itemSlot1, itemSlot2, itemSlot3, itemSlot4};
     }
 
     @Override
-    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
+    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
         if (itemStack.isEmpty() && player.isCrouching()) {
             return true;
         }
 
         if (itemStack.isEmpty()) {
-            hotpotPlacementBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
-            return false;
+            selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
+            container.markDataChanged();
+            return plateItemSlot.isEmpty();
+        }
+
+        if (itemStack.is(HotpotModEntry.HOTPOT_LARGE_ROUND_PLATE)) {
+            plateItemSlot.addItem(itemStack);
+            return plateItemSlot.isEmpty();
         }
 
         slots[pos].addItem(itemStack);
-        return false;
+        return plateItemSlot.isEmpty();
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos selfPos, boolean tableware) {
-        return slots[pos].takeItem(!hotpotPlateBlockEntity.isInfiniteContent());
+    public ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+        boolean consume = !container.isInfiniteContent();
+        return isEmpty() ? plateItemSlot.takeItem(consume) : slots[pos].takeItem(consume);
     }
 
     @Override
-    public void onRemove(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos pos) {
+    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
         itemSlot1.dropItem(pos);
         itemSlot2.dropItem(pos);
         itemSlot3.dropItem(pos);
@@ -66,8 +76,8 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
     }
 
     @Override
-    public ItemStack getCloneItemStack(HotpotPlacementBlockEntity hotpotPlateBlockEntity, LevelBlockPos level) {
-        return new ItemStack(HotpotModEntry.HOTPOT_LARGE_ROUND_PLATE_BLOCK_ITEM.get());
+    public ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos) {
+        return plateItemSlot.getItemStack();
     }
 
     @Override
@@ -78,6 +88,15 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
     @Override
     public boolean isConflict(int pos) {
         return true;
+    }
+
+    @Override
+    public void setPlateItemSlot(ItemStack itemStack) {
+        plateItemSlot.set(itemStack);
+    }
+
+    public boolean isEmpty() {
+        return slots[0].isEmpty() && slots[1].isEmpty() && slots[2].isEmpty() && slots[3].isEmpty();
     }
 
     public SimpleItemSlot getItemSlot1() {
@@ -96,6 +115,10 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
         return itemSlot4;
     }
 
+    public SimpleItemSlot getPlateItemSlot() {
+        return plateItemSlot;
+    }
+
     public SimpleItemSlot[] getSlots() {
         return slots;
     }
@@ -111,7 +134,8 @@ public class HotpotLargeRoundPlate implements IHotpotPlacement {
                         SimpleItemSlot.CODEC.fieldOf("ItemSlot1").forGetter(HotpotLargeRoundPlate::getItemSlot1),
                         SimpleItemSlot.CODEC.fieldOf("ItemSlot2").forGetter(HotpotLargeRoundPlate::getItemSlot2),
                         SimpleItemSlot.CODEC.fieldOf("ItemSlot3").forGetter(HotpotLargeRoundPlate::getItemSlot3),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot4").forGetter(HotpotLargeRoundPlate::getItemSlot4)
+                        SimpleItemSlot.CODEC.fieldOf("ItemSlot4").forGetter(HotpotLargeRoundPlate::getItemSlot4),
+                        SimpleItemSlot.CODEC.fieldOf("PlateItemSlot").forGetter(HotpotLargeRoundPlate::getPlateItemSlot)
                 ).apply(plate, HotpotLargeRoundPlate::new))
         );
 

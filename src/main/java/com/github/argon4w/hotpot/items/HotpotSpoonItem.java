@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacements;
 import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoupType;
@@ -30,12 +31,12 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
     }
 
     @Override
-    public void loadPlacement(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, HotpotPlacedSpoon placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, HotpotPlacedSpoon placement, ItemStack itemStack) {
         placement.setSpoonItemSlot(itemStack);
     }
 
     @Override
-    public void tablewareInteract(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, AbstractTablewareInteractiveBlockEntity blockEntity, LevelBlockPos selfPos) {
+    public void tablewareInteract(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractTablewareInteractiveBlockEntity blockEntity, LevelBlockPos selfPos) {
         if (!(blockEntity instanceof HotpotBlockEntity hotpotBlockEntity)) {
             return;
         }
@@ -65,7 +66,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         ArrayList<ItemStack> skewers = new ArrayList<>();
 
         for (int i = 0; i < 8; i ++) {
-            ItemStack content = blockEntity.tryTakeOutContentViaTableware(player, i, selfPos);
+            ItemStack content = blockEntity.tryTakeOutContentViaTableware(player, i, 0, selfPos);
 
             if (content.isEmpty()) {
                 continue;

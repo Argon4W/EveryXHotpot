@@ -89,11 +89,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             }
 
             BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(soupLocation));
-            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucent()), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
-
-            if (bufferSource instanceof MultiBufferSource.BufferSource source) {
-                source.endBatch(Sheets.translucentCullBlockSheet());
-            }
+            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
             poseStack.popPose();
         });

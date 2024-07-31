@@ -174,7 +174,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
 
     @Override
     public ItemStack getResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
-        setSkewerItems(itemStack, getSkewerItems(itemStack).stream().map(skewerStack -> content.remapResult(soupType, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).map(Optional::get).toList());
+        setSkewerItems(itemStack, getSkewerItems(itemStack).stream().map(skewerStack -> content.remapResult(soupType, skewerStack, pos, hotpotBlockEntity).orElse(skewerStack)).toList());
         return itemStack;
     }
 

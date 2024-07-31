@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.client.events;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityRenderer;
 import com.github.argon4w.hotpot.client.blocks.HotpotPlacementBlockEntityRenderer;
+import com.github.argon4w.hotpot.client.blocks.HotpotPlacementRackBlockEntityRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
@@ -53,5 +54,6 @@ public class HotpotClientModEvents {
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_PLACEMENT_BLOCK_ENTITY.get(), HotpotPlacementBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(HotpotModEntry.HOTPOT_PLACEMENT_RACK_BLOCK_ENTITY.get(), HotpotPlacementRackBlockEntityRenderer::new);
     }
 }

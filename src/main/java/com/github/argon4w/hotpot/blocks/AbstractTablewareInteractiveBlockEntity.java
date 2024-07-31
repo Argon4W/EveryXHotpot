@@ -15,15 +15,15 @@ public abstract class AbstractTablewareInteractiveBlockEntity extends BlockEntit
         super(p_155228_, p_155229_, p_155230_);
     }
 
-    public void interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         if (itemStack.getItem() instanceof IHotpotTablewareItem tablewareItem) {
-            tablewareItem.tablewareInteract(hitPos, player, hand, itemStack, this, selfPos);
+            tablewareItem.tablewareInteract(hitPos, layer, player, hand, itemStack, this, selfPos);
         } else {
-            tryPlaceContentViaInteraction(hitPos, player, hand, itemStack, selfPos);
+            tryPlaceContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
         }
     }
 
-    public abstract ItemStack tryPlaceContentViaTableware(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
-    public abstract void tryPlaceContentViaInteraction(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
-    public abstract ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, LevelBlockPos pos);
+    public abstract ItemStack tryPlaceContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
+    public abstract void tryPlaceContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
+    public abstract ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, int layer, LevelBlockPos pos);
 }

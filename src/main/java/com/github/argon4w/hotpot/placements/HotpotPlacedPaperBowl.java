@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -37,12 +37,13 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos) {
+    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
         if (isPaperBowlUsed()) {
+            paperBowlItemSlot.getItemStack().shrink(1);
             return true;
         }
 
-        if (!itemStack.isEmpty()) {
+        if (!itemStack.isEmpty() && HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemSlot.getItemStack())) {
             paperBowlItemSlot.addItem(itemStack);
             return false;
         }
@@ -51,20 +52,27 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
             return true;
         }
 
-        hotpotPlacementBlockEntity.tryTakeOutContentViaHand(pos, selfPos);
+        selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
+        container.markDataChanged();
+
         return isPaperBowlUsed();
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos selfPos, boolean tableware) {
-        boolean consume = !hotpotPlacementBlockEntity.isInfiniteContent();
+    public ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+        boolean consume = !container.isInfiniteContent();
         ItemStack paperBowl = paperBowlItemSlot.getItemStack();
+
+        if (paperBowl.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
 
         if (HotpotPaperBowlItem.isPaperBowlClear(paperBowl)) {
             return paperBowlItemSlot.getItemStack().split(1);
         }
 
         if (isPaperBowlUsed()) {
+            paperBowlItemSlot.getItemStack().shrink(1);
             return ItemStack.EMPTY;
         }
 
@@ -83,19 +91,23 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
             itemStacks.removeFirst();
         }
 
-        HotpotPaperBowlItem.setPaperBowlItems(paperBowl, itemStacks);
-        HotpotPaperBowlItem.setPaperBowlSkewers(paperBowl, itemStacks);
+        HotpotPaperBowlItem.setPaperBowlItems(paperBowl, items);
+        HotpotPaperBowlItem.setPaperBowlSkewers(paperBowl, skewers);
+
+        if (isPaperBowlUsed()) {
+            paperBowlItemSlot.getItemStack().shrink(1);
+        }
 
         return itemStack;
     }
 
     @Override
-    public void onRemove(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos) {
+    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
 
     }
 
     @Override
-    public ItemStack getCloneItemStack(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos level) {
+    public ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos) {
         return paperBowlItemSlot.getItemStack();
     }
 

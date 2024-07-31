@@ -161,12 +161,6 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .setValue(SEPARATOR_WEST, westValue && !HotpotBlockEntity.isSameSoup(selfPos, west));
     }
 
-    private int getHitPos(BlockHitResult result) {
-        BlockPos blockPos = result.getBlockPos().relative(Direction.UP);
-
-        return HotpotBlockEntity.getHitPos(blockPos, result.getLocation());
-    }
-
     @SuppressWarnings("deprecation")
     private int getShapeIndex(BlockState state) {
         return stateToIndex.computeIntIfAbsent(state, blockState -> {
@@ -189,23 +183,27 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
-        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-            int hitPos = getHitPos(hitResult);
-
-            if (levelPos.isServerSide()) {
-                hotpotBlockEntity.interact(hitPos, player, hand, itemStack, levelPos);
-            }
-
-            return ItemInteractionResult.SUCCESS;
+        if (!(levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        int hitPos = HotpotBlockEntity.getHitPos(hitResult);
+
+        if (levelPos.isServerSide()) {
+            hotpotBlockEntity.interact(hitPos, 0, player, hand, itemStack, levelPos);
+        }
+
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
+        if (state.is(newState.getBlock())) {
+            return;
+        }
+
+        if (level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
             hotpotBlockEntity.onRemove(new LevelBlockPos(level, pos));
         }
 
@@ -219,18 +217,26 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
         LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
-        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity && levelPos.isServerSide()) {
-            hotpotBlockEntity.getSoup().entityInside(hotpotBlockEntity, levelPos, entity);
+        if (!levelPos.isServerSide()) {
+            return;
         }
+
+        if (!(levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
+            return;
+        }
+
+        hotpotBlockEntity.getSoup().entityInside(hotpotBlockEntity, levelPos, entity);
     }
 
     @Override
     public void animateTick(BlockState blockState, Level level, BlockPos pos, RandomSource randomSource) {
         LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
-        if (levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-            hotpotBlockEntity.getSoup().animateTick(hotpotBlockEntity, levelPos, randomSource);
+        if (!(levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
+            return;
         }
+
+        hotpotBlockEntity.getSoup().animateTick(hotpotBlockEntity, levelPos, randomSource);
     }
 
     @NotNull

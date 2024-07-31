@@ -4,23 +4,38 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
 import com.github.argon4w.hotpot.placements.HotpotPlacements;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedChopstick> implements IHotpotTablewareItem, IHotpotItemContainer {
     public HotpotChopstickItem() {
-        super(HotpotPlacements.PLACED_CHOPSTICK, new Properties().stacksTo(1).component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY));
+        super(HotpotPlacements.PLACED_CHOPSTICK, new Properties()
+                .stacksTo(1)
+                .component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY)
+                .attributes(new ItemAttributeModifiers(List.of(
+                        new ItemAttributeModifiers.Entry(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "chopstick_block_range_modifier"), 4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND),
+                        new ItemAttributeModifiers.Entry(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "chopstick_entity_range_modifier"), 4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                ), true))
+        );
     }
 
     @Override
@@ -29,7 +44,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     @Override
-    public void loadPlacement(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, HotpotPlacedChopstick placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, HotpotPlacedChopstick placement, ItemStack itemStack) {
         placement.setChopstickItemSlot(itemStack);
     }
 
@@ -115,13 +130,13 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     @Override
-    public void tablewareInteract(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, AbstractTablewareInteractiveBlockEntity blockEntity, LevelBlockPos selfPos) {
+    public void tablewareInteract(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractTablewareInteractiveBlockEntity blockEntity, LevelBlockPos selfPos) {
         if (!(itemStack.getItem() instanceof HotpotChopstickItem)) {
             return;
         }
 
         ItemStack heldItemStack = HotpotChopstickItem.getHeldItemStack(itemStack);
-        heldItemStack = heldItemStack.isEmpty() ? blockEntity.tryTakeOutContentViaTableware(player, hitPos, selfPos) : blockEntity.tryPlaceContentViaTableware(hitPos, player, hand, heldItemStack, selfPos);
+        heldItemStack = heldItemStack.isEmpty() ? blockEntity.tryTakeOutContentViaTableware(player, hitPos, layer, selfPos) : blockEntity.tryPlaceContentViaTableware(hitPos, layer, player, hand, heldItemStack, selfPos);
 
         if (heldItemStack.getItem().canFitInsideContainerItems()) {
             HotpotChopstickItem.setHeldItemStack(itemStack, heldItemStack);

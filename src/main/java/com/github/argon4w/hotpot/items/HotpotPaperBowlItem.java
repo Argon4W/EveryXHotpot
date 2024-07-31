@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacements;
@@ -33,7 +34,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     @Override
-    public void loadPlacement(HotpotPlacementBlockEntity hotpotPlacementBlockEntity, LevelBlockPos pos, HotpotPlacedPaperBowl placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, HotpotPlacedPaperBowl placement, ItemStack itemStack) {
         placement.setPaperBowlItemSlot(itemStack.copyWithCount(1));
     }
 
@@ -229,7 +230,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlUsed(ItemStack itemStack) {
-        return itemStack.isEmpty() || ( isPaperBowlEmpty(itemStack) && !isPaperBowlSoupEmpty(itemStack));
+        return itemStack.isEmpty() || (isPaperBowlEmpty(itemStack) && !isPaperBowlSoupEmpty(itemStack));
     }
 
     public static boolean isPaperBowlClear(ItemStack itemStack) {

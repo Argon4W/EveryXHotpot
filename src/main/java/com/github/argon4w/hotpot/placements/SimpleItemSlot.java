@@ -20,6 +20,10 @@ public class SimpleItemSlot {
     }
 
     public int getStackCount() {
+        return getStackCount(4);
+    }
+
+    public int getStackCount(float maxRenderCount) {
         if (itemSlot.isEmpty()) {
             return 0;
         }
@@ -28,7 +32,7 @@ public class SimpleItemSlot {
             return itemSlot.getCount();
         }
 
-        return Math.max(1, Math.round(itemSlot.getCount() / (itemSlot.getMaxStackSize() / 4f)));
+        return Math.max(1, Math.round(itemSlot.getCount() / (itemSlot.getMaxStackSize() / maxRenderCount)));
     }
 
     public boolean addItem(ItemStack itemStack) {
