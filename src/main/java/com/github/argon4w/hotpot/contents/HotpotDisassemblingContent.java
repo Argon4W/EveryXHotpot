@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
 
-    public HotpotDisassemblingContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+    public HotpotDisassemblingContent(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
@@ -130,7 +130,7 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
 
     public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotDisassemblingContent> {
         @Override
-        public HotpotDisassemblingContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+        public HotpotDisassemblingContent buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
             return new HotpotDisassemblingContent(itemStack, cookingTime, cookingProgress, experience);
         }
 

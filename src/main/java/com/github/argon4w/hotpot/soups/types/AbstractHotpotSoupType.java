@@ -47,7 +47,7 @@ public abstract class AbstractHotpotSoupType implements IHotpotSoupType {
     }
 
     @Override
-    public void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         hotpotBlockEntity.getContents().stream()
                 .filter(content1 -> content1 != content)
                 .forEach(content1 -> content1.onOtherContentUpdate(content, hotpotBlockEntity, pos));

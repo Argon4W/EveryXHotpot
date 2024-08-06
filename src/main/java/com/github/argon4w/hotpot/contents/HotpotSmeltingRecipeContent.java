@@ -12,7 +12,7 @@ import java.util.Optional;
 public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
     public static final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> SMELTING_RECIPE_QUICK_CHECK = RecipeManager.createCheck(RecipeType.BLASTING);
 
-    public HotpotSmeltingRecipeContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+    public HotpotSmeltingRecipeContent(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
@@ -41,7 +41,7 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
 
     public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotSmeltingRecipeContent> {
         @Override
-        public HotpotSmeltingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+        public HotpotSmeltingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
             return new HotpotSmeltingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
         }
 

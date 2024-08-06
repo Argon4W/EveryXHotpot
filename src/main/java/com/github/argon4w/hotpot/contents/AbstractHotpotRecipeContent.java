@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStackContent {
     public static final RecipeManager.CachedCheck<SingleRecipeInput, HotpotCookingRecipe> HOTPOT_COOKING_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_COOKING_RECIPE.get());
 
-    public AbstractHotpotRecipeContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+    public AbstractHotpotRecipeContent(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 

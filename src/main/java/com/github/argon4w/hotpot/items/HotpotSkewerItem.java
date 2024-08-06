@@ -188,7 +188,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     public static void setSkewerItems(ItemStack itemStack, List<ItemStack> itemStacks) {
-        itemStack.set(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT, getDataComponent(itemStack).setItemStacks(itemStacks));
+        setDataComponent(itemStack, getDataComponent(itemStack).setItemStacks(itemStacks));
     }
 
     public static HotpotSkewerDataComponent getDataComponent(ItemStack itemStack) {
@@ -212,7 +212,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     public static ItemStack applyToSkewerItemStacks(ItemStack itemStack, UnaryOperator<ItemStack> operator) {
-        itemStack.set(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT, getDataComponent(itemStack).applyToItemStacks(operator));
+        setDataComponent(itemStack, getDataComponent(itemStack).applyToItemStacks(operator));
         return itemStack;
     }
 

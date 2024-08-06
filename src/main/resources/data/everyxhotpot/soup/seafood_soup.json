@@ -1,0 +1,21 @@
+{
+  "type": "everyxhotpot:cooking_recipe_soup",
+  "water_level_drop_rate": 0.04,
+  "saved_effects": [
+    {
+      "id": "everyxhotpot:warm",
+      "amplifier": 0,
+      "duration": 300
+    },
+    {
+      "id": "minecraft:water_breathing",
+      "amplifier": 0,
+      "duration": 600
+    },
+    {
+      "id": "minecraft:luck",
+      "amplifier": 1,
+      "duration": 1200
+    }
+  ]
+}

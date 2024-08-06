@@ -35,7 +35,7 @@ public record HotpotSpriteProcessorDataComponent(List<Holder<IHotpotSpriteProces
     );
 
     public HotpotSpriteProcessorDataComponent addProcessor(Holder<IHotpotSpriteProcessor> processor) {
-        return processor.value() instanceof HotpotEmptySpriteProcessor ? this : new HotpotSpriteProcessorDataComponent(Stream.concat(processors.stream(), Stream.of(processor)).toList());
+        return processor.value() instanceof HotpotEmptySpriteProcessor ? this : new HotpotSpriteProcessorDataComponent(processors.contains(processor) ? processors : Stream.concat(processors.stream(), Stream.of(processor)).toList());
     }
 
     public static boolean hasDataComponent(ItemStack itemStack) {

@@ -17,7 +17,7 @@ public record HotpotSoupIngredient(IHotpotSoupIngredientCondition condition, IHo
             RecordCodecBuilder.mapCodec(ingredient -> ingredient.group(
                     CONDITION_CODEC.fieldOf("condition").forGetter(HotpotSoupIngredient::condition),
                     ACTION_CODEC.fieldOf("action").forGetter(HotpotSoupIngredient::action),
-                    Codec.INT.fieldOf("amount").forGetter(HotpotSoupIngredient::amount)
+                    Codec.INT.optionalFieldOf("amount", 1).forGetter(HotpotSoupIngredient::amount)
             ).apply(ingredient, HotpotSoupIngredient::new))
     );
 

@@ -33,7 +33,6 @@ public class HotpotDisassemblingRecipeSoupTypeRecipeSoupType extends AbstractHot
         this.activeness = 0.0f;
     }
 
-
     public HotpotDisassemblingRecipeSoupTypeRecipeSoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder, float waterLevelDropRate, float waterLevel, float overflowWaterLevel, float activeness) {
         this.soupTypeFactoryHolder = soupTypeFactoryHolder;
         this.waterLevelDropRate = waterLevelDropRate;

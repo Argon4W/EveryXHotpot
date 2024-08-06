@@ -52,7 +52,7 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
 
     }
 
@@ -82,8 +82,8 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public int getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return 0;
+    public float getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return 0.0f;
     }
 
     @Override

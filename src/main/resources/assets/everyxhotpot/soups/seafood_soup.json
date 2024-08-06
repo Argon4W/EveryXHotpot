@@ -1,0 +1,19 @@
+{
+  "soup_model_resource_location": "everyxhotpot:soup/hotpot_seafood_soup",
+  "custom_elements_renderers": [
+    {
+      "type": "everyxhotpot:floating_element_renderer",
+      "element1_model_resource_location": "everyxhotpot:soup/hotpot_seafood_soup_floating_seafood_1",
+      "element2_model_resource_location": "everyxhotpot:soup/hotpot_seafood_soup_floating_seafood_2",
+      "should_render_in_bowl": true
+    },
+    {
+      "type": "everyxhotpot:bubble_renderer",
+      "spread": 0.3,
+      "max_scale": 0.85,
+      "amount": 50,
+      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_seafood_soup_bubble",
+      "should_render_in_bowl": false
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -90,6 +91,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public SoundType getSoundType(Entity entity) {
         return getBlockState().getSoundType(level, pos, entity);
+    }
+
+    public RandomSource getRandomSource() {
+        return level.random;
     }
 
     public boolean isServerSide() {

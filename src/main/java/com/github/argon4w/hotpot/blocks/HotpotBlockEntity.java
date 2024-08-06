@@ -351,30 +351,20 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
         blockEntity.waterLevel = blockEntity.soup.getWaterLevel();
 
-        int tickSpeed = blockEntity.soup.getContentTickSpeed(blockEntity, selfPos);
-
-        if (tickSpeed < 0) {
-            if (blockEntity.time % (- tickSpeed * 2) == 0) {
-                tickContent(blockEntity, selfPos);
-            }
-        } else {
-            int i = 0;
-
-            do {
-                tickContent(blockEntity, selfPos);
-            } while (++ i < tickSpeed);
+        if (blockEntity.waterLevel > 0.0f) {
+            tickContents(blockEntity, selfPos, blockEntity.soup.getContentTickSpeed(blockEntity, selfPos));
         }
 
         level.sendBlockUpdated(pos, state, state, 3);
         blockEntity.setChanged();
     }
 
-    public static void tickContent(HotpotBlockEntity blockEntity, LevelBlockPos selfPos) {
+    public static void tickContents(HotpotBlockEntity blockEntity, LevelBlockPos selfPos, float tickSpeed) {
         for (int i = 0; i < blockEntity.contents.size(); i ++) {
             IHotpotContent content = blockEntity.contents.get(i);
 
-            if (content.tick(blockEntity, selfPos)) {
-                blockEntity.soup.contentUpdate(content, blockEntity, selfPos);
+            if (content.tick(blockEntity, selfPos, tickSpeed)) {
+                blockEntity.soup.onContentUpdate(content, blockEntity, selfPos);
                 blockEntity.markDataChanged();
             }
 

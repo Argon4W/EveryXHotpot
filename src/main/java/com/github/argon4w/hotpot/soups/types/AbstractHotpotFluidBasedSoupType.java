@@ -38,15 +38,14 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
     }
 
     @Override
-    public void contentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        super.contentUpdate(content, hotpotBlockEntity, pos);
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        super.onContentUpdate(content, hotpotBlockEntity, pos);
 
         if (!(content instanceof HotpotCookingRecipeContent itemStackContent)) {
             return;
         }
 
-        FoodProperties foodProperties = itemStackContent.getItemStack().get(DataComponents.FOOD);
-        int nutrition = foodProperties == null ? 1 : foodProperties.nutrition();
+        int nutrition = itemStackContent.getItemStack().has(DataComponents.FOOD) ? itemStackContent.getItemStack().get(DataComponents.FOOD).nutrition() : 1;
         activeness = Math.min(1f, activeness + 0.025f * nutrition);
     }
 
@@ -70,8 +69,8 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
     }
 
     @Override
-    public int getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return Math.round(2f * (getWaterLevel() * 2f - 1f) + activeness * 4f);
+    public float getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return getWaterLevel() + activeness * 4f;
     }
 
     @Override

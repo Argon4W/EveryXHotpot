@@ -42,7 +42,7 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, float ticks) {
         return false;
     }
 

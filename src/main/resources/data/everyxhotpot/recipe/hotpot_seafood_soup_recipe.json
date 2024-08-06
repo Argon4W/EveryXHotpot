@@ -1,35 +1,14 @@
 {
   "type": "everyxhotpot:hotpot_soup_ingredient_recipe",
   "source_soup": "everyxhotpot:clear_soup",
-  "result_soup": "everyxhotpot:spicy_soup",
-  "conditions": [
-    {
-      "type": "neoforge:not",
-      "value": {
-        "type": "neoforge:mod_loaded",
-        "modid": "sinofeast"
-      }
-    }
-  ],
+  "result_soup": "everyxhotpot:seafood_soup",
   "ingredients": [
     {
-      "amount": 3,
+      "amount": 2,
       "condition": {
         "type": "everyxhotpot:item",
         "predicate": {
-          "item": "minecraft:redstone"
-        }
-      },
-      "action": {
-        "type": "everyxhotpot:consume"
-      }
-    },
-    {
-      "amount": 3,
-      "condition": {
-        "type": "everyxhotpot:item",
-        "predicate": {
-          "item": "minecraft:blaze_powder"
+          "item": "minecraft:cod"
         }
       },
       "action": {
@@ -41,7 +20,30 @@
       "condition": {
         "type": "everyxhotpot:item",
         "predicate": {
-          "item": "minecraft:gunpowder"
+          "item": "minecraft:salmon"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "item": "minecraft:tropical_fish"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "item": "minecraft:nautilus_shell"
         }
       },
       "action": {

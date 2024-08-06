@@ -13,7 +13,7 @@ import java.util.Optional;
 public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
     public static final RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> COOKING_RECIPE_QUICK_CHECK = RecipeManager.createCheck(RecipeType.CAMPFIRE_COOKING);
 
-    public HotpotCookingRecipeContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+    public HotpotCookingRecipeContent(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
@@ -48,7 +48,7 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
 
     public static class Factory extends AbstractHotpotRecipeContent.Factory<HotpotCookingRecipeContent> {
         @Override
-        public HotpotCookingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+        public HotpotCookingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
             return new HotpotCookingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
         }
 

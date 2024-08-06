@@ -19,10 +19,10 @@ import java.util.Optional;
 public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     private ItemStack itemStack;
     private int cookingTime;
-    private int cookingProgress;
+    private float cookingProgress;
     private double experience;
 
-    public AbstractHotpotItemStackContent(ItemStack itemStack, int cookingTime, int cookingProgress, double experience) {
+    public AbstractHotpotItemStackContent(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
         this.itemStack = itemStack;
         this.cookingTime = cookingTime;
         this.cookingProgress = cookingProgress;
@@ -70,13 +70,13 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     }
 
     @Override
-    public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, float ticks) {
         if (cookingTime < 0) {
             return false;
         }
 
         if (cookingProgress < cookingTime) {
-            cookingProgress ++;
+            cookingProgress = Math.max(0.0f, cookingProgress + ticks);
             return false;
         }
 
@@ -106,7 +106,7 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         return cookingTime;
     }
 
-    public int getCookingProgress() {
+    public float getCookingProgress() {
         return cookingProgress;
     }
 
@@ -115,14 +115,14 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     }
 
     public abstract static class Factory<T extends AbstractHotpotItemStackContent> implements IHotpotContentFactory<T> {
-        public abstract T buildFromData(ItemStack itemStack, int cookingTime, int cookingProgress, double experience);
+        public abstract T buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience);
 
         @Override
         public MapCodec<T> buildFromCodec() {
             return RecordCodecBuilder.mapCodec(content -> content.group(
                     ItemStack.CODEC.fieldOf("ItemStack").forGetter(AbstractHotpotItemStackContent::getItemStack),
                     Codec.INT.fieldOf("CookingTime").forGetter(AbstractHotpotItemStackContent::getCookingTime),
-                    Codec.INT.fieldOf("CookingProgress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
+                    Codec.FLOAT.fieldOf("CookingProgress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
                     Codec.DOUBLE.fieldOf("Experience").forGetter(AbstractHotpotItemStackContent::getExperience)
             ).apply(content, this::buildFromData));
         }
