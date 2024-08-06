@@ -31,8 +31,8 @@ public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLev
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.5f, 0.5f);
 
-            BakedModel chopstickModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(resourceLocation));
-            Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, true, poseStack, bufferSource, combinedLight, combinedOverlay, chopstickModel);
+            BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(resourceLocation));
+            Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, true, poseStack, bufferSource, combinedLight, combinedOverlay, model);
 
             poseStack.popPose();
         });

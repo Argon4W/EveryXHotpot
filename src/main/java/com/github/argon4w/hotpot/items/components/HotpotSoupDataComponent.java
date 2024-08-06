@@ -38,4 +38,8 @@ public record HotpotSoupDataComponent(HotpotSoupTypeFactoryHolder<?> soupTypeFac
     public static void setSoup(ItemStack itemStack, IHotpotSoupType soupType) {
         itemStack.set(HotpotModEntry.HOTPOT_SOUP_DATA_COMPONENT, new HotpotSoupDataComponent(soupType.getSoupTypeFactoryHolder()));
     }
+
+    public static HotpotSoupTypeFactoryHolder<?> getSoupTypeFactory(ItemStack itemStack) {
+        return getDataComponent(itemStack).soupTypeFactory;
+    }
 }

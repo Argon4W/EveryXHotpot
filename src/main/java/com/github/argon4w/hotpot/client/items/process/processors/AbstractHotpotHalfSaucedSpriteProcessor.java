@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.client.items.process.processors;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
+import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.items.components.HotpotSoupDataComponent;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
@@ -12,6 +12,21 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
 public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpotSpriteProcessor {
+    @Override
+    public int getColor(ItemStack itemStack) {
+        if (!HotpotSoupDataComponent.hasDataComponent(itemStack)) {
+            return -1;
+        }
+
+        HotpotSoupRendererConfig rendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(itemStack);
+
+        if (rendererConfig.color().isEmpty()) {
+            return -1;
+        }
+
+        return rendererConfig.color().get().toInt();
+    }
+
     @Override
     public void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, int frame) {
         float amplifier = 0.65f / getAverageGrayScale(original, frameSize, frame);
@@ -41,21 +56,6 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpot
         }
     }
 
-    @Override
-    public int getColor(ItemStack itemStack) {
-        if (!HotpotSoupDataComponent.hasDataComponent(itemStack)) {
-            return -1;
-        }
-
-        HotpotSoupRendererConfig rendererConfig = HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(HotpotSoupDataComponent.getDataComponent(itemStack).soupTypeFactory().key());
-
-        if (rendererConfig.color().isEmpty()) {
-            return -1;
-        }
-
-        return rendererConfig.color().get().toInt();
-    }
-
     private float getAverageGrayScale(NativeImage image, FrameSize frameSize, int frame) {
         float totalGray = 0f;
         int validCount = 0;
@@ -68,10 +68,12 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpot
                 int green = FastColor.ARGB32.green(originalColor);
                 int red = FastColor.ARGB32.red(originalColor);
 
-                if (FastColor.ARGB32.alpha(originalColor) != 0) {
-                    totalGray += (red * 0.299f + green * 0.587f + blue * 0.144f) / 255f;
-                    validCount ++;
+                if (FastColor.ARGB32.alpha(originalColor) == 0) {
+                    continue;
                 }
+
+                totalGray += (red * 0.299f + green * 0.587f + blue * 0.144f) / 255f;
+                validCount ++;
             }
         }
 

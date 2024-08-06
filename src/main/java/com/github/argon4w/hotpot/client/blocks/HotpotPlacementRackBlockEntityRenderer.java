@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.client.blocks;
 
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementRackBlockEntity;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,11 +19,13 @@ public class HotpotPlacementRackBlockEntityRenderer implements BlockEntityRender
 
     @Override
     public void render(HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+        LevelBlockPos pos = new LevelBlockPos(hotpotPlacementRackBlockEntity.getLevel(), hotpotPlacementRackBlockEntity.getBlockPos());
+
         poseStack.pushPose();
 
         poseStack.translate(0.05f, 0.15625f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
-        hotpotPlacementRackBlockEntity.getPlacements1().forEach(placement -> placement.getPlacementFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlacementRackBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay)));
+        hotpotPlacementRackBlockEntity.getPlacements1().forEach(placement -> placement.getPlacementFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlacementRackBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, pos)));
 
         poseStack.popPose();
 
@@ -31,7 +33,7 @@ public class HotpotPlacementRackBlockEntityRenderer implements BlockEntityRender
 
         poseStack.translate(0.05f, 0.71875f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
-        hotpotPlacementRackBlockEntity.getPlacements2().forEach(placement -> placement.getPlacementFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlacementRackBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay)));
+        hotpotPlacementRackBlockEntity.getPlacements2().forEach(placement -> placement.getPlacementFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlacementRackBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, pos)));
 
         poseStack.popPose();
     }

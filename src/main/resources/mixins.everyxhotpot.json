@@ -11,8 +11,8 @@
     "SpriteLoaderMixin"
   ],
   "mixins": [
+    "IBlockStateExtensionMixin",
     "LivingEntityMixin",
-    ,
     "ReloadableServerResourcesMixin"
   ],
   "injectors": {

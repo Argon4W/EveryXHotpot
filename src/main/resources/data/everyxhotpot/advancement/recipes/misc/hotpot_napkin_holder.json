@@ -6,9 +6,8 @@
         "items": [
           {
             "items": [
-              "minecraft:iron_ingot",
-              "minecraft:heavy_weighted_pressure_plate",
-              "minecraft:iron_bars"
+              "minecraft:paper",
+              "minecraft:slime_ball"
             ]
           }
         ]
@@ -17,7 +16,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "everyxhotpot:hotpot_placement_rack"
+        "recipe": "everyxhotpot:hotpot_napkin_holder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -30,7 +29,7 @@
   ],
   "rewards": {
     "recipes": [
-      "everyxhotpot:hotpot_placement_rack"
+      "everyxhotpot:hotpot_napkin_holder"
     ]
   },
   "sends_telemetry_event": false

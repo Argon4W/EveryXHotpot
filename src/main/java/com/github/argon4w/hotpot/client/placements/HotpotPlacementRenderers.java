@@ -18,6 +18,7 @@ public class HotpotPlacementRenderers {
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotSmallPlateRenderer> SMALL_PLATE_RENDERER = PLACEMENT_RENDERERS.register("small_plate", HotpotSmallPlateRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotLongPlateRenderer> LONG_PLATE_RENDERER = PLACEMENT_RENDERERS.register("long_plate", HotpotLongPlateRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotLargeRoundPlateRenderer> LARGE_ROUND_PLATE_RENDERER = PLACEMENT_RENDERERS.register("large_round_plate", HotpotLargeRoundPlateRenderer::new);
+    public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedNapkinHolderRenderer> NAPKIN_HOLDER_RENDERER = PLACEMENT_RENDERERS.register("napkin_holder", HotpotPlacedNapkinHolderRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedChopstickRenderer> PLACED_CHOPSTICK_RENDERER = PLACEMENT_RENDERERS.register("placed_chopstick", HotpotPlacedChopstickRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedSpoonRenderer> PLACED_SPOON_RENDERER = PLACEMENT_RENDERERS.register("placed_spoon", HotpotPlacedSpoonRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedPaperBowlRenderer> PLACED_PAPER_BOWL_RENDERER = PLACEMENT_RENDERERS.register("placed_paper_bowl", HotpotPlacedPaperBowlRenderer::new);

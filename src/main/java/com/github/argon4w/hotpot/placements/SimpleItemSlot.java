@@ -2,11 +2,18 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class SimpleItemSlot {
     public static final Codec<SimpleItemSlot> CODEC = Codec.lazyInitialized(() ->
             ItemStack.OPTIONAL_CODEC.xmap(SimpleItemSlot::new, SimpleItemSlot::getItemStack)
+    );
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SimpleItemSlot> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
+            ItemStack.OPTIONAL_STREAM_CODEC.map(SimpleItemSlot::new, SimpleItemSlot::getItemStack)
     );
 
     private ItemStack itemSlot;
@@ -58,6 +65,10 @@ public class SimpleItemSlot {
         }
     }
 
+    public SimpleItemSlot copy() {
+        return new SimpleItemSlot(itemSlot.copy());
+    }
+
     public boolean isSame(ItemStack itemStack) {
         return ItemStack.isSameItemSameComponents(itemSlot, itemStack);
     }
@@ -84,5 +95,10 @@ public class SimpleItemSlot {
 
     public ItemStack getItemStack() {
         return itemSlot;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof SimpleItemSlot slot && ItemStack.isSameItemSameComponents(itemSlot, slot.itemSlot);
     }
 }

@@ -32,7 +32,7 @@ public class HotpotSoupTypeFactoryManager extends SimpleJsonResourceReloadListen
     public static final ResourceLocation EMPTY_SOUP_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_soup");
     public static final HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> EMPTY_SOUP_FACTORY = new HotpotSoupTypeFactoryHolder<>(EMPTY_SOUP_LOCATION, new HotpotEmptySoupType.Factory());
 
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final Codec<IHotpotSoupTypeFactory<?>> CODEC = Codec.lazyInitialized(() -> HotpotSoupTypes.getSoupTypeRegistry().byNameCodec().dispatch(IHotpotSoupTypeFactory::getSerializer, IHotpotSoupFactorySerializer::getCodec));

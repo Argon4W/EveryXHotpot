@@ -47,6 +47,7 @@ public class HotpotPlacements {
     public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotSmallPlate.Factory> SMALL_PLATE = PLACEMENTS.register("small_plate", HotpotSmallPlate.Factory::new);
     public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotLongPlate.Factory> LONG_PLATE = PLACEMENTS.register("long_plate", HotpotLongPlate.Factory::new);
     public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotLargeRoundPlate.Factory> LARGE_ROUND_PLATE = PLACEMENTS.register("large_round_plate", HotpotLargeRoundPlate.Factory::new);
+    public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotPlacedNapkinHolder.Factory> NAPKIN_HOLDER = PLACEMENTS.register("napkin_holder", HotpotPlacedNapkinHolder.Factory::new);
     public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotPlacedChopstick.Factory> PLACED_CHOPSTICK = PLACEMENTS.register("placed_chopstick", HotpotPlacedChopstick.Factory::new);
     public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotPlacedSpoon.Factory> PLACED_SPOON = PLACEMENTS.register("placed_spoon", HotpotPlacedSpoon.Factory::new);
     public static final DeferredHolder<IHotpotPlacementFactory<?>, HotpotPlacedPaperBowl.Factory> PLACED_PAPER_BOWL = PLACEMENTS.register("placed_paper_bowl", HotpotPlacedPaperBowl.Factory::new);

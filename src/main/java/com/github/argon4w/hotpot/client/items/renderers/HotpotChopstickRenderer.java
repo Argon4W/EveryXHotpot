@@ -17,15 +17,17 @@ public class HotpotChopstickRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         ItemStack chopstickFoodItemStack;
-        if (!(chopstickFoodItemStack = HotpotChopstickItem.getHeldItemStack(itemStack)).isEmpty()) {
-            poseStack.pushPose();
-
-            poseStack.translate(0.5f, 0.1f, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(90f));
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, chopstickFoodItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
-
-            poseStack.popPose();
+        if ((chopstickFoodItemStack = HotpotChopstickItem.getHeldItemStack(itemStack)).isEmpty()) {
+            return;
         }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.5f, 0.1f, 0.5f);
+        poseStack.mulPose(Axis.YP.rotationDegrees(90f));
+        Minecraft.getInstance().getItemRenderer().renderStatic(null, chopstickFoodItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+
+        poseStack.popPose();
     }
 
     @Override

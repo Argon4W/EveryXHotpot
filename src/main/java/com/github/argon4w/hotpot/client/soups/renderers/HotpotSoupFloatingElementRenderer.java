@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRenderer;
 import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRendererSerializer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,10 +20,12 @@ import org.joml.Math;
 public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomElementRenderer {
     private final ResourceLocation element1ModelResourceLocation;
     private final ResourceLocation element2ModelResourceLocation;
+    private final boolean shouldRenderInBowl;
 
-    public HotpotSoupFloatingElementRenderer(ResourceLocation element1ModelResourceLocation, ResourceLocation element2ModelResourceLocation) {
+    public HotpotSoupFloatingElementRenderer(ResourceLocation element1ModelResourceLocation, ResourceLocation element2ModelResourceLocation, boolean shouldRenderInBowl) {
         this.element1ModelResourceLocation = element1ModelResourceLocation;
         this.element2ModelResourceLocation = element2ModelResourceLocation;
+        this.shouldRenderInBowl = shouldRenderInBowl;
     }
 
     @Override
@@ -56,7 +59,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     @Override
     public boolean shouldRenderInBowl() {
-        return true;
+        return shouldRenderInBowl;
     }
 
     @Override
@@ -75,7 +78,8 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
         public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
                 ResourceLocation.CODEC.fieldOf("element1_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElement1ModelResourceLocation),
-                ResourceLocation.CODEC.fieldOf("element2_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElement2ModelResourceLocation)
+                ResourceLocation.CODEC.fieldOf("element2_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElement2ModelResourceLocation),
+                Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotSoupFloatingElementRenderer::shouldRenderInBowl)
         ).apply(renderer, HotpotSoupFloatingElementRenderer::new));
 
         @Override

@@ -2,6 +2,7 @@
   "death.attack.in_hotpot": "%1$s自愿当成了火锅食材",
   "death.attack.in_hotpot.player": "%1$s在逃离%2$s时被自愿当成了火锅食材",
   "block.everyxhotpot.hotpot": "火锅",
+  "block.everyxhotpot.hotpot_placement_rack": "火锅餐架",
   "item.everyxhotpot.hotpot_chopstick": "筷子",
   "item.everyxhotpot.hotpot_long_plate": "长碟",
   "item.everyxhotpot.hotpot_large_round_plate": "大碟",
@@ -16,7 +17,9 @@
   "item.everyxhotpot.hotpot_soup_spoon": "汤勺",
   "item.everyxhotpot.hotpot_skewer": "串串签",
   "item.everyxhotpot.hotpot_skewer.hotpot": "串串香",
+  "item.everyxhotpot.hotpot_napkin_holder": "纸巾盒",
   "effect.everyxhotpot.acrid": "辛辣",
   "effect.everyxhotpot.warm": "温暖",
+  "effect.everyxhotpot.greasy": "油腻",
   "itemGroup.EveryXHotpot": "EveryXHotpot 一起火锅"
 }

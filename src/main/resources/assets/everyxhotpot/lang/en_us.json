@@ -2,6 +2,7 @@
   "death.attack.in_hotpot": "%1$s jumps into the hotpot and becomes a member of the hotpot ingredients voluntarily.",
   "death.attack.in_hotpot.player": "%1$s jumps into the hotpot when escaping %2$s and becomes a member of the hotpot ingredients involuntarily.",
   "block.everyxhotpot.hotpot": "Hotpot",
+  "block.everyxhotpot.hotpot_placement_rack": "Rack",
   "item.everyxhotpot.hotpot_chopstick": "Chopstick",
   "item.everyxhotpot.hotpot_long_plate": "Long Plate",
   "item.everyxhotpot.hotpot_small_plate": "Small Plate",
@@ -16,7 +17,9 @@
   "item.everyxhotpot.hotpot_soup_spoon": "Soup Spoon",
   "item.everyxhotpot.hotpot_skewer": "Skewer",
   "item.everyxhotpot.hotpot_skewer.hotpot": "Skewer In Hotpot",
+  "item.everyxhotpot.hotpot_napkin_holder": "Napkin Holder",
   "effect.everyxhotpot.acrid": "Acrid",
   "effect.everyxhotpot.warm": "Warm",
+  "effect.everyxhotpot.greasy": "Greasy",
   "itemGroup.EveryXHotpot": "EveryXHotpot"
 }

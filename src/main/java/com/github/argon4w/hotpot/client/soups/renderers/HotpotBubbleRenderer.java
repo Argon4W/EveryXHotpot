@@ -27,12 +27,14 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     private final Bubble[] bubbles;
     private final float spread, maxScale;
     private final ResourceLocation bubbleModelResourceLocation;
+    private final boolean shouldRenderInBowl;
 
-    public HotpotBubbleRenderer(float spread, float maxScale, int amount, ResourceLocation bubbleModelResourceLocation) {
+    public HotpotBubbleRenderer(float spread, float maxScale, int amount, ResourceLocation bubbleModelResourceLocation, boolean shouldRenderInBowl) {
         this.spread = spread;
         this.maxScale = maxScale;
         this.bubbles = new Bubble[amount];
         this.bubbleModelResourceLocation = bubbleModelResourceLocation;
+        this.shouldRenderInBowl = shouldRenderInBowl;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
 
     @Override
     public boolean shouldRenderInBowl() {
-        return false;
+        return shouldRenderInBowl;
     }
 
     @Override
@@ -101,7 +103,8 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
                 Codec.FLOAT.fieldOf("spread").forGetter(HotpotBubbleRenderer::getSpread),
                 Codec.FLOAT.fieldOf("max_scale").forGetter(HotpotBubbleRenderer::getMaxScale),
                 Codec.INT.fieldOf("amount").forGetter(HotpotBubbleRenderer::getAmount),
-                ResourceLocation.CODEC.fieldOf("bubble_model_resource_location").forGetter(HotpotBubbleRenderer::getBubbleModelResourceLocation)
+                ResourceLocation.CODEC.fieldOf("bubble_model_resource_location").forGetter(HotpotBubbleRenderer::getBubbleModelResourceLocation),
+                Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotBubbleRenderer::shouldRenderInBowl)
         ).apply(renderer, HotpotBubbleRenderer::new));
 
         @Override

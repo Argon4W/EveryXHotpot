@@ -27,7 +27,7 @@ public abstract class SpriteLoaderMixin {
     private @Final ResourceLocation location;
 
     @SuppressWarnings("deprecation")
-    @ModifyVariable(method = "stitch", argsOnly = true, index = 1, at = @At("HEAD"))
+    @ModifyVariable(method = "stitch", at = @At("HEAD"), argsOnly = true, index = 1)
     private List<SpriteContents> stitch(List<SpriteContents> contents) {
         if (!location.equals(TextureAtlas.LOCATION_BLOCKS)) {
             return contents;

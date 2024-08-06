@@ -40,8 +40,9 @@ public class HotpotSkewerRecipe extends CustomRecipe {
         return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).feed(this::assembleSkewerItem).assemble();
     }
 
-    private void assembleSkewerItem(ItemStack assembled, ItemStack ingredient) {
+    private ItemStack assembleSkewerItem(ItemStack assembled, ItemStack ingredient) {
         HotpotSkewerItem.addSkewerItems(assembled, ingredient.copyWithCount(1));
+        return assembled;
     }
 
     @Override

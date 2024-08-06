@@ -19,6 +19,7 @@ public class HotpotItemSpecialRenderers {
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotSpicePackRenderer> SPICE_PACK_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_spice_pack", HotpotSpicePackRenderer::new);
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotPaperBowlRenderer> PAPER_BOWL_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_paper_bowl", HotpotPaperBowlRenderer::new);
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotSkewerRenderer> SKEWER_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_skewer", HotpotSkewerRenderer::new);
+    public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotNapkinHolderItemRenderer> NAPKIN_HOLDER_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_napkin_holder", HotpotNapkinHolderItemRenderer::new);
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotEmptyItemSpecialRenderer> EMPTY_ITEM_RENDERER = ITEM_SPECIAL_RENDERERS.register("empty_item_renderer", HotpotEmptyItemSpecialRenderer::new);
 
     public static IHotpotItemSpecialRenderer getEmptyItemRenderer() {

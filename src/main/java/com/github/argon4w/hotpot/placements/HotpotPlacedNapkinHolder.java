@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
-import com.github.argon4w.hotpot.items.components.HotpotNapkinHolderDataComponent;
+import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,25 +17,22 @@ import net.minecraft.world.item.Items;
 
 import java.util.List;
 
-public class HotpotPlacedNapkinHolder implements IHotpotPlate {
+public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
     private final int pos;
     private final int directionPos;
     private final Direction direction;
-    private final SimpleItemSlot itemSlot;
     private final SimpleItemSlot napkinHolderItemSlot;
 
     public HotpotPlacedNapkinHolder(int pos, Direction direction) {
         this.pos = pos;
         this.direction = direction;
-        this.itemSlot = new SimpleItemSlot();
         this.napkinHolderItemSlot = new SimpleItemSlot();
         this.directionPos = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
     }
 
-    public HotpotPlacedNapkinHolder(int pos, int directionPos, SimpleItemSlot itemSlot, SimpleItemSlot napkinHolderItemSlot) {
+    public HotpotPlacedNapkinHolder(int pos, int directionPos, SimpleItemSlot napkinHolderItemSlot) {
         this.pos = pos;
         this.directionPos = directionPos;
-        this.itemSlot = itemSlot;
         this.napkinHolderItemSlot = napkinHolderItemSlot;
         this.direction = HotpotPlacements.POS_TO_DIRECTION.get(directionPos - pos);
     }
@@ -43,7 +40,8 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlate {
     @Override
     public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
         if (itemStack.is(Items.PAPER)) {
-            itemSlot.addItem(itemStack);
+            addNapkinHolderItemStack(itemStack);
+            container.markDataChanged();
             return false;
         }
 
@@ -51,13 +49,19 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlate {
             return true;
         }
 
-        if (!itemSlot.getItemStack().isEmpty() && itemSlot.getItemStack().is(Items.PAPER)) {
-            itemSlot.getItemStack().shrink(1);
-            container.markDataChanged();
-
-            List<Holder<MobEffect>> holders = player.getActiveEffectsMap().keySet().stream().toList();
-            player.removeEffect(holders.get(player.getRandom().nextInt(holders.size())));
+        if (isNapkinHolderEmpty()) {
+            return false;
         }
+
+        if (!isNapkinHolderItemStackPaper()) {
+            dropNapkinHolderItemStack(selfPos);
+            container.markDataChanged();
+            return false;
+        }
+
+        shrinkNapkinHolderItemStack();
+        container.markDataChanged();
+        removeRandomEffect(player);
 
         return false;
     }
@@ -74,7 +78,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlate {
 
     @Override
     public ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos) {
-        return HotpotNapkinHolderDataComponent.setNapkin(napkinHolderItemSlot.getItemStack(), itemSlot.getItemStack());
+        return napkinHolderItemSlot.getItemStack();
     }
 
     @Override
@@ -92,8 +96,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlate {
         return HotpotPlacements.NAPKIN_HOLDER;
     }
 
-    @Override
-    public void setPlateItemSlot(ItemStack itemStack) {
+    public void setNapkinHolderItemSlot(ItemStack itemStack) {
         napkinHolderItemSlot.set(itemStack);
     }
 
@@ -109,12 +112,37 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlate {
         return direction;
     }
 
-    public SimpleItemSlot getItemSlot() {
-        return itemSlot;
-    }
-
     public SimpleItemSlot getNapkinHolderItemSlot() {
         return napkinHolderItemSlot;
+    }
+
+    public SimpleItemSlot getNapkinItemSlot() {
+        return HotpotNapkinHolderItem.getNapkinHolderItemSlot(napkinHolderItemSlot);
+    }
+
+    public boolean isNapkinHolderEmpty() {
+        return HotpotNapkinHolderItem.isNapkinHolderEmpty(napkinHolderItemSlot);
+    }
+
+    public boolean isNapkinHolderItemStackPaper() {
+        return getNapkinItemSlot().getItemStack().is(Items.PAPER);
+    }
+
+    public void addNapkinHolderItemStack(ItemStack itemStack) {
+        HotpotNapkinHolderItem.addNapkinHolderItemStack(napkinHolderItemSlot, itemStack);
+    }
+
+    public void dropNapkinHolderItemStack(LevelBlockPos pos) {
+        HotpotNapkinHolderItem.dropNapkinHolderItemStack(napkinHolderItemSlot, pos);
+    }
+
+    public void shrinkNapkinHolderItemStack() {
+        HotpotNapkinHolderItem.shrinkNapkinHolderItemStack(napkinHolderItemSlot);
+    }
+
+    public void removeRandomEffect(Player player) {
+        List<Holder<MobEffect>> holders = player.getActiveEffectsMap().keySet().stream().toList();
+        player.removeEffect(holders.get(player.getRandom().nextInt(holders.size())));
     }
 
     public static class Factory implements IHotpotPlacementFactory<HotpotPlacedNapkinHolder> {
@@ -122,7 +150,6 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlate {
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
                         Codec.INT.fieldOf("Pos").forGetter(HotpotPlacedNapkinHolder::getPos),
                         Codec.INT.fieldOf("DirectionPos").forGetter(HotpotPlacedNapkinHolder::getDirectionPos),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot").forGetter(HotpotPlacedNapkinHolder::getItemSlot),
                         SimpleItemSlot.CODEC.fieldOf("NapkinHolderItemSlot").forGetter(HotpotPlacedNapkinHolder::getNapkinHolderItemSlot)
                 ).apply(plate, HotpotPlacedNapkinHolder::new))
         );

@@ -4,6 +4,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -24,7 +25,7 @@ public class SimpleRecipeAssembler {
         return this;
     }
 
-    public SimpleRecipeAssembler feed(BiConsumer<ItemStack, ItemStack> consumer) {
+    public SimpleRecipeAssembler feed(BiFunction<ItemStack, ItemStack, ItemStack> function) {
         for (int i = 0; i < input.size(); i ++) {
             ItemStack itemStack = input.getItem(i);
 
@@ -36,7 +37,7 @@ public class SimpleRecipeAssembler {
                 continue;
             }
 
-            consumer.accept(assembled, itemStack);
+            assembled = function.apply(assembled, itemStack);
         }
 
         return this;

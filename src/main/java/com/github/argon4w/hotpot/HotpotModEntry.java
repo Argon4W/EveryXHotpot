@@ -12,10 +12,8 @@ import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.contents.HotpotContents;
 import com.github.argon4w.hotpot.items.*;
 import com.github.argon4w.hotpot.items.components.*;
-import com.github.argon4w.hotpot.placements.HotpotLargeRoundPlate;
-import com.github.argon4w.hotpot.placements.HotpotLongPlate;
-import com.github.argon4w.hotpot.placements.HotpotPlacements;
-import com.github.argon4w.hotpot.placements.HotpotSmallPlate;
+import com.github.argon4w.hotpot.placements.*;
+import com.github.argon4w.hotpot.recipes.HotpotNapkinHolderDyeRecipe;
 import com.github.argon4w.hotpot.recipes.HotpotSkewerRecipe;
 import com.github.argon4w.hotpot.recipes.HotpotSpicePackRecipe;
 import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryManager;
@@ -84,14 +82,17 @@ public class HotpotModEntry {
     public static final DeferredItem<HotpotPlateItem<HotpotSmallPlate>> HOTPOT_SMALL_PLATE = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlateItem<>(HotpotPlacements.SMALL_PLATE));
     public static final DeferredItem<HotpotPlateItem<HotpotLongPlate>> HOTPOT_LONG_PLATE = HotpotRegistries.ITEMS.register("hotpot_long_plate", () -> new HotpotPlateItem<>(HotpotPlacements.LONG_PLATE));
     public static final DeferredItem<HotpotPlateItem<HotpotLargeRoundPlate>> HOTPOT_LARGE_ROUND_PLATE = HotpotRegistries.ITEMS.register("hotpot_large_round_plate", () -> new HotpotPlateItem<>(HotpotPlacements.LARGE_ROUND_PLATE));
+    public static final DeferredItem<HotpotNapkinHolderItem> HOTPOT_NAPKIN_HOLDER = HotpotRegistries.ITEMS.register("hotpot_napkin_holder", HotpotNapkinHolderItem::new);
     public static final DeferredItem<HotpotChopstickItem> HOTPOT_CHOPSTICK = HotpotRegistries.ITEMS.register("hotpot_chopstick", HotpotChopstickItem::new);
     public static final DeferredItem<HotpotSpicePackItem> HOTPOT_SPICE_PACK = HotpotRegistries.ITEMS.register("hotpot_spice_pack", HotpotSpicePackItem::new);
 
     public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_WARM = HotpotRegistries.MOB_EFFECTS.register("warm", () -> new HotpotMobEffect(MobEffectCategory.BENEFICIAL, (240 << 16) | (240 << 8) | 240));
+    public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_GREASY = HotpotRegistries.MOB_EFFECTS.register("greasy", () -> new HotpotMobEffect(MobEffectCategory.HARMFUL, (235 << 16) | (235 << 8) | 25));
     public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_ACRID = HotpotRegistries.MOB_EFFECTS.register("acrid", () -> new HotpotMobEffect(MobEffectCategory.BENEFICIAL, (240 << 16) | (84 << 8) | 64).addAttributeModifier(Attributes.ATTACK_SPEED, ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "acrid"), 0.5f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotSpicePackRecipe>> HOTPOT_SPICE_PACK_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_spice_pack", () -> new SimpleCraftingRecipeSerializer<>(HotpotSpicePackRecipe::new));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotSkewerRecipe>> HOTPOT_SKEWER_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_skewer", () -> new SimpleCraftingRecipeSerializer<>(HotpotSkewerRecipe::new));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotNapkinHolderDyeRecipe>> HOTPOT_NAPKIN_HOLDER_DYE_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_napkin_holder_dye", () -> new SimpleCraftingRecipeSerializer<>(HotpotNapkinHolderDyeRecipe::new));
     public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupIngredientRecipe.Serializer> HOTPOT_SOUP_INGREDIENT_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_ingredient_recipe", HotpotSoupIngredientRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupBaseRecipe.Serializer> HOTPOT_SOUP_BASE_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_base_recipe", HotpotSoupBaseRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupRechargeRecipe.Serializer> HOTPOT_SOUP_RECHARGE_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_recharge_recipe", HotpotSoupRechargeRecipe.Serializer::new);
@@ -109,6 +110,7 @@ public class HotpotModEntry {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpicePackDataComponent>> HOTPOT_SPICE_PACK_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("spice_pack_data_component", builder -> builder.persistent(HotpotSpicePackDataComponent.CODEC).networkSynchronized(HotpotSpicePackDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSoupDataComponent>> HOTPOT_SOUP_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("soup_data_component", builder -> builder.persistent(HotpotSoupDataComponent.CODEC).networkSynchronized(HotpotSoupDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpriteProcessorDataComponent>> HOTPOT_SPRITE_PROCESSOR_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("sprite_processor_data_component", builder -> builder.persistent(HotpotSpriteProcessorDataComponent.CODEC).networkSynchronized(HotpotSpriteProcessorDataComponent.STREAM_CODEC).cacheEncoding());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotNapkinHolderDataComponent>> HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("napkin_holder_data_component", builder -> builder.persistent(HotpotNapkinHolderDataComponent.CODEC).networkSynchronized(HotpotNapkinHolderDataComponent.STREAM_CODEC).cacheEncoding());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
@@ -121,6 +123,7 @@ public class HotpotModEntry {
                 output.accept(HOTPOT_SMALL_PLATE.get());
                 output.accept(HOTPOT_LONG_PLATE.get());
                 output.accept(HOTPOT_LARGE_ROUND_PLATE.get());
+                output.accept(HOTPOT_NAPKIN_HOLDER.get());
                 output.accept(HOTPOT_SPICE_PACK.get());
                 output.accept(HOTPOT_SLOTTED_SPOON.get());
                 output.accept(HOTPOT_SOUP_SPOON.get());
