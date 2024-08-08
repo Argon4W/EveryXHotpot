@@ -50,7 +50,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         int pos = getHitPos(context);
         int layer = getLayer(context);
 
-        IHotpotPlacementSerializer<T> factory = holder.value();
+        IHotpotPlacementSerializer<T> serializer = holder.value();
         Player player = context.getPlayer();
         InteractionHand hand = context.getHand();
         ItemStack itemStack = context.getItemInHand();
@@ -67,11 +67,11 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
             return super.useOn(context);
         }
 
-        if (!factory.canPlace(pos, direction)) {
+        if (!serializer.canPlace(pos, direction)) {
             return super.useOn(context);
         }
 
-        if (!place(selfPos, factory.get(pos, direction), itemStack.copy(), pos, layer)) {
+        if (!place(selfPos, serializer.get(pos, direction), itemStack.copy(), pos, layer)) {
             container.interact(pos, layer, player, hand, itemStack, selfPos);
             return InteractionResult.SUCCESS_NO_ITEM_USED;
         }
