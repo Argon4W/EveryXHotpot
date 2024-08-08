@@ -147,11 +147,11 @@ public class HotpotLongPlate implements IHotpotPlate {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotLongPlate> {
         public static final MapCodec<HotpotLongPlate> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        Codec.INT.fieldOf("Pos1").forGetter(HotpotLongPlate::getPos1),
-                        Codec.INT.fieldOf("Pos2").forGetter(HotpotLongPlate::getPos2),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot1").forGetter(HotpotLongPlate::getItemSlot1),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot2").forGetter(HotpotLongPlate::getItemSlot2),
-                        SimpleItemSlot.CODEC.fieldOf("PlateItemSlot").forGetter(HotpotLongPlate::getPlateItemSlot)
+                        Codec.INT.fieldOf("pos_1").forGetter(HotpotLongPlate::getPos1),
+                        Codec.INT.fieldOf("pos_2").forGetter(HotpotLongPlate::getPos2),
+                        SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLongPlate::getItemSlot1),
+                        SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLongPlate::getItemSlot2),
+                        SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotLongPlate::getPlateItemSlot)
                 ).apply(plate, HotpotLongPlate::new))
         );
 

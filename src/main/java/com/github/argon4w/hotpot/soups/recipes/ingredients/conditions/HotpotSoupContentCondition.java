@@ -45,10 +45,5 @@ public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> con
         public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> getStreamCodec() {
             return STREAM_CODEC;
         }
-
-        @Override
-        public ResourceLocation getType() {
-            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "content");
-        }
     }
 }

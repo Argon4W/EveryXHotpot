@@ -52,10 +52,5 @@ public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpo
         public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> getStreamCodec() {
             return STREAM_CODEC;
         }
-
-        @Override
-        public ResourceLocation getType() {
-            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "replace");
-        }
     }
 }

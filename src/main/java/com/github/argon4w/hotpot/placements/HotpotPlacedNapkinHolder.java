@@ -131,10 +131,10 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedNapkinHolder> {
         public static final MapCodec<HotpotPlacedNapkinHolder> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        Codec.INT.fieldOf("Pos").forGetter(HotpotPlacedNapkinHolder::getPos),
-                        Codec.INT.fieldOf("DirectionPos").forGetter(HotpotPlacedNapkinHolder::getDirectionPos),
-                        SimpleItemSlot.CODEC.fieldOf("NapkinHolderItemSlot").forGetter(HotpotPlacedNapkinHolder::getNapkinHolderItemSlot),
-                        SimpleItemSlot.CODEC.fieldOf("NapkinItemSLot").forGetter(HotpotPlacedNapkinHolder::getNapkinItemSlot)
+                        Codec.INT.fieldOf("pos").forGetter(HotpotPlacedNapkinHolder::getPos),
+                        Codec.INT.fieldOf("direction_pos").forGetter(HotpotPlacedNapkinHolder::getDirectionPos),
+                        SimpleItemSlot.CODEC.fieldOf("napkin_holder_item_slot").forGetter(HotpotPlacedNapkinHolder::getNapkinHolderItemSlot),
+                        SimpleItemSlot.CODEC.fieldOf("napkin_item_slot").forGetter(HotpotPlacedNapkinHolder::getNapkinItemSlot)
                 ).apply(plate, HotpotPlacedNapkinHolder::new))
         );
 

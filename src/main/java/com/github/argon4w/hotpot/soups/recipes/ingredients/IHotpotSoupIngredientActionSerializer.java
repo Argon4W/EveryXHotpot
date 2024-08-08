@@ -8,5 +8,4 @@ import net.minecraft.resources.ResourceLocation;
 public interface IHotpotSoupIngredientActionSerializer<T extends IHotpotSoupIngredientAction> {
     MapCodec<T> getCodec();
     StreamCodec<RegistryFriendlyByteBuf, T> getStreamCodec();
-    ResourceLocation getType();
 }

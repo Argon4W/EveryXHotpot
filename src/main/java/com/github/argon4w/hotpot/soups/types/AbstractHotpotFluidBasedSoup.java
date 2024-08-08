@@ -106,9 +106,9 @@ public abstract class AbstractHotpotFluidBasedSoup extends AbstractHotpotSoup im
         @Override
         public MapCodec<T> getCodec(HotpotSoupTypeHolder<T> soupTypeHolder) {
             return RecordCodecBuilder.mapCodec(soupType -> soupType.group(
-                    Codec.FLOAT.fieldOf("WaterLevel").forGetter(AbstractHotpotSoup::getWaterLevel),
-                    Codec.FLOAT.fieldOf("OverflowWaterLevel").forGetter(AbstractHotpotSoup::getOverflowWaterLevel),
-                    Codec.FLOAT.fieldOf("Activeness").forGetter(AbstractHotpotFluidBasedSoup::getActiveness)
+                    Codec.FLOAT.fieldOf("waterlevel").forGetter(AbstractHotpotSoup::getWaterLevel),
+                    Codec.FLOAT.fieldOf("overflow_waterlevel").forGetter(AbstractHotpotSoup::getOverflowWaterLevel),
+                    Codec.FLOAT.fieldOf("activeness").forGetter(AbstractHotpotFluidBasedSoup::getActiveness)
             ).apply(soupType, (waterLevel, overflowWaterLevel, activeness) -> buildFrom(soupTypeHolder, waterLevel, overflowWaterLevel, activeness)));
         }
     }

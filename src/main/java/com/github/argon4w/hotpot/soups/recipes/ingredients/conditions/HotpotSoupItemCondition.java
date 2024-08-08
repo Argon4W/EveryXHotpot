@@ -50,10 +50,5 @@ public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotS
         public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> getStreamCodec() {
             return STREAM_CODEC;
         }
-
-        @Override
-        public ResourceLocation getType() {
-            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item");
-        }
     }
 }

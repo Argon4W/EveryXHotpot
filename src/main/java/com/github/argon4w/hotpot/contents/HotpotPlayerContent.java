@@ -74,14 +74,14 @@ public class HotpotPlayerContent implements IHotpotContent {
     public static class Serializer implements IHotpotContentSerializer<HotpotPlayerContent> {
         public static final MapCodec<HotpotPlayerContent> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(content -> content.group(
-                        ResolvableProfile.CODEC.fieldOf("Profile").forGetter(HotpotPlayerContent::getProfile),
-                        Codec.INT.fieldOf("ModelPartIndex").forGetter(HotpotPlayerContent::getModelPartIndex)
+                        ResolvableProfile.CODEC.fieldOf("profile").forGetter(HotpotPlayerContent::getProfile),
+                        Codec.INT.fieldOf("model_part_index").forGetter(HotpotPlayerContent::getModelPartIndex)
                 ).apply(content, HotpotPlayerContent::new))
         );
 
         @Override
         public HotpotPlayerContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-            throw new IllegalStateException("Cannot built from itemStack");
+            throw new IllegalStateException("Cannot get from itemStack");
         }
 
         @Override

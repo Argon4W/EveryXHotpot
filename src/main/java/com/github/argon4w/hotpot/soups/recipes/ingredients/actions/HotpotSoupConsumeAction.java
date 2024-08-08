@@ -38,10 +38,5 @@ public class HotpotSoupConsumeAction implements IHotpotSoupIngredientAction {
         public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupConsumeAction> getStreamCodec() {
             return STREAM_CODEC;
         }
-
-        @Override
-        public ResourceLocation getType() {
-            return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "consume");
-        }
     }
 }

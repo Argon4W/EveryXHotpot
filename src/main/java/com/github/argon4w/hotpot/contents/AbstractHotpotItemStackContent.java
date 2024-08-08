@@ -120,10 +120,10 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         @Override
         public MapCodec<T> getCodec() {
             return RecordCodecBuilder.mapCodec(content -> content.group(
-                    ItemStack.CODEC.fieldOf("ItemStack").forGetter(AbstractHotpotItemStackContent::getItemStack),
-                    Codec.INT.fieldOf("CookingTime").forGetter(AbstractHotpotItemStackContent::getCookingTime),
-                    Codec.FLOAT.fieldOf("CookingProgress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
-                    Codec.DOUBLE.fieldOf("Experience").forGetter(AbstractHotpotItemStackContent::getExperience)
+                    ItemStack.CODEC.fieldOf("item_stack").forGetter(AbstractHotpotItemStackContent::getItemStack),
+                    Codec.INT.fieldOf("cooking_time").forGetter(AbstractHotpotItemStackContent::getCookingTime),
+                    Codec.FLOAT.fieldOf("cooking_progress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
+                    Codec.DOUBLE.fieldOf("experience").forGetter(AbstractHotpotItemStackContent::getExperience)
             ).apply(content, this::buildFromData));
         }
     }

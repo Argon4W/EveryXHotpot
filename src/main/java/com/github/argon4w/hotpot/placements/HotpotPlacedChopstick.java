@@ -93,9 +93,9 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedChopstick> {
         public static final MapCodec<HotpotPlacedChopstick> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(chopstick -> chopstick.group(
-                        Codec.INT.fieldOf("Pos1").forGetter(HotpotPlacedChopstick::getPos1),
-                        Codec.INT.fieldOf("Pos2").forGetter(HotpotPlacedChopstick::getPos2),
-                        SimpleItemSlot.CODEC.fieldOf("Chopstick").forGetter(HotpotPlacedChopstick::getChopstickItemSlot)
+                        Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedChopstick::getPos1),
+                        Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedChopstick::getPos2),
+                        SimpleItemSlot.CODEC.fieldOf("chopstick_item_slot").forGetter(HotpotPlacedChopstick::getChopstickItemSlot)
                 ).apply(chopstick, HotpotPlacedChopstick::new))
         );
 

@@ -131,11 +131,11 @@ public class HotpotLargeRoundPlate implements IHotpotPlate {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotLargeRoundPlate> {
         public static final MapCodec<HotpotLargeRoundPlate> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot1").forGetter(HotpotLargeRoundPlate::getItemSlot1),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot2").forGetter(HotpotLargeRoundPlate::getItemSlot2),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot3").forGetter(HotpotLargeRoundPlate::getItemSlot3),
-                        SimpleItemSlot.CODEC.fieldOf("ItemSlot4").forGetter(HotpotLargeRoundPlate::getItemSlot4),
-                        SimpleItemSlot.CODEC.fieldOf("PlateItemSlot").forGetter(HotpotLargeRoundPlate::getPlateItemSlot)
+                        SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLargeRoundPlate::getItemSlot1),
+                        SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLargeRoundPlate::getItemSlot2),
+                        SimpleItemSlot.CODEC.fieldOf("item_slot_3").forGetter(HotpotLargeRoundPlate::getItemSlot3),
+                        SimpleItemSlot.CODEC.fieldOf("item_slot_4").forGetter(HotpotLargeRoundPlate::getItemSlot4),
+                        SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotLargeRoundPlate::getPlateItemSlot)
                 ).apply(plate, HotpotLargeRoundPlate::new))
         );
 

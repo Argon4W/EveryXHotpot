@@ -93,9 +93,9 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedSpoon> {
         public static final MapCodec<HotpotPlacedSpoon> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(spoon -> spoon.group(
-                        Codec.INT.fieldOf("Pos1").forGetter(HotpotPlacedSpoon::getPos1),
-                        Codec.INT.fieldOf("Pos2").forGetter(HotpotPlacedSpoon::getPos2),
-                        SimpleItemSlot.CODEC.fieldOf("Spoon").forGetter(HotpotPlacedSpoon::getSpoonItemSlot)
+                        Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPos1),
+                        Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPos2),
+                        SimpleItemSlot.CODEC.fieldOf("spoon_item_slot").forGetter(HotpotPlacedSpoon::getSpoonItemSlot)
                 ).apply(spoon, HotpotPlacedSpoon::new))
         );
 

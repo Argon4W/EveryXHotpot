@@ -157,9 +157,9 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedPaperBowl> {
         public static final MapCodec<HotpotPlacedPaperBowl> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(bowl -> bowl.group(
-                        Codec.INT.fieldOf("Pos").forGetter(HotpotPlacedPaperBowl::getPos),
-                        Codec.INT.fieldOf("DirectionPos").forGetter(HotpotPlacedPaperBowl::getDirectionPos),
-                        SimpleItemSlot.CODEC.fieldOf("PaperBowl").forGetter(HotpotPlacedPaperBowl::getPaperBowlItemSlot)
+                        Codec.INT.fieldOf("pos").forGetter(HotpotPlacedPaperBowl::getPos),
+                        Codec.INT.fieldOf("direction_pos").forGetter(HotpotPlacedPaperBowl::getDirectionPos),
+                        SimpleItemSlot.CODEC.fieldOf("paper_bowl_item_slot").forGetter(HotpotPlacedPaperBowl::getPaperBowlItemSlot)
                 ).apply(bowl, HotpotPlacedPaperBowl::new))
         );
 

@@ -171,10 +171,10 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
         @Override
         public MapCodec<HotpotCookingRecipeSoup> getCodec(HotpotSoupTypeHolder<HotpotCookingRecipeSoup> soupTypeHolder) {
             return RecordCodecBuilder.mapCodec(soupType -> soupType.group(
-                    Codec.FLOAT.fieldOf("WaterLevel").forGetter(HotpotCookingRecipeSoup::getWaterLevel),
-                    Codec.FLOAT.fieldOf("OverflowWaterLevel").forGetter(HotpotCookingRecipeSoup::getOverflowWaterLevel),
-                    Codec.FLOAT.fieldOf("Activeness").forGetter(HotpotCookingRecipeSoup::getActiveness),
-                    Codec.INT.fieldOf("EmptyWaterPunishCooldown").forGetter(HotpotCookingRecipeSoup::getEmptyWaterPunishCooldown)
+                    Codec.FLOAT.fieldOf("waterlevel").forGetter(HotpotCookingRecipeSoup::getWaterLevel),
+                    Codec.FLOAT.fieldOf("overflow_waterlevel").forGetter(HotpotCookingRecipeSoup::getOverflowWaterLevel),
+                    Codec.FLOAT.fieldOf("activeness").forGetter(HotpotCookingRecipeSoup::getActiveness),
+                    Codec.INT.fieldOf("empty_water_punish_cooldown").forGetter(HotpotCookingRecipeSoup::getEmptyWaterPunishCooldown)
             ).apply(soupType, (waterLevel, overflowWaterLevel, activeness, emptyWaterPunishCooldown) -> buildFrom(soupTypeHolder, waterLevel, overflowWaterLevel, activeness, emptyWaterPunishCooldown)));
         }
 
