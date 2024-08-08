@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -24,11 +25,11 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
             return;
         }
 
-        float x1 = IHotpotPlacement.getSlotX(placedChopstick.getPos1()) + 0.25f;
-        float z1 = IHotpotPlacement.getSlotZ(placedChopstick.getPos1()) + 0.25f;
+        float x1 = HotpotPlacementSerializers.getSlotX(placedChopstick.getPos1()) + 0.25f;
+        float z1 = HotpotPlacementSerializers.getSlotZ(placedChopstick.getPos1()) + 0.25f;
 
-        float x2 = IHotpotPlacement.getSlotX(placedChopstick.getPos2()) + 0.25f;
-        float z2 = IHotpotPlacement.getSlotZ(placedChopstick.getPos2()) + 0.25f;
+        float x2 = HotpotPlacementSerializers.getSlotX(placedChopstick.getPos2()) + 0.25f;
+        float z2 = HotpotPlacementSerializers.getSlotZ(placedChopstick.getPos2()) + 0.25f;
 
         poseStack.pushPose();
         poseStack.translate((x1 + x2) / 2, 0.07f, (z1 + z2) / 2);

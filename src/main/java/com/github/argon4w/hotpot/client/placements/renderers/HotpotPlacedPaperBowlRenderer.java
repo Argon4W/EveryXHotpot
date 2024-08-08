@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -20,8 +21,8 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
             return;
         }
 
-        float x = IHotpotPlacement.getSlotX(placedPaperBowl.getPos()) + 0.25f;
-        float z = IHotpotPlacement.getSlotZ(placedPaperBowl.getPos()) + 0.25f;
+        float x = HotpotPlacementSerializers.getSlotX(placedPaperBowl.getPos()) + 0.25f;
+        float z = HotpotPlacementSerializers.getSlotZ(placedPaperBowl.getPos()) + 0.25f;
 
         ItemStack paperBowlItemStack = placedPaperBowl.getPaperBowlItemSlot().getItemStack();
 

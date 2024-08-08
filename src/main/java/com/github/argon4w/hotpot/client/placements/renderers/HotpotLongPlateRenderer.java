@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotLongPlate;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -26,11 +27,11 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
             return;
         }
 
-        float x1 = IHotpotPlacement.getSlotX(longPlate.getPos1()) + 0.25f;
-        float z1 = IHotpotPlacement.getSlotZ(longPlate.getPos1()) + 0.25f;
+        float x1 = HotpotPlacementSerializers.getSlotX(longPlate.getPos1()) + 0.25f;
+        float z1 = HotpotPlacementSerializers.getSlotZ(longPlate.getPos1()) + 0.25f;
 
-        float x2 = IHotpotPlacement.getSlotX(longPlate.getPos2()) + 0.25f;
-        float z2 = IHotpotPlacement.getSlotZ(longPlate.getPos2()) + 0.25f;
+        float x2 = HotpotPlacementSerializers.getSlotX(longPlate.getPos2()) + 0.25f;
+        float z2 = HotpotPlacementSerializers.getSlotZ(longPlate.getPos2()) + 0.25f;
 
         int plateCount = 0;
 

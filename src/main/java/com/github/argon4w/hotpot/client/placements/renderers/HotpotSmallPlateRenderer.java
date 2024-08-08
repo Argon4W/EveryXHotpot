@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.HotpotSmallPlate;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,8 +25,8 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
             return;
         }
 
-        float x = IHotpotPlacement.getSlotX(smallPlate.getPos()) + 0.25f;
-        float z = IHotpotPlacement.getSlotZ(smallPlate.getPos()) + 0.25f;
+        float x = HotpotPlacementSerializers.getSlotX(smallPlate.getPos()) + 0.25f;
+        float z = HotpotPlacementSerializers.getSlotZ(smallPlate.getPos()) + 0.25f;
 
         int plateCount = 0;
 

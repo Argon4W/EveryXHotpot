@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedNapkinHolder;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -27,8 +28,8 @@ public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRendere
             return;
         }
 
-        float x = IHotpotPlacement.getSlotX(napkinHolder.getPos()) + 0.25f;
-        float z = IHotpotPlacement.getSlotZ(napkinHolder.getPos()) + 0.25f;
+        float x = HotpotPlacementSerializers.getSlotX(napkinHolder.getPos()) + 0.25f;
+        float z = HotpotPlacementSerializers.getSlotZ(napkinHolder.getPos()) + 0.25f;
 
         BakedModel napkinHolderModel = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin_holder")));
         BakedModel napkinModel = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
