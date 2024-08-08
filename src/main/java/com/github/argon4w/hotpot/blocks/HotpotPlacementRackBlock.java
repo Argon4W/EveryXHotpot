@@ -40,6 +40,7 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
                 .noOcclusion()
                 .mapColor(MapColor.COLOR_GRAY)
                 .sound(SoundType.COPPER)
+                .isViewBlocking((pState, pLevel, pPos) -> false)
                 .strength(0.5f));
 
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));

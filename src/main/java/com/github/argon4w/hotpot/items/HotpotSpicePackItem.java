@@ -115,10 +115,6 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         setDataComponent(itemStack, getDataComponent(itemStack).setCharges(charges));
     }
 
-    public static void setSpicePackItems(ItemStack itemStack, List<ItemStack> itemStacks) {
-        setDataComponent(itemStack, getDataComponent(itemStack).setItemStacks(itemStacks));
-    }
-
     public static List<MobEffectInstance> getSpicePackEffects(ItemStack itemStack) {
         return getDataComponent(itemStack).getFoodEffects();
     }

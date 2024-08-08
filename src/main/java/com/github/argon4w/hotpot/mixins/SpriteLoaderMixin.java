@@ -47,13 +47,7 @@ public abstract class SpriteLoaderMixin {
         NativeImage image = new NativeImage(contents.getOriginalImage().format(), contents.getOriginalImage().getWidth(), contents.getOriginalImage().getHeight(), true);
 
         processSpriteImage(original, image, frameSize, processor);
-
-        return new SpriteContents(
-                name.withSuffix(processor.getProcessedSuffix()),
-                frameSize,
-                image,
-                metadata
-        );
+        return new SpriteContents(name.withSuffix(processor.getProcessedSuffix()), frameSize, image, metadata);
     }
 
     private static void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, IHotpotSpriteProcessor processor) {

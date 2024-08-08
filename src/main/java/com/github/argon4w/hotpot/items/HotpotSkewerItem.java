@@ -5,7 +5,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.items.components.HotpotSkewerDataComponent;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -163,17 +163,17 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     @Override
-    public int getCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
+    public int getCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
         return getSkewerItems(itemStack).stream().map(skewerStack -> content.remapCookingTime(soupType, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToInt(Optional::get).max().orElse(-1);
     }
 
     @Override
-    public double getExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
+    public double getExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
         return getSkewerItems(itemStack).stream().map(skewerStack -> content.remapExperience(soupType, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToDouble(Optional::get).sum();
     }
 
     @Override
-    public ItemStack getResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
+    public ItemStack getResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, HotpotCookingRecipeContent content) {
         setSkewerItems(itemStack, getSkewerItems(itemStack).stream().map(skewerStack -> content.remapResult(soupType, skewerStack, pos, hotpotBlockEntity).orElse(skewerStack)).toList());
         return itemStack;
     }

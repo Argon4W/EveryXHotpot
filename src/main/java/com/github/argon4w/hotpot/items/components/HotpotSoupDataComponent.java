@@ -1,9 +1,9 @@
 package com.github.argon4w.hotpot.items.components;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeHolder;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeSerializers;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,18 +11,18 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-public record HotpotSoupDataComponent(HotpotSoupTypeFactoryHolder<?> soupTypeFactory) {
-    public static final HotpotSoupDataComponent EMPTY = new HotpotSoupDataComponent(HotpotSoupTypes.getEmptySoupFactoryHolder());
+public record HotpotSoupDataComponent(HotpotSoupTypeHolder<?> soupTypeHolder) {
+    public static final HotpotSoupDataComponent EMPTY = new HotpotSoupDataComponent(HotpotSoupTypeSerializers.getEmptySoupTypeHolder());
 
     public static final Codec<HotpotSoupDataComponent> CODEC = Codec.lazyInitialized(() ->
             RecordCodecBuilder.create(data -> data.group(
-                    HotpotSoupTypes.getHolderCodec().fieldOf("soup_type").forGetter(HotpotSoupDataComponent::soupTypeFactory)
+                    HotpotSoupTypeSerializers.getHolderCodec().fieldOf("soup_type").forGetter(HotpotSoupDataComponent::soupTypeHolder)
             ).apply(data, HotpotSoupDataComponent::new))
     );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
             StreamCodec.composite(
-                    HotpotSoupTypes.getStreamHolderCodec(), HotpotSoupDataComponent::soupTypeFactory,
+                    HotpotSoupTypeSerializers.getStreamHolderCodec(), HotpotSoupDataComponent::soupTypeHolder,
                     HotpotSoupDataComponent::new
             )
     );
@@ -35,11 +35,7 @@ public record HotpotSoupDataComponent(HotpotSoupTypeFactoryHolder<?> soupTypeFac
         return itemStack.getOrDefault(HotpotModEntry.HOTPOT_SOUP_DATA_COMPONENT, EMPTY);
     }
 
-    public static void setSoup(ItemStack itemStack, IHotpotSoupType soupType) {
-        itemStack.set(HotpotModEntry.HOTPOT_SOUP_DATA_COMPONENT, new HotpotSoupDataComponent(soupType.getSoupTypeFactoryHolder()));
-    }
-
-    public static HotpotSoupTypeFactoryHolder<?> getSoupTypeFactory(ItemStack itemStack) {
-        return getDataComponent(itemStack).soupTypeFactory;
+    public static void setSoup(ItemStack itemStack, IHotpotSoup soupType) {
+        itemStack.set(HotpotModEntry.HOTPOT_SOUP_DATA_COMPONENT, new HotpotSoupDataComponent(soupType.getSoupTypeHolder()));
     }
 }

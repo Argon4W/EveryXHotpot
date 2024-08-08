@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -27,7 +28,7 @@ public class HotpotSmallPlate implements IHotpotPlate {
         this.direction = direction;
         this.itemSlot = new SimpleItemSlot();
         this.plateItemSlot = new SimpleItemSlot();
-        this.directionPos = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
+        this.directionPos = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
     }
 
     public HotpotSmallPlate(int pos, int directionPos, SimpleItemSlot itemSlot, SimpleItemSlot plateItemSlot) {
@@ -35,7 +36,7 @@ public class HotpotSmallPlate implements IHotpotPlate {
         this.directionPos = directionPos;
         this.itemSlot = itemSlot;
         this.plateItemSlot = plateItemSlot;
-        this.direction = HotpotPlacements.POS_TO_DIRECTION.get(directionPos - pos);
+        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(directionPos - pos);
     }
 
     @Override
@@ -50,7 +51,6 @@ public class HotpotSmallPlate implements IHotpotPlate {
         }
 
         selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
-        container.markDataChanged();
         return plateItemSlot.isEmpty();
     }
 
@@ -80,8 +80,8 @@ public class HotpotSmallPlate implements IHotpotPlate {
     }
 
     @Override
-    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
-        return HotpotPlacements.SMALL_PLATE;
+    public Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder() {
+        return HotpotPlacementSerializers.SMALL_PLATE_SERIALIZER;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class HotpotSmallPlate implements IHotpotPlate {
         return plateItemSlot;
     }
 
-    public static class Factory implements IHotpotPlacementFactory<HotpotSmallPlate> {
+    public static class Serializer implements IHotpotPlacementSerializer<HotpotSmallPlate> {
         public static final MapCodec<HotpotSmallPlate> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
                         Codec.INT.fieldOf("Pos").forGetter(HotpotSmallPlate::getPos),
@@ -120,12 +120,12 @@ public class HotpotSmallPlate implements IHotpotPlate {
         );
 
         @Override
-        public HotpotSmallPlate buildFromSlots(int pos, Direction direction) {
+        public HotpotSmallPlate get(int pos, Direction direction) {
             return new HotpotSmallPlate(pos, direction);
         }
 
         @Override
-        public MapCodec<HotpotSmallPlate> buildFromCodec() {
+        public MapCodec<HotpotSmallPlate> getCodec() {
             return CODEC;
         }
 

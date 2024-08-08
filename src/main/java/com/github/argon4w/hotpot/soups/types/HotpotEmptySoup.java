@@ -2,12 +2,13 @@ package com.github.argon4w.hotpot.soups.types;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.contents.HotpotContents;
+import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
+import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.soups.*;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
@@ -19,21 +20,21 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.Optional;
 
-public class HotpotEmptySoupType implements IHotpotSoupType {
-    private final HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder;
+public class HotpotEmptySoup implements IHotpotSoup {
+    private final HotpotSoupTypeHolder<?> soupTypeHolder;
 
-    public HotpotEmptySoupType(HotpotSoupTypeFactoryHolder<?> soupTypeFactoryHolder) {
-        this.soupTypeFactoryHolder = soupTypeFactoryHolder;
+    public HotpotEmptySoup(HotpotSoupTypeHolder<?> soupTypeHolder) {
+        this.soupTypeHolder = soupTypeHolder;
     }
 
     @Override
-    public Optional<IHotpotContentFactory<?>> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContentSerializer<?>> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<IHotpotContentFactory<?>> remapItemStack(boolean copy, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return Optional.of(HotpotContents.getEmptyContentFactory());
+    public Optional<IHotpotContentSerializer<?>> getContentSerializerFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return itemStack.isEmpty() ? Optional.empty() : Optional.of(HotpotContentSerializers.getEmptyContentSerializer());
     }
 
     @Override
@@ -102,38 +103,38 @@ public class HotpotEmptySoupType implements IHotpotSoupType {
     }
 
     @Override
-    public HotpotSoupTypeFactoryHolder<?> getSoupTypeFactoryHolder() {
-        return HotpotSoupTypes.getEmptySoupFactoryHolder();
+    public HotpotSoupTypeHolder<?> getSoupTypeHolder() {
+        return HotpotSoupTypeSerializers.getEmptySoupTypeHolder();
     }
 
-    public record Factory() implements IHotpotSoupTypeFactory<HotpotEmptySoupType> {
+    public record Type() implements IHotpotSoupType<HotpotEmptySoup> {
         @Override
-        public MapCodec<HotpotEmptySoupType> buildFromCodec(HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> soupTypeFactoryHolder) {
-            return MapCodec.unit(() -> new HotpotEmptySoupType(soupTypeFactoryHolder));
+        public MapCodec<HotpotEmptySoup> getCodec(HotpotSoupTypeHolder<HotpotEmptySoup> soupTypeHolder) {
+            return MapCodec.unit(() -> new HotpotEmptySoup(soupTypeHolder));
         }
 
         @Override
-        public HotpotEmptySoupType buildFromScratch(HotpotSoupTypeFactoryHolder<HotpotEmptySoupType> soupTypeFactoryHolder) {
-            return new HotpotEmptySoupType(soupTypeFactoryHolder);
+        public HotpotEmptySoup getSoup(HotpotSoupTypeHolder<HotpotEmptySoup> soupTypeHolder) {
+            return new HotpotEmptySoup(soupTypeHolder);
         }
 
         @Override
-        public IHotpotSoupFactorySerializer<HotpotEmptySoupType> getSerializer() {
-            return HotpotSoupTypes.EMPTY_SOUP_SERIALIZER.get();
+        public Holder<IHotpotSoupTypeSerializer<?>> getSerializer() {
+            return HotpotSoupTypeSerializers.EMPTY_SOUP_TYPE_SERIALIZER;
         }
     }
 
-    public static class Serializer implements IHotpotSoupFactorySerializer<HotpotEmptySoupType> {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Factory> STREAM_CODEC = StreamCodec.of((buffer, value) -> {}, buffer -> new Factory());
-        public static final MapCodec<Factory> CODEC = MapCodec.unit(Factory::new);
+    public static class Serializer implements IHotpotSoupTypeSerializer<HotpotEmptySoup> {
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.of((buffer, value) -> {}, buffer -> new Type());
+        public static final MapCodec<Type> CODEC = MapCodec.unit(Type::new);
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupTypeFactory<HotpotEmptySoupType>> getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupType<HotpotEmptySoup>> getStreamCodec() {
             return STREAM_CODEC;
         }
 
         @Override
-        public MapCodec<? extends IHotpotSoupTypeFactory<HotpotEmptySoupType>> getCodec() {
+        public MapCodec<? extends IHotpotSoupType<HotpotEmptySoup>> getCodec() {
             return CODEC;
         }
     }

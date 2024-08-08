@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class HotpotSkewerRecipe extends CustomRecipe {
     public HotpotSkewerRecipe(CraftingBookCategory category) {
@@ -37,7 +38,7 @@ public class HotpotSkewerRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).feed(this::assembleSkewerItem).assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSkewerItem).assemble();
     }
 
     private ItemStack assembleSkewerItem(ItemStack assembled, ItemStack ingredient) {

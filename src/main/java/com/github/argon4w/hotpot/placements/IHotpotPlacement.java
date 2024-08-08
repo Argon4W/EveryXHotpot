@@ -16,13 +16,5 @@ public interface IHotpotPlacement {
     ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos);
     List<Integer> getPoslist();
     boolean isConflict(int pos);
-    Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder();
-
-    static float getSlotX(int slot) {
-        return ((2 & slot) > 0 ? 0.5f : 0f);
-    }
-
-    static float getSlotZ(int slot) {
-        return ((1 & slot) > 0 ? 0.5f : 0f);
-    }
+    Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder();
 }

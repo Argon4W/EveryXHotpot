@@ -4,7 +4,7 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotSoupIngredientCondition {
     @Override
-    public boolean matches(IHotpotContent content, IHotpotSoupType soup) {
+    public boolean matches(IHotpotContent content, IHotpotSoup soup) {
         return content instanceof AbstractHotpotItemStackContent itemStackContent && ingredient.test(itemStackContent.getItemStack());
     }
 

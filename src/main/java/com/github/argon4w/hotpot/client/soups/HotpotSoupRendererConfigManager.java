@@ -1,9 +1,8 @@
 package com.github.argon4w.hotpot.client.soups;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.items.components.HotpotSoupDataComponent;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeHolder;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,7 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -57,19 +55,15 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
         }
     }
 
-    public HotpotSoupRendererConfig getSoupRendererConfig(ResourceLocation resourceLocation) {
-        return byName.getOrDefault(resourceLocation, HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG);
+    public static HotpotSoupRendererConfig getSoupRendererConfig(ResourceLocation resourceLocation) {
+        return HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.byName.getOrDefault(resourceLocation, HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG);
     }
 
-    public static HotpotSoupRendererConfig getSoupRendererConfig(HotpotSoupTypeFactoryHolder<?> soupTypeFactory) {
-        return HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.getSoupRendererConfig(soupTypeFactory.key());
+    public static HotpotSoupRendererConfig getSoupRendererConfig(HotpotSoupTypeHolder<?> soupTypeHolder) {
+        return getSoupRendererConfig(soupTypeHolder.key());
     }
 
-    public static HotpotSoupRendererConfig getSoupRendererConfig(IHotpotSoupType soupType) {
-        return getSoupRendererConfig(soupType.getSoupTypeFactoryHolder());
-    }
-
-    public static HotpotSoupRendererConfig getSoupRendererConfig(ItemStack itemStack) {
-        return getSoupRendererConfig(HotpotSoupDataComponent.getSoupTypeFactory(itemStack));
+    public static HotpotSoupRendererConfig getSoupRendererConfig(IHotpotSoup soupType) {
+        return getSoupRendererConfig(soupType.getSoupTypeHolder());
     }
 }

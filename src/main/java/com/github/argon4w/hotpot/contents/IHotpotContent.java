@@ -11,5 +11,5 @@ public interface IHotpotContent {
     boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    Holder<IHotpotContentFactory<?>> getContentFactoryHolder();
+    Holder<IHotpotContentSerializer<?>> getContentSerializerHolder();
 }

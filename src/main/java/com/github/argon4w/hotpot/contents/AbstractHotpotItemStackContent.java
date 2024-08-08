@@ -3,8 +3,8 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.IHotpotSpecialContentItem;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.github.argon4w.hotpot.soups.types.IHotpotSoupTypeWithActiveness;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.types.IHotpotSoupWithActiveness;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -29,16 +29,16 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         this.experience = experience;
     }
 
-    public AbstractHotpotItemStackContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
+    public AbstractHotpotItemStackContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         this.itemStack = itemStack.split(1);
-        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), this.itemStack, hotpotBlockEntity.getPos(), hotpotBlockEntity).orElse(-1);
+        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), this.itemStack, pos, hotpotBlockEntity).orElse(-1);
         this.cookingProgress = 0;
         this.experience = 0;
     }
 
-    public abstract Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
-    public abstract Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
-    public abstract Optional<Double> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<ItemStack> remapResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<Double> remapExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
 
     @Override
     public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
@@ -46,7 +46,7 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
             return itemStack;
         }
 
-        if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupTypeWithActiveness withActiveness) {
+        if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupWithActiveness withActiveness) {
             experience *= (1f + withActiveness.getActiveness());
         }
 
@@ -114,11 +114,11 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         return experience;
     }
 
-    public abstract static class Factory<T extends AbstractHotpotItemStackContent> implements IHotpotContentFactory<T> {
+    public abstract static class Serializer<T extends AbstractHotpotItemStackContent> implements IHotpotContentSerializer<T> {
         public abstract T buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience);
 
         @Override
-        public MapCodec<T> buildFromCodec() {
+        public MapCodec<T> getCodec() {
             return RecordCodecBuilder.mapCodec(content -> content.group(
                     ItemStack.CODEC.fieldOf("ItemStack").forGetter(AbstractHotpotItemStackContent::getItemStack),
                     Codec.INT.fieldOf("CookingTime").forGetter(AbstractHotpotItemStackContent::getCookingTime),

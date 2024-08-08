@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -22,7 +23,7 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
 
     public HotpotPlacedChopstick(int pos, Direction direction) {
         this.pos1 = pos;
-        this.pos2 = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
+        this.pos2 = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
         this.chopstickItemSlot = new SimpleItemSlot();
     }
@@ -31,7 +32,7 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.chopstickItemSlot = chopstickItemSlot;
-        this.direction = HotpotPlacements.POS_TO_DIRECTION.get(pos2 - pos1);
+        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(pos2 - pos1);
     }
 
     @Override
@@ -65,8 +66,8 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     @Override
-    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
-        return HotpotPlacements.PLACED_CHOPSTICK;
+    public Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder() {
+        return HotpotPlacementSerializers.PLACED_CHOPSTICK_SERIALIZER;
     }
 
     public void setChopstickItemSlot(ItemStack chopstickItemSlot) {
@@ -89,7 +90,7 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
         return chopstickItemSlot;
     }
 
-    public static class Factory implements IHotpotPlacementFactory<HotpotPlacedChopstick> {
+    public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedChopstick> {
         public static final MapCodec<HotpotPlacedChopstick> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(chopstick -> chopstick.group(
                         Codec.INT.fieldOf("Pos1").forGetter(HotpotPlacedChopstick::getPos1),
@@ -99,18 +100,18 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedChopstick buildFromSlots(int pos, Direction direction) {
+        public HotpotPlacedChopstick get(int pos, Direction direction) {
             return new HotpotPlacedChopstick(pos, direction);
         }
 
         @Override
-        public MapCodec<HotpotPlacedChopstick> buildFromCodec() {
+        public MapCodec<HotpotPlacedChopstick> getCodec() {
             return CODEC;
         }
 
         @Override
         public boolean canPlace(int pos, Direction direction) {
-            return isValidPos(pos, pos + HotpotPlacements.DIRECTION_TO_POS.get(direction));
+            return isValidPos(pos, pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction));
         }
 
         public boolean isValidPos(int pos1, int pos2) {

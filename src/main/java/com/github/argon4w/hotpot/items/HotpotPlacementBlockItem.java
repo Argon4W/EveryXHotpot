@@ -2,10 +2,9 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
-import com.github.argon4w.hotpot.placements.IHotpotPlacementFactory;
+import com.github.argon4w.hotpot.placements.IHotpotPlacementSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -23,14 +22,14 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockItem {
-    private final DeferredHolder<IHotpotPlacementFactory<?>, ? extends  IHotpotPlacementFactory<T>> holder;
+    private final DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder;
 
-    public HotpotPlacementBlockItem(DeferredHolder<IHotpotPlacementFactory<?>, ? extends IHotpotPlacementFactory<T>> holder) {
+    public HotpotPlacementBlockItem(DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder) {
         super(HotpotModEntry.HOTPOT_PLACEMENT.get(), new Properties().stacksTo(64));
         this.holder = holder;
     }
 
-    public HotpotPlacementBlockItem(DeferredHolder<IHotpotPlacementFactory<?>, ? extends  IHotpotPlacementFactory<T>> holder, Properties properties) {
+    public HotpotPlacementBlockItem(DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder, Properties properties) {
         super(HotpotModEntry.HOTPOT_PLACEMENT.get(), properties);
         this.holder = holder;
     }
@@ -51,7 +50,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         int pos = getHitPos(context);
         int layer = getLayer(context);
 
-        IHotpotPlacementFactory<T> factory = holder.value();
+        IHotpotPlacementSerializer<T> factory = holder.value();
         Player player = context.getPlayer();
         InteractionHand hand = context.getHand();
         ItemStack itemStack = context.getItemInHand();
@@ -72,7 +71,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
             return super.useOn(context);
         }
 
-        if (!place(selfPos, factory.buildFromSlots(pos, direction), itemStack.copy(), pos, layer)) {
+        if (!place(selfPos, factory.get(pos, direction), itemStack.copy(), pos, layer)) {
             container.interact(pos, layer, player, hand, itemStack, selfPos);
             return InteractionResult.SUCCESS_NO_ITEM_USED;
         }
@@ -101,14 +100,14 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         int pos = getHitPos(context);
         int layer = getLayer(context);
 
-        IHotpotPlacementFactory<T> factory = holder.value();
+        IHotpotPlacementSerializer<T> factory = holder.value();
 
         if (!factory.canPlace(pos, direction)) {
             return InteractionResult.FAIL;
         }
 
         InteractionResult result = super.place(context);
-        place(selfPos, factory.buildFromSlots(pos, direction), itemStack, pos, layer);
+        place(selfPos, factory.get(pos, direction), itemStack, pos, layer);
 
         return result;
     }

@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.client.blocks;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
@@ -9,14 +8,11 @@ import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Math;
 
@@ -64,13 +60,8 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             lastOrbitY = orbitY;
 
             IHotpotContent content = blockEntity.getContents().get(i);
-            content.getContentFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, context, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
+            content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, context, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
         }
-
-        //Make Oculus Happy
-        poseStack.pushPose();
-        context.getItemRenderer().render(ItemStack.EMPTY, ItemDisplayContext.FIXED, false, poseStack, bufferSource, combinedLight, combinedOverlay, null);
-        poseStack.popPose();
 
         HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup());
 
@@ -90,7 +81,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             }
 
             BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(soupLocation));
-            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
+            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucentMovingBlock()), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
             poseStack.popPose();
         });

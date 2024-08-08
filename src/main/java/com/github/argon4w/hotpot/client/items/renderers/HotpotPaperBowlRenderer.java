@@ -27,7 +27,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             return;
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoup(itemStack));
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupType(itemStack));
 
         if (soupRendererConfig == HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG) {
             return;

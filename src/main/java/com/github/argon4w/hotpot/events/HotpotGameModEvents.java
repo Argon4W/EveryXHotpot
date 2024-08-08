@@ -6,7 +6,7 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
-import com.github.argon4w.hotpot.network.HotpotUpdateSoupFactoriesPacket;
+import com.github.argon4w.hotpot.network.HotpotUpdateSoupTypesPacket;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -26,7 +26,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class HotpotGameModEvents {
     @SubscribeEvent
     public static void onDataPackSync(OnDatapackSyncEvent event) {
-        HotpotUpdateSoupFactoriesPacket packet = new HotpotUpdateSoupFactoriesPacket(HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER.getAllFactoriesByName());
+        HotpotUpdateSoupTypesPacket packet = new HotpotUpdateSoupTypesPacket(HotpotModEntry.HOTPOT_SOUP_TYPE_MANAGER.getAllSoupTypes());
 
         if (event.getPlayer() == null) {
             PacketDistributor.sendToAllPlayers(packet);
@@ -37,21 +37,31 @@ public class HotpotGameModEvents {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        if (event.getSource().is(HotpotModEntry.IN_HOTPOT_DAMAGE_KEY) && event.getEntity() instanceof Player player) {
-            Vec3 vec = event.getSource().getSourcePosition();
-
-            if (vec != null) {
-                LevelBlockPos pos = LevelBlockPos.fromVec3(event.getEntity().level(), vec);
-
-                if (pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-                    ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
-
-                    hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, true), pos);
-                    hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, false), pos);
-                    hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, false), pos);
-                }
-            }
+        if (!event.getSource().is(HotpotModEntry.IN_HOTPOT_DAMAGE_KEY)) {
+            return;
         }
+
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        Vec3 vec = event.getSource().getSourcePosition();
+
+        if (vec == null) {
+            return;
+        }
+
+        LevelBlockPos pos = LevelBlockPos.fromVec3(event.getEntity().level(), vec);
+
+        if (!(pos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
+            return;
+        }
+
+        ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
+
+        hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, true), pos);
+        hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, false), pos);
     }
 
     @SubscribeEvent

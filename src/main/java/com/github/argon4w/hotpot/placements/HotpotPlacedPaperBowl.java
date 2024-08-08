@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.mojang.serialization.Codec;
@@ -24,7 +25,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
 
     public HotpotPlacedPaperBowl(int pos, Direction direction) {
         this.pos = pos;
-        this.directionPos = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
+        this.directionPos = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
         this.paperBowlItemSlot = new SimpleItemSlot();
     }
@@ -33,7 +34,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         this.pos = pos;
         this.directionPos = directionPos;
         this.paperBowlItemSlot = paperBowlItemSlot;
-        this.direction = HotpotPlacements.POS_TO_DIRECTION.get(directionPos - pos);
+        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(directionPos - pos);
     }
 
     @Override
@@ -53,7 +54,6 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         }
 
         selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
-        container.markDataChanged();
 
         return isPaperBowlUsed();
     }
@@ -122,8 +122,8 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
-        return HotpotPlacements.PLACED_PAPER_BOWL;
+    public Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder() {
+        return HotpotPlacementSerializers.PLACED_PAPER_BOWL_SERIALIZER;
     }
 
     public int getPos() {
@@ -154,7 +154,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         return paperBowlItemSlot;
     }
 
-    public static class Factory implements IHotpotPlacementFactory<HotpotPlacedPaperBowl> {
+    public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedPaperBowl> {
         public static final MapCodec<HotpotPlacedPaperBowl> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(bowl -> bowl.group(
                         Codec.INT.fieldOf("Pos").forGetter(HotpotPlacedPaperBowl::getPos),
@@ -164,12 +164,12 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedPaperBowl buildFromSlots(int pos, Direction direction) {
+        public HotpotPlacedPaperBowl get(int pos, Direction direction) {
             return new HotpotPlacedPaperBowl(pos, direction);
         }
 
         @Override
-        public MapCodec<HotpotPlacedPaperBowl> buildFromCodec() {
+        public MapCodec<HotpotPlacedPaperBowl> getCodec() {
             return CODEC;
         }
 

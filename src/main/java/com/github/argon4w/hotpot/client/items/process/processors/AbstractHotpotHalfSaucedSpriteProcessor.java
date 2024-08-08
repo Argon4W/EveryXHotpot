@@ -1,30 +1,29 @@
 package com.github.argon4w.hotpot.client.items.process.processors;
 
+import com.github.argon4w.hotpot.client.HotpotColor;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
-import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
-import com.github.argon4w.hotpot.items.components.HotpotSoupDataComponent;
+import com.github.argon4w.hotpot.items.process.HotpotCustomColorSpriteProcessorConfig;
+import com.github.argon4w.hotpot.items.process.HotpotSoupRendererConfigSpriteProcessorConfig;
+import com.github.argon4w.hotpot.items.process.IHotpotSpriteProcessorConfig;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
 public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpotSpriteProcessor {
     @Override
-    public int getColor(ItemStack itemStack) {
-        if (!HotpotSoupDataComponent.hasDataComponent(itemStack)) {
-            return -1;
+    public HotpotColor getColor(IHotpotSpriteProcessorConfig config) {
+        if (config instanceof HotpotCustomColorSpriteProcessorConfig customColorConfig) {
+            return customColorConfig.color();
         }
 
-        HotpotSoupRendererConfig rendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(itemStack);
-
-        if (rendererConfig.color().isEmpty()) {
-            return -1;
+        if (config instanceof HotpotSoupRendererConfigSpriteProcessorConfig soupTypeConfig) {
+            return HotpotSoupRendererConfigManager.getSoupRendererConfig(soupTypeConfig.soupRendererConfigResourceLocation()).color().orElse(HotpotColor.WHITE);
         }
 
-        return rendererConfig.color().get().toInt();
+        return HotpotColor.WHITE;
     }
 
     @Override

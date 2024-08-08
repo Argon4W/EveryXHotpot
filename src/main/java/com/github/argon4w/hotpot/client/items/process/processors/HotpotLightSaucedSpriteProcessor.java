@@ -1,8 +1,5 @@
 package com.github.argon4w.hotpot.client.items.process.processors;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
-import net.minecraft.resources.ResourceLocation;
-
 public class HotpotLightSaucedSpriteProcessor extends AbstractHotpotHalfSaucedSpriteProcessor {
     @Override
     public float getAlphaModifier() {
@@ -12,10 +9,5 @@ public class HotpotLightSaucedSpriteProcessor extends AbstractHotpotHalfSaucedSp
     @Override
     public String getProcessedSuffix() {
         return "_light_sauced";
-    }
-
-    @Override
-    public int getIndex() {
-        return 1;
     }
 }

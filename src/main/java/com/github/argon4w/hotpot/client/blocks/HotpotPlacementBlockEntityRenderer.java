@@ -20,7 +20,7 @@ public class HotpotPlacementBlockEntityRenderer implements BlockEntityRenderer<H
     @Override
     public void render(HotpotPlacementBlockEntity hotpotPlateBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         LevelBlockPos pos = new LevelBlockPos(hotpotPlateBlockEntity.getLevel(), hotpotPlateBlockEntity.getBlockPos());
-        hotpotPlateBlockEntity.getPlacements().forEach(placement -> placement.getPlacementFactoryHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlateBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, pos)));
+        hotpotPlateBlockEntity.getPlacements().forEach(placement -> placement.getPlacementSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(placement, context, hotpotPlateBlockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, pos)));
     }
 
     @Override

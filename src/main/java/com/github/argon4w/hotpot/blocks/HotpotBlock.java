@@ -65,6 +65,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .sound(SoundType.COPPER)
                 .requiresCorrectToolForDrops()
                 .lightLevel((blockState) -> blockState.getValue(HOTPOT_LIT) ? 15 : 0)
+                .isViewBlocking((pState, pLevel, pPos) -> false)
                 .strength(3.0F, 6.0F));
 
         this.registerDefaultState(this.getStateDefinition().any()
@@ -187,7 +188,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        int hitPos = HotpotBlockEntity.getHitPos(hitResult);
+        int hitPos = HotpotBlockEntity.getHitPos(hitResult.getBlockPos(), hitResult.getLocation());
 
         if (levelPos.isServerSide()) {
             hotpotBlockEntity.interact(hitPos, 0, player, hand, itemStack, levelPos);

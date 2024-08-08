@@ -5,10 +5,11 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
-import com.github.argon4w.hotpot.soups.IHotpotSoupTypeFactory;
+import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeHolder;
+import com.github.argon4w.hotpot.soups.IHotpotSoupType;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRechargeRecipe;
+import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import com.github.argon4w.hotpot.soups.synchronizers.HotpotSoupActivenessSynchronizer;
 import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import com.mojang.serialization.Codec;
@@ -18,16 +19,18 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSoupType implements IHotpotSoupTypeWithActiveness {
+public abstract class AbstractHotpotFluidBasedSoup extends AbstractHotpotSoup implements IHotpotSoupWithActiveness {
+    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRechargeRecipe> RECHARGE_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get());
+
     protected float activeness = 0f;
 
     public abstract float getWaterLevelDropRate();
@@ -50,14 +53,11 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
     }
 
     @Override
-    public Optional<IHotpotContentFactory<?>> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
-        for (RecipeHolder<HotpotSoupRechargeRecipe> holder : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get())) {
-            HotpotSoupRechargeRecipe recipe = holder.value();
+    public Optional<IHotpotContentSerializer<?>> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+        Optional<HotpotSoupRechargeRecipe> optional = RECHARGE_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, hotpotBlockEntity.getSoup()), selfPos.level()).map(RecipeHolder::value);
 
-            if (!recipe.matches(itemStack, hotpotBlockEntity.getSoup())) {
-                continue;
-            }
-
+        if (optional.isPresent()) {
+            HotpotSoupRechargeRecipe recipe = optional.get();
             setWaterLevel(hotpotBlockEntity, selfPos, getWaterLevel() + recipe.getRechargeWaterLevel());
             player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
             selfPos.playSound(recipe.getSoundEvent());
@@ -70,7 +70,7 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
 
     @Override
     public float getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getWaterLevel() + activeness * 4f;
+        return getWaterLevel() * 2f + activeness * 4f;
     }
 
     @Override
@@ -100,16 +100,16 @@ public abstract class AbstractHotpotFluidBasedSoupType extends AbstractHotpotSou
         return list;
     }
 
-    public static abstract class Factory<T extends AbstractHotpotFluidBasedSoupType> implements IHotpotSoupTypeFactory<T> {
-        public abstract T buildFrom(HotpotSoupTypeFactoryHolder<T> soupTypeFactoryHolder, float waterLevel, float overflowWaterLevel, float activeness);
+    public static abstract class Type<T extends AbstractHotpotFluidBasedSoup> implements IHotpotSoupType<T> {
+        public abstract T buildFrom(HotpotSoupTypeHolder<T> soupTypeHolder, float waterLevel, float overflowWaterLevel, float activeness);
 
         @Override
-        public MapCodec<T> buildFromCodec(HotpotSoupTypeFactoryHolder<T> soupTypeFactoryHolder) {
+        public MapCodec<T> getCodec(HotpotSoupTypeHolder<T> soupTypeHolder) {
             return RecordCodecBuilder.mapCodec(soupType -> soupType.group(
-                    Codec.FLOAT.fieldOf("WaterLevel").forGetter(AbstractHotpotSoupType::getWaterLevel),
-                    Codec.FLOAT.fieldOf("OverflowWaterLevel").forGetter(AbstractHotpotSoupType::getOverflowWaterLevel),
-                    Codec.FLOAT.fieldOf("Activeness").forGetter(AbstractHotpotFluidBasedSoupType::getActiveness)
-            ).apply(soupType, (waterLevel, overflowWaterLevel, activeness) -> buildFrom(soupTypeFactoryHolder, waterLevel, overflowWaterLevel, activeness)));
+                    Codec.FLOAT.fieldOf("WaterLevel").forGetter(AbstractHotpotSoup::getWaterLevel),
+                    Codec.FLOAT.fieldOf("OverflowWaterLevel").forGetter(AbstractHotpotSoup::getOverflowWaterLevel),
+                    Codec.FLOAT.fieldOf("Activeness").forGetter(AbstractHotpotFluidBasedSoup::getActiveness)
+            ).apply(soupType, (waterLevel, overflowWaterLevel, activeness) -> buildFrom(soupTypeHolder, waterLevel, overflowWaterLevel, activeness)));
         }
     }
 }

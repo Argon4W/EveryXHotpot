@@ -1,10 +1,9 @@
 package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
-import com.github.argon4w.hotpot.items.components.HotpotNapkinHolderDataComponent;
-import com.github.argon4w.hotpot.placements.SimpleItemSlot;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -25,7 +23,7 @@ import java.util.Optional;
 public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        SimpleItemSlot napkinItemStack = HotpotNapkinHolderItem.getNapkinHolderItemSlot(itemStack);
+        ItemStack napkinItemStack = HotpotNapkinHolderItem.getNapkinItemStack(itemStack);
         BakedModel napkinHolderModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_napkin_holder_model")));
         BakedModel napkinModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
 
@@ -38,11 +36,11 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, napkinHolderModel, r, g, b, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
         poseStack.popPose();
 
-        if (HotpotNapkinHolderItem.isNapkinHolderEmpty(itemStack)) {
+        if (napkinItemStack.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < napkinItemStack.getStackCount(); i ++) {
+        for (int i = 0; i < SimpleItemSlot.getItemStackRenderedCount(napkinItemStack, 4); i ++) {
             poseStack.pushPose();
 
             poseStack.translate(0.5f, 0.0625f + 0.05f * i, 0.5f);

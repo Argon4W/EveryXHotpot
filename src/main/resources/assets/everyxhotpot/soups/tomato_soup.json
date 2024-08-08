@@ -15,5 +15,10 @@
       "bubble_model_resource_location": "everyxhotpot:soup/hotpot_tomato_soup_bubble",
       "should_render_in_bowl": false
     }
-  ]
+  ],
+  "color": {
+    "red": 160,
+    "green": 95,
+    "blue": 35
+  }
 }

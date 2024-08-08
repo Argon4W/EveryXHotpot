@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.conditions;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.contents.HotpotContents;
+import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.contents.IHotpotContentFactory;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
@@ -15,10 +15,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
-public record HotpotSoupContentCondition(Holder<IHotpotContentFactory<?>> contentFactoryHolder) implements IHotpotSoupIngredientCondition {
+public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> contentSerializerHolder) implements IHotpotSoupIngredientCondition {
     @Override
-    public boolean matches(IHotpotContent content, IHotpotSoupType soup) {
-        return content.getContentFactoryHolder().equals(contentFactoryHolder);
+    public boolean matches(IHotpotContent content, IHotpotSoup soup) {
+        return content.getContentSerializerHolder().equals(contentSerializerHolder);
     }
 
     @Override
@@ -28,11 +28,11 @@ public record HotpotSoupContentCondition(Holder<IHotpotContentFactory<?>> conten
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupContentCondition> {
         public static final MapCodec<HotpotSoupContentCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
-                HotpotContents.FACTORY_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentFactoryHolder)
+                HotpotContentSerializers.SERIALIZER_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentSerializerHolder)
         ).apply(condition, HotpotSoupContentCondition::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC = StreamCodec.composite(
-                HotpotContents.STREAM_CODEC, HotpotSoupContentCondition::contentFactoryHolder,
+                HotpotContentSerializers.STREAM_CODEC, HotpotSoupContentCondition::contentSerializerHolder,
                 HotpotSoupContentCondition::new
         );
 

@@ -29,23 +29,23 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
-        return HotpotContents.EMPTY_CONTENT;
+    public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
+        return HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER;
     }
 
-    public static class Factory implements IHotpotContentFactory<HotpotEmptyContent> {
+    public static class Serializer implements IHotpotContentSerializer<HotpotEmptyContent> {
 
         @Override
-        public HotpotEmptyContent buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-            return build();
+        public HotpotEmptyContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+            return get();
         }
 
         @Override
-        public MapCodec<HotpotEmptyContent> buildFromCodec() {
-            return MapCodec.unit(this::build);
+        public MapCodec<HotpotEmptyContent> getCodec() {
+            return MapCodec.unit(this::get);
         }
 
-        public HotpotEmptyContent build() {
+        public HotpotEmptyContent get() {
             return new HotpotEmptyContent();
         }
     }

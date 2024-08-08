@@ -2,14 +2,14 @@ package com.github.argon4w.hotpot.soups.synchronizers;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 
 public class HotpotSoupWaterLevelSynchronizer implements IHotpotSoupSynchronizer {
     private float collectedWaterLevel = 0f;
 
     @Override
     public void collect(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        IHotpotSoupType soup = hotpotBlockEntity.getSoup();
+        IHotpotSoup soup = hotpotBlockEntity.getSoup();
         collectedWaterLevel += soup.getWaterLevel() + soup.getOverflowWaterLevel();
     }
 

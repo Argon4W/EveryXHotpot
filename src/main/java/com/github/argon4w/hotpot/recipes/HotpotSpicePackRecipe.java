@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class HotpotSpicePackRecipe extends CustomRecipe {
     public HotpotSpicePackRecipe(CraftingBookCategory category) {
@@ -37,7 +38,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).feed(this::assembleSpicePack).assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSpicePack).assemble();
     }
 
     private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {

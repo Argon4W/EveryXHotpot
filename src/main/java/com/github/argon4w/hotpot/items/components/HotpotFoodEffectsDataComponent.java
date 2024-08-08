@@ -50,7 +50,7 @@ public record HotpotFoodEffectsDataComponent(List<MobEffectInstance> effects) {
     }
 
     public static List<MobEffectInstance> getFoodEffects(ItemStack itemStack) {
-        return getDataComponent(itemStack).effects();
+        return getDataComponent(itemStack).effects().stream().map(MobEffectInstance::new).toList();
     }
 
     public static boolean hasFoodEffects(ItemStack itemStack) {
@@ -63,7 +63,7 @@ public record HotpotFoodEffectsDataComponent(List<MobEffectInstance> effects) {
     }
 
     public static List<MobEffectInstance> mergeEffects(List<MobEffectInstance> effects, List<MobEffectInstance> newEffects) {
-        newEffects.forEach(newEffect -> effects.stream().filter(effect -> effect.is(newEffect.getEffect())).findFirst().ifPresentOrElse(effect -> effect.update(newEffect), () -> effects.add(newEffect)));
+        newEffects.forEach(newEffect -> effects.stream().filter(effect -> effect.is(newEffect.getEffect())).findFirst().ifPresentOrElse(effect -> effect.update(new MobEffectInstance(newEffect)), () -> effects.add(new MobEffectInstance(newEffect))));
         return effects;
     }
 }

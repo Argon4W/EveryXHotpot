@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.client.items.process.processors;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.client.HotpotColor;
 import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
+import com.github.argon4w.hotpot.items.process.IHotpotSpriteProcessorConfig;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
@@ -19,12 +19,7 @@ public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
     }
 
     @Override
-    public int getIndex() {
-        return -1;
-    }
-
-    @Override
-    public int getColor(ItemStack itemStack) {
-        return -1;
+    public HotpotColor getColor(IHotpotSpriteProcessorConfig config) {
+        return HotpotColor.WHITE;
     }
 }

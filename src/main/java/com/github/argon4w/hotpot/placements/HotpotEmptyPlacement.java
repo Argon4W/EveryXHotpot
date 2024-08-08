@@ -43,18 +43,18 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     }
 
     @Override
-    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
-        return HotpotPlacements.EMPTY_PLACEMENT;
+    public Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder() {
+        return HotpotPlacementSerializers.EMPTY_PLACEMENT_SERIALIZER;
     }
 
-    public static class Factory implements IHotpotPlacementFactory<HotpotEmptyPlacement> {
+    public static class Serializer implements IHotpotPlacementSerializer<HotpotEmptyPlacement> {
         @Override
-        public HotpotEmptyPlacement buildFromSlots(int pos, Direction direction) {
+        public HotpotEmptyPlacement get(int pos, Direction direction) {
             return build();
         }
 
         @Override
-        public MapCodec<HotpotEmptyPlacement> buildFromCodec() {
+        public MapCodec<HotpotEmptyPlacement> getCodec() {
             return MapCodec.unit(this::build);
         }
 

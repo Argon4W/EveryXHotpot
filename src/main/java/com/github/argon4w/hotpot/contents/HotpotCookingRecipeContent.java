@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.IHotpotSpecialHotpotCookingRecipeItem;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -17,8 +17,8 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
-    public HotpotCookingRecipeContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        super(itemStack, hotpotBlockEntity);
+    public HotpotCookingRecipeContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        super(itemStack, hotpotBlockEntity, pos);
     }
 
     @Override
@@ -27,34 +27,34 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     @Override
-    public Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return itemStack.getItem() instanceof IHotpotSpecialHotpotCookingRecipeItem item ? Optional.of(item.getCookingTime(soupType, itemStack, pos, hotpotBlockEntity, this)) : super.remapCookingTime(soupType, itemStack, pos, hotpotBlockEntity);
     }
 
     @Override
-    public Optional<Double> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Double> remapExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return itemStack.getItem() instanceof IHotpotSpecialHotpotCookingRecipeItem item ? Optional.of(item.getExperience(soupType, itemStack, pos, hotpotBlockEntity, this)) : super.remapExperience(soupType, itemStack, pos, hotpotBlockEntity);
     }
 
     @Override
-    public Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<ItemStack> remapResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return itemStack.getItem() instanceof IHotpotSpecialHotpotCookingRecipeItem item ? Optional.of(item.getResult(soupType, itemStack, pos, hotpotBlockEntity, this)) : super.remapResult(soupType, itemStack, pos, hotpotBlockEntity);
     }
 
     @Override
-    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
-        return HotpotContents.COOKING_RECIPE_CONTENT;
+    public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
+        return HotpotContentSerializers.COOKING_RECIPE_CONTENT_SERIALIZER;
     }
 
-    public static class Factory extends AbstractHotpotRecipeContent.Factory<HotpotCookingRecipeContent> {
+    public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotCookingRecipeContent> {
         @Override
         public HotpotCookingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
             return new HotpotCookingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotCookingRecipeContent buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-            return new HotpotCookingRecipeContent(itemStack, hotpotBlockEntity);
+        public HotpotCookingRecipeContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+            return new HotpotCookingRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }
 }

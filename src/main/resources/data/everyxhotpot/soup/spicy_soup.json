@@ -1,6 +1,11 @@
 {
   "type": "everyxhotpot:cooking_recipe_soup",
-  "sprite_processor": "everyxhotpot:light_sauced_processor",
+  "sprite_processor_config": {
+    "type": "everyxhotpot:soup_renderer_config_processor_config",
+    "processor_resource_location": "everyxhotpot:light_sauced_processor",
+    "resource_location": "everyxhotpot:spicy_soup_overlay",
+    "soup_renderer_config": "everyxhotpot:spicy_soup"
+  },
   "water_level_drop_rate": 0.04,
   "saved_effects": [
     {

@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
@@ -24,8 +24,8 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
-    public HotpotDisassemblingContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        super(itemStack, hotpotBlockEntity);
+    public HotpotDisassemblingContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        super(itemStack, hotpotBlockEntity, pos);
     }
 
     @Override
@@ -34,23 +34,23 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     }
 
     @Override
-    public Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return Optional.of(200);
     }
 
     @Override
-    public Optional<Double> remapExperience(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Double> remapExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return Optional.of(0d);
     }
 
     @Override
-    public Optional<ItemStack> remapResult(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<ItemStack> remapResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return Optional.of(itemStack);
     }
 
     @Override
-    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
-        return HotpotContents.DISASSEMBLING_RECIPE_CONTENT;
+    public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
+        return HotpotContentSerializers.DISASSEMBLING_RECIPE_CONTENT_SERIALIZER;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
             pos.dropFloatingItemStack(itemStack.copy());
         }
 
-        hotpotBlockEntity.setWaterLevel(hotpotBlockEntity.getWaterLevel() - 0.125f);
+        hotpotBlockEntity.setWaterLevel(hotpotBlockEntity.getWaterLevel() - 0.125f, pos);
         return ItemStack.EMPTY;
     }
 
@@ -128,15 +128,15 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
         return !ingredient.hasNoItems() && Arrays.stream(ingredient.getItems()).map(ItemStack::getCraftingRemainingItem).anyMatch(itemStack -> !itemStack.isEmpty());
     }
 
-    public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotDisassemblingContent> {
+    public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotDisassemblingContent> {
         @Override
         public HotpotDisassemblingContent buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
             return new HotpotDisassemblingContent(itemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotDisassemblingContent buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-            return new HotpotDisassemblingContent(itemStack, hotpotBlockEntity);
+        public HotpotDisassemblingContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+            return new HotpotDisassemblingContent(itemStack, hotpotBlockEntity, pos);
         }
     }
 }

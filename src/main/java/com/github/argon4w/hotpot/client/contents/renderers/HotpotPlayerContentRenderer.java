@@ -10,12 +10,13 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.joml.Math;
 
 import java.util.HashMap;
 
 public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
-    public static final HashMap<HotpotPlayerContent, HotpotPlayerModelRenderContext> MODEL_RENDER_CONTEXTS = Maps.newHashMap();
+    public static final HashMap<ResolvableProfile, HotpotPlayerModelRenderContext> MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
     public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
@@ -23,7 +24,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
             return;
         }
 
-        HotpotPlayerModelRenderContext renderContext = HotpotPlayerContentRenderer.MODEL_RENDER_CONTEXTS.computeIfAbsent(playerContent, p -> new HotpotPlayerModelRenderContext(p.getProfile(), p.getModelPartIndex()));
+        HotpotPlayerModelRenderContext renderContext = HotpotPlayerContentRenderer.MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(playerContent.getProfile(), profile -> new HotpotPlayerModelRenderContext(playerContent.getProfile(), playerContent.getModelPartIndex()));
 
         if (!renderContext.isModelPartLoaded()) {
             renderContext.updateModelPartWithTexture();

@@ -7,7 +7,6 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,6 +14,6 @@ import java.util.stream.Stream;
 public class ReloadableServerResourcesMixin {
     @ModifyReturnValue(method = "listeners", at = @At("RETURN"))
     public List<PreparableReloadListener> listeners(List<PreparableReloadListener> original) {
-        return Stream.concat(Stream.of(HotpotModEntry.HOTPOT_SOUP_FACTORY_MANAGER), original.stream()).toList();
+        return Stream.concat(Stream.of(HotpotModEntry.HOTPOT_SOUP_TYPE_MANAGER), original.stream()).toList();
     }
 }

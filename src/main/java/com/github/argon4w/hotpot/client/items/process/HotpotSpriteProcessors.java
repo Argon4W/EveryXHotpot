@@ -19,12 +19,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class HotpotSpriteProcessors {
     public static final ResourceKey<Registry<IHotpotSpriteProcessor>> SPRITE_PROCESSOR_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "sprite_processor"));
 
-    public static final Codec<Holder<IHotpotSpriteProcessor>> CODEC = Codec.lazyInitialized(() -> getSpriteProcessorRegistry().holderByNameCodec());
-    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<IHotpotSpriteProcessor>> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holderRegistry(SPRITE_PROCESSOR_REGISTRY_KEY));
-
     public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor");
     public static final DeferredRegister<IHotpotSpriteProcessor> SPRITE_PROCESSORS = DeferredRegister.create(SPRITE_PROCESSOR_REGISTRY_KEY, HotpotModEntry.MODID);
-    public static final Registry<IHotpotSpriteProcessor> SPRITE_PROCESSOR_REGISTRY = SPRITE_PROCESSORS.makeRegistry(builder -> builder.defaultKey(EMPTY_SPRITE_PROCESSOR_LOCATION).sync(true));
+    public static final Registry<IHotpotSpriteProcessor> SPRITE_PROCESSOR_REGISTRY = SPRITE_PROCESSORS.makeRegistry(builder -> builder.defaultKey(EMPTY_SPRITE_PROCESSOR_LOCATION));
 
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotLightSaucedSpriteProcessor> LIGHT_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("light_sauced_processor", HotpotLightSaucedSpriteProcessor::new);
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotHeavySaucedSpriteProcessor> HEAVY_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("heavy_sauced_processor", HotpotHeavySaucedSpriteProcessor::new);
@@ -32,6 +29,10 @@ public class HotpotSpriteProcessors {
 
     public static IHotpotSpriteProcessor getEmptySpriteProcessor() {
         return EMPTY_SPRITE_PROCESSOR.get();
+    }
+
+    public static IHotpotSpriteProcessor getSpriteProcessor(ResourceLocation resourceLocation) {
+        return getSpriteProcessorRegistry().get(resourceLocation);
     }
 
     public static Registry<IHotpotSpriteProcessor> getSpriteProcessorRegistry() {

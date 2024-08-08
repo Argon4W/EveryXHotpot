@@ -3,11 +3,10 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
-import com.github.argon4w.hotpot.placements.HotpotPlacements;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -28,7 +27,7 @@ import java.util.List;
 
 public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedChopstick> implements IHotpotTablewareItem, IHotpotItemContainer {
     public HotpotChopstickItem() {
-        super(HotpotPlacements.PLACED_CHOPSTICK, new Properties()
+        super(HotpotPlacementSerializers.PLACED_CHOPSTICK_SERIALIZER, new Properties()
                 .stacksTo(1)
                 .component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY)
                 .attributes(new ItemAttributeModifiers(List.of(

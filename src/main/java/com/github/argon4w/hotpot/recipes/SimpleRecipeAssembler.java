@@ -3,7 +3,6 @@ package com.github.argon4w.hotpot.recipes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -21,7 +20,7 @@ public class SimpleRecipeAssembler {
     }
 
     public SimpleRecipeAssembler filter(Predicate<ItemStack> predicate) {
-        filter = predicate;
+        filter = filter.and(predicate);
         return this;
     }
 

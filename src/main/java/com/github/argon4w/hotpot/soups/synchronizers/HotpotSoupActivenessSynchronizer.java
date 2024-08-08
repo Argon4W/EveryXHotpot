@@ -2,17 +2,17 @@ package com.github.argon4w.hotpot.soups.synchronizers;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.github.argon4w.hotpot.soups.types.IHotpotSoupTypeWithActiveness;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.types.IHotpotSoupWithActiveness;
 
 public class HotpotSoupActivenessSynchronizer implements IHotpotSoupSynchronizer {
     private float collectedActiveness = 0f;
 
     @Override
     public void collect(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        IHotpotSoupType soup = hotpotBlockEntity.getSoup();
+        IHotpotSoup soup = hotpotBlockEntity.getSoup();
 
-        if (soup instanceof IHotpotSoupTypeWithActiveness withActiveness) {
+        if (soup instanceof IHotpotSoupWithActiveness withActiveness) {
             collectedActiveness += withActiveness.getActiveness();
         }
     }
@@ -21,7 +21,7 @@ public class HotpotSoupActivenessSynchronizer implements IHotpotSoupSynchronizer
     public void integrate(int size, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         float averageActiveness = Math.max(0f, Math.min(1f, collectedActiveness / size));
 
-        if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupTypeWithActiveness withActiveness) {
+        if (hotpotBlockEntity.getSoup() instanceof IHotpotSoupWithActiveness withActiveness) {
             withActiveness.setActiveness(averageActiveness);
         }
     }

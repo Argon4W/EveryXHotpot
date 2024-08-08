@@ -1,9 +1,7 @@
 package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
@@ -14,7 +12,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
@@ -38,19 +35,11 @@ public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_NAPKIN_HOLDER)).feed(this::assembleSpicePack).assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_NAPKIN_HOLDER)).filter(itemStack -> !itemStack.isEmpty()).filter(itemStack -> itemStack.getItem() instanceof DyeItem).feed(this::assembleSpicePack).assemble();
     }
 
     private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
-        if (ingredient.isEmpty()) {
-            return assembled;
-        }
-
-        if (!(ingredient.getItem() instanceof DyeItem dyeItem)) {
-            return assembled;
-        }
-
-        return DyedItemColor.applyDyes(assembled, List.of(dyeItem));
+        return DyedItemColor.applyDyes(assembled, List.of((DyeItem) ingredient.getItem()));
     }
 
     @Override

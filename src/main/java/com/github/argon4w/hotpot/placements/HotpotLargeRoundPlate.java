@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -48,7 +49,6 @@ public class HotpotLargeRoundPlate implements IHotpotPlate {
 
         if (itemStack.isEmpty()) {
             selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
-            container.markDataChanged();
             return plateItemSlot.isEmpty();
         }
 
@@ -124,11 +124,11 @@ public class HotpotLargeRoundPlate implements IHotpotPlate {
     }
 
     @Override
-    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
-        return HotpotPlacements.LARGE_ROUND_PLATE;
+    public Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder() {
+        return HotpotPlacementSerializers.LARGE_ROUND_PLATE_SERIALIZER;
     }
 
-    public static class Factory implements IHotpotPlacementFactory<HotpotLargeRoundPlate> {
+    public static class Serializer implements IHotpotPlacementSerializer<HotpotLargeRoundPlate> {
         public static final MapCodec<HotpotLargeRoundPlate> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
                         SimpleItemSlot.CODEC.fieldOf("ItemSlot1").forGetter(HotpotLargeRoundPlate::getItemSlot1),
@@ -140,12 +140,12 @@ public class HotpotLargeRoundPlate implements IHotpotPlate {
         );
 
         @Override
-        public HotpotLargeRoundPlate buildFromSlots(int pos, Direction direction) {
+        public HotpotLargeRoundPlate get(int pos, Direction direction) {
             return new HotpotLargeRoundPlate();
         }
 
         @Override
-        public MapCodec<HotpotLargeRoundPlate> buildFromCodec() {
+        public MapCodec<HotpotLargeRoundPlate> getCodec() {
             return CODEC;
         }
 

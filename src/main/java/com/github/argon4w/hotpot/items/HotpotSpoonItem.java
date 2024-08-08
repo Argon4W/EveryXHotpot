@@ -4,11 +4,10 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
-import com.github.argon4w.hotpot.placements.HotpotPlacements;
-import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoupType;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
+import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoup;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +20,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
     private final boolean drained;
 
     public HotpotSpoonItem(boolean drained) {
-        super(HotpotPlacements.PLACED_SPOON, new Properties().stacksTo(1));
+        super(HotpotPlacementSerializers.PLACED_SPOON_SERIALIZER, new Properties().stacksTo(1));
         this.drained = drained;
     }
 
@@ -41,7 +40,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
             return;
         }
 
-        if (!(hotpotBlockEntity.getSoup() instanceof HotpotCookingRecipeSoupType soupType)) {
+        if (!(hotpotBlockEntity.getSoup() instanceof HotpotCookingRecipeSoup soup)) {
             return;
         }
 
@@ -106,7 +105,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
 
         ItemStack bowl = offhandItemStack.split(1);
 
-        HotpotPaperBowlItem.setPaperBowlSoup(bowl, soupType);
+        HotpotPaperBowlItem.setPaperBowlSoupType(bowl, soup);
         HotpotPaperBowlItem.setPaperBowlItems(bowl, contents);
         HotpotPaperBowlItem.setPaperBowlSkewers(bowl, skewers);
         HotpotPaperBowlItem.setPaperBowlDrained(bowl, drained);

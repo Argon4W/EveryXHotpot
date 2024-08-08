@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -22,7 +23,7 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
 
     public HotpotPlacedSpoon(int pos, Direction direction) {
         this.pos1 = pos;
-        this.pos2 = pos + HotpotPlacements.DIRECTION_TO_POS.get(direction);
+        this.pos2 = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
         this.direction = direction;
         this.spoonItemSlot = new SimpleItemSlot();
     }
@@ -31,7 +32,7 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.spoonItemSlot = spoonItemSlot;
-        this.direction = HotpotPlacements.POS_TO_DIRECTION.get(pos2 - pos1);
+        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(pos2 - pos1);
     }
 
     @Override
@@ -65,8 +66,8 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     @Override
-    public Holder<IHotpotPlacementFactory<?>> getPlacementFactoryHolder() {
-        return HotpotPlacements.PLACED_SPOON;
+    public Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder() {
+        return HotpotPlacementSerializers.PLACED_SPOON_SERIALIZER;
     }
 
     public void setSpoonItemSlot(ItemStack spoonItemSlot) {
@@ -89,7 +90,7 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         return spoonItemSlot;
     }
 
-    public static class Factory implements IHotpotPlacementFactory<HotpotPlacedSpoon> {
+    public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedSpoon> {
         public static final MapCodec<HotpotPlacedSpoon> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(spoon -> spoon.group(
                         Codec.INT.fieldOf("Pos1").forGetter(HotpotPlacedSpoon::getPos1),
@@ -99,18 +100,18 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedSpoon buildFromSlots(int pos, Direction direction) {
+        public HotpotPlacedSpoon get(int pos, Direction direction) {
             return new HotpotPlacedSpoon(pos, direction);
         }
 
         @Override
-        public MapCodec<HotpotPlacedSpoon> buildFromCodec() {
+        public MapCodec<HotpotPlacedSpoon> getCodec() {
             return CODEC;
         }
 
         @Override
         public boolean canPlace(int pos, Direction direction) {
-            return isValidPos(pos, pos + HotpotPlacements.DIRECTION_TO_POS.get(direction));
+            return isValidPos(pos, pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction));
         }
 
         public boolean isValidPos(int pos1, int pos2) {

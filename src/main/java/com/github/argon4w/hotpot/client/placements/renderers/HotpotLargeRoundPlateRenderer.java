@@ -2,11 +2,11 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotLargeRoundPlate;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
-import com.github.argon4w.hotpot.placements.SimpleItemSlot;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;

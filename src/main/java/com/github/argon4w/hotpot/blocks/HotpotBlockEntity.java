@@ -2,14 +2,15 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.contents.HotpotContents;
+import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeSerializers;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupBaseRecipe;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupIngredientRecipe;
-import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotIngredientActionExecutor;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypes;
+import com.github.argon4w.hotpot.soups.recipes.input.HotpotIngredientRecipeInput;
+import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -24,10 +25,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +40,11 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
-    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotContents.buildEmptyContent());
-    private IHotpotSoupType soup = HotpotSoupTypes.buildEmptySoup();
+    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupBaseRecipe> BASE_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_BASE_RECIPE_TYPE.get());
+    public static final RecipeManager.CachedCheck<HotpotIngredientRecipeInput, HotpotSoupIngredientRecipe> INGREDIENT_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_INGREDIENT_RECIPE_TYPE.get());
+
+    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotContentSerializers.getEmptyContent());
+    private IHotpotSoup soup = HotpotSoupTypeSerializers.buildEmptySoup();
 
     private boolean contentChanged = true;
     private boolean soupSynchronized = false;
@@ -70,33 +74,38 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         tryFindEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> hotpotBlockEntity.placeContent(p, supplier.get(), pos));
     }
 
+    public void tryPlaceItemStack(int hitPos, ItemStack itemStack, LevelBlockPos selfPos) {
+        soup.getContentSerializerFromItemStack(itemStack, this, selfPos).ifPresent(serializer -> tryPlaceContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
+    }
+
+    private void placeContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
+        contents.set(contentPos, content);
+        INGREDIENT_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotIngredientRecipeInput(this), pos.level()).map(RecipeHolder::value).ifPresent(recipe -> recipe.assemble(this).execute(this, pos));
+
+        markDataChanged();
+    }
+
     @Override
-    public ItemStack tryPlaceContentViaTableware(int hitPos, int hitLayer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        tryPlaceContentViaInteraction(hitPos, hitLayer, player, hand, itemStack, selfPos);
+    public ItemStack tryPlaceContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        tryPlaceContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
         return itemStack;
     }
 
     @Override
-    public void tryPlaceContentViaInteraction(int hitPos, int hitLayer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        for (RecipeHolder<HotpotSoupBaseRecipe> holder : selfPos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_BASE_RECIPE_TYPE.get())) {
-            HotpotSoupBaseRecipe recipe = holder.value();
+    public void tryPlaceContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        Optional<HotpotSoupBaseRecipe> optional = BASE_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, getSoup()), selfPos.level()).map(RecipeHolder::value);
 
-            if (!recipe.matches(itemStack, getSoup())) {
-                continue;
-            }
-
-            player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
-
-            setSoup(recipe.createResultSoup(), selfPos);
-            setWaterLevel(recipe.getResultWaterLevel());
-            selfPos.playSound(recipe.getSoundEvent());
-
+        if (optional.isEmpty()) {
+            soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(serializer -> tryPlaceContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
             return;
         }
 
-        soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(factory -> tryFindEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> {
-            hotpotBlockEntity.placeContent(p, factory.buildFromItem(itemStack, this), pos);
-        }));
+        HotpotSoupBaseRecipe recipe = optional.get();
+        player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
+
+        setSoup(recipe.getResultSoup(), selfPos);
+        setWaterLevel(recipe.getResultWaterLevel(), selfPos);
+        selfPos.playSound(recipe.getSoundEvent());
     }
 
     @Override
@@ -104,47 +113,15 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         int contentPos = getContentPos(hitPos);
         IHotpotContent content = contents.get(contentPos);
 
-        if (!(content instanceof HotpotEmptyContent)) {
-            ItemStack itemStack = soup.takeOutContentViaTableware(content, content.takeOut(player, this, pos), this, pos);
-
-            contents.set(contentPos, HotpotContents.buildEmptyContent());
-            markDataChanged();
-
-            return itemStack;
+        if (content instanceof HotpotEmptyContent) {
+            return ItemStack.EMPTY;
         }
 
-        return ItemStack.EMPTY;
-    }
-
-    private void placeContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
-        contents.set(contentPos, content);
-
-        for (RecipeHolder<HotpotSoupIngredientRecipe> holder : pos.level().getRecipeManager().getAllRecipesFor(HotpotModEntry.HOTPOT_SOUP_INGREDIENT_RECIPE_TYPE.get())) {
-            Optional<HotpotIngredientActionExecutor> optional = holder.value().matches(this, pos);
-
-            if (optional.isEmpty()) {
-                continue;
-            }
-
-            optional.get().execute(this, pos);
-            break;
-        }
-
+        ItemStack itemStack = soup.takeOutContentViaTableware(content, content.takeOut(player, this, pos), this, pos);
+        contents.set(contentPos, HotpotContentSerializers.getEmptyContent());
         markDataChanged();
-    }
 
-    private void synchronizeSoup(LevelBlockPos selfPos) {
-        if (soupSynchronized) {
-            return;
-        }
-
-        Map<HotpotBlockEntity, LevelBlockPos> neighbors = new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos) && !hotpotBlockEntity.soupSynchronized).getAll();
-        neighbors.forEach((key, value) -> key.soupSynchronized = true);
-
-        soup.getSynchronizer(this, selfPos).forEach(synchronizer -> {
-            neighbors.forEach(synchronizer::collect);
-            neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.integrate(neighbors.size(), hotpotBlockEntity, pos));
-        });
+        return itemStack;
     }
 
     public void tryTakeOutContentViaHand(Player player, int hitPos, LevelBlockPos pos) {
@@ -156,7 +133,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         }
 
         soup.takeOutContentViaHand(content, soup.takeOutContentViaTableware(content, content.takeOut(player, this, pos), this, pos), this, pos);
-        contents.set(contentPos, HotpotContents.buildEmptyContent());
+        contents.set(contentPos, HotpotContentSerializers.getEmptyContent());
 
         markDataChanged();
     }
@@ -171,25 +148,35 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         return contentPos < 0 ? 8 + contentPos : contentPos;
     }
 
+    public void setSoup(IHotpotSoup soup, LevelBlockPos pos) {
+        this.soup = soup;
+
+        boolean hotpotLit = this.soup.isHotpotLit(this, pos);
+        pos.setBlockState(pos.getBlockState().setValue(HotpotBlock.HOTPOT_LIT, hotpotLit));
+
+        markDataChanged();
+        pos.markAndNotifyBlock();
+    }
+
+    private void synchronizeSoup(LevelBlockPos selfPos) {
+        Map<HotpotBlockEntity, LevelBlockPos> neighbors = new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos) && !hotpotBlockEntity.soupSynchronized).getAll();
+        neighbors.forEach((key, value) -> key.setSoupSynchronized());
+
+        soup.getSynchronizer(this, selfPos).forEach(synchronizer -> {
+            neighbors.forEach(synchronizer::collect);
+            neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.integrate(neighbors.size(), hotpotBlockEntity, pos));
+        });
+    }
+
     public void onRemove(LevelBlockPos pos) {
         for (int i = 0; i < contents.size(); i ++) {
             IHotpotContent content = contents.get(i);
 
             soup.takeOutContentViaHand(content, content.takeOut(null, this, pos), this, pos);
-            contents.set(i, HotpotContents.buildEmptyContent());
+            contents.set(i, HotpotContentSerializers.getEmptyContent());
         }
 
         markDataChanged();
-    }
-
-    public void setSoup(IHotpotSoupType soup, LevelBlockPos pos) {
-        this.soup = soup;
-
-        markDataChanged();
-        pos.markAndNotifyBlock();
-
-        boolean hotpotLit = this.soup.isHotpotLit(this, pos);
-        pos.setBlockState(pos.getBlockState().setValue(HotpotBlock.HOTPOT_LIT, hotpotLit));
     }
 
     @Override
@@ -208,12 +195,12 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         waterLevel = compoundTag.contains("WaterLevel", Tag.TAG_FLOAT) ?compoundTag.getFloat("WaterLevel") : 0f;
 
         if (compoundTag.contains("Soup", Tag.TAG_COMPOUND)) {
-            soup = HotpotSoupTypes.loadSoup(compoundTag.getCompound("Soup"), registryAccess);
+            soup = HotpotSoupTypeSerializers.loadSoup(compoundTag.getCompound("Soup"), registryAccess);
         }
 
         if (compoundTag.contains("Contents", Tag.TAG_LIST)) {
             contents.clear();
-            HotpotContents.loadContents(compoundTag.getList("Contents", Tag.TAG_COMPOUND), registryAccess, contents);
+            HotpotContentSerializers.loadContents(compoundTag.getList("Contents", Tag.TAG_COMPOUND), registryAccess, contents);
         }
     }
 
@@ -227,8 +214,8 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putInt("Velocity", velocity);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
-        compoundTag.put("Soup", HotpotSoupTypes.saveSoup(soup, registryAccess));
-        compoundTag.put("Contents", HotpotContents.saveContents(contents, registryAccess));
+        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
+        compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
     }
 
     public CompoundTag getUpdatePacketTag(BlockEntity blockEntity, HolderLookup.Provider registryAccess) {
@@ -244,8 +231,8 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             return compoundTag;
         }
 
-        compoundTag.put("Soup", HotpotSoupTypes.saveSoup(soup, registryAccess));
-        compoundTag.put("Contents", HotpotContents.saveContents(contents, registryAccess));
+        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
+        compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
 
         contentChanged = false;
         return compoundTag;
@@ -262,8 +249,8 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putInt("Velocity", velocity);
         compoundTag.putFloat("WaterLevel", waterLevel);
 
-        compoundTag.put("Soup", HotpotSoupTypes.saveSoup(soup, registryAccess));
-        compoundTag.put("Contents", HotpotContents.saveContents(contents, registryAccess));
+        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
+        compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
 
         return compoundTag;
     }
@@ -287,6 +274,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
     public void setContent(int i, IHotpotContent content) {
         contents.set(i, content);
+        markDataChanged();
     }
 
     public NonNullList<IHotpotContent> getContents() {
@@ -297,20 +285,16 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         return contents.get(pos);
     }
 
-    public IHotpotSoupType getSoup() {
+    public IHotpotSoup getSoup() {
         return soup;
-    }
-
-    public LevelBlockPos getPos() {
-        return new LevelBlockPos(level, worldPosition);
     }
 
     public float getWaterLevel() {
         return waterLevel;
     }
 
-    public void setWaterLevel(float waterLevel) {
-        soup.setWaterLevel(this, getPos(), waterLevel);
+    public void setWaterLevel(float waterLevel, LevelBlockPos pos) {
+        soup.setWaterLevel(this, pos, waterLevel);
     }
 
     public int getTime() {
@@ -341,13 +325,29 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         this.canBeRemoved = canBeRemoved;
     }
 
+    public void setSoupSynchronized(boolean soupSynchronized) {
+        this.soupSynchronized = soupSynchronized;
+    }
+
+    public void setSoupSynchronized() {
+        setSoupSynchronized(true);
+    }
+
+    public boolean isSoupSynchronized() {
+        return soupSynchronized;
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity blockEntity) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
 
         blockEntity.time += 1 + blockEntity.velocity;
         blockEntity.velocity = Math.max(0, blockEntity.velocity - 1);
-        blockEntity.synchronizeSoup(selfPos);
-        blockEntity.soupSynchronized = false;
+
+        if (!blockEntity.isSoupSynchronized()) {
+            blockEntity.synchronizeSoup(selfPos);
+        }
+
+        blockEntity.setSoupSynchronized(false);
 
         blockEntity.waterLevel = blockEntity.soup.getWaterLevel();
 
@@ -370,7 +370,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
             if (content.shouldRemove(blockEntity, selfPos)) {
                 selfPos.dropItemStack(content.takeOut(null, blockEntity, selfPos));
-                blockEntity.contents.set(i, HotpotContents.buildEmptyContent());
+                blockEntity.contents.set(i, HotpotContentSerializers.getEmptyContent());
             }
         }
     }
@@ -384,7 +384,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             return false;
         }
 
-        return selfBlockEntity.getSoup().getSoupTypeFactoryHolder().equals(hotpotBlockEntity.getSoup().getSoupTypeFactoryHolder());
+        return selfBlockEntity.getSoup().getSoupTypeHolder().equals(hotpotBlockEntity.getSoup().getSoupTypeHolder());
     }
 
     public static int getHitPos(BlockPos blockPos, Vec3 pos) {
@@ -398,9 +398,5 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         degree = degree < 0f ? degree + 360f : degree;
 
         return (int) Math.floor(degree / size);
-    }
-
-    public static int getHitPos(BlockHitResult result) {
-        return HotpotBlockEntity.getHitPos(result.getBlockPos(), result.getLocation());
     }
 }

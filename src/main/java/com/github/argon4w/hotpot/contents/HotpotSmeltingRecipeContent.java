@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -16,8 +16,8 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
         super(itemStack, cookingTime, cookingProgress, experience);
     }
 
-    public HotpotSmeltingRecipeContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        super(itemStack, hotpotBlockEntity);
+    public HotpotSmeltingRecipeContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        super(itemStack, hotpotBlockEntity, pos);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     @Override
-    public Optional<Integer> remapCookingTime(IHotpotSoupType soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return super.remapCookingTime(soupType, itemStack, pos, hotpotBlockEntity).map(integer -> (int) (integer * 1.5f));
     }
 
@@ -35,19 +35,19 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     @Override
-    public Holder<IHotpotContentFactory<?>> getContentFactoryHolder() {
-        return HotpotContents.SMELTING_RECIPE_CONTENT;
+    public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
+        return HotpotContentSerializers.SMELTING_RECIPE_CONTENT_SERIALIZER;
     }
 
-    public static class Factory extends AbstractHotpotItemStackContent.Factory<HotpotSmeltingRecipeContent> {
+    public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotSmeltingRecipeContent> {
         @Override
         public HotpotSmeltingRecipeContent buildFromData(ItemStack itemStack, int cookingTime, float cookingProgress, double experience) {
             return new HotpotSmeltingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotSmeltingRecipeContent buildFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-            return new HotpotSmeltingRecipeContent(itemStack, hotpotBlockEntity);
+        public HotpotSmeltingRecipeContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+            return new HotpotSmeltingRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }
 }

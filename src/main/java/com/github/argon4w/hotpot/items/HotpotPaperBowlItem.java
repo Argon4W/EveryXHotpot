@@ -2,14 +2,13 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.HotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
-import com.github.argon4w.hotpot.placements.HotpotPlacements;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeFactoryHolder;
-import com.github.argon4w.hotpot.soups.IHotpotSoupType;
-import com.github.argon4w.hotpot.soups.types.HotpotEmptySoupType;
+import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
+import com.github.argon4w.hotpot.soups.HotpotSoupTypeHolder;
+import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.types.HotpotEmptySoup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,7 +24,7 @@ import java.util.List;
 
 public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPaperBowl> implements IHotpotItemContainer {
     public HotpotPaperBowlItem() {
-        super(HotpotPlacements.PLACED_PAPER_BOWL, new Properties().stacksTo(64).component(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
+        super(HotpotPlacementSerializers.PLACED_PAPER_BOWL_SERIALIZER, new Properties().stacksTo(64).component(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
     }
 
     @Override
@@ -254,11 +253,11 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlSoupEmpty(ItemStack itemStack) {
-        return getPaperBowlSoup(itemStack).value() instanceof HotpotEmptySoupType.Factory;
+        return getPaperBowlSoupType(itemStack).value() instanceof HotpotEmptySoup.Type;
     }
 
-    public static HotpotSoupTypeFactoryHolder<?> getPaperBowlSoup(ItemStack itemStack) {
-        return getDataComponent(itemStack).soupTypeFactory();
+    public static HotpotSoupTypeHolder<?> getPaperBowlSoupType(ItemStack itemStack) {
+        return getDataComponent(itemStack).soupTypeHolder();
     }
 
     public static boolean isPaperBowlDrained(ItemStack itemStack) {
@@ -281,8 +280,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         setDataComponent(itemStack, getDataComponent(itemStack).setSkewers(skewers));
     }
 
-    public static void setPaperBowlSoup(ItemStack itemStack, IHotpotSoupType soupType) {
-        setDataComponent(itemStack, getDataComponent(itemStack).setSoupType(soupType));
+    public static void setPaperBowlSoupType(ItemStack itemStack, IHotpotSoup soup) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setSoupType(soup));
     }
 
     public static void setPaperBowlDrained(ItemStack itemStack, boolean drained) {
