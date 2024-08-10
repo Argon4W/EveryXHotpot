@@ -32,7 +32,7 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
             float scale = (i % 2 == 0) ? 0.6f : (0.6f - 0.0001f);
 
             poseStack.pushPose();
-            poseStack.translate(x, 0.2f + 0.1f * i, z);
+            poseStack.translate(x, 0.001f + (0.5f - 3.0f / 16.0f) * 0.6f + 0.1f * i, z);
             poseStack.mulPose(Axis.YN.rotationDegrees(placedPaperBowl.getDirection().toYRot() + 90.0f));
             poseStack.scale(scale, scale, scale);
 

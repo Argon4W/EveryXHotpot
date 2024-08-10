@@ -5,8 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public record HotpotSoupRendererConfig(Optional<ResourceLocation> soupModelResourceLocation, boolean fixedLighting, List<IHotpotSoupCustomElementRenderer> customElementRenderers, Optional<HotpotColor> color) {
     public static final Codec<HotpotSoupRendererConfig> CODEC = Codec.lazyInitialized(() ->
@@ -17,4 +19,8 @@ public record HotpotSoupRendererConfig(Optional<ResourceLocation> soupModelResou
                     HotpotColor.CODEC.optionalFieldOf("color").forGetter(HotpotSoupRendererConfig::color)
             ).apply(config, HotpotSoupRendererConfig::new))
     );
+
+    public Stream<ResourceLocation> getRequiredModelResourceLocations() {
+        return Stream.concat(customElementRenderers.stream().map(IHotpotSoupCustomElementRenderer::getRequiredModelResourceLocations).flatMap(Collection::stream), soupModelResourceLocation.stream());
+    }
 }

@@ -23,7 +23,7 @@ import java.util.Optional;
 public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRenderer {
     @Override
     public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        ItemStack napkinItemStack = HotpotNapkinHolderItem.getNapkinItemStack(itemStack);
+        SimpleItemSlot napkinItemSlot = HotpotNapkinHolderItem.getNapkinItemSlot(itemStack);
         BakedModel napkinHolderModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_napkin_holder_model")));
         BakedModel napkinModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
 
@@ -36,11 +36,11 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, napkinHolderModel, r, g, b, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
         poseStack.popPose();
 
-        if (napkinItemStack.isEmpty()) {
+        if (napkinItemSlot.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < SimpleItemSlot.getItemStackRenderedCount(napkinItemStack, 4); i ++) {
+        for (int i = 0; i < napkinItemSlot.getRenderCount(); i ++) {
             poseStack.pushPose();
 
             poseStack.translate(0.5f, 0.0625f + 0.05f * i, 0.5f);

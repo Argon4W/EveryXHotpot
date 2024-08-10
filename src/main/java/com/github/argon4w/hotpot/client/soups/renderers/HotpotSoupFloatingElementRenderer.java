@@ -17,6 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Math;
 
+import java.util.List;
+
 public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomElementRenderer {
     private final ResourceLocation element1ModelResourceLocation;
     private final ResourceLocation element2ModelResourceLocation;
@@ -29,7 +31,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     }
 
     @Override
-    public void render(BlockEntityRendererProvider.Context context, int time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(BlockEntityRendererProvider.Context context, long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
         float f = time / 20f / 5f;
 
         float part1Rotation = Math.sin(f * (float) Math.PI) * 1.6f;
@@ -60,6 +62,11 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     @Override
     public boolean shouldRenderInBowl() {
         return shouldRenderInBowl;
+    }
+
+    @Override
+    public List<ResourceLocation> getRequiredModelResourceLocations() {
+        return List.of(element1ModelResourceLocation, element2ModelResourceLocation);
     }
 
     @Override

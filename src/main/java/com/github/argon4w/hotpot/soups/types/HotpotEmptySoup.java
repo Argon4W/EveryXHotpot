@@ -43,12 +43,12 @@ public class HotpotEmptySoup implements IHotpotSoup {
     }
 
     @Override
-    public ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack getContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return itemStack;
     }
 
     @Override
-    public void takeOutContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public void getContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         pos.dropItemStack(itemStack);
     }
 
@@ -88,7 +88,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
     }
 
     @Override
-    public void entityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Entity entity) {
+    public void onEntityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Entity entity) {
 
     }
 

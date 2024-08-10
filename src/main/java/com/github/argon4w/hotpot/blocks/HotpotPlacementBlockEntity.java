@@ -38,22 +38,22 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     @Override
-    public ItemStack tryPlaceContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        tryPlaceContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
-
+    public ItemStack setContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        setContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
         return itemStack;
     }
 
     @Override
-    public void tryPlaceContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public void setContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         if (isEmpty()) {
             selfPos.removeBlock(true);
             return;
         }
 
         IHotpotPlacement placement = getPlacementInPos(hitPos);
+        placement.interact(player, hand, itemStack, hitPos, layer, selfPos, this);
 
-        if (placement.interact(player, hand, itemStack, hitPos, layer, selfPos, this) && canBeRemoved()) {
+        if (placement.shouldRemove(player, hand, itemStack, hitPos, layer, selfPos, this)) {
             tryRemove(hitPos, selfPos);
         }
 
@@ -61,14 +61,19 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     @Override
-    public ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, int layer, LevelBlockPos pos) {
+    public ItemStack getContentViaTableware(Player player, InteractionHand hand, int hitPos, int layer, LevelBlockPos pos) {
         if (isEmpty()) {
             pos.removeBlock(true);
             return ItemStack.EMPTY;
         }
 
         IHotpotPlacement placement = getPlacementInPos(hitPos);
-        ItemStack itemStack = placement.takeOutContent(hitPos, layer, pos, this, true);
+        ItemStack itemStack = placement.getContent(player, hand, hitPos, layer, pos, this, true);
+
+        if (placement.shouldRemove(player, hand, itemStack, hitPos, layer, pos, this)) {
+            tryRemove(hitPos, pos);
+        }
+
         markDataChanged();
 
         return itemStack;
@@ -107,29 +112,23 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     public void onRemove(LevelBlockPos pos) {
-        placements.forEach(placement -> removePlacement(placement, pos));
+        placements.forEach(placement -> placement.onRemove(this, pos));
         placements.clear();
         markDataChanged();
     }
 
     public void removePlacement(int index, LevelBlockPos pos) {
-        removePlacement(placements.get(index), pos);
-        placements.set(index, HotpotPlacementSerializers.buildEmptyPlacement());
+        placements.set(index, HotpotPlacementSerializers.buildEmptyPlacement()).onRemove(this, pos);
         markDataChanged();
-    }
-
-    public void removePlacement(IHotpotPlacement placement, LevelBlockPos pos) {
-        placement.onRemove(this, pos);
-        pos.dropItemStack(placement.getCloneItemStack(this, pos));
-    }
-    
-    public int getPlacementIndexInPos(int hitPos) {
-        return IntStream.range(0, placements.size()).filter(i -> placements.get(i).getPoslist().contains(hitPos)).findFirst().orElse(-1);
     }
 
     public IHotpotPlacement getPlacementInPos(int hitPos) {
         int i = getPlacementIndexInPos(hitPos);
         return i < 0 ? HotpotPlacementSerializers.buildEmptyPlacement() : placements.get(i);
+    }
+
+    public int getPlacementIndexInPos(int hitPos) {
+        return IntStream.range(0, placements.size()).filter(i -> placements.get(i).getPosList().contains(hitPos)).findFirst().orElse(-1);
     }
 
     @Override
@@ -204,6 +203,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
         return infiniteContent;
     }
 
+    @Override
     public boolean canBeRemoved() {
         return canBeRemoved;
     }
@@ -221,7 +221,7 @@ public class HotpotPlacementBlockEntity extends AbstractTablewareInteractiveBloc
     }
 
     public boolean isNotConflict(IHotpotPlacement another) {
-        return placements.stream().noneMatch(plate -> another.getPoslist().stream().anyMatch(plate::isConflict));
+        return placements.stream().noneMatch(plate -> another.getPosList().stream().anyMatch(plate.getPosList()::contains));
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotPlacementBlockEntity blockEntity) {

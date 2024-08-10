@@ -18,14 +18,14 @@ public interface IHotpotSoup {
     Optional<IHotpotContentSerializer<?>> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos);
     Optional<IHotpotContentSerializer<?>> getContentSerializerFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos);
-    ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    void takeOutContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    ItemStack getContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    void getContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     void animateTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, RandomSource randomSource);
     void setWaterLevel(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, float waterLevel);
     void discardOverflowWaterLevel(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     float getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
-    void entityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Entity entity);
+    void onEntityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Entity entity);
     void tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     boolean isHotpotLit(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     HotpotSoupTypeHolder<?> getSoupTypeHolder();

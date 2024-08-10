@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public interface IHotpotPlacementContainerBlockEntity {
+    boolean canBeRemoved();
     boolean isInfiniteContent();
     boolean place(IHotpotPlacement placement, int pos, int layer);
     void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);

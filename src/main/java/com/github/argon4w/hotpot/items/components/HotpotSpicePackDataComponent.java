@@ -55,12 +55,9 @@ public record HotpotSpicePackDataComponent(int charges, List<ItemStack> itemStac
         return SuspiciousEffectHolder.tryGet(itemStack.getItem());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HotpotSpicePackDataComponent data && equalsItemStacks(data);
-    }
-
-    public boolean equalsItemStacks(HotpotSpicePackDataComponent another) {
-        return itemStacks.size() == another.itemStacks().size() && IntStream.range(0, itemStacks.size()).allMatch(i -> ItemStack.isSameItemSameComponents(itemStacks.get(i), another.itemStacks.get(i)));
+        return obj instanceof HotpotSpicePackDataComponent data && ItemStack.listMatches(itemStacks, data.itemStacks) && charges == data.charges;
     }
 }

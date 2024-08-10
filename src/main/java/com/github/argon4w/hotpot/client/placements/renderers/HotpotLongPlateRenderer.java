@@ -35,7 +35,7 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
 
         int plateCount = 0;
 
-        for (; plateCount < longPlate.getPlateItemSlot().getStackCount(8); plateCount ++) {
+        for (; plateCount < longPlate.getPlateItemSlot().getRenderCount(8); plateCount ++) {
             poseStack.pushPose();
             poseStack.translate((x1 + x2) / 2, plateCount * 0.0625f, (z1 + z2) / 2);
             poseStack.mulPose(Axis.YP.rotationDegrees(longPlate.getDirection().toYRot()));
@@ -49,11 +49,11 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
 
         int i = 0;
 
-        for (int k = 0; k < longPlate.getItemSlot1().getStackCount(); k ++, i ++) {
+        for (int k = 0; k < longPlate.getItemSlot1().getRenderCount(); k ++, i ++) {
             renderLargePlateItem(longPlate, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot1(), x1, z1, i, plateCount);
         }
 
-        for (int k = 0; k < longPlate.getItemSlot2().getStackCount(); k ++, i ++) {
+        for (int k = 0; k < longPlate.getItemSlot2().getRenderCount(); k ++, i ++) {
             renderLargePlateItem(longPlate, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot2(), x1, z1, i, plateCount);
         }
     }

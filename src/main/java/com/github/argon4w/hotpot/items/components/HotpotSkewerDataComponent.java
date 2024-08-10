@@ -42,12 +42,9 @@ public record HotpotSkewerDataComponent(List<ItemStack> itemStacks) {
         return itemStack.isEmpty() ? this : new HotpotSkewerDataComponent(Stream.concat(itemStacks.stream(), Stream.of(itemStack)).toList());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HotpotSkewerDataComponent data && equalsItemStacks(data);
-    }
-
-    public boolean equalsItemStacks(HotpotSkewerDataComponent another) {
-        return itemStacks.size() == another.itemStacks.size() && IntStream.range(0, itemStacks.size()).allMatch(i -> ItemStack.isSameItemSameComponents(itemStacks.get(i), another.itemStacks.get(i)));
+        return obj instanceof HotpotSkewerDataComponent data && ItemStack.listMatches(itemStacks, data.itemStacks);
     }
 }

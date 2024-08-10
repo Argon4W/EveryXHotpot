@@ -28,7 +28,7 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     public HotpotPlayerContent(ResolvableProfile profile, boolean head) {
         this.profile = profile;
-        this.modelPartIndex = head ? 0 : HotpotPlayerContent.RANDOM_SOURCE.nextInt(VALID_PARTS.length);
+        this.modelPartIndex = head ? 0 : HotpotPlayerContent.RANDOM_SOURCE.nextInt(1, VALID_PARTS.length);
     }
 
     @Override

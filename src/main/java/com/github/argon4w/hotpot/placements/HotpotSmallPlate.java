@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class HotpotSmallPlate implements IHotpotPlate {
     private final int pos;
@@ -40,28 +41,39 @@ public class HotpotSmallPlate implements IHotpotPlate {
     }
 
     @Override
-    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
-        if (!itemStack.isEmpty()) {
-            (itemStack.is(HotpotModEntry.HOTPOT_SMALL_PLATE) ? plateItemSlot : itemSlot).addItem(itemStack);
-            return plateItemSlot.isEmpty();
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        if (itemStack.isEmpty() && player.isCrouching() && container.canBeRemoved()) {
+            onRemove(container, selfPos);
+            return;
         }
 
-        if (player.isCrouching()) {
-            return true;
+        if (itemStack.isEmpty()) {
+            selfPos.dropItemStack(getContent(player, hand, pos, layer, selfPos, container, false));
+            return;
         }
 
-        selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
-        return plateItemSlot.isEmpty();
-    }
+        if (itemStack.is(HotpotModEntry.HOTPOT_SMALL_PLATE)) {
+            plateItemSlot.addItem(itemStack);
+            return;
+        }
 
-    @Override
-    public ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
-        return itemSlot.isEmpty() ? plateItemSlot.takeItem(!container.isInfiniteContent()) : itemSlot.takeItem(!container.isInfiniteContent());
+        itemSlot.addItem(itemStack);
     }
 
     @Override
     public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+        plateItemSlot.dropItem(pos);
         itemSlot.dropItem(pos);
+    }
+
+    @Override
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        return plateItemSlot.isEmpty() && container.canBeRemoved();
+    }
+
+    @Override
+    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+        return (itemSlot.isEmpty() ? plateItemSlot : itemSlot).takeItem(!container.isInfiniteContent());
     }
 
     @Override
@@ -70,13 +82,8 @@ public class HotpotSmallPlate implements IHotpotPlate {
     }
 
     @Override
-    public List<Integer> getPoslist() {
+    public List<Integer> getPosList() {
         return List.of(pos);
-    }
-
-    @Override
-    public boolean isConflict(int pos) {
-        return this.pos == pos;
     }
 
     @Override

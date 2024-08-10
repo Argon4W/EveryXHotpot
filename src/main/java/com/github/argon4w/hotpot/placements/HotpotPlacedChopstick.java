@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class HotpotPlacedChopstick implements IHotpotPlacement {
     private final int pos1;
@@ -36,18 +37,25 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     @Override
-    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
-        return true;
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        if (container.canBeRemoved()) {
+            onRemove(container, selfPos);
+        }
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
         return ItemStack.EMPTY;
     }
 
     @Override
     public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+        chopstickItemSlot.dropItem(pos);
+    }
 
+    @Override
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        return chopstickItemSlot.isEmpty() && container.canBeRemoved();
     }
 
     @Override
@@ -56,13 +64,8 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPoslist() {
+    public List<Integer> getPosList() {
         return List.of(pos1, pos2);
-    }
-
-    @Override
-    public boolean isConflict(int pos) {
-        return pos1 == pos || pos2 == pos;
     }
 
     @Override

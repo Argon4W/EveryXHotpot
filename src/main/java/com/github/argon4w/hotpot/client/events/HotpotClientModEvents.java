@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.client.blocks.HotpotPlacementBlockEntityRendere
 import com.github.argon4w.hotpot.client.blocks.HotpotPlacementRackBlockEntityRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
+import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +16,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
@@ -23,11 +23,6 @@ public class HotpotClientModEvents {
     @SubscribeEvent
     public static void onClientSetup(final FMLClientSetupEvent event) {
         HotpotModEntry.HOTPOT_SPECIAL_ITEM_RENDERER = new HotpotBlockEntityWithoutLevelRenderer();
-    }
-
-    @SubscribeEvent
-    public static void onRegisterClientReloadListener(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER = new HotpotSoupRendererConfigManager());
     }
 
     @SubscribeEvent
@@ -52,6 +47,7 @@ public class HotpotClientModEvents {
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin_holder")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
+        HotpotSoupRendererConfigManager.getAllSoupRendererConfigs().stream().flatMap(HotpotSoupRendererConfig::getRequiredModelResourceLocations).map(ModelResourceLocation::standalone).forEach(event::register);
     }
 
     @SubscribeEvent

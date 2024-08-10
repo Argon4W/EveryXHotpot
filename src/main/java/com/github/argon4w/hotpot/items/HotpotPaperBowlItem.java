@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
@@ -48,6 +49,11 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (isPaperBowlClear(itemStack)) {
+            return InteractionResultHolder.success(itemStack);
+        }
+
+        if (isPaperBowlEmpty(itemStack)) {
+            itemStack.shrink(1);
             return InteractionResultHolder.success(itemStack);
         }
 
@@ -103,7 +109,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         ItemStack firstItemStack = itemStacks.getFirst();
 
         if (canEatInPaperBowl(firstItemStack)) {
-            itemStacks.set(0, firstItemStack.finishUsingItem(level, player));
+            itemStacks.set(0, firstItemStack.copy().finishUsingItem(level, player));
         }
 
         firstItemStack = itemStacks.getFirst();
@@ -126,11 +132,10 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     @NotNull
     @Override
     public UseAnim getUseAnimation(ItemStack itemStack) {
-        List<ItemStack> itemStacks = getPaperBowlItems(itemStack);
+        ArrayList<ItemStack> items = new ArrayList<>(getPaperBowlItems(itemStack));
+        ArrayList<ItemStack> skewers = new ArrayList<>(getPaperBowlSkewers(itemStack));
 
-        if (itemStacks.isEmpty()) {
-            itemStacks = new ArrayList<>(getPaperBowlSkewers(itemStack));
-        }
+        List<ItemStack> itemStacks = skewers.isEmpty() ? items : skewers;
 
         if (itemStacks.isEmpty()) {
             return UseAnim.NONE;
@@ -151,11 +156,10 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
 
     @Override
     public int getUseDuration(ItemStack itemStack, LivingEntity livingEntity) {
-        List<ItemStack> itemStacks = getPaperBowlItems(itemStack);
+        ArrayList<ItemStack> items = new ArrayList<>(getPaperBowlItems(itemStack));
+        ArrayList<ItemStack> skewers = new ArrayList<>(getPaperBowlSkewers(itemStack));
 
-        if (itemStacks.isEmpty()) {
-            itemStacks = new ArrayList<>(getPaperBowlSkewers(itemStack));
-        }
+        List<ItemStack> itemStacks = skewers.isEmpty() ? items : skewers;
 
         if (itemStacks.isEmpty()) {
             return 0;
@@ -180,11 +184,10 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
 
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
-        List<ItemStack> itemStacks = getPaperBowlItems(itemStack);
+        List<ItemStack> items = getPaperBowlItems(itemStack);
+        List<ItemStack> skewers = getPaperBowlSkewers(itemStack);
 
-        if (itemStacks.isEmpty()) {
-            itemStacks = getPaperBowlSkewers(itemStack);
-        }
+        List<ItemStack> itemStacks = skewers.isEmpty() ? items : skewers;
 
         if (itemStacks.isEmpty()) {
             return ItemStack.EMPTY;
@@ -192,8 +195,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
 
         ItemStack containedItemStack = itemStacks.getFirst();
 
-        if (containedItemStack.getItem() instanceof IHotpotItemContainer itemContainer) {
-            return itemContainer.getContainedItemStack(containedItemStack);
+        if (containedItemStack.getItem() instanceof IHotpotItemContainer container) {
+            return container.getContainedItemStack(containedItemStack);
         }
 
         return containedItemStack;

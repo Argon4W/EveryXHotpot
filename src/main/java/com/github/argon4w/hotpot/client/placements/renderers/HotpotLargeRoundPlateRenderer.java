@@ -27,7 +27,7 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
 
         int plateCount = 0;
 
-        for (; plateCount < largeRoundPlate.getPlateItemSlot().getStackCount(8); plateCount++) {
+        for (; plateCount < largeRoundPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
             poseStack.pushPose();
 
             poseStack.translate(0.5f, plateCount * 0.0625f, 0.5f);
@@ -45,7 +45,7 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
             SimpleItemSlot slot = largeRoundPlate.getSlots()[mapped[i]];
             float startDegree = 360.0f / 4.0f * i;
 
-            for (int j = 0; j < slot.getStackCount(); j ++) {
+            for (int j = 0; j < slot.getRenderCount(); j ++) {
                 float stepDegree = 360.0f / 16.0f * j;
 
                 poseStack.pushPose();

@@ -25,20 +25,48 @@ public class SimpleItemSlot {
         this(ItemStack.EMPTY);
     }
 
-    public int getStackCount() {
-        return getStackCount(4);
+    public SimpleItemSlot transferItem(ItemStack itemStack) {
+        this.itemStack = transfer(this.itemStack, itemStack);
+        return this;
     }
 
-    public int getStackCount(float maxCount) {
-        return SimpleItemSlot.getItemStackRenderedCount(itemStack, 4);
+    public boolean addItem(ItemStack itemStack) {
+        transferItem(itemStack);
+        return itemStack.isEmpty();
+    }
+
+    public SimpleItemSlot dropItem(LevelBlockPos pos) {
+        pos.dropItemStack(itemStack.copyAndClear());
+        return this;
+    }
+
+    public SimpleItemSlot shrink(int count) {
+        itemStack.shrink(count);
+        return this;
+    }
+
+    public int getRenderCount() {
+        return getRenderCount(4);
+    }
+
+    public int getRenderCount(float maxCount) {
+        return isEmpty() ? 0 : getRenderCountNotEmpty(maxCount);
+    }
+
+    public int getRenderCountNotEmpty(float maxCount) {
+        return getMaxStackSize() < maxCount ? getCount() : Math.max(1, Math.round(getCount() / (getMaxStackSize() / maxCount)));
+    }
+
+    public int getCount() {
+        return itemStack.getCount();
+    }
+
+    public int getMaxStackSize() {
+        return itemStack.getMaxStackSize();
     }
 
     public SimpleItemSlot copy() {
         return new SimpleItemSlot(itemStack.copy());
-    }
-
-    public boolean isSame(ItemStack itemStack) {
-        return ItemStack.isSameItemSameComponents(this.itemStack, itemStack);
     }
 
     public ItemStack takeItem(boolean consume) {
@@ -49,10 +77,6 @@ public class SimpleItemSlot {
         return itemStack.isEmpty();
     }
 
-    public boolean isFull() {
-        return itemStack.getMaxStackSize() == itemStack.getCount();
-    }
-
     public void set(ItemStack itemStack) {
         this.itemStack = itemStack;
     }
@@ -61,51 +85,37 @@ public class SimpleItemSlot {
         itemStack = ItemStack.EMPTY;
     }
 
-    public void dropItem(LevelBlockPos pos) {
-        pos.dropItemStack(itemStack.copyAndClear());
-    }
-
     public ItemStack getItemStack() {
         return itemStack;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof SimpleItemSlot slot && ItemStack.isSameItemSameComponents(itemStack, slot.itemStack);
+        return obj instanceof SimpleItemSlot slot && ItemStack.isSameItemSameComponents(itemStack, slot.itemStack) && itemStack.getCount() == slot.itemStack.getCount();
     }
 
-    private void moveItemWithCount(ItemStack itemStack) {
-        int j = Math.min(itemStack.getCount(), this.itemStack.getMaxStackSize() - this.itemStack.getCount());
-        if (j > 0) {
-            this.itemStack.grow(j);
-            itemStack.shrink(j);
-        }
-    }
-
-    public boolean addItem(ItemStack itemStack) {
-        if (this.itemStack.isEmpty()) {
-            this.itemStack = itemStack.copyAndClear();
-
-            return true;
+    public static ItemStack transfer(ItemStack from, ItemStack to) {
+        if (to.isEmpty()) {
+            return from.copyAndClear();
         }
 
-        if (!isSame(itemStack)) {
-            return false;
+        if (from.isEmpty()) {
+            return to;
         }
 
-        moveItemWithCount(itemStack);
-        return itemStack.isEmpty();
-    }
-
-    public static int getItemStackRenderedCount(ItemStack itemStack, float maxCount) {
-        if (itemStack.isEmpty()) {
-            return 0;
+        if (!ItemStack.isSameItemSameComponents(from, to)) {
+            return to;
         }
 
-        if (itemStack.getMaxStackSize() < maxCount) {
-            return itemStack.getCount();
+        int transferCount = Math.clamp(to.getMaxStackSize() - to.getCount(), 0, from.getCount());
+
+        if (transferCount == 0) {
+            return to;
         }
 
-        return Math.max(1, Math.round(itemStack.getCount() / (itemStack.getMaxStackSize() / maxCount)));
+        to.grow(transferCount);
+        from.shrink(transferCount);
+
+        return to;
     }
 }

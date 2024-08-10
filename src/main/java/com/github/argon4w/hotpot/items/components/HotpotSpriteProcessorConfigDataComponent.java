@@ -1,7 +1,6 @@
 package com.github.argon4w.hotpot.items.components;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.items.process.HotpotEmptySpriteProcessorConfig;
 import com.github.argon4w.hotpot.items.process.HotpotSpriteProcessorConfigs;
 import com.github.argon4w.hotpot.items.process.IHotpotSpriteProcessorConfig;

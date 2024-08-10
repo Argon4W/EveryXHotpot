@@ -19,11 +19,11 @@ public abstract class AbstractTablewareInteractiveBlockEntity extends BlockEntit
         if (itemStack.getItem() instanceof IHotpotTablewareItem tablewareItem) {
             tablewareItem.tablewareInteract(hitPos, layer, player, hand, itemStack, this, selfPos);
         } else {
-            tryPlaceContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
+            setContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
         }
     }
 
-    public abstract ItemStack tryPlaceContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
-    public abstract void tryPlaceContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
-    public abstract ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, int layer, LevelBlockPos pos);
+    public abstract ItemStack setContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
+    public abstract void setContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
+    public abstract ItemStack getContentViaTableware(Player player, InteractionHand hand, int hitPos, int layer, LevelBlockPos pos);
 }

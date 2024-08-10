@@ -1,7 +1,8 @@
 package com.github.argon4w.hotpot.client.contents.renderers;
 
 import com.github.argon4w.hotpot.client.contents.IHotpotContentRenderer;
-import com.github.argon4w.hotpot.client.contents.player.HotpotPlayerModelRenderContext;
+import com.github.argon4w.hotpot.client.contents.player.HotpotPlayerModelRendererContext;
+import com.github.argon4w.hotpot.client.contents.player.HotpotPlayerModelRendererContextCacheHolder;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.google.common.collect.Maps;
@@ -16,7 +17,7 @@ import org.joml.Math;
 import java.util.HashMap;
 
 public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
-    public static final HashMap<ResolvableProfile, HotpotPlayerModelRenderContext> MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
+    public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext> PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
     public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
@@ -24,7 +25,10 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
             return;
         }
 
-        HotpotPlayerModelRenderContext renderContext = HotpotPlayerContentRenderer.MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(playerContent.getProfile(), profile -> new HotpotPlayerModelRenderContext(playerContent.getProfile(), playerContent.getModelPartIndex()));
+        int modelPartIndex = playerContent.getModelPartIndex();
+        ResolvableProfile profile = playerContent.getProfile();
+
+        HotpotPlayerModelRendererContext renderContext = HotpotPlayerContentRenderer.PLAYER_MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(new HotpotPlayerModelRendererContextCacheHolder(modelPartIndex, profile), holder -> new HotpotPlayerModelRendererContext(profile, modelPartIndex));
 
         if (!renderContext.isModelPartLoaded()) {
             renderContext.updateModelPartWithTexture();

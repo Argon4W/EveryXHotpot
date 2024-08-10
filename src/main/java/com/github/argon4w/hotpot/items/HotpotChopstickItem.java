@@ -135,7 +135,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
         }
 
         ItemStack heldItemStack = HotpotChopstickItem.getHeldItemStack(itemStack);
-        heldItemStack = heldItemStack.isEmpty() ? blockEntity.tryTakeOutContentViaTableware(player, hitPos, layer, selfPos) : blockEntity.tryPlaceContentViaTableware(hitPos, layer, player, hand, heldItemStack, selfPos);
+        heldItemStack = heldItemStack.isEmpty() ? blockEntity.getContentViaTableware(player, hand, hitPos, layer, selfPos) : blockEntity.setContentViaTableware(hitPos, layer, player, hand, heldItemStack, selfPos);
 
         if (heldItemStack.getItem().canFitInsideContainerItems()) {
             HotpotChopstickItem.setHeldItemStack(itemStack, heldItemStack);

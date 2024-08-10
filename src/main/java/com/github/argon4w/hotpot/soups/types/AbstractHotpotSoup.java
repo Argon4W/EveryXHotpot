@@ -41,7 +41,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
         }
 
         player.hurt(player.damageSources().onFire(), 5);
-        hotpotBlockEntity.tryTakeOutContentViaHand(player, hitPos, selfPos);
+        hotpotBlockEntity.getContentViaHand(player, hitPos, selfPos);
 
         return Optional.empty();
     }
@@ -52,12 +52,12 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     }
 
     @Override
-    public ItemStack takeOutContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack getContentViaTableware(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return itemStack;
     }
 
     @Override
-    public void takeOutContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public void getContentViaHand(IHotpotContent content, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         pos.dropItemStack(itemStack);
     }
 
@@ -67,7 +67,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     }
 
     @Override
-    public void entityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos, Entity entity) {
+    public void onEntityInside(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos, Entity entity) {
         if (entity instanceof ItemEntity itemEntity) {
             if (!canItemEnter(itemEntity)) {
                 return;
@@ -111,18 +111,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     }
 
     public void setWaterLevel(float waterLevel) {
-        if (waterLevel > 1f) {
-            this.waterLevel = 1f;
-            overflowWaterLevel = waterLevel - 1f;
-
-            return;
-        }
-
-        if (waterLevel < 0f) {
-            this.waterLevel = 0f;
-            return;
-        }
-
-        this.waterLevel = waterLevel;
+        this.waterLevel = Math.clamp(waterLevel, 0.0f, 1.0f);
+        this.overflowWaterLevel = Math.max(0.0f, waterLevel - 1f);
     }
 }

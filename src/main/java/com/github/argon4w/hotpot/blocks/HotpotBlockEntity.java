@@ -62,20 +62,20 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
     }
 
-    private void tryFindEmptyContent(int hitPos, LevelBlockPos selfPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
-        new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos)).getFirst(10, HotpotBlockEntity::hasEmptyContent, (hotpotBlockEntity, pos) -> tryFindEmptyContentAt(hotpotBlockEntity, pos, hitPos, consumer));
+    private void getEmptyContent(int hitPos, LevelBlockPos selfPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
+        new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos)).getFirst(10, HotpotBlockEntity::hasEmptyContent, (hotpotBlockEntity, pos) -> getEmptyContentAt(hotpotBlockEntity, pos, hitPos, consumer));
     }
 
-    public void tryFindEmptyContentAt(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, int hitPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
+    public void getEmptyContentAt(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, int hitPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
         IntStream.concat(IntStream.of(getContentPos(hitPos)), IntStream.range(0, 8)).filter(hotpotBlockEntity::isEmptyContent).findFirst().ifPresent(contentPos -> consumer.accept(contentPos, hotpotBlockEntity, pos));
     }
 
-    public void tryPlaceContent(int hitPos, Supplier<IHotpotContent> supplier, LevelBlockPos selfPos) {
-        tryFindEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> hotpotBlockEntity.placeContent(p, supplier.get(), pos));
+    public void setContent(int hitPos, Supplier<IHotpotContent> supplier, LevelBlockPos selfPos) {
+        getEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> hotpotBlockEntity.placeContent(p, supplier.get(), pos));
     }
 
     public void tryPlaceItemStack(int hitPos, ItemStack itemStack, LevelBlockPos selfPos) {
-        soup.getContentSerializerFromItemStack(itemStack, this, selfPos).ifPresent(serializer -> tryPlaceContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
+        soup.getContentSerializerFromItemStack(itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
     }
 
     private void placeContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
@@ -86,17 +86,17 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     @Override
-    public ItemStack tryPlaceContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        tryPlaceContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
+    public ItemStack setContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        setContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
         return itemStack;
     }
 
     @Override
-    public void tryPlaceContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public void setContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         Optional<HotpotSoupBaseRecipe> optional = BASE_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, getSoup()), selfPos.level()).map(RecipeHolder::value);
 
         if (optional.isEmpty()) {
-            soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(serializer -> tryPlaceContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
+            soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
             return;
         }
 
@@ -109,7 +109,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     @Override
-    public ItemStack tryTakeOutContentViaTableware(Player player, int hitPos, int hitLayer, LevelBlockPos pos) {
+    public ItemStack getContentViaTableware(Player player, InteractionHand hand, int hitPos, int hitLayer, LevelBlockPos pos) {
         int contentPos = getContentPos(hitPos);
         IHotpotContent content = contents.get(contentPos);
 
@@ -117,14 +117,14 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             return ItemStack.EMPTY;
         }
 
-        ItemStack itemStack = soup.takeOutContentViaTableware(content, content.takeOut(player, this, pos), this, pos);
+        ItemStack itemStack = soup.getContentViaTableware(content, content.takeOut(player, this, pos), this, pos);
         contents.set(contentPos, HotpotContentSerializers.getEmptyContent());
         markDataChanged();
 
         return itemStack;
     }
 
-    public void tryTakeOutContentViaHand(Player player, int hitPos, LevelBlockPos pos) {
+    public void getContentViaHand(Player player, int hitPos, LevelBlockPos pos) {
         int contentPos = getContentPos(hitPos);
         IHotpotContent content = contents.get(contentPos);
 
@@ -132,7 +132,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             return;
         }
 
-        soup.takeOutContentViaHand(content, soup.takeOutContentViaTableware(content, content.takeOut(player, this, pos), this, pos), this, pos);
+        soup.getContentViaHand(content, soup.getContentViaTableware(content, content.takeOut(player, this, pos), this, pos), this, pos);
         contents.set(contentPos, HotpotContentSerializers.getEmptyContent());
 
         markDataChanged();
@@ -172,7 +172,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         for (int i = 0; i < contents.size(); i ++) {
             IHotpotContent content = contents.get(i);
 
-            soup.takeOutContentViaHand(content, content.takeOut(null, this, pos), this, pos);
+            soup.getContentViaHand(content, content.takeOut(null, this, pos), this, pos);
             contents.set(i, HotpotContentSerializers.getEmptyContent());
         }
 

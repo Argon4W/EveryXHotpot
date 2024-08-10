@@ -25,6 +25,6 @@ public record HotpotChopstickDataComponent(ItemStack itemStack) {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HotpotChopstickDataComponent data && ItemStack.isSameItemSameComponents(itemStack, data.itemStack);
+        return obj instanceof HotpotChopstickDataComponent data && ItemStack.isSameItemSameComponents(itemStack, data.itemStack) && itemStack.getCount() == data.itemStack.getCount();
     }
 }

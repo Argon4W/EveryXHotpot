@@ -57,16 +57,9 @@ public record HotpotPaperBowlDataComponent(HotpotSoupTypeHolder<?> soupTypeHolde
         return items.isEmpty() && skewers.isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HotpotPaperBowlDataComponent data && soupTypeHolder.equals(data.soupTypeHolder) && drained == data.drained && equalsItems(data) && equalsSkewers(data);
-    }
-
-    public boolean equalsItems(HotpotPaperBowlDataComponent another) {
-        return items.size() == another.items.size() && IntStream.range(0, items.size()).allMatch(i -> ItemStack.isSameItemSameComponents(items.get(i), another.items.get(i)));
-    }
-
-    public boolean equalsSkewers(HotpotPaperBowlDataComponent another) {
-        return skewers.size() == another.skewers.size() && IntStream.range(0, skewers.size()).allMatch(i -> ItemStack.isSameItemSameComponents(skewers.get(i), another.skewers.get(i)));
+        return obj instanceof HotpotPaperBowlDataComponent data && soupTypeHolder.equals(data.soupTypeHolder) && drained == data.drained && ItemStack.listMatches(items, data.items) && ItemStack.listMatches(skewers, data.skewers);
     }
 }

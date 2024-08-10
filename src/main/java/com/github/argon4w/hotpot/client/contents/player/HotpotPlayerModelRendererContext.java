@@ -8,7 +8,7 @@ import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.ResolvableProfile;
 
-public class HotpotPlayerModelRenderContext {
+public class HotpotPlayerModelRendererContext {
     public static final String[] VALID_PARTS = {"head", "body", "right_arm", "left_arm", "right_leg", "left_leg"};
 
     private final ResolvableProfile profile;
@@ -18,7 +18,7 @@ public class HotpotPlayerModelRenderContext {
     private ResourceLocation modelPartTextureResourceLocation;
     private boolean slim;
 
-    public HotpotPlayerModelRenderContext(ResolvableProfile profile, int partIndex) {
+    public HotpotPlayerModelRendererContext(ResolvableProfile profile, int partIndex) {
         this.profile = profile;
         this.partIndex = partIndex;
     }

@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
+import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotSkewerDataComponent;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import net.minecraft.core.component.DataComponents;
@@ -44,10 +45,6 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
 
         ItemStack firstItemStack = itemStacks.getFirst();
 
-        if (firstItemStack.isEmpty()) {
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
-        }
-
         if (isFood(firstItemStack) && player.canEat(true)) {
             player.startUsingItem(hand);
             return InteractionResultHolder.consume(itemStack);
@@ -81,12 +78,8 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
 
         ItemStack firstItemStack = itemStacks.getFirst();
 
-        if (firstItemStack.isEmpty()) {
-            return itemStack;
-        }
-
         if (isFood(firstItemStack)) {
-            itemStacks.set(0, firstItemStack.finishUsingItem(level, livingEntity));
+            itemStacks.set(0, firstItemStack.copy().finishUsingItem(level, livingEntity));
         }
 
         firstItemStack = itemStacks.getFirst();
@@ -158,8 +151,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
 
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
-        List<ItemStack> itemStacks = getSkewerItems(itemStack);
-        return itemStacks.isEmpty() ? ItemStack.EMPTY : itemStacks.get(0);
+        return isSkewerEmpty(itemStack) ? ItemStack.EMPTY : getSkewerItems(itemStack).getFirst();
     }
 
     @Override

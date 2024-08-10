@@ -7,16 +7,24 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.List;
 
 public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElementRenderer {
     @Override
-    public void render(BlockEntityRendererProvider.Context context, int time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(BlockEntityRendererProvider.Context context, long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
 
     }
 
     @Override
     public boolean shouldRenderInBowl() {
         return false;
+    }
+
+    @Override
+    public List<ResourceLocation> getRequiredModelResourceLocations() {
+        return List.of();
     }
 
     @Override

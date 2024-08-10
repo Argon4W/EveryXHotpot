@@ -15,10 +15,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadListener {
     public static final HotpotSoupRendererConfig EMPTY_SOUP_RENDER_CONFIG = new HotpotSoupRendererConfig(Optional.empty(), false, List.of(), Optional.empty());
@@ -26,16 +23,18 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final HashMap<ResourceLocation, HotpotSoupRendererConfig> byName;
+    private final HashMap<ResourceLocation, HotpotSoupRendererConfig> rendererConfigs;
 
     public HotpotSoupRendererConfigManager() {
         super(HotpotSoupRendererConfigManager.GSON, "soups");
-        this.byName = Maps.newHashMap();
+        this.rendererConfigs = Maps.newHashMap();
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> jsonElements, ResourceManager resourceManager, ProfilerFiller filler) {
-        byName.clear();
+    protected Map<ResourceLocation, JsonElement> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+        Map<ResourceLocation, JsonElement> jsonElements = super.prepare(pResourceManager, pProfiler);
+
+        rendererConfigs.clear();
         RegistryOps<JsonElement> ops = this.makeConditionalOps();
 
         for (ResourceLocation resourceLocation : jsonElements.keySet()) {
@@ -51,12 +50,19 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
                 continue;
             }
 
-            byName.put(resourceLocation, result.get());
+            rendererConfigs.put(resourceLocation, result.get());
         }
+
+        return jsonElements;
+    }
+
+    @Override
+    protected void apply(Map<ResourceLocation, JsonElement> jsonElements, ResourceManager resourceManager, ProfilerFiller filler) {
+
     }
 
     public static HotpotSoupRendererConfig getSoupRendererConfig(ResourceLocation resourceLocation) {
-        return HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.byName.getOrDefault(resourceLocation, HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG);
+        return HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.rendererConfigs.getOrDefault(resourceLocation, HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG);
     }
 
     public static HotpotSoupRendererConfig getSoupRendererConfig(HotpotSoupTypeHolder<?> soupTypeHolder) {
@@ -65,5 +71,9 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
 
     public static HotpotSoupRendererConfig getSoupRendererConfig(IHotpotSoup soupType) {
         return getSoupRendererConfig(soupType.getSoupTypeHolder());
+    }
+
+    public static Collection<HotpotSoupRendererConfig> getAllSoupRendererConfigs() {
+        return HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.rendererConfigs.values();
     }
 }

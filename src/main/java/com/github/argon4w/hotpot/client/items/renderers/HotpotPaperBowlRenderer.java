@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -153,38 +154,9 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.popPose();
         }
 
-        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(
-                soupRendererConfig,
-                context,
-                poseStack,
-                bufferSource,
-                0,
-                50,
-                combinedLight,
-                combinedOverlay,
-                Math.max(minElementLevel, elementLevel),
-                true
-        );
-
-        HotpotBlockEntityRenderer.renderHotpotSoup(
-                soupRendererConfig,
-                context,
-                poseStack,
-                bufferSource,
-                combinedLight,
-                combinedOverlay,
-                Math.max(minWaterLevel, waterLevel)
-        );
-
-        HotpotBlockEntityRenderer.renderHotpotSoup(
-                soupRendererConfig,
-                context,
-                poseStack,
-                bufferSource,
-                combinedLight,
-                combinedOverlay,
-                Math.max(minWaterLevel, waterLevel)
-        );
+        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(soupRendererConfig, context, poseStack, bufferSource, 0, 50, combinedLight, combinedOverlay, Math.max(minElementLevel, elementLevel), true);
+        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel), Sheets.translucentCullBlockSheet());
+        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel), Sheets.translucentCullBlockSheet());
 
         poseStack.popPose();
 

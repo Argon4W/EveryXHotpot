@@ -226,7 +226,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return;
         }
 
-        hotpotBlockEntity.getSoup().entityInside(hotpotBlockEntity, levelPos, entity);
+        hotpotBlockEntity.getSoup().onEntityInside(hotpotBlockEntity, levelPos, entity);
     }
 
     @Override

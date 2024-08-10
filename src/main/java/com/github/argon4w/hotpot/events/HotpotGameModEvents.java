@@ -59,9 +59,9 @@ public class HotpotGameModEvents {
 
         ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
 
-        hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, true), pos);
-        hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, false), pos);
-        hotpotBlockEntity.tryPlaceContent(0, () -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContent(0, () -> new HotpotPlayerContent(profile, true), pos);
+        hotpotBlockEntity.setContent(0, () -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContent(0, () -> new HotpotPlayerContent(profile, false), pos);
     }
 
     @SubscribeEvent
@@ -77,7 +77,7 @@ public class HotpotGameModEvents {
             return;
         }
 
-        if (!HotpotFoodEffectsDataComponent.hasDataComponent(itemStack)) {
+        if (!HotpotFoodEffectsDataComponent.hasFoodEffects(itemStack)) {
             return;
         }
 
@@ -89,8 +89,8 @@ public class HotpotGameModEvents {
         ItemStack itemStack = event.getItemStack();
         Item.TooltipContext context = event.getContext();
 
-        if (itemStack.getItem() instanceof IHotpotItemContainer iHotpotItemContainer) {
-            itemStack = iHotpotItemContainer.getContainedItemStack(itemStack);
+        if (itemStack.getItem() instanceof IHotpotItemContainer container) {
+            itemStack = container.getContainedItemStack(itemStack);
         }
 
         if (itemStack.isEmpty()) {

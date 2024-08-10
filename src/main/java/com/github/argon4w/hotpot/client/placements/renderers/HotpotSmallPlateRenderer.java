@@ -30,7 +30,7 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
 
         int plateCount = 0;
 
-        for (; plateCount < smallPlate.getPlateItemSlot().getStackCount(8); plateCount++) {
+        for (; plateCount < smallPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
             poseStack.pushPose();
             poseStack.translate(x, plateCount * 0.0625f, z);
             poseStack.scale(0.68f, 0.68f, 0.68f);
@@ -41,7 +41,7 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.popPose();
         }
 
-        for (int i = 0; i < smallPlate.getItemSlot().getStackCount(); i ++) {
+        for (int i = 0; i < smallPlate.getItemSlot().getRenderCount(); i ++) {
             poseStack.pushPose();
 
             poseStack.translate(x, plateCount * 0.0625f + 0.02 * i, z);

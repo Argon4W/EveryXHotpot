@@ -38,42 +38,35 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
         if (isPaperBowlUsed()) {
-            paperBowlItemSlot.getItemStack().shrink(1);
-            return true;
+            return;
         }
 
-        if (!itemStack.isEmpty() && HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemSlot.getItemStack())) {
+        if (itemStack.isEmpty() && player.isCrouching() && container.canBeRemoved()) {
+            onRemove(container, selfPos);
+            return;
+        }
+
+        if (!itemStack.isEmpty() && isPaperBowlClear()) {
             paperBowlItemSlot.addItem(itemStack);
-            return false;
+            return;
         }
 
-        if (player.isCrouching()) {
-            return true;
-        }
-
-        selfPos.dropItemStack(takeOutContent(pos, layer, selfPos, container, false));
-
-        return isPaperBowlUsed();
+        selfPos.dropItemStack(getContent(player, hand, pos, layer, selfPos, container, false));
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
         boolean consume = !container.isInfiniteContent();
         ItemStack paperBowl = paperBowlItemSlot.getItemStack();
 
-        if (paperBowl.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-
-        if (HotpotPaperBowlItem.isPaperBowlClear(paperBowl)) {
-            return paperBowlItemSlot.getItemStack().split(1);
-        }
-
         if (isPaperBowlUsed()) {
-            paperBowlItemSlot.getItemStack().shrink(1);
             return ItemStack.EMPTY;
+        }
+
+        if (isPaperBowlClear()) {
+            return paperBowlItemSlot.takeItem(consume);
         }
 
         ArrayList<ItemStack> items = new ArrayList<>(HotpotPaperBowlItem.getPaperBowlItems(paperBowl));
@@ -95,15 +88,20 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         HotpotPaperBowlItem.setPaperBowlSkewers(paperBowl, skewers);
 
         if (isPaperBowlUsed()) {
-            paperBowlItemSlot.getItemStack().shrink(1);
+            paperBowlItemSlot.takeItem(true);
         }
 
         return itemStack;
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        return isPaperBowlUsed() && container.canBeRemoved();
+    }
 
+    @Override
+    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+        paperBowlItemSlot.dropItem(pos);
     }
 
     @Override
@@ -112,13 +110,8 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPoslist() {
+    public List<Integer> getPosList() {
         return List.of(pos);
-    }
-
-    @Override
-    public boolean isConflict(int pos) {
-        return this.pos == pos;
     }
 
     @Override

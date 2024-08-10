@@ -92,16 +92,16 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
 
         ItemStack itemStack = cookingRecipeContent.getItemStack();
 
-        if (!itemStack.has(DataComponents.FOOD)) {
-            return;
-        }
-
         if (cookingRecipeContent.getCookingTime() >= 0) {
             return;
         }
 
         if (itemStack.is(HotpotModEntry.HOTPOT_SKEWER)) {
             HotpotSkewerItem.applyToSkewerItemStacks(itemStack, this::applyProcessorAndEffects);
+            return;
+        }
+
+        if (!itemStack.has(DataComponents.FOOD)) {
             return;
         }
 

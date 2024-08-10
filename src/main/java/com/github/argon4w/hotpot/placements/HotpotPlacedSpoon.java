@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class HotpotPlacedSpoon implements IHotpotPlacement {
     private final int pos1;
@@ -36,18 +37,23 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     @Override
-    public boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
-        return true;
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        onRemove(container, selfPos);
     }
 
     @Override
-    public ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+        return spoonItemSlot.isEmpty() && container.canBeRemoved();
+    }
 
+    @Override
+    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+        spoonItemSlot.dropItem(pos);
     }
 
     @Override
@@ -56,13 +62,8 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     @Override
-    public List<Integer> getPoslist() {
+    public List<Integer> getPosList() {
         return List.of(pos1, pos2);
-    }
-
-    @Override
-    public boolean isConflict(int pos) {
-        return pos1 == pos || pos2 == pos;
     }
 
     @Override

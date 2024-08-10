@@ -10,11 +10,11 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public interface IHotpotPlacement {
-    boolean interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container);
-    ItemStack takeOutContent(int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware);
+    void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container);
+    boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container);
+    ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware);
     void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos);
     ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos);
-    List<Integer> getPoslist();
-    boolean isConflict(int pos);
+    List<Integer> getPosList();
     Holder<IHotpotPlacementSerializer<?>> getPlacementSerializerHolder();
 }

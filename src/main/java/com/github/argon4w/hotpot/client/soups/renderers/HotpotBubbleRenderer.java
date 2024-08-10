@@ -9,7 +9,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -17,12 +16,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
+import java.util.List;
+
 public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
-    public static final int BUBBLE_EMERGE_OFFSET_RANGE = 5;
-    public static final float BUBBLE_GROWTH_TIME = 10f;
-    public static final float BUBBLE_START_Y = 0.5f;
-    public static final float BUBBLE_GROWTH_Y = 0.525f;
+    public static final int BUBBLE_OFFSET_RANGE = 5;
+    public static final float BUBBLE_MAX_TIME = 10f;
+    public static final float BUBBLE_MIN_Y = 0.5f;
+    public static final float BUBBLE_MAX_Y = 0.525f;
 
     private final Bubble[] bubbles;
     private final float spread, maxScale;
@@ -38,32 +39,31 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     }
 
     @Override
-    public void render(BlockEntityRendererProvider.Context context, int time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(BlockEntityRendererProvider.Context context, long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
         BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(bubbleModelResourceLocation));
 
         for (int i = 0; i < bubbles.length; i++) {
-            Bubble bubble = bubbles[i];
-
-            if (bubble == null || time >= bubble.startTime + bubble.offset + BUBBLE_GROWTH_TIME) {
-                bubbles[i] = new Bubble(0.5f + (RANDOM_SOURCE.nextFloat() * 2f - 1f) * spread, 0.5f + (RANDOM_SOURCE.nextFloat() * 2f - 1f) * spread, RANDOM_SOURCE.nextInt(-BUBBLE_EMERGE_OFFSET_RANGE, BUBBLE_EMERGE_OFFSET_RANGE + 1), time);
-                continue;
-            }
-
-            renderBubble(context, time, poseStack, bufferSource, combinedLight, combinedOverlay, bubble, model, renderedWaterLevel);
+            renderBubble(context, time, poseStack, bufferSource, combinedLight, combinedOverlay, i, model, renderedWaterLevel);
         }
     }
 
-    public void renderBubble(BlockEntityRendererProvider.Context context, int time, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, Bubble bubble, BakedModel model, float renderedWaterLevel) {
-        poseStack.pushPose();
+    public void renderBubble(BlockEntityRendererProvider.Context context, long time, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, int bubbleIndex, BakedModel model, float renderedWaterLevel) {
+        Bubble bubble = bubbles[bubbleIndex];
 
-        float progress = (time + bubble.offset) % BUBBLE_GROWTH_TIME / BUBBLE_GROWTH_TIME;
+        if (bubble == null || time >= bubble.time + bubble.offset + BUBBLE_MAX_TIME) {
+            bubbles[bubbleIndex] = bubble = new Bubble(0.5f + (RANDOM_SOURCE.nextFloat() * 2f - 1f) * spread, 0.5f + (RANDOM_SOURCE.nextFloat() * 2f - 1f) * spread, RANDOM_SOURCE.nextInt(-BUBBLE_OFFSET_RANGE, BUBBLE_OFFSET_RANGE + 1), time);
+        }
+
+        float progress = (time + bubble.offset) % BUBBLE_MAX_TIME / BUBBLE_MAX_TIME;
         float scale = progress * this.maxScale;
-        float y = BUBBLE_START_Y + renderedWaterLevel * progress * BUBBLE_GROWTH_Y;
+        float y = BUBBLE_MIN_Y + renderedWaterLevel * progress * BUBBLE_MAX_Y;
+
+        poseStack.pushPose();
 
         poseStack.translate(bubble.x, y, bubble.z);
         poseStack.scale(scale, scale, scale);
 
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
+        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.translucentMovingBlock()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
         poseStack.popPose();
     }
@@ -71,6 +71,11 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     @Override
     public boolean shouldRenderInBowl() {
         return shouldRenderInBowl;
+    }
+
+    @Override
+    public List<ResourceLocation> getRequiredModelResourceLocations() {
+        return List.of(bubbleModelResourceLocation);
     }
 
     @Override
@@ -94,7 +99,7 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         return bubbleModelResourceLocation;
     }
 
-    public record Bubble(float x, float z, int offset, int startTime) {
+    public record Bubble(float x, float z, int offset, long time) {
 
     }
 
