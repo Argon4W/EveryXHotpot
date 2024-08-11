@@ -26,7 +26,7 @@ public class SimpleItemSlot {
     }
 
     public SimpleItemSlot transferItem(ItemStack itemStack) {
-        this.itemStack = transfer(this.itemStack, itemStack);
+        this.itemStack = transfer(itemStack, this.itemStack);
         return this;
     }
 
