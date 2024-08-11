@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.client.contents.IHotpotItemContentSpecialRender
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -11,7 +12,7 @@ import org.joml.Math;
 
 public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecialRenderer {
     @Override
-    public void render(AbstractHotpotItemStackContent itemStackContent, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel, float rotation, float x, float z) {
+    public void render(AbstractHotpotItemStackContent itemStackContent, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel, float rotation, float x, float z) {
         poseStack.pushPose();
 
         float degree = - ((float) Math.toDegrees(Math.safeAsin( (waterLevel - 0.35f) / (1.0f - 0.35f))) / 90.0f) * 85.0f;
@@ -23,7 +24,7 @@ public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecia
 
         poseStack.scale(0.32f, 0.32f, 0.32f);
 
-        context.getItemRenderer().renderStatic(null, itemStackContent.getItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+        Minecraft.getInstance().getItemRenderer().renderStatic(null, itemStackContent.getItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
 
         poseStack.popPose();
     }

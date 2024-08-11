@@ -64,6 +64,10 @@ public record HotpotSpriteProcessorConfigDataComponent(List<IHotpotSpriteProcess
         setDataComponent(itemStack, getDataComponent(itemStack).addProcessorConfig(processorConfig));
     }
 
+    public static void addProcessorConfigs(ItemStack itemStack, List<IHotpotSpriteProcessorConfig> processorConfigs) {
+        processorConfigs.forEach(processorConfig -> addProcessorConfig(itemStack, processorConfig));
+    }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof HotpotSpriteProcessorConfigDataComponent data && processorConfigs.equals(data.processorConfigs);

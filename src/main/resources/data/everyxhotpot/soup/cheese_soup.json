@@ -1,11 +1,13 @@
 {
   "type": "everyxhotpot:cooking_recipe_soup",
-  "sprite_processor_config": {
-    "type": "everyxhotpot:soup_renderer_config_processor_config",
-    "processor_resource_location": "everyxhotpot:heavy_sauced_processor",
-    "resource_location": "everyxhotpot:cheese_soup_overlay",
-    "soup_renderer_config": "everyxhotpot:cheese_soup"
-  },
+  "sprite_processor_configs": [
+    {
+      "type": "everyxhotpot:soup_renderer_config_processor_config",
+      "id": "everyxhotpot:cheese_soup_overlay",
+      "processor_resource_location": "everyxhotpot:heavy_sauced_processor",
+      "soup_renderer_config_resource_location": "everyxhotpot:cheese_soup"
+    }
+  ],
   "water_level_drop_rate": 0.03,
   "saved_effects": [
     {

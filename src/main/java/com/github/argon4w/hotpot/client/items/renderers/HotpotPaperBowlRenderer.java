@@ -30,10 +30,6 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
         HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupType(itemStack));
 
-        if (soupRendererConfig == HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG) {
-            return;
-        }
-
         List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
         List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);
 
@@ -43,15 +39,6 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         if (size > 8) {
             return;
         }
-
-        BlockEntityRendererProvider.Context context = new BlockEntityRendererProvider.Context(
-                Minecraft.getInstance().getBlockEntityRenderDispatcher(),
-                Minecraft.getInstance().getBlockRenderer(),
-                Minecraft.getInstance().getItemRenderer(),
-                Minecraft.getInstance().getEntityRenderDispatcher(),
-                Minecraft.getInstance().getEntityModels(),
-                Minecraft.getInstance().font
-        );
 
         float soupScale = 9.0f / 16.0f;
         float soupOffset = 3.5f / 16.0f;
@@ -154,9 +141,9 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.popPose();
         }
 
-        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(soupRendererConfig, context, poseStack, bufferSource, 0, 50, combinedLight, combinedOverlay, Math.max(minElementLevel, elementLevel), true);
-        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel), Sheets.translucentCullBlockSheet());
-        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel), Sheets.translucentCullBlockSheet());
+        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, 0, 50, combinedLight, combinedOverlay, Math.max(minElementLevel, elementLevel), true);
+        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel));
+        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel));
 
         poseStack.popPose();
 

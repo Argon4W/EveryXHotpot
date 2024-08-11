@@ -8,6 +8,7 @@ import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -31,7 +32,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     }
 
     @Override
-    public void render(BlockEntityRendererProvider.Context context, long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
         float f = time / 20f / 5f;
 
         float part1Rotation = Math.sin(f * (float) Math.PI) * 1.6f;
@@ -44,8 +45,8 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         poseStack.translate(0f, part1Position, 0f);
         poseStack.mulPose(Axis.XP.rotationDegrees(part1Rotation));
 
-        BakedModel part1Model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(element1ModelResourceLocation));
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, part1Model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
+        BakedModel part1Model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(element1ModelResourceLocation));
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, part1Model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
 
         poseStack.popPose();
 
@@ -53,8 +54,8 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         poseStack.translate(0f, part2Position, 0f);
         poseStack.mulPose(Axis.ZP.rotationDegrees(part2Rotation));
 
-        BakedModel part2Model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(element2ModelResourceLocation));
-        context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, part2Model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
+        BakedModel part2Model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(element2ModelResourceLocation));
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, part2Model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
 
         poseStack.popPose();
     }

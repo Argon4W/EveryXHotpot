@@ -20,7 +20,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
     public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext> PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
-    public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
+    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
         if (!(content instanceof HotpotPlayerContent playerContent)) {
             return;
         }

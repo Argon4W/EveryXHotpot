@@ -3,7 +3,6 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
-import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;

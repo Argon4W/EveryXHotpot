@@ -13,7 +13,7 @@ import java.util.List;
 
 public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElementRenderer {
     @Override
-    public void render(BlockEntityRendererProvider.Context context, long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
 
     }
 

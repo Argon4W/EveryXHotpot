@@ -5,7 +5,9 @@ import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -14,8 +16,11 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Math;
+
+import java.util.Optional;
 
 public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
@@ -23,8 +28,8 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
     public HotpotBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.context = context;
     }
-    @Override
 
+    @Override
     public void render(HotpotBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         float waterLevel = blockEntity.getWaterLevel();
         long clientTime = blockEntity.hasLevel() ? blockEntity.getLevel().getGameTime() : 0;
@@ -51,31 +56,31 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             lastOrbitY = orbitY;
 
             IHotpotContent content = blockEntity.getContents().get(i);
-            content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, context, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
+            content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
         }
 
         HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup());
 
-        renderHotpotSoupCustomElements(soupRendererConfig, context, poseStack, bufferSource, clientTime, partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
-        renderHotpotSoup(soupRendererConfig, context, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f), RenderType.translucentMovingBlock());
+        renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, clientTime, partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
+        renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f));
     }
 
-    public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel, RenderType renderType) {
-        soupRendererConfig.soupModelResourceLocation().ifPresent(soupLocation -> {
-            poseStack.pushPose();
-            poseStack.translate(0, renderedWaterLevel, 0);
+    public static void renderHotpotSoup(ResourceLocation resourceLocation, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+        poseStack.pushPose();
+        poseStack.translate(0, renderedWaterLevel, 0);
 
-            int lighting = soupRendererConfig.fixedLighting() ? 14680304 : combinedLight;
+        BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(resourceLocation));
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
-            BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(soupLocation));
-            context.getBlockRenderDispatcher().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(renderType), null, model, 1, 1, 1, lighting, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
-
-            poseStack.popPose();
-        });
+        poseStack.popPose();
     }
 
-    public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, long time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowlOnly) {
-        soupRendererConfig.customElementRenderers().stream().filter(renderer -> !bowlOnly || renderer.shouldRenderInBowl()).forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(context, time, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
+    public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+        soupRendererConfig.soupModelResourceLocation().ifPresent(resourceLocation -> renderHotpotSoup(resourceLocation, poseStack, bufferSource, soupRendererConfig.fixedLighting() ? 14680304 : combinedLight, combinedOverlay, renderedWaterLevel));
+    }
+
+    public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, PoseStack poseStack, MultiBufferSource bufferSource, long time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowlOnly) {
+        soupRendererConfig.customElementRenderers().stream().filter(renderer -> !bowlOnly || renderer.shouldRenderInBowl()).forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(time, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
     }
 
     private float orbitX(float degree) {

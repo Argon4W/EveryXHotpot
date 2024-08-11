@@ -40,15 +40,15 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
     private final HotpotSoupTypeHolder<?> soupTypeHolder;
     private final float waterLevelDropRate;
     private final List<MobEffectInstance> savedEffects;
-    private final IHotpotSpriteProcessorConfig processorConfig;
+    private final List<IHotpotSpriteProcessorConfig> processorConfigs;
 
     public int emptyWaterPunishCooldown;
 
-    public HotpotCookingRecipeSoup(HotpotSoupTypeHolder<?> soupTypeHolder, float waterLevelDropRate, List<MobEffectInstance> savedEffects, IHotpotSpriteProcessorConfig processorConfig) {
+    public HotpotCookingRecipeSoup(HotpotSoupTypeHolder<?> soupTypeHolder, float waterLevelDropRate, List<MobEffectInstance> savedEffects, List<IHotpotSpriteProcessorConfig> processorConfigs) {
         this.soupTypeHolder = soupTypeHolder;
         this.waterLevelDropRate = waterLevelDropRate;
         this.savedEffects = savedEffects;
-        this.processorConfig = processorConfig;
+        this.processorConfigs = processorConfigs;
 
         this.waterLevel = 0.0f;
         this.overflowWaterLevel = 0.0f;
@@ -56,11 +56,11 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
         this.emptyWaterPunishCooldown = 0;
     }
 
-    public HotpotCookingRecipeSoup(HotpotSoupTypeHolder<?> soupTypeHolder, float waterLevelDropRate, List<MobEffectInstance> savedEffects, IHotpotSpriteProcessorConfig processorConfig, float waterLevel, float overflowWaterLevel, float activeness, int emptyWaterPunishCooldown) {
+    public HotpotCookingRecipeSoup(HotpotSoupTypeHolder<?> soupTypeHolder, float waterLevelDropRate, List<MobEffectInstance> savedEffects, List<IHotpotSpriteProcessorConfig> processorConfigs, float waterLevel, float overflowWaterLevel, float activeness, int emptyWaterPunishCooldown) {
         this.soupTypeHolder = soupTypeHolder;
         this.waterLevelDropRate = waterLevelDropRate;
         this.savedEffects = savedEffects;
-        this.processorConfig = processorConfig;
+        this.processorConfigs = processorConfigs;
 
         this.waterLevel = waterLevel;
         this.overflowWaterLevel = overflowWaterLevel;
@@ -123,7 +123,7 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
 
         HotpotSoupDataComponent.setSoup(itemStack, this);
         HotpotFoodEffectsDataComponent.addEffects(itemStack, savedEffects);
-        HotpotSpriteProcessorConfigDataComponent.addProcessorConfig(itemStack, processorConfig);
+        HotpotSpriteProcessorConfigDataComponent.addProcessorConfigs(itemStack, processorConfigs);
 
         return itemStack;
     }
@@ -160,12 +160,12 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
     public static class Type implements IHotpotSoupType<HotpotCookingRecipeSoup> {
         private final float waterLevelDropRate;
         private final List<MobEffectInstance> savedEffects;
-        private final IHotpotSpriteProcessorConfig processorConfig;
+        private final List<IHotpotSpriteProcessorConfig> processorConfigs;
 
-        public Type(float waterLevelDropRate, List<MobEffectInstance> savedEffects, IHotpotSpriteProcessorConfig processorConfig) {
+        public Type(float waterLevelDropRate, List<MobEffectInstance> savedEffects, List<IHotpotSpriteProcessorConfig> processorConfigs) {
             this.waterLevelDropRate = waterLevelDropRate;
             this.savedEffects = savedEffects;
-            this.processorConfig = processorConfig;
+            this.processorConfigs = processorConfigs;
         }
 
         @Override
@@ -179,12 +179,12 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
         }
 
         public HotpotCookingRecipeSoup buildFrom(HotpotSoupTypeHolder<HotpotCookingRecipeSoup> soupTypeHolder, float waterLevel, float overflowWaterLevel, float activeness, int emptyWaterPunishCooldown) {
-            return new HotpotCookingRecipeSoup(soupTypeHolder, waterLevelDropRate, savedEffects, processorConfig, waterLevel, overflowWaterLevel, activeness, emptyWaterPunishCooldown);
+            return new HotpotCookingRecipeSoup(soupTypeHolder, waterLevelDropRate, savedEffects, processorConfigs, waterLevel, overflowWaterLevel, activeness, emptyWaterPunishCooldown);
         }
 
         @Override
         public HotpotCookingRecipeSoup getSoup(HotpotSoupTypeHolder<HotpotCookingRecipeSoup> soupTypeHolder) {
-            return new HotpotCookingRecipeSoup(soupTypeHolder, waterLevelDropRate, savedEffects, processorConfig);
+            return new HotpotCookingRecipeSoup(soupTypeHolder, waterLevelDropRate, savedEffects, processorConfigs);
         }
 
         @Override
@@ -200,8 +200,8 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
             return savedEffects;
         }
 
-        public IHotpotSpriteProcessorConfig getProcessorConfig() {
-            return processorConfig;
+        public List<IHotpotSpriteProcessorConfig> getProcessorConfigs() {
+            return processorConfigs;
         }
     }
 
@@ -210,7 +210,7 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
                 StreamCodec.composite(
                         ByteBufCodecs.FLOAT, Type::getWaterLevelDropRate,
                         ByteBufCodecs.collection(ArrayList::new, MobEffectInstance.STREAM_CODEC), Type::getSavedEffects,
-                        HotpotSpriteProcessorConfigs.STREAM_CODEC, Type::getProcessorConfig,
+                        ByteBufCodecs.collection(ArrayList::new, HotpotSpriteProcessorConfigs.STREAM_CODEC), Type::getProcessorConfigs,
                         Type::new
                 )
         );
@@ -219,7 +219,7 @@ public class HotpotCookingRecipeSoup extends AbstractHotpotFluidBasedSoup {
                 RecordCodecBuilder.mapCodec(serializer -> serializer.group(
                         Codec.FLOAT.fieldOf("water_level_drop_rate").forGetter(Type::getWaterLevelDropRate),
                         MobEffectInstance.CODEC.listOf().optionalFieldOf("saved_effects", List.of()).forGetter(Type::getSavedEffects),
-                        HotpotSpriteProcessorConfigs.CODEC.optionalFieldOf("sprite_processor_config", HotpotSpriteProcessorConfigs.getEmptySpriteProcessorConfig()).forGetter(Type::getProcessorConfig)
+                        HotpotSpriteProcessorConfigs.CODEC.listOf().optionalFieldOf("sprite_processor_configs", List.of()).forGetter(Type::getProcessorConfigs)
                 ).apply(serializer, Type::new))
         );
 

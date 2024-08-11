@@ -14,7 +14,7 @@ import net.minecraft.world.item.Item;
 
 public class HotpotItemContentRenderer implements IHotpotContentRenderer {
     @Override
-    public void render(IHotpotContent content, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
+    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
         if (!(content instanceof AbstractHotpotItemStackContent itemStackContent)) {
             return;
         }
@@ -23,6 +23,6 @@ public class HotpotItemContentRenderer implements IHotpotContentRenderer {
         ResourceLocation resourceLocation = BuiltInRegistries.ITEM.getKey(item);
         IHotpotItemContentSpecialRenderer itemContentSpecialRenderer = HotpotItemContentSpecialRenderers.getItemContentSpecialRenderer(resourceLocation);
 
-        itemContentSpecialRenderer.render(itemStackContent, context, poseStack, bufferSource, combinedLight, combinedOverlay, waterLevel, rotation, x, z);
+        itemContentSpecialRenderer.render(itemStackContent, poseStack, bufferSource, combinedLight, combinedOverlay, waterLevel, rotation, x, z);
     }
 }
