@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
     private final int pos;

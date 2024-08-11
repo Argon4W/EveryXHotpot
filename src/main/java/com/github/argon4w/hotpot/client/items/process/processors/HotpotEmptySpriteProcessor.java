@@ -5,7 +5,6 @@ import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.items.process.IHotpotSpriteProcessorConfig;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
-import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
     @Override

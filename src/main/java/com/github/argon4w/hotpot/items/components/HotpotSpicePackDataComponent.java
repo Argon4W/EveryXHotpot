@@ -14,7 +14,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public record HotpotSpicePackDataComponent(int charges, List<ItemStack> itemStacks) {

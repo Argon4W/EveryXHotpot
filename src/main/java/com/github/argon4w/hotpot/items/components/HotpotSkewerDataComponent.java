@@ -11,7 +11,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public record HotpotSkewerDataComponent(List<ItemStack> itemStacks) {

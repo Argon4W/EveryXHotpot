@@ -65,7 +65,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return InteractionResultHolder.pass(player.getItemInHand(hand));
         }
 
-        ItemStack firstItemStack = itemStacks.getFirst();
+        ItemStack firstItemStack = itemStacks.getFirst().copy();
 
         if (canEatInPaperBowl(firstItemStack) && player.canEat(true)) {
             player.startUsingItem(hand);
@@ -105,13 +105,13 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return itemStack;
         }
 
-        ItemStack firstItemStack = itemStacks.getFirst();
+        ItemStack firstItemStack = itemStacks.getFirst().copy();
 
         if (canEatInPaperBowl(firstItemStack)) {
-            itemStacks.set(0, firstItemStack.copy().finishUsingItem(level, player));
+            itemStacks.set(0, firstItemStack.finishUsingItem(level, player));
         }
 
-        firstItemStack = itemStacks.getFirst();
+        firstItemStack = itemStacks.getFirst().copy();
 
         if (!canEatInPaperBowl(firstItemStack)) {
             addToInventory(player, firstItemStack);

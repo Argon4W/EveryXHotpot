@@ -4,7 +4,6 @@ import com.github.argon4w.hotpot.client.contents.IHotpotContentRenderer;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class HotpotEmptyContentRenderer implements IHotpotContentRenderer {
     @Override

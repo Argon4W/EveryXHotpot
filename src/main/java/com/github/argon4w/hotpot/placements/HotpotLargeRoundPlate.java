@@ -14,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class HotpotLargeRoundPlate implements IHotpotPlate {
     private final SimpleItemSlot itemSlot1;

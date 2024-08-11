@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.actions;
 
-import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
@@ -12,7 +11,6 @@ import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredient
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 
 public class HotpotSoupConsumeAction implements IHotpotSoupIngredientAction {
     @Override

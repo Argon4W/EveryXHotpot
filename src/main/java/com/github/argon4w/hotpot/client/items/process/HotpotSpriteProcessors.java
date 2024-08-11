@@ -4,15 +4,9 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpriteProcessor;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotHeavySaucedSpriteProcessor;
 import com.github.argon4w.hotpot.client.items.process.processors.HotpotLightSaucedSpriteProcessor;
-import com.mojang.serialization.Codec;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 

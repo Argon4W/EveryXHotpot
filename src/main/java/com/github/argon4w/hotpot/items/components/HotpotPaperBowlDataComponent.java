@@ -13,7 +13,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public record HotpotPaperBowlDataComponent(HotpotSoupTypeHolder<?> soupTypeHolder, boolean drained, List<ItemStack> items, List<ItemStack> skewers) {
     public static final HotpotPaperBowlDataComponent EMPTY = new HotpotPaperBowlDataComponent(HotpotSoupTypeSerializers.getEmptySoupTypeHolder(), false, List.of(), List.of());

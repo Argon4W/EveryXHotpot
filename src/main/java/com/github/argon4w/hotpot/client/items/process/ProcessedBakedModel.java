@@ -18,7 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
