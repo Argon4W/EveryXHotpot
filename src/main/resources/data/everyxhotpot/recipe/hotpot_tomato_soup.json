@@ -8,7 +8,7 @@
       "condition": {
         "type": "everyxhotpot:item",
         "predicate": {
-          "tag": "forge:crops/tomato"
+          "tag": "c:crops/tomato"
         }
       },
       "action": {
@@ -20,7 +20,7 @@
       "condition": {
         "type": "everyxhotpot:item",
         "predicate": {
-          "tag": "forge:crops/onion"
+          "tag": "c:crops/onion"
         }
       },
       "action": {
