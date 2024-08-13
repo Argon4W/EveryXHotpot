@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
@@ -34,23 +35,25 @@ public abstract class SpriteLoaderMixin {
         }
 
         ArrayList<SpriteContents> results = new ArrayList<>(contents);
-        results.addAll(Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().flatMap(processor -> contents.stream().map(content -> CompletableFuture.supplyAsync(() -> getProcessedSpriteContents(processor, content)))).toList()).join());
+        results.addAll(Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().flatMap(processor -> contents.stream().map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join());
 
         return results;
     }
 
-    private static SpriteContents getProcessedSpriteContents(IHotpotSpriteProcessor processor, SpriteContents contents) {
+    @Unique
+    private static SpriteContents everyxhotpot$getProcessedSpriteContents(IHotpotSpriteProcessor processor, SpriteContents contents) {
         ResourceLocation name = contents.name();
         ResourceMetadata metadata = contents.metadata();
         NativeImage original = contents.getOriginalImage();
         FrameSize frameSize = metadata.getSection(AnimationMetadataSection.SERIALIZER).map(section -> section.calculateFrameSize(original.getWidth(), original.getHeight())).orElse(new FrameSize(original.getWidth(), original.getHeight()));
         NativeImage image = new NativeImage(contents.getOriginalImage().format(), contents.getOriginalImage().getWidth(), contents.getOriginalImage().getHeight(), true);
 
-        processSpriteImage(original, image, frameSize, processor);
+        everyxhotpot$processSpriteImage(original, image, frameSize, processor);
         return new SpriteContents(name.withSuffix(processor.getProcessedSuffix()), frameSize, image, metadata);
     }
 
-    private static void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, IHotpotSpriteProcessor processor) {
+    @Unique
+    private static void everyxhotpot$processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, IHotpotSpriteProcessor processor) {
         for (int i = 0; i < original.getHeight() / frameSize.height(); i ++) {
             processor.processSpriteImage(original, image, frameSize, i);
         }

@@ -15,8 +15,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class HotpotSpriteProcessorConfigs {
     public static final ResourceKey<Registry<IHotpotSpriteProcessorConfigSerializer<?>>> SPRITE_PROCESSOR_CONFIG_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "sprite_processor_config"));
 
-    public static final Codec<IHotpotSpriteProcessorConfig> CODEC = Codec.lazyInitialized(() -> getSpriteProcessorConfigRegistry().holderByNameCodec().dispatch(IHotpotSpriteProcessorConfig::getSerializer, holder -> holder.value().getCodec()));
-    public static final StreamCodec<RegistryFriendlyByteBuf, IHotpotSpriteProcessorConfig> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holderRegistry(SPRITE_PROCESSOR_CONFIG_REGISTRY_KEY).dispatch(IHotpotSpriteProcessorConfig::getSerializer, holder -> holder.value().getStreamCodec()));
+    public static final Codec<IHotpotSpriteProcessorConfig> CODEC = Codec.lazyInitialized(() -> getSpriteProcessorConfigRegistry().holderByNameCodec().dispatch(IHotpotSpriteProcessorConfig::getSerializerHolder, holder -> holder.value().getCodec()));
+    public static final StreamCodec<RegistryFriendlyByteBuf, IHotpotSpriteProcessorConfig> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holderRegistry(SPRITE_PROCESSOR_CONFIG_REGISTRY_KEY).dispatch(IHotpotSpriteProcessorConfig::getSerializerHolder, holder -> holder.value().getStreamCodec()));
 
     public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_CONFIG_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor_config");
     public static final DeferredRegister<IHotpotSpriteProcessorConfigSerializer<?>> SPRITE_PROCESSOR_CONFIGS = DeferredRegister.create(SPRITE_PROCESSOR_CONFIG_REGISTRY_KEY, HotpotModEntry.MODID);

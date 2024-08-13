@@ -31,8 +31,11 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
         float x2 = HotpotPlacementSerializers.getSlotX(placedChopstick.getPos2()) + 0.25f;
         float z2 = HotpotPlacementSerializers.getSlotZ(placedChopstick.getPos2()) + 0.25f;
 
+        float positionX = (x1 + x2) / 2;
+        float positionY = (z1 + z2) / 2;
+
         poseStack.pushPose();
-        poseStack.translate((x1 + x2) / 2, 0.07f, (z1 + z2) / 2);
+        poseStack.translate(positionX, 0.07f, positionY);
         poseStack.mulPose(Axis.YN.rotationDegrees(placedChopstick.getDirection().toYRot()));
         poseStack.mulPose(Axis.XN.rotationDegrees(95));
         poseStack.scale(0.5f, 0.5f, 0.5f);
@@ -42,7 +45,7 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
         poseStack.popPose();
 
         poseStack.pushPose();
-        poseStack.translate((x1 + x2) / 2, 0f, (z1 + z2) / 2);
+        poseStack.translate(positionX, 0f, positionY);
         poseStack.mulPose(Axis.YN.rotationDegrees(placedChopstick.getDirection().toYRot()));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 

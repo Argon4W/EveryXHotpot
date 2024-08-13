@@ -4,7 +4,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 
 public interface IHotpotSpriteProcessorConfig {
-    Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializer();
+    Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializerHolder();
     ResourceLocation getProcessorResourceLocation();
     ResourceLocation getResourceLocation();
 }

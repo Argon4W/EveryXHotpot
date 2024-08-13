@@ -57,22 +57,7 @@ public class HotpotSoupTypeManager extends SimpleJsonResourceReloadListener {
     protected void apply(Map<ResourceLocation, JsonElement> jsonElements, ResourceManager resourceManager, ProfilerFiller filler) {
         soupTypes.clear();
         RegistryOps<JsonElement> ops = this.makeConditionalOps();
-
-        for (ResourceLocation resourceLocation : jsonElements.keySet()) {
-            if (resourceLocation.getPath().startsWith("_")) {
-                LOGGER.warn("Ignore \"{}\" beginning with \"_\" as it's used for metadata", resourceLocation);
-                continue;
-            }
-
-            Optional<WithConditions<IHotpotSoupType<?>>> result = CONDITIONAL_CODEC.parse(ops, jsonElements.get(resourceLocation)).getOrThrow(JsonParseException::new);
-
-            if (result.isEmpty()) {
-                LOGGER.error("Error while loading soup config \"{}\" as it's conditions were not met", resourceLocation);
-                continue;
-            }
-
-            soupTypes.put(resourceLocation, result.get().carrier());
-        }
+        jsonElements.keySet().forEach(resourceLocation -> CONDITIONAL_CODEC.parse(ops, jsonElements.get(resourceLocation)).getOrThrow(JsonParseException::new).ifPresentOrElse(soupType -> soupTypes.put(resourceLocation, soupType.carrier()), () -> LOGGER.error("Error while loading soup config \"{}\" as it's conditions were not met", resourceLocation)));
     }
 
     public void replaceSoupTypes(Map<ResourceLocation, IHotpotSoupType<?>> soupTypes) {
@@ -84,12 +69,12 @@ public class HotpotSoupTypeManager extends SimpleJsonResourceReloadListener {
         return soupTypeCodec.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), soupType).resultOrPartial().orElse(new CompoundTag());
     }
 
-    public IHotpotSoup buildSoup(CompoundTag tag, HolderLookup.Provider registryAccess) {
-        return soupTypeCodec.parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), tag).resultOrPartial().orElse(buildEmptySoup());
-    }
-
     public HotpotEmptySoup buildEmptySoup() {
         return EMPTY_SOUP_TYPE.getSoup();
+    }
+
+    public IHotpotSoup buildSoup(CompoundTag tag, HolderLookup.Provider registryAccess) {
+        return soupTypeCodec.parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), tag).resultOrPartial().orElse(buildEmptySoup());
     }
 
     public HotpotSoupTypeHolder<?> getSoupType(ResourceLocation resourceLocation) {

@@ -80,7 +80,7 @@ public class HotpotPlayerContent implements IHotpotContent {
         );
 
         @Override
-        public HotpotPlayerContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotPlayerContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
             throw new IllegalStateException("Cannot get from itemStack");
         }
 

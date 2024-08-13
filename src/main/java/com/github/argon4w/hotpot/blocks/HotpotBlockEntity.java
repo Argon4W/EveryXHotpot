@@ -11,6 +11,7 @@ import com.github.argon4w.hotpot.soups.recipes.HotpotSoupBaseRecipe;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupIngredientRecipe;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotIngredientRecipeInput;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
+import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -50,7 +52,6 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     private boolean soupSynchronized = false;
 
     public float renderedWaterLevel = -1f;
-    private float waterLevel = 0f;
 
     private int time = 0;
     private int velocity = 0;
@@ -75,7 +76,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     public void tryPlaceItemStack(int hitPos, ItemStack itemStack, LevelBlockPos selfPos) {
-        soup.getContentSerializerFromItemStack(itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
+        soup.getContentSerializerFromItemStack(itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.get(itemStack, this, selfPos), selfPos));
     }
 
     private void placeContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
@@ -96,7 +97,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         Optional<HotpotSoupBaseRecipe> optional = BASE_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, getSoup()), selfPos.level()).map(RecipeHolder::value);
 
         if (optional.isEmpty()) {
-            soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.getFromItem(itemStack, this, selfPos), selfPos));
+            soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.get(itemStack, this, selfPos), selfPos));
             return;
         }
 
@@ -160,22 +161,25 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
 
     private void synchronizeSoup(LevelBlockPos selfPos) {
         Map<HotpotBlockEntity, LevelBlockPos> neighbors = new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos) && !hotpotBlockEntity.soupSynchronized).getAll();
-        neighbors.forEach((key, value) -> key.setSoupSynchronized());
+        List<IHotpotSoupSynchronizer> synchronizers = soup.getSynchronizers(this, selfPos);
 
-        soup.getSynchronizer(this, selfPos).forEach(synchronizer -> {
-            neighbors.forEach(synchronizer::collect);
-            neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.integrate(neighbors.size(), hotpotBlockEntity, pos));
-        });
+        neighbors.forEach((key, value) -> key.setSoupSynchronized());
+        synchronizers.forEach(synchronizer -> synchronizeSoup(neighbors, synchronizer));
+    }
+
+    private void synchronizeSoup(Map<HotpotBlockEntity, LevelBlockPos> neighbors, IHotpotSoupSynchronizer synchronizer) {
+        neighbors.forEach(synchronizer::collect);
+        neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.integrate(neighbors.size(), hotpotBlockEntity, pos));
+    }
+
+    public void removeContent(int pos, LevelBlockPos selfPos) {
+        IHotpotContent content = contents.get(pos);
+        soup.getContentViaHand(content, soup.getContentViaTableware(content, content.takeOut(null, this, selfPos), this, selfPos), this, selfPos);
+        contents.set(pos, HotpotContentSerializers.getEmptyContent());
     }
 
     public void onRemove(LevelBlockPos pos) {
-        for (int i = 0; i < contents.size(); i ++) {
-            IHotpotContent content = contents.get(i);
-
-            soup.getContentViaHand(content, content.takeOut(null, this, pos), this, pos);
-            contents.set(i, HotpotContentSerializers.getEmptyContent());
-        }
-
+        IntStream.range(0, contents.size()).forEach(i -> removeContent(i, pos));
         markDataChanged();
     }
 
@@ -192,11 +196,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         infiniteWater = compoundTag.contains("InfiniteWater", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteWater");
         time = compoundTag.contains("Time", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Time") : 0;
         velocity = compoundTag.contains("Velocity", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Velocity") : 0;
-        waterLevel = compoundTag.contains("WaterLevel", Tag.TAG_FLOAT) ?compoundTag.getFloat("WaterLevel") : 0f;
-
-        if (compoundTag.contains("Soup", Tag.TAG_COMPOUND)) {
-            soup = HotpotSoupTypeSerializers.loadSoup(compoundTag.getCompound("Soup"), registryAccess);
-        }
+        soup = HotpotSoupTypeSerializers.loadSoup(compoundTag.getCompound("Soup"), registryAccess);
 
         if (compoundTag.contains("Contents", Tag.TAG_LIST)) {
             contents.clear();
@@ -212,7 +212,6 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
         compoundTag.putInt("Velocity", velocity);
-        compoundTag.putFloat("WaterLevel", waterLevel);
 
         compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
         compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
@@ -225,13 +224,12 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
         compoundTag.putInt("Velocity", velocity);
-        compoundTag.putFloat("WaterLevel", waterLevel);
+        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
 
         if (!contentChanged) {
             return compoundTag;
         }
 
-        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
         compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
 
         contentChanged = false;
@@ -247,8 +245,6 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         compoundTag.putBoolean("InfiniteWater", infiniteWater);
         compoundTag.putInt("Time", time);
         compoundTag.putInt("Velocity", velocity);
-        compoundTag.putFloat("WaterLevel", waterLevel);
-
         compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
         compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
 
@@ -290,7 +286,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     }
 
     public float getWaterLevel() {
-        return waterLevel;
+        return getSoup().getWaterLevel();
     }
 
     public void setWaterLevel(float waterLevel, LevelBlockPos pos) {
@@ -337,41 +333,38 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         return soupSynchronized;
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity blockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity hotpotBlockEntity) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
 
-        blockEntity.time += 1 + blockEntity.velocity;
-        blockEntity.velocity = Math.max(0, blockEntity.velocity - 1);
+        hotpotBlockEntity.time += 1 + hotpotBlockEntity.velocity;
+        hotpotBlockEntity.velocity = Math.max(0, hotpotBlockEntity.velocity - 1);
 
-        if (!blockEntity.isSoupSynchronized()) {
-            blockEntity.synchronizeSoup(selfPos);
+        if (!hotpotBlockEntity.isSoupSynchronized()) {
+            hotpotBlockEntity.synchronizeSoup(selfPos);
         }
 
-        blockEntity.setSoupSynchronized(false);
+        hotpotBlockEntity.setSoupSynchronized(false);
+        float tickSpeed = hotpotBlockEntity.soup.getContentTickSpeed(hotpotBlockEntity, selfPos);
 
-        blockEntity.waterLevel = blockEntity.soup.getWaterLevel();
-
-        if (blockEntity.waterLevel > 0.0f) {
-            tickContents(blockEntity, selfPos, blockEntity.soup.getContentTickSpeed(blockEntity, selfPos));
+        if (hotpotBlockEntity.getWaterLevel() > 0.0f) {
+            IntStream.range(0, hotpotBlockEntity.contents.size()).forEach(i -> tickContents(i, hotpotBlockEntity, selfPos, tickSpeed));
         }
 
         level.sendBlockUpdated(pos, state, state, 3);
-        blockEntity.setChanged();
+        hotpotBlockEntity.setChanged();
     }
 
-    public static void tickContents(HotpotBlockEntity blockEntity, LevelBlockPos selfPos, float tickSpeed) {
-        for (int i = 0; i < blockEntity.contents.size(); i ++) {
-            IHotpotContent content = blockEntity.contents.get(i);
+    public static void tickContents(int pos, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos, float tickSpeed) {
+        IHotpotContent content = hotpotBlockEntity.contents.get(pos);
 
-            if (content.tick(blockEntity, selfPos, tickSpeed)) {
-                blockEntity.soup.onContentUpdate(content, blockEntity, selfPos);
-                blockEntity.markDataChanged();
-            }
+        if (content.tick(hotpotBlockEntity, selfPos, tickSpeed)) {
+            hotpotBlockEntity.soup.onContentUpdate(content, hotpotBlockEntity, selfPos);
+            hotpotBlockEntity.markDataChanged();
+        }
 
-            if (content.shouldRemove(blockEntity, selfPos)) {
-                selfPos.dropItemStack(content.takeOut(null, blockEntity, selfPos));
-                blockEntity.contents.set(i, HotpotContentSerializers.getEmptyContent());
-            }
+        if (content.shouldRemove(hotpotBlockEntity, selfPos)) {
+            hotpotBlockEntity.removeContent(pos, selfPos);
+            hotpotBlockEntity.markDataChanged();
         }
     }
 

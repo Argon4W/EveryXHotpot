@@ -53,7 +53,7 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
         }
 
         @Override
-        public HotpotCookingRecipeContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotCookingRecipeContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
             return new HotpotCookingRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

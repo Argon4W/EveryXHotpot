@@ -31,8 +31,10 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
         int plateCount = 0;
 
         for (; plateCount < smallPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
+            float positionY = plateCount * 0.0625f;
+
             poseStack.pushPose();
-            poseStack.translate(x, plateCount * 0.0625f, z);
+            poseStack.translate(x, positionY, z);
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
             BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
@@ -42,10 +44,13 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
         }
 
         for (int i = 0; i < smallPlate.getItemSlot().getRenderCount(); i ++) {
+            float positionY = plateCount * 0.0625f + 0.02f * i;
+            float rotationY = smallPlate.getDirection().toYRot() + (i % 2) * 20;
+
             poseStack.pushPose();
 
-            poseStack.translate(x, plateCount * 0.0625f + 0.02 * i, z);
-            poseStack.mulPose(Axis.YP.rotationDegrees(smallPlate.getDirection().toYRot() + (i % 2) * 20));
+            poseStack.translate(x, positionY, z);
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
             poseStack.mulPose(Axis.XP.rotationDegrees(90f));
             poseStack.scale(0.35f, 0.35f, 0.35f);
 

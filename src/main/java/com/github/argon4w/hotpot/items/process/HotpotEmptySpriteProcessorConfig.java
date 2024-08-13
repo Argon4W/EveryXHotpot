@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public record HotpotEmptySpriteProcessorConfig() implements IHotpotSpriteProcessorConfig {
     @Override
-    public Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializer() {
+    public Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializerHolder() {
         return HotpotSpriteProcessorConfigs.EMPTY_SPRITE_PROCESSOR_CONFIG;
     }
 

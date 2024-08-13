@@ -8,6 +8,7 @@ import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRende
 import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
+import com.github.argon4w.hotpot.client.soups.renderers.IHotpotSoupCustomElementRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +18,8 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+
+import java.util.Collection;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
 public class HotpotClientModEvents {
@@ -48,6 +51,11 @@ public class HotpotClientModEvents {
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
         HotpotSoupRendererConfigManager.getAllSoupRendererConfigs().stream().flatMap(HotpotSoupRendererConfig::getRequiredModelResourceLocations).map(ModelResourceLocation::standalone).forEach(event::register);
+    }
+
+    @SubscribeEvent
+    public static void onBakingCompleted(ModelEvent.BakingCompleted event) {
+        HotpotSoupRendererConfigManager.getAllSoupRendererConfigs().stream().map(HotpotSoupRendererConfig::customElementRenderers).flatMap(Collection::stream).forEach(IHotpotSoupCustomElementRenderer::prepareModel);
     }
 
     @SubscribeEvent

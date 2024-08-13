@@ -33,13 +33,18 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
             renderContext.updateModelPartWithTexture();
         }
 
+        float positionX = 0.5f + x * 0.325f;
+        float positionZ = 0.5f + z * 0.325f;
+        float positionY = 0.53f - getFloatingCurve(rotation / 360.0f, 0f) * 0.06f + 0.42f * waterLevel;
+        float rotationY = getFloatingCurve(rotation / 360.0f, 1f) * 25.0f;
+
         poseStack.pushPose();
 
-        poseStack.translate(0.5f + x * 0.325f, 0.53f - getFloatingCurve(rotation / 360.0f, 0f) * 0.06f + 0.42f * waterLevel, 0.5f + z * 0.325f);
+        poseStack.translate(positionX, positionY, positionZ);
 
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
         poseStack.mulPose(Axis.XP.rotationDegrees( 90.0f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(getFloatingCurve(rotation / 360.0f, 1f) * 25.0f));
+        poseStack.mulPose(Axis.XP.rotationDegrees(rotationY));
 
         poseStack.scale(0.25f, 0.25f, 0.25f);
 

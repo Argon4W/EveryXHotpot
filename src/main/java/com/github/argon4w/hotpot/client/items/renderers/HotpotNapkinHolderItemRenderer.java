@@ -41,10 +41,13 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
         }
 
         for (int i = 0; i < napkinItemSlot.getRenderCount(); i ++) {
+            float positionY = 0.0625f + 0.05f * i;
+            float rotationY = (i % 2 == 0 ? 1 : -1) * 3;
+
             poseStack.pushPose();
 
-            poseStack.translate(0.5f, 0.0625f + 0.05f * i, 0.5f);
-            poseStack.mulPose(Axis.YP.rotationDegrees((i % 2 == 0 ? 1 : -1) * 3));
+            poseStack.translate(0.5f, positionY, 0.5f);
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
 
             Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, napkinModel, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
 

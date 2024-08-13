@@ -1,18 +1,21 @@
 package com.github.argon4w.hotpot.client.soups.renderers;
 
-import com.github.argon4w.hotpot.client.soups.HotpotSoupCustomElements;
-import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRenderer;
-import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRendererSerializer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
 public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElementRenderer {
     @Override
-    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel) {
+
+    }
+
+    @Override
+    public void prepareModel() {
 
     }
 
@@ -27,8 +30,8 @@ public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElemen
     }
 
     @Override
-    public IHotpotSoupCustomElementRendererSerializer<?> getSerializer() {
-        return HotpotSoupCustomElements.getEmptyCustomElementRendererSerializer();
+    public Holder<IHotpotSoupCustomElementRendererSerializer<?>> getSerializer() {
+        return HotpotSoupCustomElementSerializers.EMPTY_CUSTOM_ELEMENT_RENDERER_SERIALIZER;
     }
 
     public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotEmptyCustomElementRenderer> {
@@ -37,10 +40,6 @@ public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElemen
         @Override
         public MapCodec<HotpotEmptyCustomElementRenderer> getCodec() {
             return CODEC;
-        }
-
-        public HotpotEmptyCustomElementRenderer build() {
-            return new HotpotEmptyCustomElementRenderer();
         }
     }
 }

@@ -42,7 +42,8 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpot
                 int green = FastColor.ABGR32.green(originalColor);
                 int red = FastColor.ABGR32.red(originalColor);
 
-                float gray =  Math.min(1f, (red * 0.299f + green * 0.587f + blue * 0.144f) / 255f * amplifier + (float) source.nextGaussian() * 0.12f);
+                float rawGray = (red * 0.299f + green * 0.587f + blue * 0.144f) / 255f;
+                float gray =  Math.min(1f, rawGray * amplifier + (float) source.nextGaussian() * 0.12f);
                 int finalAlpha = (int) (alpha * sigmoid(((frameSize.height() - 2f * y) / frameSize.height()) * 10f) * getAlphaModifier());
 
                 image.setPixelRGBA(x, y + frame * frameSize.height(), FastColor.ABGR32.color(

@@ -80,8 +80,8 @@ public abstract class AbstractHotpotFluidBasedSoup extends AbstractHotpotSoup im
     }
 
     @Override
-    public List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
-        return contact(super.getSynchronizer(selfHotpotBlockEntity, selfPos), new HotpotSoupActivenessSynchronizer());
+    public List<IHotpotSoupSynchronizer> getSynchronizers(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return contact(super.getSynchronizers(hotpotBlockEntity, pos), new HotpotSoupActivenessSynchronizer());
     }
 
     @Override

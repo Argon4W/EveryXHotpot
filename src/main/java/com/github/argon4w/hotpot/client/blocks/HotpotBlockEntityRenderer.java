@@ -56,7 +56,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup());
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup().getSoupTypeHolder().key());
 
         renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, clientTime, partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
         renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f));

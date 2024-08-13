@@ -91,7 +91,7 @@ public abstract class AbstractHotpotSoup implements IHotpotSoup {
     }
 
     @Override
-    public List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
+    public List<IHotpotSoupSynchronizer> getSynchronizers(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return List.of(new HotpotSoupTickSynchronizer(), new HotpotSoupWaterLevelSynchronizer(), new HotpotSoupDiscardOverflowSynchronizer());
     }
 

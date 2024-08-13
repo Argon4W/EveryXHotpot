@@ -26,10 +26,13 @@ public class HotpotSkewerRenderer implements IHotpotItemSpecialRenderer {
         for (int i = 0; i < Math.min(3, skewerItems.size()); i ++) {
             ItemStack skewerItemStack = skewerItems.get(skewerItems.size() - 1 - i);
 
+            float positionY = 0.68f + 0.44f * i;
+            float rotationX = i % 2 == 0 ? 15.0f : -15.0f;
+
             poseStack.pushPose();
 
-            poseStack.translate(0.5f, 0.68f + 0.44f * i, 0.5f);
-            poseStack.mulPose(Axis.XP.rotationDegrees(i % 2 == 0 ? 15.0f : -15.0f));
+            poseStack.translate(0.5f, positionY, 0.5f);
+            poseStack.mulPose(Axis.XP.rotationDegrees(rotationX));
             poseStack.scale(0.7f, 0.7f, 0.7f);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(null, skewerItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());

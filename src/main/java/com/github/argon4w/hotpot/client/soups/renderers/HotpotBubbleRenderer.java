@@ -1,8 +1,5 @@
 package com.github.argon4w.hotpot.client.soups.renderers;
 
-import com.github.argon4w.hotpot.client.soups.HotpotSoupCustomElements;
-import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRenderer;
-import com.github.argon4w.hotpot.client.soups.IHotpotSoupCustomElementRendererSerializer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -13,51 +10,71 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
-    public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
-    public static final int BUBBLE_OFFSET_RANGE = 5;
-    public static final float BUBBLE_MAX_TIME = 10f;
-    public static final float BUBBLE_MIN_Y = 0.5f;
-    public static final float BUBBLE_MAX_Y = 0.525f;
-
     private final Bubble[] bubbles;
-    private final float spread, maxScale;
+    private final float spread;
+    private final float maxScale;
+    private final int offsetRange;
+    private final float maxTime;
+    private final float minY;
+    private final float maxY;
+
     private final ResourceLocation bubbleModelResourceLocation;
     private final boolean shouldRenderInBowl;
+    private final RandomSource randomSource;
 
-    public HotpotBubbleRenderer(float spread, float maxScale, int amount, ResourceLocation bubbleModelResourceLocation, boolean shouldRenderInBowl) {
+    private BakedModel model;
+
+    public HotpotBubbleRenderer(float spread, float maxScale, int amount, int offsetRange, float maxTime, float minY, float maxY, ResourceLocation bubbleModelResourceLocation, boolean shouldRenderInBowl) {
         this.spread = spread;
         this.maxScale = maxScale;
         this.bubbles = new Bubble[amount];
+        this.offsetRange = offsetRange;
+        this.maxTime = maxTime;
+        this.minY = minY;
+        this.maxY = maxY;
+
         this.bubbleModelResourceLocation = bubbleModelResourceLocation;
         this.shouldRenderInBowl = shouldRenderInBowl;
+        this.randomSource = RandomSource.create();
+    }
+
+    @Override
+    public void prepareModel() {
+        model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(bubbleModelResourceLocation));
     }
 
     @Override
     public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
-        BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(bubbleModelResourceLocation));
-
-        for (int i = 0; i < bubbles.length; i++) {
-            renderBubble(time, poseStack, bufferSource, combinedLight, combinedOverlay, i, model, renderedWaterLevel);
-        }
+        IntStream.range(0, bubbles.length).forEach(i -> renderBubble(time, renderedWaterLevel, i, poseStack, bufferSource, combinedLight, combinedOverlay));
     }
 
-    public void renderBubble(long time, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, int bubbleIndex, BakedModel model, float renderedWaterLevel) {
+    public void renderBubble(long time, float renderedWaterLevel, int bubbleIndex, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         Bubble bubble = bubbles[bubbleIndex];
 
-        if (bubble == null || time >= bubble.time + bubble.offset + BUBBLE_MAX_TIME) {
-            bubbles[bubbleIndex] = bubble = new Bubble(0.5f + (RANDOM_SOURCE.nextFloat() * 2f - 1f) * spread, 0.5f + (RANDOM_SOURCE.nextFloat() * 2f - 1f) * spread, RANDOM_SOURCE.nextInt(-BUBBLE_OFFSET_RANGE, BUBBLE_OFFSET_RANGE + 1), time);
+        if (model == null) {
+            return;
         }
 
-        float progress = (time + bubble.offset) % BUBBLE_MAX_TIME / BUBBLE_MAX_TIME;
+        if (bubble == null || time >= bubble.time + bubble.offset + maxTime) {
+            float x = 0.5f + (randomSource.nextFloat() * 2f - 1f) * spread;
+            float z = 0.5f + (randomSource.nextFloat() * 2f - 1f) * spread;
+            int offset = randomSource.nextInt(-offsetRange, offsetRange + 1);
+
+            bubbles[bubbleIndex] = bubble = new Bubble(x, z, offset, time);
+        }
+
+        float progress = (time + bubble.offset) % maxTime / maxTime;
         float scale = progress * this.maxScale;
-        float y = BUBBLE_MIN_Y + renderedWaterLevel * progress * BUBBLE_MAX_Y;
+        float y = minY + renderedWaterLevel * progress * maxY;
 
         poseStack.pushPose();
 
@@ -80,8 +97,8 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     }
 
     @Override
-    public IHotpotSoupCustomElementRendererSerializer<?> getSerializer() {
-        return HotpotSoupCustomElements.HOTPOT_BUBBLE_RENDERER_SERIALIZER.get();
+    public Holder<IHotpotSoupCustomElementRendererSerializer<?>> getSerializer() {
+        return HotpotSoupCustomElementSerializers.BUBBLE_RENDERER_SERIALIZER;
     }
 
     public float getMaxScale() {
@@ -94,6 +111,22 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
 
     public int getAmount() {
         return bubbles.length;
+    }
+
+    public int getOffsetRange() {
+        return offsetRange;
+    }
+
+    public float getMaxTime() {
+        return maxTime;
+    }
+
+    public float getMinY() {
+        return minY;
+    }
+
+    public float getMaxY() {
+        return maxY;
     }
 
     public ResourceLocation getBubbleModelResourceLocation() {
@@ -109,6 +142,10 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
                 Codec.FLOAT.fieldOf("spread").forGetter(HotpotBubbleRenderer::getSpread),
                 Codec.FLOAT.fieldOf("max_scale").forGetter(HotpotBubbleRenderer::getMaxScale),
                 Codec.INT.fieldOf("amount").forGetter(HotpotBubbleRenderer::getAmount),
+                Codec.INT.fieldOf("offset_range").forGetter(HotpotBubbleRenderer::getOffsetRange),
+                Codec.FLOAT.fieldOf("max_time").forGetter(HotpotBubbleRenderer::getMaxTime),
+                Codec.FLOAT.fieldOf("min_y").forGetter(HotpotBubbleRenderer::getMinY),
+                Codec.FLOAT.fieldOf("max_y").forGetter(HotpotBubbleRenderer::getMaxY),
                 ResourceLocation.CODEC.fieldOf("bubble_model_resource_location").forGetter(HotpotBubbleRenderer::getBubbleModelResourceLocation),
                 Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotBubbleRenderer::shouldRenderInBowl)
         ).apply(renderer, HotpotBubbleRenderer::new));

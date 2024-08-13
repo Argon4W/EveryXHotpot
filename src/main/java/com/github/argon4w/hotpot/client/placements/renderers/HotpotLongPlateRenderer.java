@@ -33,11 +33,16 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         float x2 = HotpotPlacementSerializers.getSlotX(longPlate.getPos2()) + 0.25f;
         float z2 = HotpotPlacementSerializers.getSlotZ(longPlate.getPos2()) + 0.25f;
 
+        float positionX = (x1 + x2) / 2;
+        float positionZ = (z1 + z2) / 2;
+
         int plateCount = 0;
 
         for (; plateCount < longPlate.getPlateItemSlot().getRenderCount(8); plateCount ++) {
+            float positionY = plateCount * 0.0625f;
+
             poseStack.pushPose();
-            poseStack.translate((x1 + x2) / 2, plateCount * 0.0625f, (z1 + z2) / 2);
+            poseStack.translate(positionX, positionY, positionZ);
             poseStack.mulPose(Axis.YP.rotationDegrees(longPlate.getDirection().toYRot()));
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
@@ -50,19 +55,22 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         int i = 0;
 
         for (int k = 0; k < longPlate.getItemSlot1().getRenderCount(); k ++, i ++) {
-            renderLargePlateItem(longPlate, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot1(), x1, z1, i, plateCount);
+            renderLongPlateItem(longPlate, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot1(), x1, z1, i, plateCount);
         }
 
         for (int k = 0; k < longPlate.getItemSlot2().getRenderCount(); k ++, i ++) {
-            renderLargePlateItem(longPlate, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot2(), x1, z1, i, plateCount);
+            renderLongPlateItem(longPlate, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot2(), x1, z1, i, plateCount);
         }
     }
 
-    public void renderLargePlateItem(HotpotLongPlate longPlate, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, SimpleItemSlot slot, float x, float z, int index, int plateCount) {
+    public void renderLongPlateItem(HotpotLongPlate longPlate, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, SimpleItemSlot slot, float x, float z, int index, int plateCount) {
+        float positionY = 0.0175f + 0.0625f * plateCount;
+        float positionZ = -0.07f + index * 0.09f;
+
         poseStack.pushPose();
-        poseStack.translate(x, 0.0175f + 0.0625f * plateCount, z);
+        poseStack.translate(x, positionY, z);
         poseStack.mulPose(Axis.YN.rotationDegrees(longPlate.getDirection().toYRot()));
-        poseStack.translate(0f, 0f, -0.07f + index * 0.09f);
+        poseStack.translate(0f, 0f, positionZ);
         poseStack.mulPose(Axis.XN.rotationDegrees(75));
         poseStack.scale(0.35f, 0.35f, 0.35f);
 

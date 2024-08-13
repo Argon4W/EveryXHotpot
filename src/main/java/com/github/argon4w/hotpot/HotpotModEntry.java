@@ -7,7 +7,8 @@ import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRende
 import com.github.argon4w.hotpot.client.items.HotpotItemSpecialRenderers;
 import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
-import com.github.argon4w.hotpot.client.soups.HotpotSoupCustomElements;
+import com.github.argon4w.hotpot.client.soups.effects.HotpotSoupClientTickEffects;
+import com.github.argon4w.hotpot.client.soups.renderers.HotpotSoupCustomElementSerializers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.items.*;
@@ -153,7 +154,8 @@ public class HotpotModEntry {
         HotpotRegistries.DATA_COMPONENT_TYPES.register(modEventBus);
 
         HotpotSoupTypeSerializers.SOUP_TYPE_SERIALIZERS.register(modEventBus);
-        HotpotSoupCustomElements.CUSTOM_ELEMENTS.register(modEventBus);
+        HotpotSoupCustomElementSerializers.CUSTOM_ELEMENT_RENDERER_SERIALIZERS.register(modEventBus);
+        HotpotSoupClientTickEffects.SOUP_CLIENT_TICK_EFFECT_SERIALIZERS.register(modEventBus);
         HotpotContentSerializers.CONTENT_SERIALIZERS.register(modEventBus);
         HotpotContentRenderers.CONTENT_RENDERERS.register(modEventBus);
         HotpotItemContentSpecialRenderers.ITEM_CONTENT_SPECIAL_RENDERERS.register(modEventBus);

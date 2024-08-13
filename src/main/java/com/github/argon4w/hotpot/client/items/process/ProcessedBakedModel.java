@@ -89,6 +89,11 @@ public class ProcessedBakedModel implements BakedModel {
         public boolean equals(Object obj) {
             return obj == this || (obj instanceof ItemStackHolder holder && ItemStack.isSameItemSameComponents(itemStack, holder.itemStack));
         }
+
+        @Override
+        public int hashCode() {
+            return ItemStack.hashItemAndComponents(itemStack);
+        }
     }
 
     private class ProcessedOverrides extends ItemOverrides {

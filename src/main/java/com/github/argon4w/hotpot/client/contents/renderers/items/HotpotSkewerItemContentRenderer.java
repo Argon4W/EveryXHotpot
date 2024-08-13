@@ -14,12 +14,18 @@ public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecia
     public void render(AbstractHotpotItemStackContent itemStackContent, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel, float rotation, float x, float z) {
         poseStack.pushPose();
 
+        float positionX = 0.5f + x * 0.315f;
+        float positionZ = 0.5f + z * 0.315f;
+        float positionY = 0.56f - getFloatingCurve(rotation / 360.0f, 0.0f) * 0.03f + 0.42f * waterLevel;
+
         float degree = - ((float) Math.toDegrees(Math.safeAsin( (waterLevel - 0.35f) / (1.0f - 0.35f))) / 90.0f) * 85.0f;
+        float rotationY = rotation + 20.0f;
+        float rotationX = 270.0f + degree;
 
-        poseStack.translate(0.5f + x * 0.315f, 0.56f - getFloatingCurve(rotation / 360.0f, 0.0f) * 0.03f + 0.42f * waterLevel, 0.5f + z * 0.315f);
+        poseStack.translate(positionX, positionY, positionZ);
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation + 20.0f));
-        poseStack.mulPose(Axis.XN.rotationDegrees(270.0f + degree));
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
+        poseStack.mulPose(Axis.XN.rotationDegrees(rotationX));
 
         poseStack.scale(0.32f, 0.32f, 0.32f);
 

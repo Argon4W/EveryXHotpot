@@ -26,7 +26,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             return;
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupType(itemStack));
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupType(itemStack).key());
 
         List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
         List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);
@@ -67,12 +67,13 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         poseStack.pushPose();
 
         for (int i = 0; i < Math.min(4, bowlSkewers.size()); i ++) {
+            float positionZ = 0.215f + i * 0.19f;
             int skewerIndex = bowlSkewers.size() - i - 1;
             ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
 
             poseStack.pushPose();
 
-            poseStack.translate(0.05f, 1.0f, 0.215f + i * 0.19f);
+            poseStack.translate(0.05f, 1.0f, positionZ);
 
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
 
@@ -88,12 +89,13 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         }
 
         for (int i = 4; i < bowlSkewers.size(); i ++) {
+            float positionZ = 0.29f + (i - 4) * 0.15f;
             int skewerIndex = bowlSkewers.size() - i - 1;
             ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
 
             poseStack.pushPose();
 
-            poseStack.translate(0.2f, 1.02f, 0.29f + (i - 4) * 0.15f);
+            poseStack.translate(0.2f, 1.02f, positionZ);
 
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
 

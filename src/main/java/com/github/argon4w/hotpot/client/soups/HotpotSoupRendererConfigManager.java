@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadListener {
-    public static final HotpotSoupRendererConfig EMPTY_SOUP_RENDER_CONFIG = new HotpotSoupRendererConfig(Optional.empty(), false, List.of(), Optional.empty());
+    public static final HotpotSoupRendererConfig EMPTY_SOUP_RENDER_CONFIG = new HotpotSoupRendererConfig(Optional.empty(), false, Optional.empty(), List.of(), List.of());
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -32,28 +32,8 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
 
     @Override
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
-        Map<ResourceLocation, JsonElement> jsonElements = super.prepare(pResourceManager, pProfiler);
-
-        rendererConfigs.clear();
-        RegistryOps<JsonElement> ops = this.makeConditionalOps();
-
-        for (ResourceLocation resourceLocation : jsonElements.keySet()) {
-            if (resourceLocation.getPath().startsWith("_")) {
-                LOGGER.warn("Ignore \"{}\" beginning with \"_\" as it's used for metadata", resourceLocation);
-                continue;
-            }
-
-            Optional<HotpotSoupRendererConfig> result = HotpotSoupRendererConfig.CODEC.parse(ops, jsonElements.get(resourceLocation)).result();
-
-            if (result.isEmpty()) {
-                LOGGER.error("Error while loading soup render config \"{}\"", resourceLocation);
-                continue;
-            }
-
-            rendererConfigs.put(resourceLocation, result.get());
-        }
-
-        return jsonElements;
+        loadSoupRendererConfigs(this.makeConditionalOps(), super.prepare(pResourceManager, pProfiler));
+        return Map.of();
     }
 
     @Override
@@ -61,16 +41,13 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
 
     }
 
+    private void loadSoupRendererConfigs(RegistryOps<JsonElement> ops, Map<ResourceLocation, JsonElement> jsonElements) {
+        rendererConfigs.clear();
+        jsonElements.keySet().forEach(resourceLocation -> HotpotSoupRendererConfig.CODEC.parse(ops, jsonElements.get(resourceLocation)).result().ifPresentOrElse(rendererConfig -> rendererConfigs.put(resourceLocation, rendererConfig), () -> LOGGER.error("Error while loading soup renderer config \"{}\"", resourceLocation)));
+    }
+
     public static HotpotSoupRendererConfig getSoupRendererConfig(ResourceLocation resourceLocation) {
         return HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER.rendererConfigs.getOrDefault(resourceLocation, HotpotSoupRendererConfigManager.EMPTY_SOUP_RENDER_CONFIG);
-    }
-
-    public static HotpotSoupRendererConfig getSoupRendererConfig(HotpotSoupTypeHolder<?> soupTypeHolder) {
-        return getSoupRendererConfig(soupTypeHolder.key());
-    }
-
-    public static HotpotSoupRendererConfig getSoupRendererConfig(IHotpotSoup soupType) {
-        return getSoupRendererConfig(soupType.getSoupTypeHolder());
     }
 
     public static Collection<HotpotSoupRendererConfig> getAllSoupRendererConfigs() {

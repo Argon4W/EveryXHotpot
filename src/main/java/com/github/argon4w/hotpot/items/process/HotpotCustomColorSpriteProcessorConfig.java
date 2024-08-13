@@ -12,7 +12,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotCustomColorSpriteProcessorConfig(ResourceLocation id, HotpotColor color, ResourceLocation processorResourceLocation) implements IHotpotSpriteProcessorConfig {
     @Override
-    public Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializer() {
+    public Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializerHolder() {
         return HotpotSpriteProcessorConfigs.CUSTOM_COLOR_PROCESSOR_CONFIG;
     }
 

@@ -6,6 +6,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 
 public interface IHotpotContentSerializer<T extends IHotpotContent> {
-    T getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
+    T get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);
     MapCodec<T> getCodec();
 }

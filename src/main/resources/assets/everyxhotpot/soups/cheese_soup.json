@@ -6,6 +6,10 @@
       "spread": 0.35,
       "max_scale": 0.6,
       "amount": 55,
+      "offset_range": 5,
+      "max_time": 10.0,
+      "min_y": 0.5,
+      "max_y": 0.525,
       "bubble_model_resource_location": "everyxhotpot:soup/hotpot_cheese_soup_bubble",
       "should_render_in_bowl": false
     }
@@ -14,5 +18,35 @@
     "red": 255,
     "green": 230,
     "blue": 0
-  }
+  },
+  "client_tick_effects": [
+    {
+      "type": "everyxhotpot:empty_water_smoke_effect",
+      "particle_type": "minecraft:smoke",
+      "amount_per_tick": 25,
+      "x_offset": 0.5,
+      "y_offset": 0.4,
+      "z_offset": 0.5,
+      "x_scale": 0.28,
+      "z_scale": 0.28,
+      "x_speed": 0.0,
+      "y_speed": 0.005,
+      "z_speed": 0.0
+    },
+    {
+      "type": "everyxhotpot:vapor_effect",
+      "particle_type": "minecraft:campfire_cosy_smoke",
+      "rate_per_tick": 0.11,
+      "min_amount_per_tick": 0,
+      "max_amount_per_tick": 2,
+      "x_offset": 0.5,
+      "y_offset": 0.7,
+      "z_offset": 0.5,
+      "x_scale": 0.32,
+      "z_scale": 0.32,
+      "x_speed": 0.0,
+      "y_speed": 0.06,
+      "z_speed": 0.0
+    }
+  ]
 }

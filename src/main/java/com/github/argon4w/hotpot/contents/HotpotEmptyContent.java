@@ -36,7 +36,7 @@ public class HotpotEmptyContent implements IHotpotContent {
     public static class Serializer implements IHotpotContentSerializer<HotpotEmptyContent> {
 
         @Override
-        public HotpotEmptyContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotEmptyContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
             return get();
         }
 

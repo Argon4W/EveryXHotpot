@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupRendererConfigSpriteProcessorConfig(ResourceLocation id, ResourceLocation soupRendererConfigResourceLocation, ResourceLocation processorResourceLocation) implements IHotpotSpriteProcessorConfig {
     @Override
-    public Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializer() {
+    public Holder<IHotpotSpriteProcessorConfigSerializer<?>> getSerializerHolder() {
         return HotpotSpriteProcessorConfigs.SOUP_TYPE_PROCESSOR_CONFIG;
     }
 

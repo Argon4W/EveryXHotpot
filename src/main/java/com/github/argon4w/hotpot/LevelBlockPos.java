@@ -4,6 +4,8 @@ import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -41,10 +43,6 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return level.getChunkAt(pos);
     }
 
-    public <T> T mapPos(Function<BlockPos, T> function) {
-        return function.apply(pos);
-    }
-
     public LevelBlockPos updatePos(Function<BlockPos, BlockPos> function) {
         return new LevelBlockPos(level, function.apply(pos));
     }
@@ -75,6 +73,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public void playSound(SoundEvent soundEvent, float volume, float pitch) {
         level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, volume, pitch);
+    }
+
+    public void addParticle(ParticleType<?> type, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+        level.addParticle((ParticleOptions) type, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
     }
 
     public void removeBlock(boolean isMoving) {

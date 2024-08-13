@@ -28,9 +28,11 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
         int plateCount = 0;
 
         for (; plateCount < largeRoundPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
+            float positionY = plateCount * 0.0625f;
+
             poseStack.pushPose();
 
-            poseStack.translate(0.5f, plateCount * 0.0625f, 0.5f);
+            poseStack.translate(0.5f, positionY, 0.5f);
             poseStack.scale(0.66f, 0.66f, 0.66f);
 
             BakedModel model = context.getBlockRenderDispatcher().getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_large_round")));
@@ -42,25 +44,30 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
         int[] mapped = {0, 1, 3, 2};
 
         for (int i = 0; i < 4; i ++) {
-            SimpleItemSlot slot = largeRoundPlate.getSlots()[mapped[i]];
-            float startDegree = 360.0f / 4.0f * i;
+            renderLargeRoundPlateItem(context, poseStack, bufferSource, combinedLight, combinedOverlay, largeRoundPlate.getSlots()[mapped[i]], i, plateCount);
+        }
+    }
 
-            for (int j = 0; j < slot.getRenderCount(); j ++) {
-                float stepDegree = 360.0f / 16.0f * j;
+    public void renderLargeRoundPlateItem(BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, SimpleItemSlot slot, int i, int plateCount) {
+        float startDegree = 360.0f / 4.0f * i;
 
-                poseStack.pushPose();
+        for (int j = 0; j < slot.getRenderCount(); j ++) {
+            float stepDegree = 360.0f / 16.0f * j;
+            float positionY = 0.0175f + 0.0625f * plateCount;
+            float rotationY = 90.0f + startDegree + stepDegree;
 
-                poseStack.translate(0.5f, 0.0175f + 0.0625f * plateCount, 0.5f);
-                poseStack.mulPose(Axis.YP.rotationDegrees(90.0f + startDegree + stepDegree));
-                poseStack.translate(0.25f, 0.0f, 0.0f);
-                poseStack.mulPose(Axis.XP.rotationDegrees(75));
+            poseStack.pushPose();
 
-                poseStack.scale(0.35f, 0.35f, 0.35f);
+            poseStack.translate(0.5f, positionY, 0.5f);
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
+            poseStack.translate(0.25f, 0.0f, 0.0f);
+            poseStack.mulPose(Axis.XP.rotationDegrees(75));
 
-                context.getItemRenderer().renderStatic(slot.getItemStack(), ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, null, ItemDisplayContext.FIXED.ordinal());
+            poseStack.scale(0.35f, 0.35f, 0.35f);
 
-                poseStack.popPose();
-            }
+            context.getItemRenderer().renderStatic(slot.getItemStack(), ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, null, ItemDisplayContext.FIXED.ordinal());
+
+            poseStack.popPose();
         }
     }
 }

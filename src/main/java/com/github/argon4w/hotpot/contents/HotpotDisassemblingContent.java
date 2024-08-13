@@ -135,7 +135,7 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
         }
 
         @Override
-        public HotpotDisassemblingContent getFromItem(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotDisassemblingContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
             return new HotpotDisassemblingContent(itemStack, hotpotBlockEntity, pos);
         }
     }

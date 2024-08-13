@@ -28,7 +28,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
     }
 
     @Override
-    public Optional<IHotpotContentSerializer<?>> interact(int hitSection, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
+    public Optional<IHotpotContentSerializer<?>> interact(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos) {
         return Optional.empty();
     }
 
@@ -38,7 +38,7 @@ public class HotpotEmptySoup implements IHotpotSoup {
     }
 
     @Override
-    public List<IHotpotSoupSynchronizer> getSynchronizer(HotpotBlockEntity selfHotpotBlockEntity, LevelBlockPos selfPos) {
+    public List<IHotpotSoupSynchronizer> getSynchronizers(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return List.of();
     }
 

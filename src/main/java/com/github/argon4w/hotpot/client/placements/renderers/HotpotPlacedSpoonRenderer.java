@@ -25,9 +25,14 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
         float x2 = HotpotPlacementSerializers.getSlotX(placedSpoon.getPos2()) + 0.25f;
         float z2 = HotpotPlacementSerializers.getSlotZ(placedSpoon.getPos2()) + 0.25f;
 
+        float positionX = (x1 + x2) / 2;
+        float positionZ = (z1 + z2) / 2;
+
+        float rotationY = placedSpoon.getDirection().toYRot() + 180f;
+
         poseStack.pushPose();
-        poseStack.translate((x1 + x2) / 2, 0.12f, (z1 + z2) / 2);
-        poseStack.mulPose(Axis.YN.rotationDegrees(placedSpoon.getDirection().toYRot() + 180f));
+        poseStack.translate(positionX, 0.12f, positionZ);
+        poseStack.mulPose(Axis.YN.rotationDegrees(rotationY));
         poseStack.translate(0, 0, -0.24);
         poseStack.mulPose(Axis.XP.rotationDegrees(137));
         poseStack.scale(0.5f, 0.5f, 0.5f);

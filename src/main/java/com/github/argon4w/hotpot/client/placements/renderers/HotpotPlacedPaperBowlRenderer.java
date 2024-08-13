@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
@@ -24,16 +25,19 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
         float x = HotpotPlacementSerializers.getSlotX(placedPaperBowl.getPos()) + 0.25f;
         float z = HotpotPlacementSerializers.getSlotZ(placedPaperBowl.getPos()) + 0.25f;
 
-        ItemStack paperBowlItemStack = placedPaperBowl.getPaperBowlItemSlot().getItemStack();
+        SimpleItemSlot paperBowlItemSlot = placedPaperBowl.getPaperBowlItemSlot();
+        ItemStack paperBowlItemStack = paperBowlItemSlot.getItemStack();
 
-        int renderCount = HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemStack) ? Math.max(1, (paperBowlItemStack.getCount() * 4 / paperBowlItemStack.getMaxStackSize())) : 1;
+        int renderCount = HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemStack) ? paperBowlItemSlot.getRenderCount() : 1;
 
         for (int i = 0; i < renderCount; i ++) {
             float scale = (i % 2 == 0) ? 0.6f : (0.6f - 0.0001f);
+            float positionY = 0.001f + (0.5f - 3.0f / 16.0f) * 0.6f + 0.1f * i;
+            float rotationY = placedPaperBowl.getDirection().toYRot() + 90.0f;
 
             poseStack.pushPose();
-            poseStack.translate(x, 0.001f + (0.5f - 3.0f / 16.0f) * 0.6f + 0.1f * i, z);
-            poseStack.mulPose(Axis.YN.rotationDegrees(placedPaperBowl.getDirection().toYRot() + 90.0f));
+            poseStack.translate(x, positionY, z);
+            poseStack.mulPose(Axis.YN.rotationDegrees(rotationY));
             poseStack.scale(scale, scale, scale);
 
             context.getItemRenderer().renderStatic(null, paperBowlItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());

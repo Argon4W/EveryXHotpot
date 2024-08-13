@@ -30,13 +30,20 @@ public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRendere
 
         int color = DyedItemColor.getOrDefault(napkinHolder.getNapkinHolderItemSlot().getItemStack(), -1);
 
+        long posHashCode = pos.pos() != null ? pos.pos().hashCode() : 1L;
+        long randomSeed = color * napkinHolder.getPos() * posHashCode + napkinItemSlot.getItemStack().getCount() + 42L;
+
         RandomSource randomSource = RandomSource.create();
-        randomSource.setSeed(color * napkinHolder.getPos() * (pos.pos() != null ? pos.pos().hashCode() : 1L) + napkinItemSlot.getItemStack().getCount() + 42L);
+        randomSource.setSeed(randomSeed);
         float randomDegrees = Math.clamp((float) randomSource.nextGaussian(), 0.0f, 1.0f) * 15.0f - 7.5f;
 
+        float positionY = 0.5f * 0.68f;
+        float rotationY = 360.0f - napkinHolder.getDirection().toYRot() - randomDegrees;
+
         poseStack.pushPose();
-        poseStack.translate(x, 0.5f * 0.68f, z);
-        poseStack.mulPose(Axis.YP.rotationDegrees(360.0f - napkinHolder.getDirection().toYRot() - randomDegrees));
+
+        poseStack.translate(x, positionY, z);
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
         poseStack.scale(0.68f, 0.68f, 0.68f);
 
         context.getItemRenderer().renderStatic(napkinHolder.getNapkinHolderItemStack(), ItemDisplayContext.NONE, combinedLight, combinedOverlay, poseStack, bufferSource, null, 0);
