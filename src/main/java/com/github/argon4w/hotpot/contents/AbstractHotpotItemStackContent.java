@@ -31,14 +31,14 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
 
     public AbstractHotpotItemStackContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         this.itemStack = itemStack.split(1);
-        this.cookingTime = remapCookingTime(hotpotBlockEntity.getSoup(), this.itemStack, pos, hotpotBlockEntity).orElse(-1);
+        this.cookingTime = getCookingTime(hotpotBlockEntity.getSoup(), this.itemStack, pos, hotpotBlockEntity).orElse(-1);
         this.cookingProgress = 0;
         this.experience = 0;
     }
 
-    public abstract Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
-    public abstract Optional<ItemStack> remapResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
-    public abstract Optional<Double> remapExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<Integer> getCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<ItemStack> getResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+    public abstract Optional<Double> getExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
 
     @Override
     public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
@@ -80,14 +80,14 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
             return false;
         }
 
-        Optional<ItemStack> resultOptional = remapResult(hotpotBlockEntity.getSoup(), itemStack, pos, hotpotBlockEntity);
+        Optional<ItemStack> resultOptional = getResult(hotpotBlockEntity.getSoup(), itemStack, pos, hotpotBlockEntity);
         cookingTime = -1;
 
         if (resultOptional.isEmpty()) {
             return false;
         }
 
-        experience = remapExperience(hotpotBlockEntity.getSoup(), itemStack, pos, hotpotBlockEntity).orElse(0d);
+        experience = getExperience(hotpotBlockEntity.getSoup(), itemStack, pos, hotpotBlockEntity).orElse(0d);
         itemStack = resultOptional.get();
 
         return true;

@@ -1,11 +1,5 @@
-package com.github.argon4w.hotpot.client.items.process.processors;
+package com.github.argon4w.hotpot.client.items.sprites.processors;
 
-import com.github.argon4w.hotpot.client.HotpotColor;
-import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
-import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
-import com.github.argon4w.hotpot.items.process.HotpotCustomColorSpriteProcessorConfig;
-import com.github.argon4w.hotpot.items.process.HotpotSoupRendererConfigSpriteProcessorConfig;
-import com.github.argon4w.hotpot.items.process.IHotpotSpriteProcessorConfig;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.util.FastColor;
@@ -13,19 +7,6 @@ import net.minecraft.util.RandomSource;
 import org.joml.Math;
 
 public abstract class AbstractHotpotHalfSaucedSpriteProcessor implements IHotpotSpriteProcessor {
-    @Override
-    public HotpotColor getColor(IHotpotSpriteProcessorConfig config) {
-        if (config instanceof HotpotCustomColorSpriteProcessorConfig customColorConfig) {
-            return customColorConfig.color();
-        }
-
-        if (config instanceof HotpotSoupRendererConfigSpriteProcessorConfig soupTypeConfig) {
-            return HotpotSoupRendererConfigManager.getSoupRendererConfig(soupTypeConfig.soupRendererConfigResourceLocation()).color().orElse(HotpotColor.WHITE);
-        }
-
-        return HotpotColor.WHITE;
-    }
-
     @Override
     public void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, int frame) {
         float amplifier = 0.65f / getAverageGrayScale(original, frameSize, frame);

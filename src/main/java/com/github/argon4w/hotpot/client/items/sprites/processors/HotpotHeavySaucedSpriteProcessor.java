@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.client.items.process.processors;
+package com.github.argon4w.hotpot.client.items.sprites.processors;
 
 public class HotpotHeavySaucedSpriteProcessor extends AbstractHotpotHalfSaucedSpriteProcessor {
     @Override
@@ -7,7 +7,7 @@ public class HotpotHeavySaucedSpriteProcessor extends AbstractHotpotHalfSaucedSp
     }
 
     @Override
-    public String getProcessedSuffix() {
+    public String getSuffix() {
         return "_heavy_sauced";
     }
 }

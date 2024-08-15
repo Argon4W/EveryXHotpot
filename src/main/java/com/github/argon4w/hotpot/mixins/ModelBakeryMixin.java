@@ -1,14 +1,12 @@
 package com.github.argon4w.hotpot.mixins;
 
-import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
-import com.github.argon4w.hotpot.client.items.process.IHotpotSpriteProcessor;
-import com.github.argon4w.hotpot.client.items.process.ProcessedBakedModel;
-import com.github.argon4w.hotpot.client.items.process.SimpleModelBaker;
-import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpriteProcessor;
-import com.google.common.collect.Maps;
+import com.github.argon4w.hotpot.client.items.sprites.OverlayModelMap;
+import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
+import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
+import com.github.argon4w.hotpot.client.items.sprites.OverlayBakedModel;
+import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.*;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,20 +49,7 @@ public abstract class ModelBakeryMixin {
                 continue;
             }
 
-            HashMap<ResourceLocation, BakedModel> processedModels = Maps.newHashMap();
-
-            for (ResourceKey<IHotpotSpriteProcessor> key : HotpotSpriteProcessors.getSpriteProcessorRegistry().registryKeySet()) {
-                IHotpotSpriteProcessor processor = HotpotSpriteProcessors.getSpriteProcessorRegistry().get(key);
-
-                if (processor instanceof HotpotEmptySpriteProcessor) {
-                    continue;
-                }
-
-                SimpleModelBaker baker = new SimpleModelBaker(bakedTopLevelModels, unbakedCache, missingModel, material -> atlasSpriteGetter.get(modelResourceLocation, material), processor);
-                processedModels.put(key.location(), baker.bakeUncached(unbakedModel, BlockModelRotation.X0_Y0));
-            }
-
-            bakedTopLevelModels.put(modelResourceLocation, new ProcessedBakedModel(bakedTopLevelModels.get(modelResourceLocation), processedModels));
+            bakedTopLevelModels.put(modelResourceLocation, new OverlayBakedModel(HotpotSpriteProcessors.getSpriteProcessorRegistry().holders().collect(() -> new OverlayModelMap(bakedTopLevelModels.get(modelResourceLocation)), (map, reference) -> map.put(reference.key().location(), new SimpleModelBaker(bakedTopLevelModels, unbakedCache, missingModel, material -> atlasSpriteGetter.get(modelResourceLocation, material), reference.value()).bakeUncached(unbakedModel, BlockModelRotation.X0_Y0)), HashMap::putAll)));
         }
     }
 }

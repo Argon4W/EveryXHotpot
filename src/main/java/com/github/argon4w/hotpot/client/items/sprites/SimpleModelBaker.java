@@ -1,11 +1,12 @@
-package com.github.argon4w.hotpot.client.items.process;
+package com.github.argon4w.hotpot.client.items.sprites;
 
+import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,13 +45,7 @@ public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModel
     @Nullable
     @Override
     public BakedModel bakeUncached(UnbakedModel model, ModelState state, Function<Material, TextureAtlasSprite> sprites) {
-        return model instanceof BlockModel blockModel ? new ItemModelGenerator().generateBlockModel(getModelTextureGetter(), blockModel).bake(
-                this,
-                blockModel,
-                getModelTextureGetter(),
-                BlockModelRotation.X0_Y0,
-                false
-        ) : model.bake(this, getModelTextureGetter(), state);
+        return model instanceof BlockModel blockModel ? new ItemModelGenerator().generateBlockModel(getModelTextureGetter(), blockModel).bake(this, blockModel, getModelTextureGetter(), BlockModelRotation.X0_Y0, false) : model.bake(this, getModelTextureGetter(), state);
     }
 
     @Override
@@ -60,14 +55,6 @@ public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModel
     }
 
     public TextureAtlasSprite getModelTexture(Material material) {
-        return getModelTextureOrOriginal(material, getProcessedModelTexture(material));
-    }
-
-    public TextureAtlasSprite getProcessedModelTexture(Material material) {
-        return spriteGetter.apply(new Material(material.atlasLocation(), material.texture().withSuffix(processor.getProcessedSuffix())));
-    }
-
-    public TextureAtlasSprite getModelTextureOrOriginal(Material material, TextureAtlasSprite processedSprite) {
-        return processedSprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) ? spriteGetter.apply(material) : processedSprite;
+        return material.atlasLocation().equals(InventoryMenu.BLOCK_ATLAS) ? spriteGetter.apply(new Material(material.atlasLocation(), material.texture().withSuffix(processor.getSuffix()))) : spriteGetter.apply(material);
     }
 }

@@ -1,9 +1,6 @@
-package com.github.argon4w.hotpot.client.items.process;
+package com.github.argon4w.hotpot.client.items.sprites.processors;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.client.items.process.processors.HotpotEmptySpriteProcessor;
-import com.github.argon4w.hotpot.client.items.process.processors.HotpotHeavySaucedSpriteProcessor;
-import com.github.argon4w.hotpot.client.items.process.processors.HotpotLightSaucedSpriteProcessor;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -20,14 +17,6 @@ public class HotpotSpriteProcessors {
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotLightSaucedSpriteProcessor> LIGHT_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("light_sauced_processor", HotpotLightSaucedSpriteProcessor::new);
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotHeavySaucedSpriteProcessor> HEAVY_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("heavy_sauced_processor", HotpotHeavySaucedSpriteProcessor::new);
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotEmptySpriteProcessor> EMPTY_SPRITE_PROCESSOR = SPRITE_PROCESSORS.register("empty_sprite_processor", HotpotEmptySpriteProcessor::new);
-
-    public static IHotpotSpriteProcessor getEmptySpriteProcessor() {
-        return EMPTY_SPRITE_PROCESSOR.get();
-    }
-
-    public static IHotpotSpriteProcessor getSpriteProcessor(ResourceLocation resourceLocation) {
-        return getSpriteProcessorRegistry().get(resourceLocation);
-    }
 
     public static Registry<IHotpotSpriteProcessor> getSpriteProcessorRegistry() {
         return SPRITE_PROCESSOR_REGISTRY;

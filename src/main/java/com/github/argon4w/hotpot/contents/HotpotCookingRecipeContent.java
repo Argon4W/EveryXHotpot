@@ -2,8 +2,8 @@ package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.items.IHotpotSpecialHotpotCookingRecipeItem;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.recipes.IHotpotCookingRecipeHolder;
+import com.github.argon4w.hotpot.soups.recipes.holder.AbstractCookingRecipeHolder;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -22,23 +22,8 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     @Override
-    public Optional<AbstractCookingRecipe> getRecipe(ItemStack itemStack, LevelBlockPos pos) {
-        return HotpotCookingRecipeContent.COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).map(RecipeHolder::value);
-    }
-
-    @Override
-    public Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return itemStack.getItem() instanceof IHotpotSpecialHotpotCookingRecipeItem item ? Optional.of(item.getCookingTime(soupType, itemStack, pos, hotpotBlockEntity, this)) : super.remapCookingTime(soupType, itemStack, pos, hotpotBlockEntity);
-    }
-
-    @Override
-    public Optional<Double> remapExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return itemStack.getItem() instanceof IHotpotSpecialHotpotCookingRecipeItem item ? Optional.of(item.getExperience(soupType, itemStack, pos, hotpotBlockEntity, this)) : super.remapExperience(soupType, itemStack, pos, hotpotBlockEntity);
-    }
-
-    @Override
-    public Optional<ItemStack> remapResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return itemStack.getItem() instanceof IHotpotSpecialHotpotCookingRecipeItem item ? Optional.of(item.getResult(soupType, itemStack, pos, hotpotBlockEntity, this)) : super.remapResult(soupType, itemStack, pos, hotpotBlockEntity);
+    public Optional<IHotpotCookingRecipeHolder> getRecipe(ItemStack itemStack, LevelBlockPos pos) {
+        return HotpotCookingRecipeContent.COOKING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).map(RecipeHolder::value).map(AbstractCookingRecipeHolder::new);
     }
 
     @Override

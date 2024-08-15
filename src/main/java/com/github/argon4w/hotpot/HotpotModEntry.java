@@ -5,7 +5,8 @@ import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.contents.HotpotItemContentSpecialRenderers;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotItemSpecialRenderers;
-import com.github.argon4w.hotpot.client.items.process.HotpotSpriteProcessors;
+import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
+import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
 import com.github.argon4w.hotpot.client.soups.effects.HotpotSoupClientTickEffects;
 import com.github.argon4w.hotpot.client.soups.renderers.HotpotSoupCustomElementSerializers;
@@ -13,7 +14,7 @@ import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.items.*;
 import com.github.argon4w.hotpot.items.components.*;
-import com.github.argon4w.hotpot.items.process.HotpotSpriteProcessorConfigs;
+import com.github.argon4w.hotpot.items.sprites.HotpotSpriteConfigSerializers;
 import com.github.argon4w.hotpot.placements.HotpotLargeRoundPlate;
 import com.github.argon4w.hotpot.placements.HotpotLongPlate;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
@@ -112,7 +113,7 @@ public class HotpotModEntry {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotFoodEffectsDataComponent>> HOTPOT_FOOD_EFFECTS_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("food_effects_data_component", builder -> builder.persistent(HotpotFoodEffectsDataComponent.CODEC).networkSynchronized(HotpotFoodEffectsDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpicePackDataComponent>> HOTPOT_SPICE_PACK_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("spice_pack_data_component", builder -> builder.persistent(HotpotSpicePackDataComponent.CODEC).networkSynchronized(HotpotSpicePackDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSoupDataComponent>> HOTPOT_SOUP_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("soup_data_component", builder -> builder.persistent(HotpotSoupDataComponent.CODEC).networkSynchronized(HotpotSoupDataComponent.STREAM_CODEC).cacheEncoding());
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpriteProcessorConfigDataComponent>> HOTPOT_SPRITE_PROCESSOR_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("sprite_processor_config_data_component", builder -> builder.persistent(HotpotSpriteProcessorConfigDataComponent.CODEC).networkSynchronized(HotpotSpriteProcessorConfigDataComponent.STREAM_CODEC).cacheEncoding());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpriteConfigDataComponent>> HOTPOT_SPRITE_CONFIG_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("sprite_config_data_component", builder -> builder.persistent(HotpotSpriteConfigDataComponent.CODEC).networkSynchronized(HotpotSpriteConfigDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotNapkinHolderDataComponent>> HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("napkin_holder_data_component", builder -> builder.persistent(HotpotNapkinHolderDataComponent.CODEC).networkSynchronized(HotpotNapkinHolderDataComponent.STREAM_CODEC).cacheEncoding());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> HOTPOT_TAB = HotpotRegistries.CREATIVE_MODE_TABS.register("every_x_hotpot_tab", () -> CreativeModeTab.builder()
@@ -165,6 +166,7 @@ public class HotpotModEntry {
         HotpotSoupIngredients.ACTIONS.register(modEventBus);
         HotpotItemSpecialRenderers.ITEM_SPECIAL_RENDERERS.register(modEventBus);
         HotpotSpriteProcessors.SPRITE_PROCESSORS.register(modEventBus);
-        HotpotSpriteProcessorConfigs.SPRITE_PROCESSOR_CONFIGS.register(modEventBus);
+        HotpotSpriteColorProviders.SPRITE_COLOR_PROVIDERS.register(modEventBus);
+        HotpotSpriteConfigSerializers.SPRITE_CONFIGS.register(modEventBus);
     }
 }

@@ -50,6 +50,6 @@ public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
     @NotNull
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return HotpotModEntry.HOTPOT_SPICE_PACK_SPECIAL_RECIPE.get();
+        return HotpotModEntry.HOTPOT_NAPKIN_HOLDER_DYE_SPECIAL_RECIPE.get();
     }
 }

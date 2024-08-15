@@ -3,6 +3,8 @@ package com.github.argon4w.hotpot.contents;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.recipes.IHotpotCookingRecipeHolder;
+import com.github.argon4w.hotpot.soups.recipes.holder.BlastingRecipeHolder;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -21,17 +23,8 @@ public class HotpotSmeltingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     @Override
-    public Optional<AbstractCookingRecipe> getRecipe(ItemStack itemStack, LevelBlockPos pos) {
-        return HotpotSmeltingRecipeContent.SMELTING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).map(RecipeHolder::value);
-    }
-
-    @Override
-    public Optional<Integer> remapCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return super.remapCookingTime(soupType, itemStack, pos, hotpotBlockEntity).map(integer -> (int) (integer * 1.5f));
-    }
-
-    public static boolean hasSmeltingRecipe(ItemStack itemStack, LevelBlockPos pos) {
-        return HotpotSmeltingRecipeContent.SMELTING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).isPresent();
+    public Optional<IHotpotCookingRecipeHolder> getRecipe(ItemStack itemStack, LevelBlockPos pos) {
+        return HotpotSmeltingRecipeContent.SMELTING_RECIPE_QUICK_CHECK.getRecipeFor(new SingleRecipeInput(itemStack), pos.level()).map(RecipeHolder::value).map(BlastingRecipeHolder::new);
     }
 
     @Override

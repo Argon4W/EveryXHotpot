@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.mixins;
 
-import com.github.argon4w.hotpot.client.items.process.TintedBakedQuad;
+import com.github.argon4w.hotpot.client.items.sprites.TintedBakedQuad;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.mojang.blaze3d.vertex.PoseStack;

@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.client.items.process;
+package com.github.argon4w.hotpot.client.items.sprites;
 
 import com.github.argon4w.hotpot.client.HotpotColor;
 import net.minecraft.client.renderer.block.model.BakedQuad;
