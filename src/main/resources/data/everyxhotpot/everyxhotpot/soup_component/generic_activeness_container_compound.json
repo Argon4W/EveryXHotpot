@@ -1,0 +1,29 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:increase_activeness_on_content_update": {
+      "component": "everyxhotpot:generic_increase_activeness_on_content_update",
+      "index": 0
+    },
+    "everyxhotpot:get_extra_content_tick_speed_from_activeness": {
+      "component": "everyxhotpot:generic_get_extra_content_tick_speed_from_activeness",
+      "index": 1
+    },
+    "everyxhotpot:get_extra_experience_from_activeness": {
+      "component": "everyxhotpot:generic_get_extra_experience_from_activeness",
+      "index": 2
+    },
+    "everyxhotpot:drop_activeness": {
+      "component": "everyxhotpot:generic_drop_activeness",
+      "index": 3
+    },
+    "everyxhotpot:synchronize_activeness": {
+      "component": "everyxhotpot:generic_synchronize_activeness",
+      "index": 4
+    },
+    "everyxhotpot:activeness_container": {
+      "component": "everyxhotpot:generic_activeness_container",
+      "index": 5
+    }
+  }
+}

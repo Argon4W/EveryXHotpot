@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients;
 
-import com.github.argon4w.hotpot.LazyMapCodec;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

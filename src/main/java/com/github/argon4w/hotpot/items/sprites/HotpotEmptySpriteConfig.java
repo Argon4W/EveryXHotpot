@@ -29,8 +29,10 @@ public record HotpotEmptySpriteConfig() implements IHotpotSpriteConfig {
     }
 
     public static class Serializer implements IHotpotSpriteConfigSerializer<HotpotEmptySpriteConfig> {
-        public static final MapCodec<HotpotEmptySpriteConfig> CODEC = MapCodec.unit(HotpotEmptySpriteConfig::new);
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotEmptySpriteConfig> STREAM_CODEC = StreamCodec.of((pBuffer, pValue) -> {}, pBuffer -> new HotpotEmptySpriteConfig());
+        public static final HotpotEmptySpriteConfig UNIT = new HotpotEmptySpriteConfig();
+
+        public static final MapCodec<HotpotEmptySpriteConfig> CODEC = MapCodec.unit(UNIT);
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotEmptySpriteConfig> STREAM_CODEC = StreamCodec.unit(UNIT);
 
         @Override
         public MapCodec<HotpotEmptySpriteConfig> getCodec() {

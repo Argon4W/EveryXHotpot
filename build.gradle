@@ -20,6 +20,17 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 base {
@@ -119,6 +130,10 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    implementation "maven.modrinth:sodium:mc1.21-0.6.0-beta.1-neoforge"
+    implementation "maven.modrinth:iris:1.8.0-beta.2+1.21-neoforge"
+    implementation "maven.modrinth:R2OftAxM:ovSzG9pc"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

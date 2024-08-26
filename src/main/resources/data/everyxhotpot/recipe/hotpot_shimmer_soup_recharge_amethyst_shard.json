@@ -1,7 +1,7 @@
 {
   "type": "everyxhotpot:hotpot_soup_recharge_recipe",
   "target_soup": "everyxhotpot:shimmer_soup",
-  "recharge_waterlevel": 0.125,
+  "recharge_water_level": 0.0625,
   "ingredient": {
     "item": "minecraft:amethyst_shard"
   },

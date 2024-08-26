@@ -1,0 +1,13 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:update_content": {
+      "component": "everyxhotpot:generic_update_content",
+      "index": 0
+    },
+    "everyxhotpot:synchronize_tick": {
+      "component": "everyxhotpot:generic_synchronize_tick",
+      "index": 1
+    }
+  }
+}

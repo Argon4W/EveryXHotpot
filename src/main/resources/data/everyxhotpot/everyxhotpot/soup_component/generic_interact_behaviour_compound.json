@@ -1,0 +1,29 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:recharge_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_recharge_recipe_acceptor",
+      "index": 0
+    },
+    "everyxhotpot:base_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_base_recipe_acceptor",
+      "index": 1
+    },
+    "everyxhotpot:add_item_stack_content_by_hand": {
+      "component": "everyxhotpot:generic_add_item_stack_content_by_hand",
+      "index": 2
+    },
+    "everyxhotpot:remove_soup_when_crouching": {
+      "component": "everyxhotpot:generic_remove_soup_when_crouching",
+      "index": 3
+    },
+    "everyxhotpot:get_content_by_hand": {
+      "component": "everyxhotpot:generic_get_content_by_hand_and_hurt",
+      "index": 4
+    },
+    "everyxhotpot:drop_content_by_hand": {
+      "component": "everyxhotpot:generic_drop_content_by_hand",
+      "index": 5
+    }
+  }
+}

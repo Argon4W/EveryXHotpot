@@ -2,7 +2,6 @@ package com.github.argon4w.hotpot.client.soups.effects;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 

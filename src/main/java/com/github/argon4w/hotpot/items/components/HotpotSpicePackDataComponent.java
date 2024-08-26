@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.items.components;
 
+import com.github.argon4w.hotpot.HotpotMobEffectMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
@@ -38,16 +38,12 @@ public record HotpotSpicePackDataComponent(int charges, List<ItemStack> itemStac
         return new HotpotSpicePackDataComponent(charges, List.copyOf(itemStacks));
     }
 
-    public HotpotSpicePackDataComponent setItemStacks(List<ItemStack> itemStacks) {
-        return new HotpotSpicePackDataComponent(charges, List.copyOf(itemStacks));
-    }
-
     public HotpotSpicePackDataComponent addItemStack(ItemStack itemStack) {
         return itemStack.isEmpty() ? this : new HotpotSpicePackDataComponent(charges, Stream.concat(itemStacks.stream(), Stream.of(itemStack)).toList());
     }
 
-    public List<MobEffectInstance> getFoodEffects() {
-        return itemStacks.stream().map(this::getSuspiciousEffectHolder).map(SuspiciousEffectHolder::getSuspiciousEffects).map(SuspiciousStewEffects::effects).flatMap(Collection::stream).map(SuspiciousStewEffects.Entry::createEffectInstance).toList();
+    public HotpotMobEffectMap getFoodEffects() {
+        return new HotpotMobEffectMap(itemStacks.stream().map(this::getSuspiciousEffectHolder).map(SuspiciousEffectHolder::getSuspiciousEffects).map(SuspiciousStewEffects::effects).flatMap(Collection::stream).map(SuspiciousStewEffects.Entry::createEffectInstance).toList());
     }
 
     private SuspiciousEffectHolder getSuspiciousEffectHolder(ItemStack itemStack) {

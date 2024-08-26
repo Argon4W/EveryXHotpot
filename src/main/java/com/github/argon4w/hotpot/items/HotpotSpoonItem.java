@@ -2,12 +2,13 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
+import com.github.argon4w.hotpot.blocks.AbstractHotpotTablewareBlockEntity;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
-import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoup;
+import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
+import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -17,11 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 
 public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon> implements IHotpotTablewareItem {
-    private final boolean drained;
+    private final HotpotSoupStatus soupStatus;
 
-    public HotpotSpoonItem(boolean drained) {
+    public HotpotSpoonItem(HotpotSoupStatus soupStatus) {
         super(HotpotPlacementSerializers.PLACED_SPOON_SERIALIZER, new Properties().stacksTo(1));
-        this.drained = drained;
+        this.soupStatus = soupStatus;
     }
 
     @Override
@@ -35,12 +36,12 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
     }
 
     @Override
-    public void tablewareInteract(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractTablewareInteractiveBlockEntity blockEntity, LevelBlockPos selfPos) {
+    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractHotpotTablewareBlockEntity blockEntity, LevelBlockPos selfPos) {
         if (!(blockEntity instanceof HotpotBlockEntity hotpotBlockEntity)) {
             return;
         }
 
-        if (!(hotpotBlockEntity.getSoup() instanceof HotpotCookingRecipeSoup soup)) {
+        if (!hotpotBlockEntity.getSoup().hasComponentType(HotpotSoupComponentTypeSerializers.CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER)) {
             return;
         }
 
@@ -48,10 +49,10 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
             return;
         }
 
-        boolean drained = hotpotSpoonItem.isSpoonDrained();
+        HotpotSoupStatus soupStatus = hotpotSpoonItem.getSoupStatus();
         ItemStack offhandItemStack = player.getItemInHand(InteractionHand.OFF_HAND);
 
-        hotpotBlockEntity.setVelocity(drained ? 20 : 40);
+        hotpotBlockEntity.setVelocity(soupStatus.getStirringSpeed());
 
         if (!offhandItemStack.is(HotpotModEntry.HOTPOT_PAPER_BOWL)) {
             return;
@@ -65,7 +66,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         ArrayList<ItemStack> skewers = new ArrayList<>();
 
         for (int i = 0; i < 8; i ++) {
-            ItemStack content = blockEntity.getContentViaTableware(player, hand, i, 0, selfPos);
+            ItemStack content = blockEntity.getContentByTableware(player, hand, i, 0, selfPos);
 
             if (content.isEmpty()) {
                 continue;
@@ -105,19 +106,19 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
 
         ItemStack bowl = offhandItemStack.split(1);
 
-        HotpotPaperBowlItem.setPaperBowlSoupType(bowl, soup);
+        HotpotPaperBowlItem.setPaperBowlSoupType(bowl, hotpotBlockEntity.getSoup());
         HotpotPaperBowlItem.setPaperBowlItems(bowl, contents);
         HotpotPaperBowlItem.setPaperBowlSkewers(bowl, skewers);
-        HotpotPaperBowlItem.setPaperBowlDrained(bowl, drained);
+        HotpotPaperBowlItem.setPaperBowlSoupStatus(bowl, soupStatus);
 
-        selfPos.level().playSound(null, selfPos.pos(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
+        selfPos.playSound(SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
 
         if (!player.addItem(bowl)) {
             selfPos.dropItemStack(bowl);
         }
     }
 
-    public boolean isSpoonDrained() {
-        return drained;
+    public HotpotSoupStatus getSoupStatus() {
+        return soupStatus;
     }
 }

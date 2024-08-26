@@ -16,11 +16,13 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 
@@ -33,6 +35,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public BlockState getBlockState() {
         return level.getBlockState(pos);
+    }
+
+    public <T extends Comparable<T>, V extends T> void setBlockStateProperty(Property<T> property, V value) {
+        setBlockState(getBlockState().setValue(property, value));
     }
 
     public void setBlockState(BlockState blockState) {
@@ -72,7 +78,11 @@ public record LevelBlockPos(Level level, BlockPos pos) {
     }
 
     public void playSound(SoundEvent soundEvent, float volume, float pitch) {
-        level.playSound(null, pos, soundEvent, SoundSource.BLOCKS, volume, pitch);
+        playSound(soundEvent, SoundSource.BLOCKS, volume, pitch);
+    }
+
+    public void playSound(SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+        level.playSound(null, pos, soundEvent, soundSource, volume, pitch);
     }
 
     public void addParticle(ParticleType<?> type, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
@@ -85,6 +95,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public RegistryAccess registryAccess() {
         return level.registryAccess();
+    }
+
+    public RecipeManager getRecipeManager() {
+        return level.getRecipeManager();
     }
 
     public Vec3 toVec3() {

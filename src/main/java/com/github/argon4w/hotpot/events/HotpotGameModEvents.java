@@ -6,7 +6,6 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.github.argon4w.hotpot.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
-import com.github.argon4w.hotpot.network.HotpotUpdateSoupTypesPacket;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -16,25 +15,12 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class HotpotGameModEvents {
-    @SubscribeEvent
-    public static void onDataPackSync(OnDatapackSyncEvent event) {
-        HotpotUpdateSoupTypesPacket packet = new HotpotUpdateSoupTypesPacket(HotpotModEntry.HOTPOT_SOUP_TYPE_MANAGER.getAllSoupTypes());
-
-        if (event.getPlayer() == null) {
-            PacketDistributor.sendToAllPlayers(packet);
-        } else {
-            PacketDistributor.sendToPlayer(event.getPlayer(), packet);
-        }
-    }
-
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!event.getSource().is(HotpotModEntry.IN_HOTPOT_DAMAGE_KEY)) {
@@ -59,9 +45,9 @@ public class HotpotGameModEvents {
 
         ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
 
-        hotpotBlockEntity.setContent(0, () -> new HotpotPlayerContent(profile, true), pos);
-        hotpotBlockEntity.setContent(0, () -> new HotpotPlayerContent(profile, false), pos);
-        hotpotBlockEntity.setContent(0, () -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContentWhenEmpty(0, () -> new HotpotPlayerContent(profile, true), pos);
+        hotpotBlockEntity.setContentWhenEmpty(0, () -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContentWhenEmpty(0, () -> new HotpotPlayerContent(profile, false), pos);
     }
 
     @SubscribeEvent
@@ -77,11 +63,11 @@ public class HotpotGameModEvents {
             return;
         }
 
-        if (!HotpotFoodEffectsDataComponent.hasFoodEffects(itemStack)) {
+        if (!HotpotFoodEffectsDataComponent.hasEffects(itemStack)) {
             return;
         }
 
-        HotpotFoodEffectsDataComponent.getFoodEffects(itemStack).forEach(livingEntity::addEffect);
+        HotpotFoodEffectsDataComponent.getEffects(itemStack).forEach(livingEntity::addEffect);
     }
 
     @SubscribeEvent
@@ -101,6 +87,6 @@ public class HotpotGameModEvents {
             return;
         }
 
-        PotionContents.addPotionTooltip(HotpotFoodEffectsDataComponent.getFoodEffects(itemStack), event.getToolTip()::add, 1.0f, context.tickRate());
+        PotionContents.addPotionTooltip(HotpotFoodEffectsDataComponent.getEffects(itemStack), event.getToolTip()::add, 1.0f, context.tickRate());
     }
 }

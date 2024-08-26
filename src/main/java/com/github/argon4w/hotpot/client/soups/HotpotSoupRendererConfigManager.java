@@ -1,14 +1,14 @@
 package com.github.argon4w.hotpot.client.soups;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeHolder;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -44,6 +44,10 @@ public class HotpotSoupRendererConfigManager extends SimpleJsonResourceReloadLis
     private void loadSoupRendererConfigs(RegistryOps<JsonElement> ops, Map<ResourceLocation, JsonElement> jsonElements) {
         rendererConfigs.clear();
         jsonElements.keySet().forEach(resourceLocation -> HotpotSoupRendererConfig.CODEC.parse(ops, jsonElements.get(resourceLocation)).result().ifPresentOrElse(rendererConfig -> rendererConfigs.put(resourceLocation, rendererConfig), () -> LOGGER.error("Error while loading soup renderer config \"{}\"", resourceLocation)));
+    }
+
+    public static HotpotSoupRendererConfig getSoupRendererConfig(ResourceKey<HotpotComponentSoupType> key) {
+        return key == null ? EMPTY_SOUP_RENDER_CONFIG : getSoupRendererConfig(key.location());
     }
 
     public static HotpotSoupRendererConfig getSoupRendererConfig(ResourceLocation resourceLocation) {

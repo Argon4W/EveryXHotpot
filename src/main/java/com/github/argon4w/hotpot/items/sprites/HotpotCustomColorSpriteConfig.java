@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.items.sprites;
 
-import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.client.HotpotColor;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;

@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

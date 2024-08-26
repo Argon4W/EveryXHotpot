@@ -1,0 +1,13 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:add_item_entity_inside": {
+      "component": "everyxhotpot:generic_add_item_entity_inside",
+      "index": 0
+    },
+    "everyxhotpot:attack_entity_inside": {
+      "component": "everyxhotpot:generic_attack_entity_inside",
+      "index": 1
+    }
+  }
+}

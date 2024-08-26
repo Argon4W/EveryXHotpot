@@ -1,7 +1,7 @@
 {
   "type": "everyxhotpot:hotpot_soup_recharge_recipe",
   "target_soup": "everyxhotpot:spicy_soup",
-  "recharge_waterlevel": 0.333,
+  "recharge_water_level": 0.333,
   "ingredient": {
     "type": "neoforge:components",
     "items":"minecraft:potion",

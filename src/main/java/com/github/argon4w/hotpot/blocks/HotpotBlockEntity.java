@@ -1,30 +1,22 @@
 package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.contents.HotpotEmptyContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeSerializers;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
-import com.github.argon4w.hotpot.soups.recipes.HotpotSoupBaseRecipe;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
+import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupComponentSynchronizer;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupIngredientRecipe;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotIngredientRecipeInput;
-import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
-import com.github.argon4w.hotpot.soups.synchronizers.IHotpotSoupSynchronizer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
@@ -32,7 +24,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
 import java.util.List;
@@ -41,214 +32,166 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
-    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupBaseRecipe> BASE_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_BASE_RECIPE_TYPE.get());
+public class HotpotBlockEntity extends AbstractHotpotCodecTablewareBlockEntity<HotpotBlockEntity.Data, HotpotBlockEntity.PartialData> {
     public static final RecipeManager.CachedCheck<HotpotIngredientRecipeInput, HotpotSoupIngredientRecipe> INGREDIENT_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_INGREDIENT_RECIPE_TYPE.get());
 
-    private final NonNullList<IHotpotContent> contents = NonNullList.withSize(8, HotpotContentSerializers.getEmptyContent());
-    private IHotpotSoup soup = HotpotSoupTypeSerializers.buildEmptySoup();
+    public static final Codec<Data> CODEC = Codec.lazyInitialized(() ->
+            RecordCodecBuilder.create(data -> data.group(
+                Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved),
+                Codec.BOOL.fieldOf("infinite_water").forGetter(Data::isInfiniteWater),
+                Codec.INT.fieldOf("time").forGetter(Data::getTime),
+                Codec.INT.fieldOf("velocity").forGetter(Data::getVelocity),
+                Codec.DOUBLE.fieldOf("synchronized_water_level").forGetter(Data::getSynchronizedWaterLevel),
+                HotpotComponentSoupType.CODEC.fieldOf("soup").forGetter(Data::getSoup),
+                HotpotContentSerializers.LIST_INDEXED_CODEC.fieldOf("contents").forGetter(Data::getContents)
+            ).apply(data, Data::new))
+    );
+
+    public static final Codec<PartialData> PARTIAL_CODEC = Codec.lazyInitialized(() ->
+            RecordCodecBuilder.create(data -> data.group(
+                    Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved),
+                    Codec.BOOL.fieldOf("infinite_water").forGetter(PartialData::infiniteWater),
+                    Codec.INT.fieldOf("time").forGetter(PartialData::time),
+                    Codec.INT.fieldOf("velocity").forGetter(PartialData::velocity),
+                    Codec.DOUBLE.fieldOf("synchronized_water_level").forGetter(PartialData::synchronizedWaterLevel),
+                    HotpotComponentSoupType.UNSORTED_CODEC.fieldOf("soup").forGetter(PartialData::soup),
+                    HotpotContentSerializers.LIST_INDEXED_CODEC.optionalFieldOf("contents").forGetter(PartialData::contents)
+            ).apply(data, PartialData::new))
+    );
+
+    private Data data = getDefaultData();
 
     private boolean contentChanged = true;
     private boolean soupSynchronized = false;
 
-    public float renderedWaterLevel = -1f;
-
-    private int time = 0;
-    private int velocity = 0;
-
-    private boolean infiniteWater = false;
-    private boolean canBeRemoved = true;
+    public double renderedWaterLevel = -1;
 
     public HotpotBlockEntity(BlockPos pos, BlockState state) {
         super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
     }
 
-    private void getEmptyContent(int hitPos, LevelBlockPos selfPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
-        new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos)).getFirst(10, HotpotBlockEntity::hasEmptyContent, (hotpotBlockEntity, pos) -> getEmptyContentAt(hotpotBlockEntity, pos, hitPos, consumer));
+    @Override
+    public Data getDefaultData() {
+        return new Data(true, false, 0, 0, 0.0, HotpotComponentSoupType.loadEmptySoup(), NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()));
     }
 
-    public void getEmptyContentAt(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, int hitPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
+    @Override
+    public Codec<Data> getFullCodec() {
+        return CODEC;
+    }
+
+    @Override
+    public Codec<PartialData> getPartialCodec() {
+        return PARTIAL_CODEC;
+    }
+
+    @Override
+    public PartialData getPartialData(HolderLookup.Provider registryAccess) {
+        return new PartialData(data.canBeRemoved, data.infiniteWater, data.time, data.velocity, data.synchronizedWaterLevel, data.soup, contentChanged ? Optional.of(data.contents) : Optional.empty());
+    }
+
+    @Override
+    public Data getData() {
+        return data;
+    }
+
+    @Override
+    public void setData(Data data) {
+        this.data = data;
+    }
+
+    @Override
+    public BlockEntity getBlockEntity() {
+        return this;
+    }
+
+    @Override
+    public ItemStack getContentByTableware(Player player, InteractionHand hand, int hitPos, int hitLayer, LevelBlockPos pos) {
+        int contentPos = getContentPos(hitPos);
+        return data.soup.getContentResultByTableware(data.contents.get(contentPos), this, pos).map(c -> c.getContentItemStack(this, pos)).ifPresent(i -> setEmptyContent(contentPos, pos)).orElse(ItemStack.EMPTY);
+    }
+
+    @Override
+    public ItemStack setContentByTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        setContentByInteraction(hitPos, layer, player, hand, itemStack, selfPos);
+        return itemStack;
+    }
+
+    @Override
+    public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        data.soup.getPlayerInteractionResult(hitPos, player, hand, itemStack, this, selfPos).map(Holder::value).ifPresent(serializer -> setContentWhenEmpty(hitPos, () -> serializer.get(itemStack, this, selfPos), selfPos));
+    }
+
+    public void getContentByHand(int hitPos, LevelBlockPos pos) {
+        removeContent(getContentPos(hitPos), pos);
+    }
+
+    private void getEmptyContentFromNeighbors(int hitPos, LevelBlockPos selfPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
+        new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos)).getFirst(10, HotpotBlockEntity::hasEmptyContent, (hotpotBlockEntity, pos) -> getEmptyContentAtBlockEntity(hotpotBlockEntity, pos, hitPos, consumer));
+    }
+
+    public void getEmptyContentAtBlockEntity(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, int hitPos, TriConsumer<Integer, HotpotBlockEntity, LevelBlockPos> consumer) {
         IntStream.concat(IntStream.of(getContentPos(hitPos)), IntStream.range(0, 8)).filter(hotpotBlockEntity::isEmptyContent).findFirst().ifPresent(contentPos -> consumer.accept(contentPos, hotpotBlockEntity, pos));
     }
 
-    public void setContent(int hitPos, Supplier<IHotpotContent> supplier, LevelBlockPos selfPos) {
-        getEmptyContent(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> hotpotBlockEntity.placeContent(p, supplier.get(), pos));
+    public void setItemStackContentWhenEmpty(int hitPos, ItemStack itemStack, LevelBlockPos selfPos) {
+        data.soup.getContentSerializerResultFromItemStack(itemStack, this, selfPos).map(Holder::value).ifPresent(serializer -> setContentWhenEmpty(hitPos, () -> serializer.get(itemStack, this, selfPos), selfPos));
     }
 
-    public void tryPlaceItemStack(int hitPos, ItemStack itemStack, LevelBlockPos selfPos) {
-        soup.getContentSerializerFromItemStack(itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.get(itemStack, this, selfPos), selfPos));
+    public IHotpotResult<IHotpotContent> removeContent(int contentPos, LevelBlockPos pos) {
+        return data.soup.getContentResultByHand(data.soup.getContentResultByTableware(data.contents.get(contentPos), this, pos), this, pos).ifEmpty(() -> setEmptyContent(contentPos, pos));
     }
 
-    private void placeContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
-        contents.set(contentPos, content);
+    public void onRemove(LevelBlockPos pos) {
+        IntStream.range(0, data.contents.size()).forEach(i -> removeContent(i, pos).ifPresent(content -> pos.dropItemStack(content.getContentItemStack(this, pos))));
+    }
+
+    public void setContentWhenEmpty(int hitPos, Supplier<IHotpotContent> supplier, LevelBlockPos selfPos) {
+        getEmptyContentFromNeighbors(hitPos, selfPos, (p, hotpotBlockEntity, pos) -> hotpotBlockEntity.setContent(p, supplier.get(), pos));
+    }
+
+    public void setEmptyContent(int contentPos, LevelBlockPos pos) {
+        setContent(contentPos, HotpotContentSerializers.loadEmptyContent(), pos);
+    }
+
+    public void setContent(int contentPos, IHotpotContent content, LevelBlockPos pos) {
+        data.contents.set(contentPos, content);
+        markDataChanged();
         INGREDIENT_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotIngredientRecipeInput(this), pos.level()).map(RecipeHolder::value).ifPresent(recipe -> recipe.assemble(this).execute(this, pos));
-
-        markDataChanged();
     }
 
-    @Override
-    public ItemStack setContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        setContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
-        return itemStack;
-    }
-
-    @Override
-    public void setContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        Optional<HotpotSoupBaseRecipe> optional = BASE_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, getSoup()), selfPos.level()).map(RecipeHolder::value);
-
-        if (optional.isEmpty()) {
-            soup.interact(hitPos, player, hand, itemStack, this, selfPos).ifPresent(serializer -> setContent(hitPos, () -> serializer.get(itemStack, this, selfPos), selfPos));
-            return;
-        }
-
-        HotpotSoupBaseRecipe recipe = optional.get();
-        player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
-
-        setSoup(recipe.getResultSoup(), selfPos);
-        setWaterLevel(recipe.getResultWaterLevel(), selfPos);
-        selfPos.playSound(recipe.getSoundEvent());
-    }
-
-    @Override
-    public ItemStack getContentViaTableware(Player player, InteractionHand hand, int hitPos, int hitLayer, LevelBlockPos pos) {
-        int contentPos = getContentPos(hitPos);
-        IHotpotContent content = contents.get(contentPos);
-
-        if (content instanceof HotpotEmptyContent) {
-            return ItemStack.EMPTY;
-        }
-
-        ItemStack itemStack = soup.getContentViaTableware(content, content.takeOut(player, this, pos), this, pos);
-        contents.set(contentPos, HotpotContentSerializers.getEmptyContent());
-        markDataChanged();
-
-        return itemStack;
-    }
-
-    public void getContentViaHand(Player player, int hitPos, LevelBlockPos pos) {
-        int contentPos = getContentPos(hitPos);
-        IHotpotContent content = contents.get(contentPos);
-
-        if (content instanceof HotpotEmptyContent) {
-            return;
-        }
-
-        soup.getContentViaHand(content, soup.getContentViaTableware(content, content.takeOut(player, this, pos), this, pos), this, pos);
-        contents.set(contentPos, HotpotContentSerializers.getEmptyContent());
-
-        markDataChanged();
-    }
-
-    public int getContentPos(int hitPos) {
-        double size = (360f / 8f);
-        double degree =  (time / 20f / 60f) * 360f + size / 2f;
-
-        int root = (int) Math.floor((degree % 360f) / size);
-        int contentPos = hitPos - root;
-
-        return contentPos < 0 ? 8 + contentPos : contentPos;
-    }
-
-    public void setSoup(IHotpotSoup soup, LevelBlockPos pos) {
-        this.soup = soup;
-
-        boolean hotpotLit = this.soup.isHotpotLit(this, pos);
-        pos.setBlockState(pos.getBlockState().setValue(HotpotBlock.HOTPOT_LIT, hotpotLit));
-
-        markDataChanged();
-        pos.markAndNotifyBlock();
+    public void setSoup(HotpotComponentSoup soup, LevelBlockPos pos) {
+        this.data.soup = soup;
+        pos.setBlockStateProperty(HotpotBlock.HOTPOT_LIT, this.data.soup.isHotpotLit(this, pos));
+        markDataChangedAndNotify(pos);
     }
 
     private void synchronizeSoup(LevelBlockPos selfPos) {
         Map<HotpotBlockEntity, LevelBlockPos> neighbors = new BlockEntityFinder<>(selfPos, HotpotBlockEntity.class, (hotpotBlockEntity, pos) -> isSameSoup(selfPos, pos) && !hotpotBlockEntity.soupSynchronized).getAll();
-        List<IHotpotSoupSynchronizer> synchronizers = soup.getSynchronizers(this, selfPos);
+        List<IHotpotSoupComponentSynchronizer> synchronizers = data.soup.getSoupComponentSynchronizers(this, selfPos);
 
         neighbors.forEach((key, value) -> key.setSoupSynchronized());
         synchronizers.forEach(synchronizer -> synchronizeSoup(neighbors, synchronizer));
     }
 
-    private void synchronizeSoup(Map<HotpotBlockEntity, LevelBlockPos> neighbors, IHotpotSoupSynchronizer synchronizer) {
-        neighbors.forEach(synchronizer::collect);
-        neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.integrate(neighbors.size(), hotpotBlockEntity, pos));
+    private void synchronizeSoup(Map<HotpotBlockEntity, LevelBlockPos> neighbors, IHotpotSoupComponentSynchronizer synchronizer) {
+        neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.collect(hotpotBlockEntity, hotpotBlockEntity.getSoup(), pos));
+        neighbors.forEach((hotpotBlockEntity, pos) -> synchronizer.apply(neighbors.size(), hotpotBlockEntity, hotpotBlockEntity.getSoup(), pos));
     }
 
-    public void removeContent(int pos, LevelBlockPos selfPos) {
-        IHotpotContent content = contents.get(pos);
-        soup.getContentViaHand(content, soup.getContentViaTableware(content, content.takeOut(null, this, selfPos), this, selfPos), this, selfPos);
-        contents.set(pos, HotpotContentSerializers.getEmptyContent());
+    public int getContentPos(int hitPos) {
+        double size = (360.0 / 8.0);
+        double degree =  (data.time / 20.0 / 60.0) * 360.0 + size / 2.0;
+
+        int base = (int) Math.floor((degree % 360.0) / size);
+        int contentPos = hitPos - base;
+
+        return contentPos < 0 ? 8 + contentPos : contentPos;
     }
 
-    public void onRemove(LevelBlockPos pos) {
-        IntStream.range(0, contents.size()).forEach(i -> removeContent(i, pos));
+    public void markDataChangedAndNotify(LevelBlockPos pos) {
         markDataChanged();
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, this::getUpdatePacketTag);
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        super.loadAdditional(compoundTag, registryAccess);
-
-        canBeRemoved = !compoundTag.contains("CanBeRemoved", Tag.TAG_ANY_NUMERIC) || compoundTag.getBoolean("CanBeRemoved");
-        infiniteWater = compoundTag.contains("InfiniteWater", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteWater");
-        time = compoundTag.contains("Time", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Time") : 0;
-        velocity = compoundTag.contains("Velocity", Tag.TAG_ANY_NUMERIC) ? compoundTag.getInt("Velocity") : 0;
-        soup = HotpotSoupTypeSerializers.loadSoup(compoundTag.getCompound("Soup"), registryAccess);
-
-        if (compoundTag.contains("Contents", Tag.TAG_LIST)) {
-            contents.clear();
-            HotpotContentSerializers.loadContents(compoundTag.getList("Contents", Tag.TAG_COMPOUND), registryAccess, contents);
-        }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        super.saveAdditional(compoundTag, registryAccess);
-
-        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
-        compoundTag.putBoolean("InfiniteWater", infiniteWater);
-        compoundTag.putInt("Time", time);
-        compoundTag.putInt("Velocity", velocity);
-
-        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
-        compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
-    }
-
-    public CompoundTag getUpdatePacketTag(BlockEntity blockEntity, HolderLookup.Provider registryAccess) {
-        CompoundTag compoundTag = new CompoundTag();
-
-        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
-        compoundTag.putBoolean("InfiniteWater", infiniteWater);
-        compoundTag.putInt("Time", time);
-        compoundTag.putInt("Velocity", velocity);
-        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
-
-        if (!contentChanged) {
-            return compoundTag;
-        }
-
-        compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
-
-        contentChanged = false;
-        return compoundTag;
-    }
-
-    @NotNull
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registryAccess) {
-        CompoundTag compoundTag = super.getUpdateTag(registryAccess);
-
-        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
-        compoundTag.putBoolean("InfiniteWater", infiniteWater);
-        compoundTag.putInt("Time", time);
-        compoundTag.putInt("Velocity", velocity);
-        compoundTag.put("Soup", HotpotSoupTypeSerializers.saveSoup(soup, registryAccess));
-        compoundTag.put("Contents", HotpotContentSerializers.saveContents(contents, registryAccess));
-
-        return compoundTag;
+        pos.markAndNotifyBlock();
     }
 
     public void markDataChanged() {
@@ -256,8 +199,24 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         setChanged();
     }
 
+    public void awardExperience(double experience, LevelBlockPos pos) {
+        data.soup.onAwardExperience(experience, this, pos);
+    }
+
+    public double getSynchronizedWaterLevel() {
+        return data.synchronizedWaterLevel;
+    }
+
+    public double getWaterLevel() {
+        return getSoup().getWaterLevel();
+    }
+
+    public void setWaterLevel(double waterLevel, LevelBlockPos pos) {
+        data.soup.setWaterLevel(waterLevel, this, pos);
+    }
+
     public boolean hasEmptyContent() {
-        return contents.stream().anyMatch(content -> content instanceof HotpotEmptyContent);
+        return data.contents.stream().anyMatch(content -> content instanceof HotpotEmptyContent);
     }
 
     public static boolean hasEmptyContent(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
@@ -268,57 +227,44 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         return getContent(pos) instanceof HotpotEmptyContent;
     }
 
-    public void setContent(int i, IHotpotContent content) {
-        contents.set(i, content);
-        markDataChanged();
-    }
-
     public NonNullList<IHotpotContent> getContents() {
-        return contents;
+        return data.contents;
     }
 
     public IHotpotContent getContent(int pos) {
-        return contents.get(pos);
+        return data.contents.get(pos);
     }
 
-    public IHotpotSoup getSoup() {
-        return soup;
-    }
-
-    public float getWaterLevel() {
-        return getSoup().getWaterLevel();
-    }
-
-    public void setWaterLevel(float waterLevel, LevelBlockPos pos) {
-        soup.setWaterLevel(this, pos, waterLevel);
+    public HotpotComponentSoup getSoup() {
+        return data.soup;
     }
 
     public int getTime() {
-        return time;
+        return data.time;
     }
 
     public int getVelocity() {
-        return velocity;
+        return data.velocity;
     }
 
     public void setVelocity(int velocity) {
-        this.velocity = velocity;
+        this.data.velocity = velocity;
     }
 
     public boolean isInfiniteWater() {
-        return infiniteWater;
+        return data.infiniteWater;
     }
 
     public void setInfiniteWater(boolean infiniteWater) {
-        this.infiniteWater = infiniteWater;
+        this.data.infiniteWater = infiniteWater;
     }
 
     public boolean canBeRemoved() {
-        return canBeRemoved;
+        return data.canBeRemoved;
     }
 
     public void setCanBeRemoved(boolean canBeRemoved) {
-        this.canBeRemoved = canBeRemoved;
+        this.data.canBeRemoved = canBeRemoved;
     }
 
     public void setSoupSynchronized(boolean soupSynchronized) {
@@ -336,29 +282,31 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity hotpotBlockEntity) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
 
-        hotpotBlockEntity.time += 1 + hotpotBlockEntity.velocity;
-        hotpotBlockEntity.velocity = Math.max(0, hotpotBlockEntity.velocity - 1);
+        hotpotBlockEntity.data.time += 1 + hotpotBlockEntity.data.velocity;
+        hotpotBlockEntity.data.velocity = Math.max(0, hotpotBlockEntity.data.velocity - 1);
 
         if (!hotpotBlockEntity.isSoupSynchronized()) {
             hotpotBlockEntity.synchronizeSoup(selfPos);
         }
 
         hotpotBlockEntity.setSoupSynchronized(false);
-        float tickSpeed = hotpotBlockEntity.soup.getContentTickSpeed(hotpotBlockEntity, selfPos);
+
+        hotpotBlockEntity.data.synchronizedWaterLevel = hotpotBlockEntity.getWaterLevel();
+        double tickSpeed = hotpotBlockEntity.data.soup.getContentTickSpeed(hotpotBlockEntity, selfPos);
 
         if (hotpotBlockEntity.getWaterLevel() > 0.0f) {
-            IntStream.range(0, hotpotBlockEntity.contents.size()).forEach(i -> tickContents(i, hotpotBlockEntity, selfPos, tickSpeed));
+            IntStream.range(0, hotpotBlockEntity.data.contents.size()).forEach(i -> tickContents(i, hotpotBlockEntity, selfPos, tickSpeed));
         }
 
         level.sendBlockUpdated(pos, state, state, 3);
         hotpotBlockEntity.setChanged();
     }
 
-    public static void tickContents(int pos, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos, float tickSpeed) {
-        IHotpotContent content = hotpotBlockEntity.contents.get(pos);
+    public static void tickContents(int pos, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos selfPos, double tickSpeed) {
+        IHotpotContent content = hotpotBlockEntity.data.contents.get(pos);
 
-        if (content.tick(hotpotBlockEntity, selfPos, tickSpeed)) {
-            hotpotBlockEntity.soup.onContentUpdate(content, hotpotBlockEntity, selfPos);
+        if (content.onTick(hotpotBlockEntity, selfPos, tickSpeed)) {
+            hotpotBlockEntity.data.soup.onContentUpdate(content, hotpotBlockEntity, selfPos);
             hotpotBlockEntity.markDataChanged();
         }
 
@@ -377,7 +325,7 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
             return false;
         }
 
-        return selfBlockEntity.getSoup().getSoupTypeHolder().equals(hotpotBlockEntity.getSoup().getSoupTypeHolder());
+        return selfBlockEntity.getSoup().soupTypeHolder().equals(hotpotBlockEntity.getSoup().soupTypeHolder());
     }
 
     public static int getHitPos(BlockPos blockPos, Vec3 pos) {
@@ -391,5 +339,72 @@ public class HotpotBlockEntity extends AbstractTablewareInteractiveBlockEntity {
         degree = degree < 0f ? degree + 360f : degree;
 
         return (int) Math.floor(degree / size);
+    }
+
+    public static class Data {
+        private boolean canBeRemoved;
+        private boolean infiniteWater;
+        private int time;
+        private int velocity;
+        private double synchronizedWaterLevel;
+        private HotpotComponentSoup soup;
+        private NonNullList<IHotpotContent> contents;
+
+        public Data(boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, NonNullList<IHotpotContent> contents) {
+            this.canBeRemoved = canBeRemoved;
+            this.infiniteWater = infiniteWater;
+            this.time = time;
+            this.velocity = velocity;
+            this.synchronizedWaterLevel = synchronizedWaterLevel;
+            this.soup = soup;
+            this.contents = contents;
+        }
+
+        public Data fromPartialData(PartialData partialData) {
+            this.canBeRemoved = partialData.canBeRemoved;
+            this.infiniteWater = partialData.infiniteWater;
+            this.time = partialData.time;
+            this.velocity = partialData.velocity;
+            this.synchronizedWaterLevel = partialData.synchronizedWaterLevel;
+            this.soup = partialData.soup;
+            this.contents = partialData.contents.orElse(contents);
+
+            return this;
+        }
+
+        public boolean canBeRemoved() {
+            return canBeRemoved;
+        }
+
+        public boolean isInfiniteWater() {
+            return infiniteWater;
+        }
+
+        public int getTime() {
+            return time;
+        }
+
+        public int getVelocity() {
+            return velocity;
+        }
+
+        public double getSynchronizedWaterLevel() {
+            return synchronizedWaterLevel;
+        }
+
+        public HotpotComponentSoup getSoup() {
+            return soup;
+        }
+
+        public NonNullList<IHotpotContent> getContents() {
+            return contents;
+        }
+    }
+
+    public record PartialData(boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, Optional<NonNullList<IHotpotContent>> contents) implements AbstractHotpotCodecTablewareBlockEntity.PartialData<Data> {
+        @Override
+        public Data update(Data data) {
+            return data.fromPartialData(this);
+        }
     }
 }

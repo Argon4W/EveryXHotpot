@@ -20,12 +20,12 @@ import java.util.stream.IntStream;
 
 public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     private final Bubble[] bubbles;
-    private final float spread;
-    private final float maxScale;
+    private final double spread;
+    private final double maxScale;
     private final int offsetRange;
-    private final float maxTime;
-    private final float minY;
-    private final float maxY;
+    private final double maxTime;
+    private final double minY;
+    private final double maxY;
 
     private final ResourceLocation bubbleModelResourceLocation;
     private final boolean shouldRenderInBowl;
@@ -33,7 +33,7 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
 
     private BakedModel model;
 
-    public HotpotBubbleRenderer(float spread, float maxScale, int amount, int offsetRange, float maxTime, float minY, float maxY, ResourceLocation bubbleModelResourceLocation, boolean shouldRenderInBowl) {
+    public HotpotBubbleRenderer(double spread, double maxScale, int amount, int offsetRange, double maxTime, double minY, double maxY, ResourceLocation bubbleModelResourceLocation, boolean shouldRenderInBowl) {
         this.spread = spread;
         this.maxScale = maxScale;
         this.bubbles = new Bubble[amount];
@@ -53,11 +53,11 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
     }
 
     @Override
-    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double renderedWaterLevel) {
         IntStream.range(0, bubbles.length).forEach(i -> renderBubble(time, renderedWaterLevel, i, poseStack, bufferSource, combinedLight, combinedOverlay));
     }
 
-    public void renderBubble(long time, float renderedWaterLevel, int bubbleIndex, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void renderBubble(long time, double renderedWaterLevel, int bubbleIndex, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         Bubble bubble = bubbles[bubbleIndex];
 
         if (model == null) {
@@ -65,21 +65,21 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         }
 
         if (bubble == null || time >= bubble.time + bubble.offset + maxTime) {
-            float x = 0.5f + (randomSource.nextFloat() * 2f - 1f) * spread;
-            float z = 0.5f + (randomSource.nextFloat() * 2f - 1f) * spread;
+            double x = 0.5 + (randomSource.nextDouble() * 2.0 - 1.0) * spread;
+            double z = 0.5 + (randomSource.nextDouble() * 2.0 - 1.0) * spread;
             int offset = randomSource.nextInt(-offsetRange, offsetRange + 1);
 
             bubbles[bubbleIndex] = bubble = new Bubble(x, z, offset, time);
         }
 
-        float progress = (time + bubble.offset) % maxTime / maxTime;
-        float scale = progress * this.maxScale;
-        float y = minY + renderedWaterLevel * progress * maxY;
+        double progress = (time + bubble.offset) % maxTime / maxTime;
+        double scale = progress * this.maxScale;
+        double y = minY + renderedWaterLevel * progress * maxY;
 
         poseStack.pushPose();
 
         poseStack.translate(bubble.x, y, bubble.z);
-        poseStack.scale(scale, scale, scale);
+        poseStack.scale((float) scale, (float) scale, (float) scale);
 
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
@@ -101,11 +101,11 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         return HotpotSoupCustomElementSerializers.BUBBLE_RENDERER_SERIALIZER;
     }
 
-    public float getMaxScale() {
+    public double getMaxScale() {
         return maxScale;
     }
 
-    public float getSpread() {
+    public double getSpread() {
         return spread;
     }
 
@@ -117,15 +117,15 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         return offsetRange;
     }
 
-    public float getMaxTime() {
+    public double getMaxTime() {
         return maxTime;
     }
 
-    public float getMinY() {
+    public double getMinY() {
         return minY;
     }
 
-    public float getMaxY() {
+    public double getMaxY() {
         return maxY;
     }
 
@@ -133,19 +133,19 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         return bubbleModelResourceLocation;
     }
 
-    public record Bubble(float x, float z, int offset, long time) {
+    public record Bubble(double x, double z, int offset, long time) {
 
     }
 
     public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotBubbleRenderer> {
         public static final MapCodec<HotpotBubbleRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
-                Codec.FLOAT.fieldOf("spread").forGetter(HotpotBubbleRenderer::getSpread),
-                Codec.FLOAT.fieldOf("max_scale").forGetter(HotpotBubbleRenderer::getMaxScale),
+                Codec.DOUBLE.fieldOf("spread").forGetter(HotpotBubbleRenderer::getSpread),
+                Codec.DOUBLE.fieldOf("max_scale").forGetter(HotpotBubbleRenderer::getMaxScale),
                 Codec.INT.fieldOf("amount").forGetter(HotpotBubbleRenderer::getAmount),
                 Codec.INT.fieldOf("offset_range").forGetter(HotpotBubbleRenderer::getOffsetRange),
-                Codec.FLOAT.fieldOf("max_time").forGetter(HotpotBubbleRenderer::getMaxTime),
-                Codec.FLOAT.fieldOf("min_y").forGetter(HotpotBubbleRenderer::getMinY),
-                Codec.FLOAT.fieldOf("max_y").forGetter(HotpotBubbleRenderer::getMaxY),
+                Codec.DOUBLE.fieldOf("max_time").forGetter(HotpotBubbleRenderer::getMaxTime),
+                Codec.DOUBLE.fieldOf("min_y").forGetter(HotpotBubbleRenderer::getMinY),
+                Codec.DOUBLE.fieldOf("max_y").forGetter(HotpotBubbleRenderer::getMaxY),
                 ResourceLocation.CODEC.fieldOf("bubble_model_resource_location").forGetter(HotpotBubbleRenderer::getBubbleModelResourceLocation),
                 Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotBubbleRenderer::shouldRenderInBowl)
         ).apply(renderer, HotpotBubbleRenderer::new));

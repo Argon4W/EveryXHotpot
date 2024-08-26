@@ -19,11 +19,11 @@ import org.joml.Math;
 import java.util.List;
 
 public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomElementRenderer {
-    private final float rotationTimeOffset;
-    private final float positionTimeOffset;
-    private final float rotationScale;
-    private final float positionScale;
-    private final float positionOffset;
+    private final double rotationTimeOffset;
+    private final double positionTimeOffset;
+    private final double rotationScale;
+    private final double positionScale;
+    private final double positionOffset;
     private final RotationAxis rotationAxis;
 
     private final ResourceLocation elementModelResourceLocation;
@@ -31,7 +31,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     private BakedModel model;
 
-    public HotpotSoupFloatingElementRenderer(float rotationTimeOffset, float positionTimeOffset, float rotationScale, float positionScale, float positionOffset, RotationAxis rotationAxis, ResourceLocation elementModelResourceLocation, boolean shouldRenderInBowl) {
+    public HotpotSoupFloatingElementRenderer(double rotationTimeOffset, double positionTimeOffset, double rotationScale, double positionScale, double positionOffset, RotationAxis rotationAxis, ResourceLocation elementModelResourceLocation, boolean shouldRenderInBowl) {
         this.rotationTimeOffset = rotationTimeOffset;
         this.positionTimeOffset = positionTimeOffset;
         this.rotationScale = rotationScale;
@@ -49,20 +49,20 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     }
 
     @Override
-    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel) {
+    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel) {
         if (model == null) {
             return;
         }
 
-        float t = time / 20f / 5f;
-        float y = waterLevel * 0.4375f + 0.5625f;
+        double t = time / 20.0 / 5.0;
+        double y = waterLevel * 0.4375 + 0.5625;
 
-        float rotation = Math.sin(rotationTimeOffset + t * (float) Math.PI) * rotationScale;
-        float position = Math.cos(positionTimeOffset + t * (float) Math.PI) * positionScale + y + positionOffset;
+        double rotation = Math.sin(rotationTimeOffset + t * (float) Math.PI) * rotationScale;
+        double position = Math.cos(positionTimeOffset + t * (float) Math.PI) * positionScale + y + positionOffset;
 
         poseStack.pushPose();
-        poseStack.translate(0f, position, 0f);
-        poseStack.mulPose(rotationAxis.getAxis().rotationDegrees(rotation));
+        poseStack.translate(0, position, 0);
+        poseStack.mulPose(rotationAxis.getAxis().rotationDegrees((float) rotation));
 
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
 
@@ -84,23 +84,23 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         return HotpotSoupCustomElementSerializers.FLOATING_ELEMENT_RENDERER_SERIALIZER;
     }
 
-    public float getRotationTimeOffset() {
+    public double getRotationTimeOffset() {
         return rotationTimeOffset;
     }
 
-    public float getPositionTimeOffset() {
+    public double getPositionTimeOffset() {
         return positionTimeOffset;
     }
 
-    public float getRotationScale() {
+    public double getRotationScale() {
         return rotationScale;
     }
 
-    public float getPositionScale() {
+    public double getPositionScale() {
         return positionScale;
     }
 
-    public float getPositionOffset() {
+    public double getPositionOffset() {
         return positionOffset;
     }
 
@@ -135,11 +135,11 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
         public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
-                Codec.FLOAT.fieldOf("rotation_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getRotationTimeOffset),
-                Codec.FLOAT.fieldOf("position_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionTimeOffset),
-                Codec.FLOAT.fieldOf("rotation_scale").forGetter(HotpotSoupFloatingElementRenderer::getRotationScale),
-                Codec.FLOAT.fieldOf("position_scale").forGetter(HotpotSoupFloatingElementRenderer::getPositionScale),
-                Codec.FLOAT.fieldOf("position_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionOffset),
+                Codec.DOUBLE.fieldOf("rotation_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getRotationTimeOffset),
+                Codec.DOUBLE.fieldOf("position_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionTimeOffset),
+                Codec.DOUBLE.fieldOf("rotation_scale").forGetter(HotpotSoupFloatingElementRenderer::getRotationScale),
+                Codec.DOUBLE.fieldOf("position_scale").forGetter(HotpotSoupFloatingElementRenderer::getPositionScale),
+                Codec.DOUBLE.fieldOf("position_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionOffset),
                 StringRepresentable.fromEnum(RotationAxis::values).fieldOf("rotation_axis").forGetter(HotpotSoupFloatingElementRenderer::getRotationAxis),
                 ResourceLocation.CODEC.fieldOf("element_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElementModelResourceLocation),
                 Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotSoupFloatingElementRenderer::shouldRenderInBowl)

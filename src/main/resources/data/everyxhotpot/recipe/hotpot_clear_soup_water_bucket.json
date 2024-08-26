@@ -1,8 +1,7 @@
 {
   "type": "everyxhotpot:hotpot_soup_base_recipe",
-  "source_soup": "everyxhotpot:empty_soup",
   "result_soup": "everyxhotpot:clear_soup",
-  "result_waterlevel": 1,
+  "result_water_level": 1,
   "ingredient": {
     "item": "minecraft:water_bucket"
   },

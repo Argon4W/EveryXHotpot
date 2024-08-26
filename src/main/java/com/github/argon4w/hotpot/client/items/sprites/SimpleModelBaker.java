@@ -38,11 +38,6 @@ public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModel
     }
 
     @Nullable
-    public  BakedModel bakeUncached(UnbakedModel model, ModelState modelState) {
-        return bakeUncached(model, modelState, getModelTextureGetter());
-    }
-
-    @Nullable
     @Override
     public BakedModel bakeUncached(UnbakedModel model, ModelState state, Function<Material, TextureAtlasSprite> sprites) {
         return model instanceof BlockModel blockModel ? new ItemModelGenerator().generateBlockModel(getModelTextureGetter(), blockModel).bake(this, blockModel, getModelTextureGetter(), BlockModelRotation.X0_Y0, false) : model.bake(this, getModelTextureGetter(), state);
@@ -56,5 +51,15 @@ public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModel
 
     public TextureAtlasSprite getModelTexture(Material material) {
         return material.atlasLocation().equals(InventoryMenu.BLOCK_ATLAS) ? spriteGetter.apply(new Material(material.atlasLocation(), material.texture().withSuffix(processor.getSuffix()))) : spriteGetter.apply(material);
+    }
+
+    @Nullable
+    public BakedModel bakeUncached(UnbakedModel model, ModelState modelState) {
+        return bakeUncached(model, modelState, getModelTextureGetter());
+    }
+
+    @Nullable
+    public BakedModel bakeUncached(UnbakedModel model) {
+        return bakeUncached(model, BlockModelRotation.X0_Y0);
     }
 }

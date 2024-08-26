@@ -24,7 +24,11 @@ public record HotpotColor(int red, int green, int blue, int alpha) {
             HotpotColor::new
     );
 
-    public int toInt() {
+    public int toARGBInt() {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
+    }
+
+    public int toABGRInt() {
+        return (alpha << 24) | (blue << 16) | (green << 8) | red;
     }
 }

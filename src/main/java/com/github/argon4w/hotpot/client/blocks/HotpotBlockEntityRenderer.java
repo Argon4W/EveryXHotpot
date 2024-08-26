@@ -28,26 +28,26 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
     @Override
     public void render(HotpotBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        float waterLevel = blockEntity.getWaterLevel();
+        double waterLevel = blockEntity.getSynchronizedWaterLevel();
         long clientTime = blockEntity.hasLevel() ? blockEntity.getLevel().getGameTime() : 0;
 
-        float renderedWaterLevel = blockEntity.renderedWaterLevel;
-        float difference = (waterLevel - renderedWaterLevel);
+        double renderedWaterLevel = blockEntity.renderedWaterLevel;
+        double difference = (waterLevel - renderedWaterLevel);
 
-        float newRenderedWaterLevel = Math.abs(difference) < 0.02f ? waterLevel : (renderedWaterLevel + difference * partialTick / 8f);
+        double newRenderedWaterLevel = Math.abs(difference) < 0.02f ? waterLevel : (renderedWaterLevel + difference * partialTick / 8f);
         blockEntity.renderedWaterLevel = Math.max(0.35f, renderedWaterLevel < 0 ? waterLevel : newRenderedWaterLevel);
 
-        float interval = 360.0f / 8.0f;
-        float round = blockEntity.getTime() / 20.0f / 60.0f * 360.0f;
+        double interval = 360.0f / 8.0f;
+        double round = blockEntity.getTime() / 20.0f / 60.0f * 360.0f;
 
-        float lastOrbitX = orbitX(interval * 7.0f + round);
-        float lastOrbitY = orbitY(interval * 7.0f + round);
+        double lastOrbitX = orbitX(interval * 7.0f + round);
+        double lastOrbitY = orbitY(interval * 7.0f + round);
 
         for (int i = 0; i < blockEntity.getContents().size(); i++) {
-            float orbitX = orbitX(interval * i + round);
-            float orbitY = orbitY(interval * i + round);
+            double orbitX = orbitX(interval * i + round);
+            double orbitY = orbitY(interval * i + round);
 
-            float rotation = (float) Math.toDegrees(Math.atan2(lastOrbitY - orbitY, lastOrbitX - orbitX));
+            double rotation = Math.toDegrees(Math.atan2(lastOrbitY - orbitY, lastOrbitX - orbitX));
 
             lastOrbitX = orbitX;
             lastOrbitY = orbitY;
@@ -56,13 +56,13 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup().getSoupTypeHolder().key());
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup().soupTypeHolder().getKey());
 
         renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, clientTime, partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
-        renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563f, renderedWaterLevel * 0.4375f + 0.5625f));
+        renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563, renderedWaterLevel * 0.4375 + 0.5625));
     }
 
-    public static void renderHotpotSoup(ResourceLocation resourceLocation, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public static void renderHotpotSoup(ResourceLocation resourceLocation, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double renderedWaterLevel) {
         poseStack.pushPose();
         poseStack.translate(0, renderedWaterLevel, 0);
 
@@ -72,40 +72,40 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         poseStack.popPose();
     }
 
-    public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float renderedWaterLevel) {
+    public static void renderHotpotSoup(HotpotSoupRendererConfig soupRendererConfig, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double renderedWaterLevel) {
         soupRendererConfig.soupModelResourceLocation().ifPresent(resourceLocation -> renderHotpotSoup(resourceLocation, poseStack, bufferSource, soupRendererConfig.fixedLighting() ? 14680304 : combinedLight, combinedOverlay, renderedWaterLevel));
     }
 
-    public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, PoseStack poseStack, MultiBufferSource bufferSource, long time, float partialTick, int combinedLight, int combinedOverlay, float renderedWaterLevel, boolean bowlOnly) {
+    public static void renderHotpotSoupCustomElements(HotpotSoupRendererConfig soupRendererConfig, PoseStack poseStack, MultiBufferSource bufferSource, long time, float partialTick, int combinedLight, int combinedOverlay, double renderedWaterLevel, boolean bowlOnly) {
         soupRendererConfig.customElementRenderers().stream().filter(renderer -> !bowlOnly || renderer.shouldRenderInBowl()).forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(time, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay, renderedWaterLevel));
     }
 
-    private float orbitX(float degree) {
+    private double orbitX(double degree) {
         return Math.cos(Math.toRadians(degree)) * 0.4f + squareX(degree) * 0.6f;
     }
 
-    private float orbitY(float degree) {
+    private double orbitY(double degree) {
         return Math.sin(Math.toRadians(degree)) * 0.4f + squareY(degree) * 0.6f;
     }
 
-    private float squareX(float degree) {
+    private double squareX(double degree) {
         degree = degree % 360;
         return switch ((int) ((degree - (degree % 45)) / 45)) {
-            case 0, 7 -> 1.0f;
-            case 1, 2 -> 1.0f / Math.tan(Math.toRadians(degree));
-            case 3, 4 -> -1.0f;
-            case 5, 6 -> -1.0f / Math.tan(Math.toRadians(degree));
+            case 0, 7 -> 1.0;
+            case 1, 2 -> 1.0 / Math.tan(Math.toRadians(degree));
+            case 3, 4 -> -1.0;
+            case 5, 6 -> -1.0 / Math.tan(Math.toRadians(degree));
             default -> Float.NaN;
         };
     }
 
-    private float squareY(float degree) {
+    private double squareY(double degree) {
         degree = degree % 360;
         return switch ((int) ((degree - (degree % 45)) / 45)) {
             case 0, 7 -> Math.tan(Math.toRadians(degree));
-            case 1, 2 -> 1.0f;
+            case 1, 2 -> 1.0;
             case 3, 4 -> -Math.tan(Math.toRadians(degree));
-            case 5, 6 -> -1.0f;
+            case 5, 6 -> -1.0;
             default -> Float.NaN;
         };
     }

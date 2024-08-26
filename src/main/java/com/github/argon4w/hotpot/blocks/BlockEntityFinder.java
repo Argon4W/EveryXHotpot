@@ -2,11 +2,13 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.apache.commons.lang3.stream.Streams;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class BlockEntityFinder<T extends BlockEntity> {
     private final BlockPosIterator iterator;
@@ -25,30 +27,10 @@ public class BlockEntityFinder<T extends BlockEntity> {
     }
 
     public Map<T, LevelBlockPos> getAll() {
-        HashMap<T, LevelBlockPos> map = new HashMap<>();
-
-        while (iterator.hasNext()) {
-            LevelBlockPos pos = iterator.next();
-            T blockEntity = targetClass.cast(pos.getBlockEntity());
-
-            map.put(blockEntity, pos);
-        }
-
-        return map;
+        return Streams.of(iterator).map(pos -> Map.entry(targetClass.cast(pos.getBlockEntity()), pos)).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public void getFirst(int maximumBlocks, BiPredicate<T, LevelBlockPos> predicate, BiConsumer<T, LevelBlockPos> consumer) {
-        int count = 0;
-
-        while (iterator.hasNext() && (count ++) < maximumBlocks) {
-            LevelBlockPos pos = iterator.next();
-
-            T blockEntity = targetClass.cast(pos.getBlockEntity());
-
-            if (predicate.test(blockEntity, pos)) {
-                consumer.accept(blockEntity, pos);
-                break;
-            }
-        }
+        Streams.of(new SizedIterator<>(iterator, maximumBlocks)).map(pos -> Map.entry(targetClass.cast(pos.getBlockEntity()), pos)).filter(entry -> predicate.test(entry.getKey(), entry.getValue())).findFirst().ifPresent(entry -> consumer.accept(entry.getKey(), entry.getValue()));
     }
 }

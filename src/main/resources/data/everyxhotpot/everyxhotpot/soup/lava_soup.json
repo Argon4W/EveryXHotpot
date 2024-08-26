@@ -1,0 +1,12 @@
+{
+  "everyxhotpot:soup": {
+    "component": "everyxhotpot:generic_soup_compound",
+    "index": 0
+  },
+  "everyxhotpot:blasting_recipe_content_provider": {
+    "component": {
+      "type": "everyxhotpot:smelting_recipe_content_provider_soup_component"
+    },
+    "index": 1
+  }
+}

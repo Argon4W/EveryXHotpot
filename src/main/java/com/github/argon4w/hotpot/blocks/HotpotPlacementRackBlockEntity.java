@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class HotpotPlacementRackBlockEntity extends AbstractTablewareInteractiveBlockEntity implements Clearable, IHotpotPlacementContainerBlockEntity {
-    private final NonNullList<IHotpotPlacement> placements1 = NonNullList.withSize(4, HotpotPlacementSerializers.buildEmptyPlacement());
-    private final NonNullList<IHotpotPlacement> placements2 = NonNullList.withSize(4, HotpotPlacementSerializers.buildEmptyPlacement());
+public class HotpotPlacementRackBlockEntity extends AbstractHotpotTablewareBlockEntity implements Clearable, IHotpotPlacementContainerBlockEntity {
+    private final NonNullList<IHotpotPlacement> placements1 = NonNullList.withSize(4, HotpotPlacementSerializers.loadEmptyPlacement());
+    private final NonNullList<IHotpotPlacement> placements2 = NonNullList.withSize(4, HotpotPlacementSerializers.loadEmptyPlacement());
     
     private boolean contentChanged = true;
     private boolean infiniteContent = false;
@@ -39,13 +39,13 @@ public class HotpotPlacementRackBlockEntity extends AbstractTablewareInteractive
     }
 
     @Override
-    public ItemStack setContentViaTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        setContentViaInteraction(hitPos, layer, player, hand, itemStack, selfPos);
+    public ItemStack setContentByTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        setContentByInteraction(hitPos, layer, player, hand, itemStack, selfPos);
         return itemStack;
     }
 
     @Override
-    public void setContentViaInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         IHotpotPlacement placement = getPlacementInPosAndLayer(hitPos, layer);
         placement.interact(player, hand, itemStack, hitPos, layer, selfPos, this);
 
@@ -57,7 +57,7 @@ public class HotpotPlacementRackBlockEntity extends AbstractTablewareInteractive
     }
 
     @Override
-    public ItemStack getContentViaTableware(Player player, InteractionHand hand, int hitPos, int layer, LevelBlockPos pos) {
+    public ItemStack getContentByTableware(Player player, InteractionHand hand, int hitPos, int layer, LevelBlockPos pos) {
         IHotpotPlacement placement = getPlacementInPosAndLayer(hitPos, layer);
         ItemStack itemStack = placement.getContent(player, hand, hitPos, layer, pos, this, true);
 
@@ -108,7 +108,7 @@ public class HotpotPlacementRackBlockEntity extends AbstractTablewareInteractive
 
     public void removePlacement(int index, int layer, LevelBlockPos pos) {
         NonNullList<IHotpotPlacement> placements = getPlacements(layer);
-        placements.set(index, HotpotPlacementSerializers.buildEmptyPlacement()).onRemove(this, pos);
+        placements.set(index, HotpotPlacementSerializers.loadEmptyPlacement()).onRemove(this, pos);
         markDataChanged();
     }
     
@@ -119,7 +119,7 @@ public class HotpotPlacementRackBlockEntity extends AbstractTablewareInteractive
 
     public IHotpotPlacement getPlacementInPosAndLayer(int hitPos, int layer) {
         int i = getPlacementIndexInPosAndLayer(hitPos, layer);
-        return i < 0 ? HotpotPlacementSerializers.buildEmptyPlacement() : getPlacements(layer).get(i);
+        return i < 0 ? HotpotPlacementSerializers.loadEmptyPlacement() : getPlacements(layer).get(i);
     }
 
     @Override

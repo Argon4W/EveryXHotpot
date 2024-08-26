@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -227,18 +226,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return;
         }
 
-        hotpotBlockEntity.getSoup().onEntityInside(hotpotBlockEntity, levelPos, entity);
-    }
-
-    @Override
-    public void animateTick(BlockState blockState, Level level, BlockPos pos, RandomSource randomSource) {
-        LevelBlockPos levelPos = new LevelBlockPos(level, pos);
-
-        if (!(levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
-            return;
-        }
-
-        hotpotBlockEntity.getSoup().animateTick(hotpotBlockEntity, levelPos, randomSource);
+        hotpotBlockEntity.getSoup().onEntityInside(entity, hotpotBlockEntity, levelPos);
     }
 
     @NotNull

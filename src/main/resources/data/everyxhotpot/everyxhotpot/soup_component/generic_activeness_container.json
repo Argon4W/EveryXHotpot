@@ -1,0 +1,5 @@
+{
+  "type": "everyxhotpot:activeness_container_soup_component",
+  "min_activeness": 0.0,
+  "max_activeness": 1.0
+}

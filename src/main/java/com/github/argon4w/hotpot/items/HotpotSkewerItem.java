@@ -4,9 +4,8 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.AbstractHotpotRecipeContent;
-import com.github.argon4w.hotpot.contents.HotpotCookingRecipeContent;
 import com.github.argon4w.hotpot.items.components.HotpotSkewerDataComponent;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.recipes.IHotpotCookingRecipeHolder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
@@ -22,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
+import java.util.function.Consumer;
 
-public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHotpotCookingRecipeHolder {
+public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHotpotCookingRecipeHolder, IHotpotCustomItemStackUpdaterProvider {
     public HotpotSkewerItem() {
         super(new Properties().component(HotpotModEntry.HOTPOT_SKEWER_DATA_COMPONENT, HotpotSkewerDataComponent.EMPTY));
     }
@@ -151,23 +150,31 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     @Override
+    public IHotpotItemStackUpdater getItemStackUpdater() {
+        return (itemStack, consumer) -> {
+            applySkewerItems(itemStack, consumer);
+            return itemStack;
+        };
+    }
+
+    @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
         return isSkewerEmpty(itemStack) ? ItemStack.EMPTY : getSkewerItems(itemStack).getFirst();
     }
 
     @Override
-    public int getCookingTime(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
-        return getSkewerItems(itemStack).stream().map(skewerStack -> content.getCookingTime(soupType, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToInt(Optional::get).max().orElse(-1);
+    public int getCookingTime(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+        return getSkewerItems(itemStack).stream().map(skewerStack -> content.getCookingTime(soup, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToInt(Optional::get).max().orElse(-1);
     }
 
     @Override
-    public double getExperience(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
-        return getSkewerItems(itemStack).stream().map(skewerStack -> content.getExperience(soupType, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToDouble(Optional::get).sum();
+    public double getExperience(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+        return getSkewerItems(itemStack).stream().map(skewerStack -> content.getExperience(soup, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToDouble(Optional::get).sum();
     }
 
     @Override
-    public ItemStack getResult(IHotpotSoup soupType, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
-        setSkewerItems(itemStack, getSkewerItems(itemStack).stream().map(skewerStack -> content.getResult(soupType, skewerStack, pos, hotpotBlockEntity).orElse(skewerStack)).toList());
+    public ItemStack getResult(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+        setSkewerItems(itemStack, getSkewerItems(itemStack).stream().map(skewerStack -> content.getResult(soup, skewerStack, pos, hotpotBlockEntity).orElse(skewerStack)).toList());
         return itemStack;
     }
 
@@ -204,9 +211,8 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
         setDataComponent(itemStack, getDataComponent(itemStack).addItemStack(added));
     }
 
-    public static ItemStack applyToSkewerItemStacks(ItemStack itemStack, UnaryOperator<ItemStack> operator) {
-        setDataComponent(itemStack, getDataComponent(itemStack).applyToItemStacks(operator));
-        return itemStack;
+    public static void applySkewerItems(ItemStack itemStack, Consumer<ItemStack> consumer) {
+        setDataComponent(itemStack, getDataComponent(itemStack).applyItemStacks(consumer));
     }
 
     public static void addToInventory(Player player, ItemStack itemStack) {

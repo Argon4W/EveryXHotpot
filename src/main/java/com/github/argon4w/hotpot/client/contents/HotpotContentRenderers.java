@@ -17,14 +17,12 @@ public class HotpotContentRenderers {
     public static final DeferredRegister<IHotpotContentRenderer> CONTENT_RENDERERS = DeferredRegister.create(CONTENT_RENDERER_REGISTRY_KEY, HotpotModEntry.MODID);
     public static final Registry<IHotpotContentRenderer> CONTENT_RENDERER_REGISTRY = CONTENT_RENDERERS.makeRegistry(builder -> builder.defaultKey(EMPTY_CONTENT_RENDERER_LOCATION));
 
-    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> COOKING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("cooking_recipe_content", HotpotItemContentRenderer::new);
+    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> CAMPFIRE_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("campfire_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> SMELTING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("smelting_recipe_content", HotpotItemContentRenderer::new);
+    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> DISASSEMBLING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("disassembling_recipe_content", HotpotItemContentRenderer::new);
+    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> COOKING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("cooking_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, HotpotPlayerContentRenderer> PLAYER_CONTENT_RENDERER = CONTENT_RENDERERS.register("player_content", HotpotPlayerContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, HotpotEmptyContentRenderer> EMPTY_CONTENT_RENDERER = CONTENT_RENDERERS.register("empty_content", HotpotEmptyContentRenderer::new);
-
-    public static IHotpotContentRenderer getEmptyContentRenderer() {
-        return EMPTY_CONTENT_RENDERER.get();
-    }
 
     public static Registry<IHotpotContentRenderer> getContentRendererRegistry() {
         return CONTENT_RENDERER_REGISTRY;

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElementRenderer {
     @Override
-    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel) {
+    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel) {
 
     }
 

@@ -1,9 +1,10 @@
 package com.github.argon4w.hotpot.client.soups.effects;
 
-import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.soups.types.HotpotCookingRecipeSoup;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
+import com.github.argon4w.hotpot.soups.components.containers.HotpotPunishCooldownContainerSoupComponent;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,11 +17,7 @@ import net.minecraft.util.RandomSource;
 public record HotpotVaporEffect(ParticleType<?> particleType, float ratePerTick, int minAmountPerTick, int maxAmountPerTick, float xOffset, float yOffset, float zOffset, float xScale, float zScale, float xSpeed, float ySpeed, float zSpeed) implements IHotpotSoupClientTickEffect {
     @Override
     public void tick(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        if (!(hotpotBlockEntity.getSoup() instanceof HotpotCookingRecipeSoup soup)) {
-            return;
-        }
-
-        if (soup.getEmptyWaterPunishCooldown() > 0) {
+        if (hotpotBlockEntity.getSoup().getComponentsByType(HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().mapToInt(HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown).sum() > 0) {
             return;
         }
 

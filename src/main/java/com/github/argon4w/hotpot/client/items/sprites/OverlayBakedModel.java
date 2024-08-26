@@ -1,8 +1,6 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
-import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
-import com.github.argon4w.hotpot.items.sprites.IHotpotSpriteConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;

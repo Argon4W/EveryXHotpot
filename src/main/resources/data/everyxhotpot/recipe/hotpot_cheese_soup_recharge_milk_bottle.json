@@ -1,9 +1,15 @@
 {
+  "conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
   "type": "everyxhotpot:hotpot_soup_recharge_recipe",
   "target_soup": "everyxhotpot:cheese_soup",
-  "recharge_waterlevel": 0.333,
+  "recharge_water_level": 0.333,
   "ingredient": {
-    "tag": "forge:milk/milk_bottle"
+    "item": "farmersdelight:milk_bottle"
   },
   "remaining_item": {
     "id": "minecraft:glass_bottle"

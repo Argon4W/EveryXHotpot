@@ -19,7 +19,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
     public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext> PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
-    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float rotation, float waterLevel, float x, float z) {
+    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z) {
         if (!(content instanceof HotpotPlayerContent playerContent)) {
             return;
         }
@@ -33,18 +33,18 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
             renderContext.updateModelPartWithTexture();
         }
 
-        float positionX = 0.5f + x * 0.325f;
-        float positionZ = 0.5f + z * 0.325f;
-        float positionY = 0.53f - getFloatingCurve(rotation / 360.0f, 0f) * 0.06f + 0.42f * waterLevel;
-        float rotationY = getFloatingCurve(rotation / 360.0f, 1f) * 25.0f;
+        double positionX = 0.5 + x * 0.325;
+        double positionZ = 0.5 + z * 0.325;
+        double positionY = 0.53 - getFloatingCurve(rotation / 360.0, 0) * 0.06 + 0.42 * waterLevel;
+        double rotationY = getFloatingCurve(rotation / 360.0, 1) * 25.0;
 
         poseStack.pushPose();
 
         poseStack.translate(positionX, positionY, positionZ);
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
-        poseStack.mulPose(Axis.XP.rotationDegrees( 90.0f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(rotationY));
+        poseStack.mulPose(Axis.YP.rotationDegrees((float) rotation));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
+        poseStack.mulPose(Axis.XP.rotationDegrees((float) rotationY));
 
         poseStack.scale(0.25f, 0.25f, 0.25f);
 
@@ -53,7 +53,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
         poseStack.popPose();
     }
 
-    public static float getFloatingCurve(float f, float offset) {
-        return (float) Math.sin((f + offset) / 0.25f * 2f * Math.PI);
+    public static double getFloatingCurve(double f, double offset) {
+        return Math.sin((f + offset) / 0.25 * 2 * Math.PI);
     }
 }

@@ -1,0 +1,25 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:block_content_update_when_empty": {
+      "component": "everyxhotpot:generic_block_content_update_when_empty",
+      "index": 0
+    },
+    "everyxhotpot:get_extra_content_tick_speed_from_water_level": {
+      "component": "everyxhotpot:generic_get_extra_content_tick_speed_from_water_level",
+      "index": 1
+    },
+    "everyxhotpot:drop_water_level": {
+      "component": "everyxhotpot:generic_drop_water_level",
+      "index": 2
+    },
+    "everyxhotpot:synchronize_water_level": {
+      "component": "everyxhotpot:generic_synchronize_water_level",
+      "index": 3
+    },
+    "everyxhotpot:water_level_container": {
+      "component":  "everyxhotpot:generic_water_level_container",
+      "index": 4
+    }
+  }
+}

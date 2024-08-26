@@ -1,0 +1,37 @@
+{
+  "everyxhotpot:soup": {
+    "component": "everyxhotpot:generic_cooking_soup_compound",
+    "index": 0
+  },
+  "everyxhotpot:apply_mob_effect_on_content_update": {
+    "component": "everyxhotpot:generic_apply_mob_effect_on_content_update",
+    "index": 1
+  },
+  "everyxhotpot:mob_effect_container": {
+    "component": {
+      "type": "everyxhotpot:fixed_mob_effect_container_soup_component",
+      "effects": [
+        {
+          "id": "everyxhotpot:warm",
+          "amplifier": 0,
+          "duration": 300
+        }
+      ]
+    },
+    "index": 2
+  },
+  "everyxhotpot:apply_sprite_configs": {
+    "component": {
+      "type": "everyxhotpot:apply_sprite_configs_when_get_content",
+      "sprite_configs": [
+        {
+          "type": "everyxhotpot:soup_renderer_config_sprite_config",
+          "id": "everyxhotpot:tomato_soup_overlay",
+          "processor_resource_location": "everyxhotpot:light_sauced_processor",
+          "soup_renderer_config_resource_location": "everyxhotpot:tomato_soup"
+        }
+      ]
+    },
+    "index": 3
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:soup": {
+      "component": "everyxhotpot:generic_soup_compound",
+      "index": 0
+    },
+    "everyxhotpot:campfire_recipe_content_provider": {
+      "component": "everyxhotpot:generic_campfire_recipe_content_provider",
+      "index": 1
+    },
+    "everyxhotpot:can_be_packed": {
+      "component": "everyxhotpot:generic_can_be_packed",
+      "index": 2
+    }
+  }
+}

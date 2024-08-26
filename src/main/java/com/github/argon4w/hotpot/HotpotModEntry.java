@@ -5,12 +5,12 @@ import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.contents.HotpotItemContentSpecialRenderers;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotItemSpecialRenderers;
-import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
+import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
+import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.client.soups.effects.HotpotSoupClientTickEffects;
 import com.github.argon4w.hotpot.client.soups.renderers.HotpotSoupCustomElementSerializers;
-import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.items.*;
 import com.github.argon4w.hotpot.items.components.*;
@@ -22,15 +22,11 @@ import com.github.argon4w.hotpot.placements.HotpotSmallPlate;
 import com.github.argon4w.hotpot.recipes.HotpotNapkinHolderDyeRecipe;
 import com.github.argon4w.hotpot.recipes.HotpotSkewerRecipe;
 import com.github.argon4w.hotpot.recipes.HotpotSpicePackRecipe;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeManager;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeSerializers;
-import com.github.argon4w.hotpot.soups.recipes.HotpotCookingRecipe;
-import com.github.argon4w.hotpot.soups.recipes.HotpotSoupBaseRecipe;
-import com.github.argon4w.hotpot.soups.recipes.HotpotSoupIngredientRecipe;
-import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRechargeRecipe;
+import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
+import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
+import com.github.argon4w.hotpot.soups.recipes.*;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.mojang.datafixers.DSL;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -46,7 +42,6 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -57,30 +52,26 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Mod(HotpotModEntry.MODID)
 public class HotpotModEntry {
     public static final String MODID = "everyxhotpot";
     public static final String HOTPOT_NETWORK_PROTOCOL_VERSION = "3";
-    public static final int HOTPOT_SPRITE_TINT_INDEX = 230419;
+    public static final int MAGIC_NUMBER = 230419;
 
     public static final DeferredBlock<HotpotBlock> HOTPOT_BLOCK = HotpotRegistries.BLOCKS.register("hotpot", HotpotBlock::new);
     public static final DeferredBlock<HotpotPlacementBlock> HOTPOT_PLACEMENT = HotpotRegistries.BLOCKS.register("hotpot_placement", HotpotPlacementBlock::new);
     public static final DeferredBlock<Block> HOTPOT_PLACEMENT_RACK = HotpotRegistries.BLOCKS.register("hotpot_placement_rack", HotpotPlacementRackBlock::new);
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotBlockEntity>> HOTPOT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot",
-            () -> BlockEntityType.Builder.of(HotpotBlockEntity::new, HOTPOT_BLOCK.get()).build(DSL.remainderType()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotPlacementBlockEntity>> HOTPOT_PLACEMENT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_placement",
-            () -> BlockEntityType.Builder.of(HotpotPlacementBlockEntity::new, HOTPOT_PLACEMENT.get()).build(DSL.remainderType()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotPlacementRackBlockEntity>> HOTPOT_PLACEMENT_RACK_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_placement_rack",
-            () -> BlockEntityType.Builder.of(HotpotPlacementRackBlockEntity::new, HOTPOT_PLACEMENT_RACK.get()).build(DSL.remainderType()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotBlockEntity>> HOTPOT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot", () -> BlockEntityType.Builder.of(HotpotBlockEntity::new, HOTPOT_BLOCK.get()).build(DSL.remainderType()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotPlacementBlockEntity>> HOTPOT_PLACEMENT_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_placement", () -> BlockEntityType.Builder.of(HotpotPlacementBlockEntity::new, HOTPOT_PLACEMENT.get()).build(DSL.remainderType()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotPlacementRackBlockEntity>> HOTPOT_PLACEMENT_RACK_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_placement_rack", () -> BlockEntityType.Builder.of(HotpotPlacementRackBlockEntity::new, HOTPOT_PLACEMENT_RACK.get()).build(DSL.remainderType()));
 
     public static final DeferredItem<HotpotPaperBowlItem> HOTPOT_PAPER_BOWL = HotpotRegistries.ITEMS.register("hotpot_paper_bowl", HotpotPaperBowlItem::new);
     public static final DeferredItem<HotpotSkewerItem> HOTPOT_SKEWER = HotpotRegistries.ITEMS.register("hotpot_skewer", HotpotSkewerItem::new);
-    public static final DeferredItem<HotpotSpoonItem> HOTPOT_SLOTTED_SPOON = HotpotRegistries.ITEMS.register("hotpot_slotted_spoon", () -> new HotpotSpoonItem(true));
-    public static final DeferredItem<HotpotSpoonItem> HOTPOT_SOUP_SPOON = HotpotRegistries.ITEMS.register("hotpot_soup_spoon", () -> new HotpotSpoonItem(false));
+    public static final DeferredItem<HotpotSpoonItem> HOTPOT_SLOTTED_SPOON = HotpotRegistries.ITEMS.register("hotpot_slotted_spoon", () -> new HotpotSpoonItem(HotpotSoupStatus.DRAINED));
+    public static final DeferredItem<HotpotSpoonItem> HOTPOT_SOUP_SPOON = HotpotRegistries.ITEMS.register("hotpot_soup_spoon", () -> new HotpotSpoonItem(HotpotSoupStatus.FILLED));
     public static final DeferredItem<BlockItem> HOTPOT_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot", () -> new BlockItem(HOTPOT_BLOCK.get(), new Item.Properties()));
     public static final DeferredItem<BlockItem> HOTPOT_PLACEMENT_RACK_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_placement_rack", () -> new BlockItem(HOTPOT_PLACEMENT_RACK.get(), new Item.Properties()));
     public static final DeferredItem<HotpotPlateItem<HotpotSmallPlate>> HOTPOT_SMALL_PLATE = HotpotRegistries.ITEMS.register("hotpot_small_plate", () -> new HotpotPlateItem<>(HotpotPlacementSerializers.SMALL_PLATE_SERIALIZER));
@@ -97,22 +88,24 @@ public class HotpotModEntry {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotSpicePackRecipe>> HOTPOT_SPICE_PACK_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_spice_pack", () -> new SimpleCraftingRecipeSerializer<>(HotpotSpicePackRecipe::new));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotSkewerRecipe>> HOTPOT_SKEWER_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_skewer", () -> new SimpleCraftingRecipeSerializer<>(HotpotSkewerRecipe::new));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotNapkinHolderDyeRecipe>> HOTPOT_NAPKIN_HOLDER_DYE_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_napkin_holder_dye", () -> new SimpleCraftingRecipeSerializer<>(HotpotNapkinHolderDyeRecipe::new));
+
     public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupIngredientRecipe.Serializer> HOTPOT_SOUP_INGREDIENT_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_ingredient_recipe", HotpotSoupIngredientRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupBaseRecipe.Serializer> HOTPOT_SOUP_BASE_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_base_recipe", HotpotSoupBaseRecipe.Serializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupRechargeRecipe.Serializer> HOTPOT_SOUP_RECHARGE_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_recharge_recipe", HotpotSoupRechargeRecipe.Serializer::new);
-    public static final DeferredHolder<RecipeSerializer<?>, HotpotCookingRecipe.Serializer> HOTPOT_COOKING_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_cooking_recipe", HotpotCookingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupRandomMobEffectRecipe.Serializer> HOTPOT_SOUP_RANDOM_MOB_EFFECT_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_random_mob_effect_recipe", HotpotSoupRandomMobEffectRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeSerializer<?>, HotpotSoupCookingRecipe.Serializer> HOTPOT_SOUP_COOKING_RECIPE_SERIALIZER = HotpotRegistries.RECIPE_SERIALIZERS.register("hotpot_soup_cooking_recipe", HotpotSoupCookingRecipe.Serializer::new);
 
     public static final DeferredHolder<RecipeType<?>, RecipeType<HotpotSoupIngredientRecipe>> HOTPOT_SOUP_INGREDIENT_RECIPE_TYPE = HotpotRegistries.RECIPE_TYPES.register("hotpot_soup_ingredient_recipe_type", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_soup_ingredient_recipe_type")));
     public static final DeferredHolder<RecipeType<?>, RecipeType<HotpotSoupBaseRecipe>> HOTPOT_SOUP_BASE_RECIPE_TYPE = HotpotRegistries.RECIPE_TYPES.register("hotpot_soup_base_recipe_type", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_soup_base_recipe_type")));
     public static final DeferredHolder<RecipeType<?>, RecipeType<HotpotSoupRechargeRecipe>> HOTPOT_SOUP_RECHARGE_RECIPE_TYPE = HotpotRegistries.RECIPE_TYPES.register("hotpot_soup_recharge_recipe_type", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_soup_recharge_recipe_type")));
-    public static final DeferredHolder<RecipeType<?>, RecipeType<HotpotCookingRecipe>> HOTPOT_COOKING_RECIPE = HotpotRegistries.RECIPE_TYPES.register("hotpot_cooking_recipe_type", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_cooking_recipe_type")));
+    public static final DeferredHolder<RecipeType<?>, RecipeType<HotpotSoupRandomMobEffectRecipe>> HOTPOT_SOUP_RANDOM_MOB_EFFECT_RECIPE_TYPE = HotpotRegistries.RECIPE_TYPES.register("hotpot_soup_random_mob_effect_recipe_type", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_soup_random_mob_effect_recipe_type")));
+    public static final DeferredHolder<RecipeType<?>, RecipeType<HotpotSoupCookingRecipe>> HOTPOT_SOUP_COOKING_RECIPE_TYPE = HotpotRegistries.RECIPE_TYPES.register("hotpot_soup_cooking_recipe_type", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "hotpot_soup_cooking_recipe_type")));
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotChopstickDataComponent>> HOTPOT_CHOPSTICK_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("chopstick_data_component", builder -> builder.persistent(HotpotChopstickDataComponent.CODEC).networkSynchronized(HotpotChopstickDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSkewerDataComponent>> HOTPOT_SKEWER_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("skewer_data_component", builder -> builder.persistent(HotpotSkewerDataComponent.CODEC).networkSynchronized(HotpotSkewerDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotPaperBowlDataComponent>> HOTPOT_PAPER_BOWL_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("paper_bowl_data_component", builder -> builder.persistent(HotpotPaperBowlDataComponent.CODEC).networkSynchronized(HotpotPaperBowlDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotFoodEffectsDataComponent>> HOTPOT_FOOD_EFFECTS_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("food_effects_data_component", builder -> builder.persistent(HotpotFoodEffectsDataComponent.CODEC).networkSynchronized(HotpotFoodEffectsDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpicePackDataComponent>> HOTPOT_SPICE_PACK_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("spice_pack_data_component", builder -> builder.persistent(HotpotSpicePackDataComponent.CODEC).networkSynchronized(HotpotSpicePackDataComponent.STREAM_CODEC).cacheEncoding());
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSoupDataComponent>> HOTPOT_SOUP_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("soup_data_component", builder -> builder.persistent(HotpotSoupDataComponent.CODEC).networkSynchronized(HotpotSoupDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotSpriteConfigDataComponent>> HOTPOT_SPRITE_CONFIG_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("sprite_config_data_component", builder -> builder.persistent(HotpotSpriteConfigDataComponent.CODEC).networkSynchronized(HotpotSpriteConfigDataComponent.STREAM_CODEC).cacheEncoding());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<HotpotNapkinHolderDataComponent>> HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT = HotpotRegistries.DATA_COMPONENT_TYPES.registerComponentType("napkin_holder_data_component", builder -> builder.persistent(HotpotNapkinHolderDataComponent.CODEC).networkSynchronized(HotpotNapkinHolderDataComponent.STREAM_CODEC).cacheEncoding());
 
@@ -137,9 +130,6 @@ public class HotpotModEntry {
             }).build());
 
     public static final ResourceKey<DamageType> IN_HOTPOT_DAMAGE_KEY = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "in_hotpot"));
-    public static final Function<Level, Holder<DamageType>> IN_HOTPOT_DAMAGE_TYPE = level -> level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(IN_HOTPOT_DAMAGE_KEY);
-
-    public static final HotpotSoupTypeManager HOTPOT_SOUP_TYPE_MANAGER = new HotpotSoupTypeManager();
 
     public static HotpotBlockEntityWithoutLevelRenderer HOTPOT_SPECIAL_ITEM_RENDERER;
     public static HotpotSoupRendererConfigManager HOTPOT_SOUP_RENDERER_CONFIG_MANAGER;
@@ -154,7 +144,7 @@ public class HotpotModEntry {
         HotpotRegistries.MOB_EFFECTS.register(modEventBus);
         HotpotRegistries.DATA_COMPONENT_TYPES.register(modEventBus);
 
-        HotpotSoupTypeSerializers.SOUP_TYPE_SERIALIZERS.register(modEventBus);
+        HotpotSoupComponentTypeSerializers.SOUP_COMPONENT_TYPE_SERIALIZERS.register(modEventBus);
         HotpotSoupCustomElementSerializers.CUSTOM_ELEMENT_RENDERER_SERIALIZERS.register(modEventBus);
         HotpotSoupClientTickEffects.SOUP_CLIENT_TICK_EFFECT_SERIALIZERS.register(modEventBus);
         HotpotContentSerializers.CONTENT_SERIALIZERS.register(modEventBus);

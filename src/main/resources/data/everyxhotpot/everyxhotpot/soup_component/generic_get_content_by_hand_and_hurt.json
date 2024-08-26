@@ -1,0 +1,7 @@
+{
+  "type": "everyxhotpot:get_content_by_hand_soup_component",
+  "damage_source": {
+    "damage_type": "minecraft:on_fire",
+    "amount": 5.0
+  }
+}

@@ -1,15 +1,16 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.HotpotMobEffectMap;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotSpicePackDataComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -17,7 +18,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 
 import java.util.List;
 
-public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentItem {
+public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareContentItem {
     public HotpotSpicePackItem() {
         super(new Properties().component(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY));
     }
@@ -39,12 +40,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
     }
 
     @Override
-    public ItemStack updateSelf(ItemStack self, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getSpicePackCharges(self) > 0 ? self : new ItemStack(HotpotModEntry.HOTPOT_SPICE_PACK.get());
-    }
-
-    @Override
-    public ItemStack onOtherContentUpdate(ItemStack self, ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack onContentUpdate(ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         if (!hasSpicePackCharges(itemStack)) {
             return itemStack;
         }
@@ -53,12 +49,12 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
             return itemStack;
         }
 
-        if (!HotpotSkewerItem.isSkewerEmpty(itemStack)) {
-            return HotpotSkewerItem.applyToSkewerItemStacks(itemStack, skewerItemStack -> HotpotFoodEffectsDataComponent.addEffects(skewerItemStack, getSpicePackEffects(self)));
+        if (!(content instanceof AbstractHotpotItemStackContent itemStackContent)) {
+            return itemStack;
         }
 
         decreaseSpicePackCharges(itemStack);
-        HotpotFoodEffectsDataComponent.addEffects(itemStack, getSpicePackEffects(self));
+        itemStackContent.updateItemStack(contentItemStack -> HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
 
         return itemStack;
     }
@@ -76,7 +72,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         }
 
         components.add(Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpicePackCharges(itemStack)).withStyle(ChatFormatting.BLUE));
-        PotionContents.addPotionTooltip(getSpicePackEffects(itemStack), components::add, 1.0f, context.tickRate());
+        PotionContents.addPotionTooltip(getSpicePackEffects(itemStack).getMobEffects(), components::add, 1.0f, context.tickRate());
     }
 
     public static HotpotSpicePackDataComponent getDataComponent(ItemStack itemStack) {
@@ -115,7 +111,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotSpecialContentIt
         setDataComponent(itemStack, getDataComponent(itemStack).setCharges(charges));
     }
 
-    public static List<MobEffectInstance> getSpicePackEffects(ItemStack itemStack) {
+    public static HotpotMobEffectMap getSpicePackEffects(ItemStack itemStack) {
         return getDataComponent(itemStack).getFoodEffects();
     }
 }

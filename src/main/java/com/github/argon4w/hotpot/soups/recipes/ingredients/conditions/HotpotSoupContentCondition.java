@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.soups.recipes.ingredients.conditions;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
@@ -15,7 +15,7 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> contentSerializerHolder) implements IHotpotSoupIngredientCondition {
     @Override
-    public boolean matches(IHotpotContent content, IHotpotSoup soup) {
+    public boolean matches(IHotpotContent content, HotpotComponentSoup soup) {
         return content.getContentSerializerHolder().equals(contentSerializerHolder);
     }
 
@@ -26,11 +26,11 @@ public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> con
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupContentCondition> {
         public static final MapCodec<HotpotSoupContentCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
-                HotpotContentSerializers.SERIALIZER_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentSerializerHolder)
+                HotpotContentSerializers.SERIALIZER_HOLDER_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentSerializerHolder)
         ).apply(condition, HotpotSoupContentCondition::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC = StreamCodec.composite(
-                HotpotContentSerializers.STREAM_CODEC, HotpotSoupContentCondition::contentSerializerHolder,
+                HotpotContentSerializers.SERIALIZER_HOLDER_STREAM_CODEC, HotpotSoupContentCondition::contentSerializerHolder,
                 HotpotSoupContentCondition::new
         );
 

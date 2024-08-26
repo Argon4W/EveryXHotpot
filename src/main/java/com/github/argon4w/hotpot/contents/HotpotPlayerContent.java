@@ -1,15 +1,14 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -32,17 +31,17 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public ItemStack takeOut(Player player, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return modelPartIndex == 0? getPlayerHeadByProfile() : new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2));
     }
 
     @Override
-    public void onOtherContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
 
     }
 
     @Override
-    public boolean tick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, float ticks) {
+    public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
         return false;
     }
 
@@ -81,7 +80,7 @@ public class HotpotPlayerContent implements IHotpotContent {
 
         @Override
         public HotpotPlayerContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-            throw new IllegalStateException("Cannot get from itemStack");
+            throw new IllegalStateException("Illegal call to a non-item based content");
         }
 
         @Override

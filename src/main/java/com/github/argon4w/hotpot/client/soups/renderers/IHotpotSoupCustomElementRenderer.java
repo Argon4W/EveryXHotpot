@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public interface IHotpotSoupCustomElementRenderer {
-    void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel);
+    void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel);
     void prepareModel();
     boolean shouldRenderInBowl();
     List<ResourceLocation> getRequiredModelResourceLocations();

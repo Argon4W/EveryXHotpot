@@ -1,12 +1,14 @@
 package com.github.argon4w.hotpot.mixins;
 
-import com.github.argon4w.hotpot.client.items.sprites.OverlayModelMap;
-import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
-import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.client.items.sprites.OverlayBakedModel;
+import com.github.argon4w.hotpot.client.items.sprites.OverlayModelMap;
 import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
+import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,7 +51,7 @@ public abstract class ModelBakeryMixin {
                 continue;
             }
 
-            bakedTopLevelModels.put(modelResourceLocation, new OverlayBakedModel(HotpotSpriteProcessors.getSpriteProcessorRegistry().holders().collect(() -> new OverlayModelMap(bakedTopLevelModels.get(modelResourceLocation)), (map, reference) -> map.put(reference.key().location(), new SimpleModelBaker(bakedTopLevelModels, unbakedCache, missingModel, material -> atlasSpriteGetter.get(modelResourceLocation, material), reference.value()).bakeUncached(unbakedModel, BlockModelRotation.X0_Y0)), HashMap::putAll)));
+            bakedTopLevelModels.put(modelResourceLocation, new OverlayBakedModel(HotpotSpriteProcessors.getSpriteProcessorRegistry().holders().collect(() -> new OverlayModelMap(bakedTopLevelModels.get(modelResourceLocation)), (map, reference) -> map.put(reference.key().location(), new SimpleModelBaker(bakedTopLevelModels, unbakedCache, missingModel, material -> atlasSpriteGetter.get(modelResourceLocation, material), reference.value()).bakeUncached(unbakedModel)), HashMap::putAll)));
         }
     }
 }

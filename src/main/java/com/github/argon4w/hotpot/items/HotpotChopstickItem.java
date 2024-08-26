@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.AbstractTablewareInteractiveBlockEntity;
+import com.github.argon4w.hotpot.blocks.AbstractHotpotTablewareBlockEntity;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
@@ -129,13 +129,13 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     @Override
-    public void tablewareInteract(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractTablewareInteractiveBlockEntity blockEntity, LevelBlockPos selfPos) {
+    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractHotpotTablewareBlockEntity blockEntity, LevelBlockPos selfPos) {
         if (!(itemStack.getItem() instanceof HotpotChopstickItem)) {
             return;
         }
 
         ItemStack heldItemStack = HotpotChopstickItem.getHeldItemStack(itemStack);
-        heldItemStack = heldItemStack.isEmpty() ? blockEntity.getContentViaTableware(player, hand, hitPos, layer, selfPos) : blockEntity.setContentViaTableware(hitPos, layer, player, hand, heldItemStack, selfPos);
+        heldItemStack = heldItemStack.isEmpty() ? blockEntity.getContentByTableware(player, hand, hitPos, layer, selfPos) : blockEntity.setContentByTableware(hitPos, layer, player, hand, heldItemStack, selfPos);
 
         if (heldItemStack.getItem().canFitInsideContainerItems()) {
             HotpotChopstickItem.setHeldItemStack(itemStack, heldItemStack);

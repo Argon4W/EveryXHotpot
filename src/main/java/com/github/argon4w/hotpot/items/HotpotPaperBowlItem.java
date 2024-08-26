@@ -6,9 +6,10 @@ import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
-import com.github.argon4w.hotpot.soups.HotpotSoupTypeHolder;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
-import com.github.argon4w.hotpot.soups.types.HotpotEmptySoup;
+import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -174,11 +175,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return 0;
         }
 
-        if (isPaperBowlDrained(itemStack)) {
-            return foodItemStack.getUseDuration(livingEntity);
-        }
-
-        return (int) (foodItemStack.getUseDuration(livingEntity) * 1.5f);
+        return (int) (foodItemStack.getUseDuration(livingEntity) * getPaperBowlSoupStatus(itemStack).getUseDurationFactor());
     }
 
     @Override
@@ -211,11 +208,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return super.getDescriptionId(itemStack) + ".skewer";
         }
 
-        if (isPaperBowlDrained(itemStack)) {
-            return super.getDescriptionId(itemStack) + ".drained";
-        }
-
-        return super.getDescriptionId(itemStack) + ".hotpot";
+        return super.getDescriptionId(itemStack) + getPaperBowlSoupStatus(itemStack).getSuffix();
     }
 
     public static boolean isFood(ItemStack itemStack) {
@@ -255,15 +248,15 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlSoupEmpty(ItemStack itemStack) {
-        return getPaperBowlSoupType(itemStack).value() instanceof HotpotEmptySoup.Type;
+        return getPaperBowlSoupType(itemStack).equals(HotpotComponentSoupType.UNIT_TYPE_HOLDER);
     }
 
-    public static HotpotSoupTypeHolder<?> getPaperBowlSoupType(ItemStack itemStack) {
+    public static Holder<HotpotComponentSoupType> getPaperBowlSoupType(ItemStack itemStack) {
         return getDataComponent(itemStack).soupTypeHolder();
     }
 
-    public static boolean isPaperBowlDrained(ItemStack itemStack) {
-        return getDataComponent(itemStack).drained();
+    public static HotpotSoupStatus getPaperBowlSoupStatus(ItemStack itemStack) {
+        return getDataComponent(itemStack).soupStatus();
     }
 
     public static HotpotPaperBowlDataComponent getDataComponent(ItemStack itemStack) {
@@ -282,12 +275,12 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         setDataComponent(itemStack, getDataComponent(itemStack).setSkewers(skewers));
     }
 
-    public static void setPaperBowlSoupType(ItemStack itemStack, IHotpotSoup soup) {
+    public static void setPaperBowlSoupType(ItemStack itemStack, HotpotComponentSoup soup) {
         setDataComponent(itemStack, getDataComponent(itemStack).setSoupType(soup));
     }
 
-    public static void setPaperBowlDrained(ItemStack itemStack, boolean drained) {
-        setDataComponent(itemStack, getDataComponent(itemStack).setDrained(drained));
+    public static void setPaperBowlSoupStatus(ItemStack itemStack, HotpotSoupStatus soupStatus) {
+        setDataComponent(itemStack, getDataComponent(itemStack).setDrained(soupStatus));
     }
 
     public static void addToInventory(Player player, ItemStack itemStack) {

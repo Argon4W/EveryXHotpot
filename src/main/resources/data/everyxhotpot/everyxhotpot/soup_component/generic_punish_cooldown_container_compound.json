@@ -1,0 +1,21 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:block_content_update_when_in_punish_cooldown": {
+      "component": "everyxhotpot:generic_block_content_update_when_in_punish_cooldown",
+      "index": 0
+    },
+    "everyxhotpot:drop_punish_cooldown_when_not_empty": {
+      "component": "everyxhotpot:generic_drop_punish_cooldown_when_not_empty",
+      "index": 1
+    },
+    "everyxhotpot:increase_punish_cooldown_when_empty": {
+      "component": "everyxhotpot:generic_increase_punish_cooldown_when_empty",
+      "index": 2
+    },
+    "everyxhotpot:punish_cooldown_container": {
+      "component": "everyxhotpot:generic_punish_cooldown_container",
+      "index": 3
+    }
+  }
+}

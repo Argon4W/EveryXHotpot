@@ -1,0 +1,5 @@
+{
+  "type": "everyxhotpot:increase_punish_cooldown_when_empty_soup_component",
+  "min_cooldown_when_empty": 600,
+  "cooldown_increase_rate": 1
+}

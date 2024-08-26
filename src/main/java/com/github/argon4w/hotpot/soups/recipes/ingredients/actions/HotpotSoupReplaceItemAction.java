@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.actions;
 
-import com.github.argon4w.hotpot.LazyMapCodec;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.soups.IHotpotSoup;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientAction;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientActionSerializer;
@@ -18,8 +18,8 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
     @Override
-    public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, IHotpotSoup sourceSoup, IHotpotSoup resultSoup, LevelBlockPos selfPos) {
-        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.getEmptyContentSerializer()).get(itemStack.copy(), hotpotBlockEntity, selfPos));
+    public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos) {
+        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER).value().get(itemStack.copy(), hotpotBlockEntity, selfPos), selfPos);
     }
 
     @Override

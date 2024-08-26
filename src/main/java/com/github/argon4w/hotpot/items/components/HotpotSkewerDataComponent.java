@@ -10,7 +10,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.UnaryOperator;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public record HotpotSkewerDataComponent(List<ItemStack> itemStacks) {
@@ -33,8 +33,8 @@ public record HotpotSkewerDataComponent(List<ItemStack> itemStacks) {
         return new HotpotSkewerDataComponent(List.copyOf(itemStacks));
     }
 
-    public HotpotSkewerDataComponent applyToItemStacks(UnaryOperator<ItemStack> operator) {
-        return new HotpotSkewerDataComponent(itemStacks.stream().map(operator).toList());
+    public HotpotSkewerDataComponent applyItemStacks(Consumer<ItemStack> consumer) {
+        return new HotpotSkewerDataComponent(itemStacks.stream().map(ItemStack::copy).peek(consumer).toList());
     }
 
     public HotpotSkewerDataComponent addItemStack(ItemStack itemStack) {

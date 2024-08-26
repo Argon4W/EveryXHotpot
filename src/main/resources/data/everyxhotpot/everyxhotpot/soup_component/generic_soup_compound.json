@@ -1,0 +1,43 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:interact_behaviour": {
+      "component": "everyxhotpot:generic_interact_behaviour_compound",
+      "index": 0
+    },
+    "everyxhotpot:entity_inside_behaviour": {
+      "component": "everyxhotpot:generic_entity_inside_behaviour_compound",
+      "index": 1
+    },
+    "everyxhotpot:cooking_recipe_content_provider": {
+      "component": "everyxhotpot:generic_cooking_recipe_content_provider",
+      "index": 2
+    },
+
+    "everyxhotpot:tick_and_update": {
+      "component": "everyxhotpot:generic_tick_and_update_compound",
+      "index": 3
+    },
+    "everyxhotpot:water_level_container": {
+      "component": "everyxhotpot:generic_water_level_container_compound",
+      "index": 4
+    },
+    "everyxhotpot:activeness_container": {
+      "component": "everyxhotpot:generic_activeness_container_compound",
+      "index": 5
+    },
+    "everyxhotpot:punish_cooldown_container": {
+      "component": "everyxhotpot:generic_punish_cooldown_container_compound",
+      "index": 6
+    },
+
+    "everyxhotpot:modify_experience": {
+      "component": "everyxhotpot:generic_modify_experience",
+      "index": 7
+    },
+    "everyxhotpot:summon_experience_orb": {
+      "component": "everyxhotpot:generic_summon_experience_orb",
+      "index": 8
+    }
+  }
+}

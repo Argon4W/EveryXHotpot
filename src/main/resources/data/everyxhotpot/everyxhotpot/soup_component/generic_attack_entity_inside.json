@@ -1,0 +1,7 @@
+{
+  "type": "everyxhotpot:attack_entity_inside_soup_component",
+  "damage_source": {
+    "damage_type": "everyxhotpot:in_hotpot",
+    "amount": 5.0
+  }
+}

@@ -50,12 +50,12 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotEmptyPlacement> {
         @Override
         public HotpotEmptyPlacement get(int pos, Direction direction) {
-            return build();
+            return get();
         }
 
         @Override
         public MapCodec<HotpotEmptyPlacement> getCodec() {
-            return MapCodec.unit(this::build);
+            return MapCodec.unit(this::get);
         }
 
         @Override
@@ -63,7 +63,7 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
             return false;
         }
 
-        public HotpotEmptyPlacement build() {
+        public HotpotEmptyPlacement get() {
             return new HotpotEmptyPlacement();
         }
     }

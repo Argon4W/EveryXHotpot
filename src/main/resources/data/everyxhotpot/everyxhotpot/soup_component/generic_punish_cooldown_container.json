@@ -1,0 +1,5 @@
+{
+  "type": "everyxhotpot:punish_cooldown_container_soup_component",
+  "min_cooldown": 0,
+  "max_cooldown": 2400
+}

@@ -11,21 +11,21 @@ import org.joml.Math;
 
 public class HotpotDefaultItemContentRenderer implements IHotpotItemContentSpecialRenderer {
     @Override
-    public void render(AbstractHotpotItemStackContent itemStackContent, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float waterLevel, float rotation, float x, float z) {
+    public void render(AbstractHotpotItemStackContent itemStackContent, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel, double rotation, double x, double z) {
         poseStack.pushPose();
 
-        float positionX = 0.5f + x * 0.315f;
-        float positionZ = 0.5f + z * 0.315f;
-        float positionY = 0.53f - getFloatingCurve(rotation / 360.0f, 0.0f) * 0.06f + 0.42f * waterLevel;
+        double positionX = 0.5 + x * 0.315;
+        double positionZ = 0.5 + z * 0.315;
+        double positionY = 0.53 - getFloatingCurve(rotation / 360.0, 0.0) * 0.06 + 0.42 * waterLevel;
 
-        float rotationY = rotation - 90.0f;
-        float rotationX = getFloatingCurve(rotation / 360.0f, 1f) * 25.0f;
+        double rotationY = rotation - 90.0;
+        double rotationX = getFloatingCurve(rotation / 360.0, 1) * 25.0;
 
         poseStack.translate(positionX, positionY, positionZ);
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
-        poseStack.mulPose(Axis.XP.rotationDegrees( 90.0f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(rotationX));
+        poseStack.mulPose(Axis.YP.rotationDegrees((float) rotationY));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
+        poseStack.mulPose(Axis.XP.rotationDegrees((float) rotationX));
 
         poseStack.scale(0.25f, 0.25f, 0.25f);
 
@@ -34,7 +34,7 @@ public class HotpotDefaultItemContentRenderer implements IHotpotItemContentSpeci
         poseStack.popPose();
     }
 
-    public static float getFloatingCurve(float f, float offset) {
-        return (float) Math.sin((f + offset) / 0.25f * 2f * Math.PI);
+    public static double getFloatingCurve(double f, double offset) {
+        return Math.sin((f + offset) / 0.25 * 2 * Math.PI);
     }
 }
