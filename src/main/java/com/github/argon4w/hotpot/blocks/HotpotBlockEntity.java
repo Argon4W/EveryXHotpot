@@ -160,6 +160,11 @@ public class HotpotBlockEntity extends AbstractHotpotCodecTablewareBlockEntity<H
         INGREDIENT_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotIngredientRecipeInput(this), pos.level()).map(RecipeHolder::value).ifPresent(recipe -> recipe.assemble(this).execute(this, pos));
     }
 
+    public void setContent(int contentPos, IHotpotContent content) {
+        data.contents.set(contentPos, content);
+        markDataChanged();
+    }
+
     public void setSoup(HotpotComponentSoup soup, LevelBlockPos pos) {
         this.data.soup = soup;
         pos.setBlockStateProperty(HotpotBlock.HOTPOT_LIT, this.data.soup.isHotpotLit(this, pos));

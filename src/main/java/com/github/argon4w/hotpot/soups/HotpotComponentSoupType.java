@@ -34,7 +34,7 @@ public class HotpotComponentSoupType {
     public static final Holder<HotpotComponentSoupType> UNIT_TYPE_HOLDER = Holder.direct(UNIT_TYPE);
     public static final HotpotComponentSoup UNIT_SOUP = loadSoup(UNIT_TYPE_HOLDER);
 
-    public static final Codec<HotpotComponentSoupType> TYPE_CODEC = Codec.lazyInitialized(() -> Codec.unboundedMap(ResourceLocation.CODEC, IndexHolder.getIndexedCodec(HotpotSoupComponentTypeSerializers.TYPE_HOLDER_CODEC.fieldOf("component"))).xmap(HotpotComponentSoupType::new, HotpotComponentSoupType::getComponentTypeHolders));
+    public static final Codec<HotpotComponentSoupType> TYPE_CODEC = Codec.lazyInitialized(() -> Codec.unboundedMap(ResourceLocation.CODEC, IndexHolder.getIndexedCodec(HotpotSoupComponentTypeSerializers.TYPE_HOLDER_CODEC.fieldOf("component"))).fieldOf("components").codec().xmap(HotpotComponentSoupType::new, HotpotComponentSoupType::getComponentTypeHolders));
     public static final StreamCodec<RegistryFriendlyByteBuf, HotpotComponentSoupType> TYPE_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.map(LinkedHashMap::new, ResourceLocation.STREAM_CODEC, IndexHolder.getIndexedStreamCodec(HotpotSoupComponentTypeSerializers.TYPE_HOLDER_STREAM_CODEC)).map(HotpotComponentSoupType::new, type -> new LinkedHashMap<>(type.getComponentTypeHolders())));
 
     public static final Codec<Holder<HotpotComponentSoupType>> TYPE_HOLDER_CODEC = Codec.lazyInitialized(() -> RegistryFileCodec.create(COMPONENT_SOUP_TYPE_REGISTRY_KEY, Codec.unit(UNIT_TYPE), true));

@@ -19,7 +19,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
     @Override
     public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos) {
-        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER).value().get(itemStack.copy(), hotpotBlockEntity, selfPos), selfPos);
+        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER).value().get(itemStack.copy(), hotpotBlockEntity, selfPos));
     }
 
     @Override

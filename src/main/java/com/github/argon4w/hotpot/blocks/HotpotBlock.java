@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.blocks;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityClientTicker;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;

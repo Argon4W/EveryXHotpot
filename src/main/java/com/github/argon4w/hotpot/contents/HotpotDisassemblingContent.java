@@ -4,13 +4,15 @@ import com.github.argon4w.hotpot.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
-import com.mojang.datafixers.util.Either;
+import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,16 +23,16 @@ import java.util.function.Predicate;
 
 public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
-    private final Either<Unit, IHotpotResult<CraftingRecipe>> cachedDisassembledResult;
+    private final Function<LevelBlockPos, IHotpotResult<CraftingRecipe>> cachedDisassembledResult;
 
     public HotpotDisassemblingContent(ItemStack itemStack, int cookingTime, double cookingProgress, double experience) {
         super(itemStack, cookingTime, cookingProgress, experience);
-        this.cachedDisassembledResult = Either.left(Unit.INSTANCE);
+        this.cachedDisassembledResult = Util.memoize(this::getDisassembledResultRecipe);
     }
 
     public HotpotDisassemblingContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         super(itemStack, hotpotBlockEntity, pos);
-        this.cachedDisassembledResult = Either.right(getDisassembledResultRecipe(pos));
+        this.cachedDisassembledResult = Util.memoize(this::getDisassembledResultRecipe);
     }
 
     @Override
@@ -67,7 +69,7 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     }
 
     public IHotpotResult<CraftingRecipe> getOrCacheDisassembledResultRecipe(LevelBlockPos pos) {
-        return cachedDisassembledResult.map(unit -> getDisassembledResultRecipe(pos), Function.identity());
+        return cachedDisassembledResult.apply(pos);
     }
 
     public IHotpotResult<CraftingRecipe> getDisassembledResultRecipe(LevelBlockPos pos) {

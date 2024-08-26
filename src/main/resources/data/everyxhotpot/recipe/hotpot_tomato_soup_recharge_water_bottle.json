@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
   "type": "everyxhotpot:hotpot_soup_recharge_recipe",
   "target_soup": "everyxhotpot:tomato_soup",
   "recharge_water_level": 0.333,

@@ -1,6 +1,6 @@
 {
   "type": "everyxhotpot:hotpot_soup_ingredient_recipe",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "sinofeast"

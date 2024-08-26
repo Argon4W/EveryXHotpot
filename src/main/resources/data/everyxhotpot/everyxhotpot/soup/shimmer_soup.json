@@ -1,62 +1,64 @@
 {
-  "everyxhotpot:disassembling_recipe_content_provider": {
-    "component": {
-      "type": "everyxhotpot:disassembling_recipe_content_provider_soup_component"
+  "components": {
+    "everyxhotpot:disassembling_recipe_content_provider": {
+      "component": {
+        "type": "everyxhotpot:disassembling_recipe_content_provider_soup_component"
+      },
+      "index": 0
     },
-    "index": 0
-  },
-  "everyxhotpot:no_lit": {
-    "component": {
-      "type": "everyxhotpot:no_lit_soup_component"
+    "everyxhotpot:no_lit": {
+      "component": {
+        "type": "everyxhotpot:no_lit_soup_component"
+      },
+      "index": 1
     },
-    "index": 1
-  },
-  "everyxhotpot:recharge_soup_recipe_acceptor": {
-    "component": "everyxhotpot:generic_soup_recharge_recipe_acceptor",
-    "index": 2
-  },
-  "everyxhotpot:base_soup_recipe_acceptor": {
-    "component": "everyxhotpot:generic_soup_base_recipe_acceptor",
-    "index": 3
-  },
-  "everyxhotpot:add_item_stack_content_by_hand": {
-    "component": "everyxhotpot:generic_add_item_stack_content_by_hand",
-    "index": 4
-  },
-  "everyxhotpot:remove_soup_when_crouching": {
-    "component": "everyxhotpot:generic_remove_soup_when_crouching",
-    "index": 5
-  },
-  "everyxhotpot:get_content_by_hand": {
-    "component": {
-      "type": "everyxhotpot:get_content_by_hand_soup_component"
+    "everyxhotpot:recharge_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_recharge_recipe_acceptor",
+      "index": 2
     },
-    "index": 6
-  },
-  "everyxhotpot:add_item_inside_delayed": {
-    "component": {
-      "type": "everyxhotpot:add_item_entity_inside_soup_component",
-      "delayed": true
+    "everyxhotpot:base_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_base_recipe_acceptor",
+      "index": 3
     },
-    "index": 7
-  },
-  "everyxhotpot:cooking_recipe_content_provider": {
-    "component": "everyxhotpot:generic_cooking_recipe_content_provider",
-    "index": 8
-  },
-  "everyxhotpot:synchronize_tick": {
-    "component": "everyxhotpot:generic_synchronize_tick",
-    "index": 9
-  },
-  "everyxhotpot:water_level_container": {
-    "component": "everyxhotpot:generic_no_drop_water_level_container_compound",
-    "index": 10
-  },
-  "everyxhotpot:drop_water_level_on_content_update": {
-    "component": {
-      "type": "everyxhotpot:increase_water_level_on_content_update_soup_component",
-      "base": -0.125
+    "everyxhotpot:add_item_stack_content_by_hand": {
+      "component": "everyxhotpot:generic_add_item_stack_content_by_hand",
+      "index": 4
     },
-    "index": 11
+    "everyxhotpot:remove_soup_when_crouching": {
+      "component": "everyxhotpot:generic_remove_soup_when_crouching",
+      "index": 5
+    },
+    "everyxhotpot:get_content_by_hand": {
+      "component": {
+        "type": "everyxhotpot:get_content_by_hand_soup_component"
+      },
+      "index": 6
+    },
+    "everyxhotpot:add_item_inside_delayed": {
+      "component": {
+        "type": "everyxhotpot:add_item_entity_inside_soup_component",
+        "delayed": true
+      },
+      "index": 7
+    },
+    "everyxhotpot:cooking_recipe_content_provider": {
+      "component": "everyxhotpot:generic_cooking_recipe_content_provider",
+      "index": 8
+    },
+    "everyxhotpot:synchronize_tick": {
+      "component": "everyxhotpot:generic_synchronize_tick",
+      "index": 9
+    },
+    "everyxhotpot:water_level_container": {
+      "component": "everyxhotpot:generic_no_drop_water_level_container_compound",
+      "index": 10
+    },
+    "everyxhotpot:drop_water_level_on_content_update": {
+      "component": {
+        "type": "everyxhotpot:increase_water_level_on_content_update_soup_component",
+        "base": -0.125
+      },
+      "index": 11
+    }
   }
 }

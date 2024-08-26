@@ -4,7 +4,6 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.stream.Streams;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;

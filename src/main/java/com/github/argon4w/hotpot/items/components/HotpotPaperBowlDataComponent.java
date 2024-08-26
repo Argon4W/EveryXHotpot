@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.items.components;
 
-import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
+import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;

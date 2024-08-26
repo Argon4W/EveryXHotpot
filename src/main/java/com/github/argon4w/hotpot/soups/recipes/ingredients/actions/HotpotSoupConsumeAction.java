@@ -15,7 +15,7 @@ import net.minecraft.network.codec.StreamCodec;
 public class HotpotSoupConsumeAction implements IHotpotSoupIngredientAction {
     @Override
     public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos) {
-        hotpotBlockEntity.setContent(pos, HotpotContentSerializers.loadEmptyContent(), selfPos);
+        hotpotBlockEntity.setContent(pos, HotpotContentSerializers.loadEmptyContent());
     }
 
     @Override
