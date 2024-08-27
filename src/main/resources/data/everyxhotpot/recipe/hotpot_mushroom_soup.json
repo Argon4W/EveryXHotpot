@@ -1,0 +1,55 @@
+{
+  "type": "everyxhotpot:hotpot_soup_ingredient_recipe",
+  "source_soup": "everyxhotpot:clear_soup",
+  "result_soup": "everyxhotpot:mushroom_soup",
+  "ingredients": [
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "item": "minecraft:red_mushroom"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "item": "minecraft:brown_mushroom"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "item": "minecraft:crimson_fungus"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    },
+    {
+      "amount": 2,
+      "condition": {
+        "type": "everyxhotpot:item",
+        "predicate": {
+          "item": "minecraft:warped_fungus"
+        }
+      },
+      "action": {
+        "type": "everyxhotpot:consume"
+      }
+    }
+  ]
+}

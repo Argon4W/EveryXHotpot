@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.HotpotItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -50,7 +51,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return InteractionResultHolder.consume(itemStack);
         }
 
-        addToInventory(player, firstItemStack);
+        HotpotItemUtils.addToInventory(player, firstItemStack);
         itemStacks.removeFirst();
 
         setSkewerItems(itemStack, itemStacks);
@@ -85,7 +86,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
         firstItemStack = itemStacks.getFirst().copy();
 
         if (!isFood(firstItemStack)) {
-            addToInventory(player, firstItemStack);
+            HotpotItemUtils.addToInventory(player, firstItemStack);
             itemStacks.set(0, ItemStack.EMPTY);
         }
 
@@ -213,11 +214,5 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
 
     public static void applySkewerItems(ItemStack itemStack, Consumer<ItemStack> consumer) {
         setDataComponent(itemStack, getDataComponent(itemStack).applyItemStacks(consumer));
-    }
-
-    public static void addToInventory(Player player, ItemStack itemStack) {
-        if (!player.getInventory().add(itemStack)) {
-            player.drop(itemStack, false);
-        }
     }
 }

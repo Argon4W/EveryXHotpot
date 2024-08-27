@@ -15,7 +15,7 @@ public abstract class AbstractHotpotTablewareBlockEntity extends BlockEntity {
         super(pType, pPos, pBlockState);
     }
 
-    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+    public final void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         if (itemStack.getItem() instanceof IHotpotTablewareItem tablewareItem) {
             tablewareItem.interact(hitPos, layer, player, hand, itemStack, this, selfPos);
         } else {
@@ -23,7 +23,11 @@ public abstract class AbstractHotpotTablewareBlockEntity extends BlockEntity {
         }
     }
 
-    public abstract ItemStack setContentByTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
+    public final ItemStack setContentByTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
+        setContentByInteraction(hitPos, layer, player, hand, itemStack, selfPos);
+        return itemStack;
+    }
+
     public abstract void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos);
     public abstract ItemStack getContentByTableware(Player player, InteractionHand hand, int hitPos, int layer, LevelBlockPos pos);
 }

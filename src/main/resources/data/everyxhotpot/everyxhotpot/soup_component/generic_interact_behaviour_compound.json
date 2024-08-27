@@ -1,11 +1,11 @@
 {
   "type": "everyxhotpot:compound_soup_component",
   "compounds": {
-    "everyxhotpot:recharge_soup_recipe_acceptor": {
+    "everyxhotpot:soup_recharge_recipe_acceptor": {
       "component": "everyxhotpot:generic_soup_recharge_recipe_acceptor",
       "index": 0
     },
-    "everyxhotpot:base_soup_recipe_acceptor": {
+    "everyxhotpot:soup_base_recipe_acceptor": {
       "component": "everyxhotpot:generic_soup_base_recipe_acceptor",
       "index": 1
     },

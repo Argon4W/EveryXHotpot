@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.recipes;
 
+import com.github.argon4w.hotpot.HotpotItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
@@ -17,7 +18,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
@@ -30,7 +30,7 @@ public class HotpotSoupBaseRecipeAcceptorSoupComponent extends AbstractHotpotSou
     public static final HotpotSoupComponentUnitType<HotpotSoupBaseRecipeAcceptorSoupComponent> TYPE = new HotpotSoupComponentUnitType<>(UNIT, HotpotSoupComponentTypeSerializers.SOUP_BASE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER);
 
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }
@@ -43,7 +43,7 @@ public class HotpotSoupBaseRecipeAcceptorSoupComponent extends AbstractHotpotSou
 
         HotpotSoupBaseRecipe recipe = optional.get();
 
-        player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
+        HotpotItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
         hotpotBlockEntity.setSoup(recipe.getResultSoup(), pos);
         hotpotBlockEntity.setWaterLevel(recipe.getResultWaterLevel(), pos);
         pos.playSound(recipe.getSoundEvent());

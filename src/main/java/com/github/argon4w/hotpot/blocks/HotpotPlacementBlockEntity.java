@@ -38,12 +38,6 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotTablewareBlockEnti
     }
 
     @Override
-    public ItemStack setContentByTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        setContentByInteraction(hitPos, layer, player, hand, itemStack, selfPos);
-        return itemStack;
-    }
-
-    @Override
     public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         if (isEmpty()) {
             selfPos.removeBlock(true);

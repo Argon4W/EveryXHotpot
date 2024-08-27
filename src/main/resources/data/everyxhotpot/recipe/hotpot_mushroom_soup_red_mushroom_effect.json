@@ -1,0 +1,13 @@
+{
+  "type": "everyxhotpot:hotpot_soup_random_mob_effect_recipe",
+  "target_soup": "everyxhotpot:mushroom_soup",
+  "ingredient": {
+    "item": "minecraft:red_mushroom"
+  },
+  "mob_effect_map": "everyxhotpot:overworld_mushroom_mob_effect_map",
+  "mob_effect_key": {
+    "from": -5,
+    "to": 6
+  },
+  "sound_event": "block.brewing_stand.brew"
+}

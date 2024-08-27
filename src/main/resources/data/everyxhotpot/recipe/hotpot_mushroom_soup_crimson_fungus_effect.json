@@ -1,0 +1,13 @@
+{
+  "type": "everyxhotpot:hotpot_soup_random_mob_effect_recipe",
+  "target_soup": "everyxhotpot:mushroom_soup",
+  "ingredient": {
+    "item": "minecraft:crimson_fungus"
+  },
+  "mob_effect_map": "everyxhotpot:nether_fungus_mob_effect_map",
+  "mob_effect_key": {
+    "from": -14,
+    "to": 13
+  },
+  "sound_event": "block.brewing_stand.brew"
+}

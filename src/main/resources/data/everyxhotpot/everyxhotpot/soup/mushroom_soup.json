@@ -1,0 +1,38 @@
+{
+  "components": {
+    "everyxhotpot:soup_random_mob_effect_recipe_acceptor": {
+      "component": {
+        "type": "everyxhotpot:soup_random_mob_effect_recipe_acceptor_soup_component"
+      },
+      "index": 0
+    },
+    "everyxhotpot:soup": {
+      "component": "everyxhotpot:generic_cooking_soup_compound",
+      "index": 1
+    },
+    "everyxhotpot:apply_mob_effect_on_content_update": {
+      "component": "everyxhotpot:generic_apply_mob_effect_on_content_update",
+      "index": 2
+    },
+    "everyxhotpot:mob_effect_container": {
+      "component": {
+        "type": "everyxhotpot:fixed_mob_effect_container_soup_component",
+        "effects": [
+          {
+            "id": "everyxhotpot:warm",
+            "amplifier": 0,
+            "duration": 300
+          }
+        ]
+      },
+      "index": 3
+    },
+    "everyxhotpot:dynamic_mob_effect_container": {
+      "component": {
+        "type": "everyxhotpot:dynamic_mob_effect_container_soup_component",
+        "size": 3
+      },
+      "index": 4
+    }
+  }
+}

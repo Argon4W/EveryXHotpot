@@ -59,7 +59,7 @@ public record HotpotComponentSoup(LinkedHashMap<ResourceLocation, IndexHolder<IH
     }
 
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents((component, result) -> component.getPlayerInteractionResult(hitPos, player, hand, itemStack, hotpotBlockEntity, this, pos, result));
+        return getResultFromComponents((component, result) -> component.getPlayerInteractionResult(hitPos, player, hand, itemStack, this, pos, result, hotpotBlockEntity));
     }
 
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getContentSerializerResultFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {

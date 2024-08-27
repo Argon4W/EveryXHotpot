@@ -25,18 +25,18 @@ import java.util.Optional;
 public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRecipe {
     private final Holder<HotpotComponentSoupType> targetSoupType;
     private final Ingredient ingredient;
-    private final ItemStack remainingItem;
-    private final Holder<SoundEvent> soundEvent;
     private final Holder<HotpotRandomMobEffectMap> mobEffectMapHolder;
     private final IHotpotRandomMobEffectKey.Wrapper mobEffectKey;
+    private final ItemStack remainingItem;
+    private final Holder<SoundEvent> soundEvent;
 
-    public HotpotSoupRandomMobEffectRecipe(Holder<HotpotComponentSoupType> targetSoupType, Ingredient ingredient, ItemStack remainingItem, Holder<SoundEvent> soundEvent, Holder<HotpotRandomMobEffectMap> mobEffectMap, IHotpotRandomMobEffectKey.Wrapper mobEffectKey) {
+    public HotpotSoupRandomMobEffectRecipe(Holder<HotpotComponentSoupType> targetSoupType, Ingredient ingredient, Holder<HotpotRandomMobEffectMap> mobEffectMap, IHotpotRandomMobEffectKey.Wrapper mobEffectKey, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
         this.targetSoupType = targetSoupType;
         this.ingredient = ingredient;
-        this.remainingItem = remainingItem;
-        this.soundEvent = soundEvent;
         this.mobEffectMapHolder = mobEffectMap;
         this.mobEffectKey = mobEffectKey;
+        this.remainingItem = remainingItem;
+        this.soundEvent = soundEvent;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
     }
 
     public ItemStack getRemainingItem() {
-        return remainingItem;
+        return remainingItem.copy();
     }
 
     public Holder<SoundEvent> getSoundEvent() {
@@ -87,10 +87,10 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
                         HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRandomMobEffectRecipe::getTargetSoupType),
                         Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupRandomMobEffectRecipe::getIngredient),
-                        ItemStack.OPTIONAL_CODEC.fieldOf("remaining_item").forGetter(HotpotSoupRandomMobEffectRecipe::getRemainingItem),
-                        SoundEvent.CODEC.fieldOf("sound_event").forGetter(HotpotSoupRandomMobEffectRecipe::getSoundEvent),
                         HotpotRandomMobEffectMap.HOLDER_CODEC.fieldOf("mob_effect_map").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder),
-                        IHotpotRandomMobEffectKey.CODEC.fieldOf("mob_effect_key").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectKey)
+                        IHotpotRandomMobEffectKey.CODEC.fieldOf("mob_effect_key").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectKey),
+                        ItemStack.OPTIONAL_CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupRandomMobEffectRecipe::getRemainingItem),
+                        SoundEvent.CODEC.fieldOf("sound_event").forGetter(HotpotSoupRandomMobEffectRecipe::getSoundEvent)
                 ).apply(recipe, HotpotSoupRandomMobEffectRecipe::new))
         );
 
@@ -98,10 +98,10 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
                 StreamCodec.composite(
                         HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getTargetSoupType,
                         Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getIngredient,
-                        ItemStack.OPTIONAL_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getRemainingItem,
-                        SoundEvent.STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getSoundEvent,
                         HotpotRandomMobEffectMap.HOLDER_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder,
                         IHotpotRandomMobEffectKey.STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getMobEffectKey,
+                        ItemStack.OPTIONAL_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getRemainingItem,
+                        SoundEvent.STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getSoundEvent,
                         HotpotSoupRandomMobEffectRecipe::new
                 )
         );

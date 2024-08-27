@@ -39,12 +39,6 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotTablewareBlock
     }
 
     @Override
-    public ItemStack setContentByTableware(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        setContentByInteraction(hitPos, layer, player, hand, itemStack, selfPos);
-        return itemStack;
-    }
-
-    @Override
     public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
         IHotpotPlacement placement = getPlacementInPosAndLayer(hitPos, layer);
         placement.interact(player, hand, itemStack, hitPos, layer, selfPos, this);

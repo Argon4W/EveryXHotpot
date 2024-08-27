@@ -1,0 +1,12 @@
+{
+  "type": "everyxhotpot:hotpot_soup_recharge_recipe",
+  "target_soup": "everyxhotpot:mushroom_soup",
+  "recharge_water_level": 1,
+  "ingredient": {
+    "item": "minecraft:water_bucket"
+  },
+  "remaining_item": {
+    "id": "minecraft:bucket"
+  },
+  "sound_event": "item.bucket.empty"
+}

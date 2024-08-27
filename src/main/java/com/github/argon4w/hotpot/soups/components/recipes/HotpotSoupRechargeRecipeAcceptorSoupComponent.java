@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.recipes;
 
+import com.github.argon4w.hotpot.HotpotItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
@@ -13,7 +14,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
@@ -23,7 +23,7 @@ public class HotpotSoupRechargeRecipeAcceptorSoupComponent extends AbstractHotpo
     public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRechargeRecipe> SOUP_RECHARGE_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get());
 
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }
@@ -36,8 +36,8 @@ public class HotpotSoupRechargeRecipeAcceptorSoupComponent extends AbstractHotpo
 
         HotpotSoupRechargeRecipe recipe = optional.get();
 
+        HotpotItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
         soup.setWaterLevel(soup.getWaterLevel() + recipe.getRechargeWaterLevel(), hotpotBlockEntity, pos);
-        player.setItemInHand(hand, ItemUtils.createFilledResult(itemStack, player, recipe.getRemainingItem()));
         pos.playSound(recipe.getSoundEvent());
 
         return IHotpotResult.blocked();

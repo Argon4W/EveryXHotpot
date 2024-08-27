@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.HotpotItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
@@ -73,7 +74,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return InteractionResultHolder.consume(itemStack);
         }
 
-        addToInventory(player, firstItemStack);
+        HotpotItemUtils.addToInventory(player, firstItemStack);
         itemStacks.removeFirst();
 
         setPaperBowlItems(itemStack, items);
@@ -115,7 +116,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         firstItemStack = itemStacks.getFirst().copy();
 
         if (!canEatInPaperBowl(firstItemStack)) {
-            addToInventory(player, firstItemStack);
+            HotpotItemUtils.addToInventory(player, firstItemStack);
             itemStacks.removeFirst();
         }
 
@@ -281,11 +282,5 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
 
     public static void setPaperBowlSoupStatus(ItemStack itemStack, HotpotSoupStatus soupStatus) {
         setDataComponent(itemStack, getDataComponent(itemStack).setDrained(soupStatus));
-    }
-
-    public static void addToInventory(Player player, ItemStack itemStack) {
-        if (!player.getInventory().add(itemStack)) {
-            player.drop(itemStack, false);
-        }
     }
 }

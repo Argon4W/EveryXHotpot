@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class HotpotRandomMobEffectMap extends HashMap<Integer, MobEffectInstance> {
-    public static final Codec<HotpotRandomMobEffectMap> CODEC = Codec.lazyInitialized(() -> Codec.INT.dispatch(Map.Entry::getKey, i -> MobEffectInstance.CODEC.xmap(mobEffectInstance -> Map.entry(i, mobEffectInstance), Map.Entry::getValue).fieldOf("effect")).listOf().xmap(HotpotRandomMobEffectMap::new, map -> List.copyOf(map.entrySet())));
+    public static final Codec<HotpotRandomMobEffectMap> CODEC = Codec.lazyInitialized(() -> Codec.INT.dispatch("index", Map.Entry::getKey, i -> MobEffectInstance.CODEC.xmap(mobEffectInstance -> Map.entry(i, mobEffectInstance), Map.Entry::getValue).fieldOf("effect")).listOf().xmap(HotpotRandomMobEffectMap::new, map -> List.copyOf(map.entrySet())).fieldOf("effects").codec());
     public static final StreamCodec<RegistryFriendlyByteBuf, HotpotRandomMobEffectMap> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().dispatch(Map.Entry::getKey, i -> MobEffectInstance.STREAM_CODEC.map(mobEffectInstance -> Map.entry(i, mobEffectInstance), Map.Entry::getValue)).apply(ByteBufCodecs.list()).map(HotpotRandomMobEffectMap::new, map -> List.copyOf(map.entrySet())));
     public static final RandomSource RANDOM_SOURCE = RandomSource.create();
 
@@ -37,7 +37,7 @@ public class HotpotRandomMobEffectMap extends HashMap<Integer, MobEffectInstance
     }
 
     public Optional<MobEffectInstance> getRandom(int from, int to) {
-        return getClosest(RANDOM_SOURCE.nextInt(from, to));
+        return getClosest(RANDOM_SOURCE.nextInt(from, to + 1));
     }
 
     public Optional<MobEffectInstance> getClosest(int key) {
