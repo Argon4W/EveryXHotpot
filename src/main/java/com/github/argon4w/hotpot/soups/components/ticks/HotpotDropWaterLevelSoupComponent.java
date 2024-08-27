@@ -23,7 +23,7 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
 
     @Override
     public void onTick(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-        soup.setWaterLevel(soup.getWaterLevel() - (hotpotBlockEntity.isInfiniteWater() ? 0 : waterLevelDropRate) / 20.0 / 60.0, hotpotBlockEntity, pos);
+        soup.setWaterLevel(soup.getWaterLevel() - waterLevelDropRate / 20.0 / 60.0, hotpotBlockEntity, pos);
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent> {

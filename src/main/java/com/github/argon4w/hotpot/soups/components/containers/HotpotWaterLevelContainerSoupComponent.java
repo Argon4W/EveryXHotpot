@@ -32,7 +32,7 @@ public class HotpotWaterLevelContainerSoupComponent extends AbstractHotpotSoupCo
 
     @Override
     public void setWaterLevel(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-        this.waterLevel = Math.clamp(waterLevel, 0.0, 1.0);
+        this.waterLevel = hotpotBlockEntity.isInfiniteWater() ? 1.0 : Math.clamp(waterLevel, 0.0, 1.0);
         this.overflowWaterLevel = Math.max(0.0, waterLevel - 1.0);
     }
 
