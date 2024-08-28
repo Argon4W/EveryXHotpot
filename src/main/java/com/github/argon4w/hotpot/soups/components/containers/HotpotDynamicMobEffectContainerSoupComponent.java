@@ -17,57 +17,49 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpotSoupComponent implements IHotpotMobEffectContainerSoupComponent {
-    private final int size;
-    private boolean updated;
-    private HotpotMobEffectMap mobEffectMap;
+    private final HotpotMobEffectMap.Sized mobEffectMap;
+    private final HotpotMobEffectMap.Sized scheduledMobEffectMap;
 
-    public HotpotDynamicMobEffectContainerSoupComponent(int size, boolean updated, HotpotMobEffectMap mobEffectMap) {
-        this.size = size;
-        this.updated = updated;
+    public HotpotDynamicMobEffectContainerSoupComponent(HotpotMobEffectMap.Sized mobEffectMap, HotpotMobEffectMap.Sized scheduledMobEffectMap) {
         this.mobEffectMap = mobEffectMap;
+        this.scheduledMobEffectMap = scheduledMobEffectMap;
     }
 
     public HotpotDynamicMobEffectContainerSoupComponent(int size) {
-        this.size = size;
-        this.updated = false;
-        this.mobEffectMap = new HotpotMobEffectMap();
+        this.mobEffectMap = new HotpotMobEffectMap.Sized(size);
+        this.scheduledMobEffectMap = new HotpotMobEffectMap.Sized(size);
     }
 
-    public void trimEffectMap() {
-        while (mobEffectMap.size() > size) {
-            mobEffectMap.pollFirstEntry();
-        }
+    public void putEffects(HotpotMobEffectMap mobEffectMap) {
+        this.mobEffectMap.putEffects(mobEffectMap);
     }
 
-    public void putEffect(MobEffectInstance mobEffectInstance) {
-        mobEffectMap.putEffect(mobEffectInstance);
-        this.updated = true;
-        trimEffectMap();
+    public void putScheduledEffect(MobEffectInstance mobEffectInstance) {
+        scheduledMobEffectMap.putEffect(mobEffectInstance);
     }
 
-    public void setMobEffectMap(HotpotMobEffectMap mobEffectMap) {
-        this.mobEffectMap = mobEffectMap.copy();
-        trimEffectMap();
+    public void clearScheduledEffects() {
+        scheduledMobEffectMap.clear();
     }
 
-    public boolean isUpdated() {
-        return updated;
+    public boolean isScheduled() {
+        return !scheduledMobEffectMap.isEmpty();
     }
 
-    public void setUpdated() {
-        this.updated = false;
+    public HotpotMobEffectMap.Sized getScheduledMobEffectMap() {
+        return scheduledMobEffectMap;
     }
 
     @Override
-    public HotpotMobEffectMap getMobEffectMap() {
+    public HotpotMobEffectMap.Sized getMobEffectMap() {
         return mobEffectMap.copy();
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotDynamicMobEffectContainerSoupComponent> {
         private final int size;
 
-        private final Codec<HotpotMobEffectMap> sizedMobEffectMapCodec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotMobEffectMap> sizedMobEffectMapStreamCodec;
+        private final Codec<HotpotMobEffectMap.Sized> sizedMobEffectMapCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotMobEffectMap.Sized> sizedMobEffectMapStreamCodec;
 
         private final MapCodec<HotpotDynamicMobEffectContainerSoupComponent> codec;
         private final StreamCodec<RegistryFriendlyByteBuf, HotpotDynamicMobEffectContainerSoupComponent> streamCodec;
@@ -80,16 +72,16 @@ public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpot
 
             this.codec = LazyMapCodec.of(() ->
                     RecordCodecBuilder.mapCodec(component -> component.group(
-                            Codec.BOOL.fieldOf("updated").forGetter(HotpotDynamicMobEffectContainerSoupComponent::isUpdated),
-                            sizedMobEffectMapCodec.fieldOf("effects").forGetter(HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap)
-                    ).apply(component, (updated, effects) -> new HotpotDynamicMobEffectContainerSoupComponent(size, updated, effects)))
+                            sizedMobEffectMapCodec.fieldOf("effects").forGetter(HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap),
+                            sizedMobEffectMapCodec.fieldOf("scheduled_effects").forGetter(HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap)
+                    ).apply(component, HotpotDynamicMobEffectContainerSoupComponent::new))
             );
 
             this.streamCodec = NeoForgeStreamCodecs.lazy(() ->
                     StreamCodec.composite(
-                            ByteBufCodecs.BOOL, HotpotDynamicMobEffectContainerSoupComponent::isUpdated,
                             sizedMobEffectMapStreamCodec, HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap,
-                            (updated, effects) -> new HotpotDynamicMobEffectContainerSoupComponent(size, updated, effects)
+                            sizedMobEffectMapStreamCodec, HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap,
+                            HotpotDynamicMobEffectContainerSoupComponent::new
                     )
             );
         }

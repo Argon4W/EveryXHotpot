@@ -40,7 +40,7 @@ public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends Abstra
         HotpotSoupRandomMobEffectRecipe recipe = optional.get();
 
         HotpotItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
-        recipe.getMobEffect().ifPresent(mobEffectInstance -> soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.putEffect(mobEffectInstance)));
+        recipe.getMobEffect().ifPresent(mobEffectInstance -> soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.putScheduledEffect(mobEffectInstance)));
         pos.playSound(recipe.getSoundEvent());
 
         return IHotpotResult.blocked();
@@ -67,7 +67,7 @@ public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends Abstra
         HotpotSoupRandomMobEffectRecipe recipe = optional.get();
 
         for (int i = 0; i < itemStack.getCount(); i++) {
-            recipe.getMobEffect().ifPresent(mobEffectInstance -> soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.putEffect(mobEffectInstance)));
+            recipe.getMobEffect().ifPresent(mobEffectInstance -> soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.putScheduledEffect(mobEffectInstance)));
             pos.playSound(recipe.getSoundEvent());
             pos.dropItemStack(recipe.getRemainingItem());
         }

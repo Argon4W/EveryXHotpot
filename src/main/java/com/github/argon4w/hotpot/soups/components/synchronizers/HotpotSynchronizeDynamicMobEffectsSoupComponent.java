@@ -25,12 +25,12 @@ public class HotpotSynchronizeDynamicMobEffectsSoupComponent extends AbstractHot
 
         @Override
         public void collect(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-            soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().filter(HotpotDynamicMobEffectContainerSoupComponent::isUpdated).peek(HotpotDynamicMobEffectContainerSoupComponent::setUpdated).map(HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap).forEach(mobEffectMap::putEffects);
+            soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().filter(HotpotDynamicMobEffectContainerSoupComponent::isScheduled).map(HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap).forEach(mobEffectMap::putEffects);
         }
 
         @Override
         public void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-            soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.setMobEffectMap(mobEffectMap));
+            soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().peek(HotpotDynamicMobEffectContainerSoupComponent::clearScheduledEffects).forEach(component -> component.putEffects(mobEffectMap));
         }
 
         @Override

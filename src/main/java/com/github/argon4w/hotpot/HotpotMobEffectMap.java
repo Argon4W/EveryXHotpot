@@ -25,11 +25,6 @@ public class HotpotMobEffectMap extends LinkedHashMap<Holder<MobEffect>, MobEffe
         putEffects(mobEffects);
     }
 
-    public HotpotMobEffectMap putEffect(MobEffectInstance mobEffectInstance) {
-        keySet().stream().filter(holder -> holder.equals(mobEffectInstance.getEffect())).findFirst().ifPresentOrElse(holder -> get(holder).update(new MobEffectInstance(mobEffectInstance)), () -> putLast(mobEffectInstance.getEffect(), new MobEffectInstance(mobEffectInstance)));
-        return this;
-    }
-
     public HotpotMobEffectMap putEffects(Collection<MobEffectInstance> mobEffectInstances) {
         mobEffectInstances.forEach(this::putEffect);
         return this;
@@ -39,19 +34,50 @@ public class HotpotMobEffectMap extends LinkedHashMap<Holder<MobEffect>, MobEffe
         return putEffects(hotpotMobEffectMap.values());
     }
 
+    public void putEffect(MobEffectInstance mobEffectInstance) {
+        keySet().stream().filter(holder -> holder.equals(mobEffectInstance.getEffect())).findFirst().ifPresentOrElse(holder -> get(holder).update(new MobEffectInstance(mobEffectInstance)), () -> putLast(mobEffectInstance.getEffect(), new MobEffectInstance(mobEffectInstance)));
+    }
+
     public HotpotMobEffectMap copy() {
-        return new HotpotMobEffectMap(values().stream().map(MobEffectInstance::new).toList());
+        return new HotpotMobEffectMap(getMobEffects());
     }
 
     public List<MobEffectInstance> getMobEffects() {
         return values().stream().map(MobEffectInstance::new).toList();
     }
 
-    public static Codec<HotpotMobEffectMap> getSizedCodec(int size) {
-        return Codec.lazyInitialized(() -> MobEffectInstance.CODEC.listOf(0, size).xmap(HotpotMobEffectMap::new, HotpotMobEffectMap::getMobEffects));
+    public static Codec<Sized> getSizedCodec(int size) {
+        return Codec.lazyInitialized(() -> MobEffectInstance.CODEC.listOf(0, size).xmap(list -> new Sized(size), HotpotMobEffectMap::getMobEffects));
     }
 
-    public static StreamCodec<RegistryFriendlyByteBuf, HotpotMobEffectMap> getSizedStreamCodec(int size) {
-        return NeoForgeStreamCodecs.lazy(() -> MobEffectInstance.STREAM_CODEC.apply(ByteBufCodecs.list(size)).map(HotpotMobEffectMap::new, HotpotMobEffectMap::getMobEffects));
+    public static StreamCodec<RegistryFriendlyByteBuf, Sized> getSizedStreamCodec(int size) {
+        return NeoForgeStreamCodecs.lazy(() -> MobEffectInstance.STREAM_CODEC.apply(ByteBufCodecs.list(size)).map(list -> new Sized(size), HotpotMobEffectMap::getMobEffects));
+    }
+
+    public static class Sized extends HotpotMobEffectMap {
+        private final int size;
+
+        public Sized(int size) {
+            this.size = size;
+        }
+
+        public Sized(int size, Collection<MobEffectInstance> mobEffectInstances) {
+            this.size = size;
+            putEffects(mobEffectInstances);
+        }
+
+        @Override
+        public void putEffect(MobEffectInstance mobEffectInstance) {
+            super.putEffect(mobEffectInstance);
+
+            while (size() > size) {
+                pollFirstEntry();
+            }
+        }
+
+        @Override
+        public Sized copy() {
+            return new Sized(size(), getMobEffects());
+        }
     }
 }
