@@ -90,4 +90,9 @@ public abstract class AbstractHotpotSoupComponent implements IHotpotSoupComponen
     public Optional<IHotpotSoupComponentSynchronizer> getSoupComponentSynchronizer(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         return Optional.empty();
     }
+
+    @Override
+    public boolean shouldSendToClient() {
+        return false;
+    }
 }

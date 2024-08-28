@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.soups;
 
+import com.github.argon4w.hotpot.EntryStreams;
 import com.github.argon4w.hotpot.IHotpotResult;
 import com.github.argon4w.hotpot.IndexHolder;
 import com.github.argon4w.hotpot.LevelBlockPos;
@@ -56,6 +57,10 @@ public record HotpotComponentSoup(LinkedHashMap<ResourceLocation, IndexHolder<IH
 
     public <T> IHotpotResult<T> getResultFromComponents(BiFunction<IHotpotSoupComponent, IHotpotResult<T>, IHotpotResult<T>> function) {
         return getResultFromComponents(IHotpotResult.pass(), function);
+    }
+
+    public LinkedHashMap<ResourceLocation, IndexHolder<IHotpotSoupComponent>> getPartialComponents() {
+        return components.sequencedEntrySet().stream().filter(EntryStreams.filterEntryValue(holder -> holder.value().shouldSendToClient())).collect(EntryStreams.ofSequenced());
     }
 
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {

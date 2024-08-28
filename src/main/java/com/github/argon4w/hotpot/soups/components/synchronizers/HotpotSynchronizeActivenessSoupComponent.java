@@ -18,6 +18,10 @@ public class HotpotSynchronizeActivenessSoupComponent extends AbstractHotpotSoup
     public static class Synchronizer implements IHotpotSoupComponentSynchronizer {
         private double totalActiveness;
 
+        public Synchronizer() {
+            this.totalActiveness = 0.0;
+        }
+
         @Override
         public void collect(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
             totalActiveness += soup.getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().mapToDouble(HotpotActivenessContainerSoupComponent::getActiveness).average().orElse(0.0);
@@ -26,6 +30,11 @@ public class HotpotSynchronizeActivenessSoupComponent extends AbstractHotpotSoup
         @Override
         public void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
             soup.getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.setActiveness(totalActiveness / size));
+        }
+
+        @Override
+        public boolean shouldApply() {
+            return true;
         }
     }
 }

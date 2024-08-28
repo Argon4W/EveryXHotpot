@@ -7,4 +7,5 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 public interface IHotpotSoupComponentSynchronizer {
     void collect(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos);
     void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos);
+    boolean shouldApply();
 }

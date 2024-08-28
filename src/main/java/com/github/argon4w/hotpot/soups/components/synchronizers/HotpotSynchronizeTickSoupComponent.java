@@ -23,5 +23,10 @@ public class HotpotSynchronizeTickSoupComponent extends AbstractHotpotSoupCompon
         public void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
             soup.onTick(hotpotBlockEntity, pos);
         }
+
+        @Override
+        public boolean shouldApply() {
+            return true;
+        }
     }
 }

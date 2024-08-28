@@ -33,6 +33,12 @@
         "size": 3
       },
       "index": 4
+    },
+    "everyxhotpot:synchronize_dynamic_mob_effects": {
+      "component": {
+        "type": "everyxhotpot:synchronize_dynamic_mob_effects_soup_component"
+      },
+      "index": 5
     }
   }
 }

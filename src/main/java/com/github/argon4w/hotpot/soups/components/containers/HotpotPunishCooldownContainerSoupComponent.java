@@ -37,6 +37,11 @@ public class HotpotPunishCooldownContainerSoupComponent extends AbstractHotpotSo
         return emptyWaterPunishCooldown;
     }
 
+    @Override
+    public boolean shouldSendToClient() {
+        return true;
+    }
+
     public static class Type implements IHotpotSoupComponentType<HotpotPunishCooldownContainerSoupComponent> {
         private final int minCooldown;
         private final int maxCooldown;

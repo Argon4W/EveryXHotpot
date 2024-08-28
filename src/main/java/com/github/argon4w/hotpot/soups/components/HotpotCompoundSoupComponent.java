@@ -107,6 +107,11 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
+    @Override
+    public boolean shouldSendToClient() {
+        throw new IllegalStateException("Illegal call to a compound component");
+    }
+
     public record Type(Map<ResourceLocation, IndexHolder<Either<ResourceKey<IHotpotSoupComponentType<?>>, IHotpotSoupComponentType<?>>>> componentTypeHolders) implements IHotpotSoupComponentType<HotpotCompoundSoupComponent> {
         @Override
         public HotpotCompoundSoupComponent get() {

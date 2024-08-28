@@ -51,6 +51,11 @@ public class HotpotWaterLevelContainerSoupComponent extends AbstractHotpotSoupCo
         overflowWaterLevel = 0.0;
     }
 
+    @Override
+    public boolean shouldSendToClient() {
+        return true;
+    }
+
     public double getWaterLevel() {
         return waterLevel;
     }

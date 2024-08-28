@@ -16,6 +16,10 @@ public class HotpotSynchronizeWaterLevelSoupComponent extends AbstractHotpotSoup
     public static class Synchronizer implements IHotpotSoupComponentSynchronizer {
         private double totalWaterLevel;
 
+        public Synchronizer() {
+            this.totalWaterLevel = 0;
+        }
+
         @Override
         public void collect(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
             totalWaterLevel += soup.getOverflowWaterLevel() + soup.getWaterLevel();
@@ -25,6 +29,11 @@ public class HotpotSynchronizeWaterLevelSoupComponent extends AbstractHotpotSoup
         @Override
         public void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
             soup.setWaterLevel(totalWaterLevel / size, hotpotBlockEntity, pos);
+        }
+
+        @Override
+        public boolean shouldApply() {
+            return true;
         }
     }
 }
