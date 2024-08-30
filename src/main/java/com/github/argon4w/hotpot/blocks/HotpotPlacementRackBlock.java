@@ -65,7 +65,7 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
         int hitPos = HotpotPlacementBlockItem.getHitPos(result);
         int layer = HotpotPlacementBlockItem.getLayer(result);
 
-        hotpotPlacementRackBlockEntity.interact(hitPos, layer, player, hand, itemStack, selfPos);
+        hotpotPlacementRackBlockEntity.interact(hitPos, layer + hotpotPlacementRackBlockEntity.getLayerOffset(), player, hand, itemStack, selfPos);
 
         return ItemInteractionResult.sidedSuccess(false);
     }

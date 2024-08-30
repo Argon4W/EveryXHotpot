@@ -2,12 +2,10 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.placements.HotpotEmptyPlacement;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
@@ -23,12 +21,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class HotpotPlacementRackBlockEntity extends AbstractHotpotTablewareBlockEntity implements Clearable, IHotpotPlacementContainerBlockEntity {
-    private final NonNullList<IHotpotPlacement> placements1 = NonNullList.withSize(4, HotpotPlacementSerializers.loadEmptyPlacement());
-    private final NonNullList<IHotpotPlacement> placements2 = NonNullList.withSize(4, HotpotPlacementSerializers.loadEmptyPlacement());
+public class HotpotPlacementRackBlockEntity extends BlockEntity implements Clearable, IHotpotPlacementContainer {
+    private final LinkedList<IHotpotPlacement> placements1 = new LinkedList<>();
+    private final LinkedList<IHotpotPlacement> placements2 = new LinkedList<>();
     
     private boolean contentChanged = true;
     private boolean infiniteContent = false;
@@ -65,28 +65,41 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotTablewareBlock
     }
 
     @Override
-    public boolean place(IHotpotPlacement placement, int pos, int layer) {
-        if (!isNotConflict(placement, layer)) {
-            return false;
-        }
-
-        NonNullList<IHotpotPlacement> placements = getPlacements(layer);
-        IHotpotPlacement toReplace = placements.get(pos);
-
-        if (!(toReplace instanceof HotpotEmptyPlacement)) {
-            return false;
-        }
-
-        placements.set(pos, placement);
+    public void place(IHotpotPlacement placement, int pos, int layer) {
+        List<IHotpotPlacement> placements = getPlacements(layer);
+        placements.add(placement);
         markDataChanged();
+    }
 
-        return true;
+    @Override
+    public boolean isInfiniteContent() {
+        return infiniteContent;
+    }
+
+    @Override
+    public boolean canBeRemoved() {
+        return canBeRemoved;
+    }
+
+    @Override
+    public boolean isPositionValid(int position, int layer) {
+        return position == 5 || position == 9 || position == 6 || position == 10;
+    }
+
+    @Override
+    public List<Integer> getOccupiedPositions(int layer) {
+        return getPlacements(layer).stream().map(IHotpotPlacement::getPositions).flatMap(Collection::stream).toList();
+    }
+
+    @Override
+    public int getLayerOffset() {
+        return 1;
     }
 
     public void tryRemove(int hitPos, int layer, LevelBlockPos pos) {
         int index = getPlacementIndexInPosAndLayer(hitPos, layer);
 
-        if (isEmptyPlacement(index, layer)) {
+        if (index < 0) {
             return;
         }
 
@@ -101,14 +114,14 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotTablewareBlock
     }
 
     public void removePlacement(int index, int layer, LevelBlockPos pos) {
-        NonNullList<IHotpotPlacement> placements = getPlacements(layer);
-        placements.set(index, HotpotPlacementSerializers.loadEmptyPlacement()).onRemove(this, pos);
+        List<IHotpotPlacement> placements = getPlacements(layer);
+        placements.remove(index).onRemove(this, pos);
         markDataChanged();
     }
     
     public int getPlacementIndexInPosAndLayer(int hitPos, int layer) {
-        NonNullList<IHotpotPlacement> placements = getPlacements(layer);
-        return IntStream.range(0, placements.size()).filter(i -> placements.get(i).getPosList().contains(hitPos)).findFirst().orElse(-1);
+        List<IHotpotPlacement> placements = getPlacements(layer);
+        return IntStream.range(0, placements.size()).filter(i -> placements.get(i).getPositions().contains(hitPos)).findFirst().orElse(-1);
     }
 
     public IHotpotPlacement getPlacementInPosAndLayer(int hitPos, int layer) {
@@ -193,38 +206,20 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotTablewareBlock
         setChanged();
     }
 
-    @Override
-    public boolean isInfiniteContent() {
-        return infiniteContent;
-    }
-
-    @Override
-    public boolean canBeRemoved() {
-        return canBeRemoved;
-    }
-
-    public boolean isEmptyPlacement(int index, int layer) {
-        return getPlacements(layer).get(index) instanceof HotpotEmptyPlacement;
-    }
-
-    public boolean isEmpty() {
-        return placements1.stream().allMatch(placement -> placement instanceof HotpotEmptyPlacement) && placements2.stream().allMatch(placement -> placement instanceof HotpotEmptyPlacement);
-    }
-
     public List<IHotpotPlacement> getPlacements1() {
         return placements1;
     }
 
-    public NonNullList<IHotpotPlacement> getPlacements2() {
+    public List<IHotpotPlacement> getPlacements2() {
         return placements2;
     }
     
-    public NonNullList<IHotpotPlacement> getPlacements(int layer) {
-        return layer == 0 ? placements1 : placements2;
-    }
-
-    public boolean isNotConflict(IHotpotPlacement another, int layer) {
-        return getPlacements(layer).stream().noneMatch(plate -> another.getPosList().stream().anyMatch(plate.getPosList()::contains));
+    public List<IHotpotPlacement> getPlacements(int layer) {
+        return switch (layer) {
+            case 1 -> placements1;
+            case 2 -> placements2;
+            default -> List.of();
+        };
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotPlacementRackBlockEntity blockEntity) {

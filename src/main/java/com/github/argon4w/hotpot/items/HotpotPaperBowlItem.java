@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
@@ -35,7 +35,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, HotpotPlacedPaperBowl placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedPaperBowl placement, ItemStack itemStack) {
         placement.setPaperBowlItemSlot(itemStack.copyWithCount(1));
     }
 

@@ -1,12 +1,15 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
+import com.github.argon4w.hotpot.EntryStreams;
 import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
 import com.github.argon4w.hotpot.items.sprites.IHotpotSpriteConfig;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -17,6 +20,10 @@ public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
 
     public OverlayModelMap(BakedModel originalModel) {
         this.originalModel = originalModel;
+    }
+
+    public OverlayModelMap applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        return entrySet().stream().collect(EntryStreams.of(() -> new OverlayModelMap(originalModel.applyTransform(transformType, poseStack, applyLeftHandTransform))));
     }
 
     public List<BakedModel> getResolvedTintedModels(ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {

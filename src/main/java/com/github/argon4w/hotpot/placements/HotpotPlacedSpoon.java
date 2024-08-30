@@ -2,8 +2,10 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
+import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,55 +16,53 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Optional;
 
 public class HotpotPlacedSpoon implements IHotpotPlacement {
-    private final int pos1;
-    public final int pos2;
-    private final Direction direction;
+    private final int position1;
+    private final int position2;
     private final SimpleItemSlot spoonItemSlot;
 
-    public HotpotPlacedSpoon(int pos, Direction direction) {
-        this.pos1 = pos;
-        this.pos2 = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
-        this.direction = direction;
+    public HotpotPlacedSpoon(int position1, int position2) {
+        this.position1 = position1;
+        this.position2 = position2;
         this.spoonItemSlot = new SimpleItemSlot();
     }
 
-    public HotpotPlacedSpoon(int pos1, int pos2, SimpleItemSlot spoonItemSlot) {
-        this.pos1 = pos1;
-        this.pos2 = pos2;
+    public HotpotPlacedSpoon(int position1, int position2, SimpleItemSlot spoonItemSlot) {
+        this.position1 = position1;
+        this.position2 = position2;
         this.spoonItemSlot = spoonItemSlot;
-        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(pos2 - pos1);
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
-        onRemove(container, selfPos);
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+        onRemove(container, pos);
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
         return spoonItemSlot.isEmpty() && container.canBeRemoved();
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {
         spoonItemSlot.dropItem(pos);
     }
 
     @Override
-    public ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos) {
+    public ItemStack getCloneItemStack(IHotpotPlacementContainer container, LevelBlockPos pos) {
         return spoonItemSlot.getItemStack();
     }
 
     @Override
-    public List<Integer> getPosList() {
-        return List.of(pos1, pos2);
+    public List<Integer> getPositions() {
+        return List.of(position1, position2);
     }
 
     @Override
@@ -74,16 +74,12 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         this.spoonItemSlot.set(spoonItemSlot);
     }
 
-    public int getPos1() {
-        return pos1;
+    public int getPosition1() {
+        return position1;
     }
 
-    public int getPos2() {
-        return pos2;
-    }
-
-    public Direction getDirection() {
-        return direction;
+    public int getPosition2() {
+        return position2;
     }
 
     public SimpleItemSlot getSpoonItemSlot() {
@@ -93,15 +89,15 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedSpoon> {
         public static final MapCodec<HotpotPlacedSpoon> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(spoon -> spoon.group(
-                        Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPos1),
-                        Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPos2),
+                        Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPosition1),
+                        Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPosition2),
                         SimpleItemSlot.CODEC.fieldOf("spoon_item_slot").forGetter(HotpotPlacedSpoon::getSpoonItemSlot)
                 ).apply(spoon, HotpotPlacedSpoon::new))
         );
 
         @Override
-        public HotpotPlacedSpoon get(int pos, Direction direction) {
-            return new HotpotPlacedSpoon(pos, direction);
+        public HotpotPlacedSpoon get(List<Integer> positions, ComplexDirection direction) {
+            return new HotpotPlacedSpoon(positions.getFirst(), positions.get(1));
         }
 
         @Override
@@ -110,12 +106,8 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         }
 
         @Override
-        public boolean canPlace(int pos, Direction direction) {
-            return isValidPos(pos, pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction));
-        }
-
-        public boolean isValidPos(int pos1, int pos2) {
-            return 0 <= pos1 && pos1 <= 3 && 0 <= pos2 && pos2 <= 3 && pos1 + pos2 != 3;
+        public List<Optional<Integer>> getPositions(int position, ComplexDirection direction) {
+            return List.of(Optional.of(position), direction.relativeTo(position));
         }
     }
 }

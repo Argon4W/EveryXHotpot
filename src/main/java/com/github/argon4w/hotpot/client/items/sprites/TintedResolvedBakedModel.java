@@ -1,9 +1,7 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
-import com.github.argon4w.hotpot.client.HotpotColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -22,100 +20,100 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-@SuppressWarnings("deprecation")
-public record TintedRenderPassBakedModel(BakedModel model, HotpotColor color) implements BakedModel {
+public record TintedResolvedBakedModel(BakedModel resolved, List<BakedModel> tintedModels) implements BakedModel {
     @NotNull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState pState, @Nullable Direction pDirection, @NotNull RandomSource pRandom) {
-        return model.getQuads(pState, pDirection, pRandom).stream().<BakedQuad>map(bakedQuad -> new TintedBakedQuad(bakedQuad, color)).toList();
+    public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, @NotNull RandomSource randomSource) {
+        return resolved.getQuads(blockState, direction, randomSource);
     }
 
     @Override
     public boolean useAmbientOcclusion() {
-        return model.useAmbientOcclusion();
+        return resolved.useAmbientOcclusion();
     }
 
     @Override
     public boolean isGui3d() {
-        return model.isGui3d();
+        return resolved.isGui3d();
     }
 
     @Override
     public boolean usesBlockLight() {
-        return model.usesBlockLight();
+        return resolved.usesBlockLight();
     }
 
     @Override
     public boolean isCustomRenderer() {
-        return model.isCustomRenderer();
+        return resolved.isCustomRenderer();
     }
 
     @NotNull
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return model.getParticleIcon();
-    }
-
-    @NotNull
-    @Override
-    public ItemTransforms getTransforms() {
-        return model.getTransforms();
+        return resolved.getParticleIcon();
     }
 
     @NotNull
     @Override
     public ItemOverrides getOverrides() {
-        return model.getOverrides();
+        return resolved.getOverrides();
     }
 
     @NotNull
     @Override
     public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
-        return model.getRenderPasses(itemStack, fabulous);
+        return Stream.concat(Stream.of(resolved), tintedModels.stream()).map(bakedModel -> bakedModel.getRenderPasses(itemStack, fabulous)).flatMap(Collection::stream).toList();
+    }
+
+    @NotNull
+    @Override
+    public ItemTransforms getTransforms() {
+        return resolved.getTransforms();
     }
 
     @NotNull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
-        return model.getQuads(state, side, rand, data, renderType).stream().<BakedQuad>map(bakedQuad -> new TintedBakedQuad(bakedQuad, color)).toList();
+        return resolved.getQuads(state, side, rand, data, renderType);
     }
 
     @NotNull
     @Override
     public TriState useAmbientOcclusion(@NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
-        return model.useAmbientOcclusion(state, data, renderType);
+        return resolved.useAmbientOcclusion(state, data, renderType);
     }
 
     @NotNull
     @Override
     public BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new TintedRenderPassBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), color);
+        return new TintedResolvedBakedModel(resolved.applyTransform(transformType, poseStack, applyLeftHandTransform), tintedModels);
     }
 
     @NotNull
     @Override
     public ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
-        return model.getModelData(level, pos, state, modelData);
+        return resolved.getModelData(level, pos, state, modelData);
     }
 
     @NotNull
     @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        return model.getParticleIcon();
+        return resolved.getParticleIcon();
     }
 
     @NotNull
     @Override
     public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-        return model.getRenderTypes(state, rand, data);
+        return resolved.getRenderTypes(state, rand, data);
     }
 
     @NotNull
     @Override
     public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
-        return List.of(fabulous ? Sheets.translucentCullBlockSheet() : Sheets.translucentItemSheet());
+        return resolved.getRenderTypes(itemStack, fabulous);
     }
 }

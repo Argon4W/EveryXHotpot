@@ -1,7 +1,9 @@
 package com.github.argon4w.hotpot;
 
+import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
@@ -26,6 +28,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.function.Function;
 
 public record LevelBlockPos(Level level, BlockPos pos) {
@@ -133,8 +136,24 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return updatePos(BlockPos::west);
     }
 
+    public LevelBlockPos relative(Direction direction) {
+        return updatePos(pos -> pos.relative(direction));
+    }
+
+    public LevelBlockPos relative(ComplexDirection direction) {
+        return updatePos(pos -> direction.reduce(pos, BlockPos::relative));
+    }
+
+    public LevelBlockPos relative(List<Direction> directions) {
+        return updatePos(pos -> directions.stream().reduce(pos, BlockPos::relative, (pos1, pos2) -> pos2));
+    }
+
     public boolean is(Block block) {
         return getBlockState().is(block);
+    }
+
+    public boolean isAir() {
+        return getBlockState().isAir();
     }
 
     @Override

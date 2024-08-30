@@ -3,8 +3,10 @@ package com.github.argon4w.hotpot.placements;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
+import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -15,29 +17,27 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Optional;
 
 public class HotpotLongPlate implements IHotpotPlate {
-    private final int pos1;
-    private final int pos2;
-    private final Direction direction;
+    private final int position1;
+    private final int position2;
 
     private final SimpleItemSlot itemSlot1;
     private final SimpleItemSlot itemSlot2;
     private final SimpleItemSlot plateItemSlot;
 
-    public HotpotLongPlate(int pos, Direction direction) {
-        this.pos1 = pos;
-        this.pos2 = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
-        this.direction = direction;
+    public HotpotLongPlate(int position1, int position2) {
+        this.position1 = position1;
+        this.position2 = position2;
         this.itemSlot1 = new SimpleItemSlot();
         this.itemSlot2 = new SimpleItemSlot();
         this.plateItemSlot = new SimpleItemSlot();
     }
 
-    public HotpotLongPlate(int pos1, int pos2, SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2, SimpleItemSlot plateItemSlot) {
-        this.pos1 = pos1;
-        this.pos2 = pos2;
-        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(pos2 - pos1);
+    public HotpotLongPlate(int position1, int position2, SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2, SimpleItemSlot plateItemSlot) {
+        this.position1 = position1;
+        this.position2 = position2;
 
         this.itemSlot1 = itemSlot1;
         this.itemSlot2 = itemSlot2;
@@ -45,14 +45,14 @@ public class HotpotLongPlate implements IHotpotPlate {
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
         if (itemStack.isEmpty() && player.isCrouching() && container.canBeRemoved()) {
-            onRemove(container, selfPos);
+            onRemove(container, pos);
             return;
         }
 
         if (itemStack.isEmpty()) {
-            selfPos.dropItemStack(getContent(player, hand, pos, layer, selfPos, container, true));
+            pos.dropItemStack(getContent(player, hand, position, layer, pos, container, true));
             return;
         }
 
@@ -61,8 +61,8 @@ public class HotpotLongPlate implements IHotpotPlate {
             return;
         }
 
-        SimpleItemSlot preferred = pos == pos1 ? itemSlot1 : itemSlot2;
-        SimpleItemSlot fallback = pos == pos1 ? itemSlot2 : itemSlot1;
+        SimpleItemSlot preferred = position == position1 ? itemSlot1 : itemSlot2;
+        SimpleItemSlot fallback = position == position1 ? itemSlot2 : itemSlot1;
 
         if (!fallback.isEmpty() && fallback.addItem(itemStack)) {
             return;
@@ -74,10 +74,10 @@ public class HotpotLongPlate implements IHotpotPlate {
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
         boolean consume = !container.isInfiniteContent();
 
-        if (pos == pos1 && !itemSlot1.isEmpty()) {
+        if (position == position1 && !itemSlot1.isEmpty()) {
             return itemSlot1.takeItem(consume);
         }
 
@@ -89,25 +89,25 @@ public class HotpotLongPlate implements IHotpotPlate {
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {
         plateItemSlot.dropItem(pos);
         itemSlot1.dropItem(pos);
         itemSlot2.dropItem(pos);
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
         return plateItemSlot.isEmpty() && container.canBeRemoved();
     }
 
     @Override
-    public ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos) {
+    public ItemStack getCloneItemStack(IHotpotPlacementContainer container, LevelBlockPos selfPos) {
         return plateItemSlot.getItemStack();
     }
 
     @Override
-    public List<Integer> getPosList() {
-        return List.of(pos1, pos2);
+    public List<Integer> getPositions() {
+        return List.of(position1, position2);
     }
 
     @Override
@@ -120,16 +120,12 @@ public class HotpotLongPlate implements IHotpotPlate {
         plateItemSlot.set(itemStack);
     }
 
-    public int getPos1() {
-        return pos1;
+    public int getPosition1() {
+        return position1;
     }
 
-    public int getPos2() {
-        return pos2;
-    }
-
-    public Direction getDirection() {
-        return direction;
+    public int getPosition2() {
+        return position2;
     }
 
     public SimpleItemSlot getItemSlot1() {
@@ -147,8 +143,8 @@ public class HotpotLongPlate implements IHotpotPlate {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotLongPlate> {
         public static final MapCodec<HotpotLongPlate> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        Codec.INT.fieldOf("pos_1").forGetter(HotpotLongPlate::getPos1),
-                        Codec.INT.fieldOf("pos_2").forGetter(HotpotLongPlate::getPos2),
+                        Codec.INT.fieldOf("pos_1").forGetter(HotpotLongPlate::getPosition1),
+                        Codec.INT.fieldOf("pos_2").forGetter(HotpotLongPlate::getPosition2),
                         SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLongPlate::getItemSlot1),
                         SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLongPlate::getItemSlot2),
                         SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotLongPlate::getPlateItemSlot)
@@ -156,8 +152,8 @@ public class HotpotLongPlate implements IHotpotPlate {
         );
 
         @Override
-        public HotpotLongPlate get(int pos, Direction direction) {
-            return new HotpotLongPlate(pos, direction);
+        public HotpotLongPlate get(List<Integer> positions, ComplexDirection direction) {
+            return new HotpotLongPlate(positions.getFirst(), positions.get(1));
         }
 
         @Override
@@ -166,12 +162,8 @@ public class HotpotLongPlate implements IHotpotPlate {
         }
 
         @Override
-        public boolean canPlace(int pos, Direction direction) {
-            return isValidPos(pos, pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction));
-        }
-
-        public boolean isValidPos(int pos1, int pos2) {
-            return 0 <= pos1 && pos1 <= 3 && 0 <= pos2 && pos2 <= 3 && pos1 + pos2 != 3;
+        public List<Optional<Integer>> getPositions(int position, ComplexDirection direction) {
+            return List.of(Optional.of(position), direction.relativeTo(position));
         }
     }
 }

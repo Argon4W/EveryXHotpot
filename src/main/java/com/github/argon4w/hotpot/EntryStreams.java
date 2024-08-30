@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,10 @@ public class EntryStreams {
 
     public static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> of() {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
+    }
+
+    public static <K, V, M extends Map<K, V>> Collector<Map.Entry<K, V>, ?, M> of(Supplier<M> supplier) {
+        return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v2, supplier);
     }
 
     public static  <K, V1, V2> Function<Map.Entry<K, V1>, Map.Entry<K, V2>> mapEntryValue(Function<V1, V2> function) {

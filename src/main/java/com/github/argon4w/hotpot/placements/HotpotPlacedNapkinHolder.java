@@ -2,9 +2,10 @@ package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
+import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,31 +18,29 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
+import java.util.Optional;
 
 public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
-    private final int pos;
-    private final int directionPos;
-    private final Direction direction;
+    private final int position;
+    private final ComplexDirection direction;
     private final SimpleItemSlot napkinHolderItemSlot;
 
-    public HotpotPlacedNapkinHolder(int pos, Direction direction) {
-        this.pos = pos;
+    public HotpotPlacedNapkinHolder(int position, ComplexDirection direction) {
+        this.position = position;
         this.direction = direction;
         this.napkinHolderItemSlot = new SimpleItemSlot();
-        this.directionPos = pos + HotpotPlacementSerializers.DIRECTION_TO_POS.get(direction);
     }
 
-    public HotpotPlacedNapkinHolder(int pos, int directionPos, SimpleItemSlot napkinHolderItemSlot) {
-        this.pos = pos;
-        this.directionPos = directionPos;
+    public HotpotPlacedNapkinHolder(int position, ComplexDirection direction, SimpleItemSlot napkinHolderItemSlot) {
+        this.position = position;
+        this.direction = direction;
         this.napkinHolderItemSlot = napkinHolderItemSlot;
-        this.direction = HotpotPlacementSerializers.POS_TO_DIRECTION.get(directionPos - pos);
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
         if (itemStack.isEmpty() && player.isCrouching() && container.canBeRemoved()) {
-            onRemove(container, selfPos);
+            onRemove(container, pos);
             return;
         }
 
@@ -51,7 +50,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
         }
 
         if (!isNapkinItemSlotPaper()) {
-            dropNapkinItemSlot(selfPos);
+            dropNapkinItemSlot(pos);
             return;
         }
 
@@ -70,28 +69,28 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container, boolean tableware) {
+    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos) {
+    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {
         napkinHolderItemSlot.dropItem(pos);
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainerBlockEntity container) {
+    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
         return napkinHolderItemSlot.isEmpty() && container.canBeRemoved();
     }
 
     @Override
-    public ItemStack getCloneItemStack(IHotpotPlacementContainerBlockEntity container, LevelBlockPos selfPos) {
+    public ItemStack getCloneItemStack(IHotpotPlacementContainer container, LevelBlockPos pos) {
         return napkinHolderItemSlot.getItemStack();
     }
 
     @Override
-    public List<Integer> getPosList() {
-        return List.of(pos);
+    public List<Integer> getPositions() {
+        return List.of(position);
     }
 
     @Override
@@ -99,15 +98,11 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
         return HotpotPlacementSerializers.NAPKIN_HOLDER_SERIALIZER;
     }
 
-    public int getPos() {
-        return pos;
+    public int getPosition() {
+        return position;
     }
 
-    public int getDirectionPos() {
-        return directionPos;
-    }
-
-    public Direction getDirection() {
+    public ComplexDirection getDirection() {
         return direction;
     }
 
@@ -150,15 +145,15 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedNapkinHolder> {
         public static final MapCodec<HotpotPlacedNapkinHolder> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        Codec.INT.fieldOf("pos").forGetter(HotpotPlacedNapkinHolder::getPos),
-                        Codec.INT.fieldOf("direction_pos").forGetter(HotpotPlacedNapkinHolder::getDirectionPos),
+                        Codec.INT.fieldOf("pos").forGetter(HotpotPlacedNapkinHolder::getPosition),
+                        ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotPlacedNapkinHolder::getDirection),
                         SimpleItemSlot.CODEC.fieldOf("napkin_holder_item_slot").forGetter(HotpotPlacedNapkinHolder::getNapkinHolderItemSlot)
                 ).apply(plate, HotpotPlacedNapkinHolder::new))
         );
 
         @Override
-        public HotpotPlacedNapkinHolder get(int pos, Direction direction) {
-            return new HotpotPlacedNapkinHolder(pos, direction);
+        public HotpotPlacedNapkinHolder get(List<Integer> positions, ComplexDirection direction) {
+            return new HotpotPlacedNapkinHolder(positions.getFirst(), direction);
         }
 
         @Override
@@ -167,8 +162,8 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
         }
 
         @Override
-        public boolean canPlace(int pos, Direction direction) {
-            return true;
+        public List<Optional<Integer>> getPositions(int position, ComplexDirection direction) {
+            return List.of(Optional.of(position));
         }
     }
 }

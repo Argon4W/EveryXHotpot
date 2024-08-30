@@ -32,6 +32,7 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
     public HotpotPlacementBlock() {
         super(Properties.of()
                 .forceSolidOn()
+                .noCollission()
                 .noOcclusion()
                 .mapColor(MapColor.COLOR_GRAY)
                 .sound(SoundType.COPPER)
@@ -74,7 +75,9 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
         }
 
         int hitPos = HotpotPlacementBlockItem.getHitPos(pos, target.getLocation());
-        return hotpotPlacementBlockEntity.getPlacementInPos(hitPos).getCloneItemStack(hotpotPlacementBlockEntity, selfPos);
+        int index = hotpotPlacementBlockEntity.getPlacementIndexInPos(hitPos);
+
+        return index < 0 ? ItemStack.EMPTY : hotpotPlacementBlockEntity.getPlacements().get(index).getCloneItemStack(hotpotPlacementBlockEntity, selfPos);
     }
 
     @Override

@@ -2,9 +2,9 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
+import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.github.argon4w.hotpot.placements.HotpotSmallPlate;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,18 +20,18 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainerBlockEntity container, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, LevelBlockPos pos) {
+    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, LevelBlockPos pos) {
         if (!(placement instanceof HotpotSmallPlate smallPlate)) {
             return;
         }
 
-        float x = HotpotPlacementSerializers.getSlotX(smallPlate.getPos()) + 0.25f;
-        float z = HotpotPlacementSerializers.getSlotZ(smallPlate.getPos()) + 0.25f;
+        double x = HotpotPlacementPositions.getRenderCenterX(smallPlate.getPosition());
+        double z = HotpotPlacementPositions.getRenderCenterZ(smallPlate.getPosition());
 
         int plateCount = 0;
 
         for (; plateCount < smallPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
-            float positionY = plateCount * 0.0625f;
+            double positionY = plateCount * 0.0625;
 
             poseStack.pushPose();
             poseStack.translate(x, positionY, z);
@@ -44,13 +44,13 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
         }
 
         for (int i = 0; i < smallPlate.getItemSlot().getRenderCount(); i ++) {
-            float positionY = plateCount * 0.0625f + 0.02f * i;
-            float rotationY = smallPlate.getDirection().toYRot() + (i % 2) * 20;
+            double positionY = plateCount * 0.0625 + 0.02 * i;
+            double rotationY = smallPlate.getDirection().toYRot() + (i % 2) * 20;
 
             poseStack.pushPose();
 
             poseStack.translate(x, positionY, z);
-            poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
+            poseStack.mulPose(Axis.YP.rotationDegrees((float) rotationY));
             poseStack.mulPose(Axis.XP.rotationDegrees(90f));
             poseStack.scale(0.35f, 0.35f, 0.35f);
 

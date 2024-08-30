@@ -2,9 +2,9 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.AbstractHotpotTablewareBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
@@ -31,12 +31,12 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, HotpotPlacedSpoon placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedSpoon placement, ItemStack itemStack) {
         placement.setSpoonItemSlot(itemStack);
     }
 
     @Override
-    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, AbstractHotpotTablewareBlockEntity blockEntity, LevelBlockPos selfPos) {
+    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, IHotpotTablewareContainer blockEntity, LevelBlockPos selfPos) {
         if (!(blockEntity instanceof HotpotBlockEntity hotpotBlockEntity)) {
             return;
         }

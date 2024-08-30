@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainerBlockEntity;
+import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.items.components.HotpotNapkinHolderDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedNapkinHolder;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
@@ -16,7 +16,7 @@ public class HotpotNapkinHolderItem extends HotpotPlacementBlockItem<HotpotPlace
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainerBlockEntity container, LevelBlockPos pos, HotpotPlacedNapkinHolder placement, ItemStack itemStack) {
+    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedNapkinHolder placement, ItemStack itemStack) {
         placement.setNapkinHolderItemSlot(itemStack.copyWithCount(1));
     }
 

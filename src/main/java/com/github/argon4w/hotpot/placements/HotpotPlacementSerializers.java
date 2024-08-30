@@ -37,10 +37,7 @@ public class HotpotPlacementSerializers {
     );
 
     public static final ResourceLocation EMPTY_PLACEMENT_SERIALIZER_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_placement");
-
-    public static final MapCodec<IHotpotPlacement> CODEC = LazyMapCodec.of(() -> getPlacementSerializerRegistry().holderByNameCodec().dispatchMap(IHotpotPlacement::getPlacementSerializerHolder, holder -> holder.value().getCodec()));
-    public static final Codec<IndexHolder<IHotpotPlacement>> INDEXED_CODEC = Codec.lazyInitialized(() -> IndexHolder.getIndexedCodec(CODEC, "slot"));
-    public static final Codec<List<IndexHolder<IHotpotPlacement>>> LIST_INDEXED_CODEC = Codec.lazyInitialized(INDEXED_CODEC::listOf);
+    public static final Codec<IHotpotPlacement> CODEC = Codec.lazyInitialized(() -> getPlacementSerializerRegistry().holderByNameCodec().dispatch(IHotpotPlacement::getPlacementSerializerHolder, holder -> holder.value().getCodec()));
 
     public static final ResourceKey<Registry<IHotpotPlacementSerializer<?>>> PLACEMENT_SERIALIZER_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "placement_serializer"));
     public static final DeferredRegister<IHotpotPlacementSerializer<?>> PLACEMENT_SERIALIZERS = DeferredRegister.create(PLACEMENT_SERIALIZER_REGISTRY_KEY, HotpotModEntry.MODID);
@@ -63,12 +60,12 @@ public class HotpotPlacementSerializers {
         return EMPTY_PLACEMENT_SERIALIZER.get().get();
     }
 
-    public static void loadPlacements(ListTag listTag, HolderLookup.Provider registryAccess, NonNullList<IHotpotPlacement> placements) {
-        LIST_INDEXED_CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), listTag).resultOrPartial().orElseGet(List::of).stream().filter(placement -> placement.index() >= 0 && placement.index() < placements.size()).forEach(placement -> placements.set(placement.index(), placement.value()));
+    public static void loadPlacements(ListTag listTag, HolderLookup.Provider registryAccess, List<IHotpotPlacement> placements) {
+        placements.addAll(CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), listTag).resultOrPartial().orElseGet(List::of));
     }
 
-    public static Tag savePlacements(NonNullList<IHotpotPlacement> placements, HolderLookup.Provider registryAccess) {
-        return LIST_INDEXED_CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), IntStream.range(0, placements.size()).mapToObj(i -> new IndexHolder<>(i, placements.get(i))).toList()).resultOrPartial().orElseGet(ListTag::new);
+    public static Tag savePlacements(List<IHotpotPlacement> placements, HolderLookup.Provider registryAccess) {
+        return CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), placements).resultOrPartial().orElseGet(ListTag::new);
     }
 
     public static float getSlotX(int slot) {

@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-public class HotpotBlockEntity extends AbstractHotpotCodecTablewareBlockEntity<HotpotBlockEntity.Data, HotpotBlockEntity.PartialData> {
+public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBlockEntity.Data, HotpotBlockEntity.PartialData> implements IHotpotTablewareContainer {
     public static final RecipeManager.CachedCheck<HotpotIngredientRecipeInput, HotpotSoupIngredientRecipe> INGREDIENT_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_INGREDIENT_RECIPE_TYPE.get());
 
     public static final Codec<Data> CODEC = Codec.lazyInitialized(() ->
@@ -392,7 +392,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecTablewareBlockEntity<H
         }
     }
 
-    public record PartialData(boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, Optional<NonNullList<IHotpotContent>> contents) implements AbstractHotpotCodecTablewareBlockEntity.PartialData<Data> {
+    public record PartialData(boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, Optional<NonNullList<IHotpotContent>> contents) implements AbstractHotpotCodecBlockEntity.PartialData<Data> {
         @Override
         public Data update(Data data) {
             return data.fromPartialData(this);
