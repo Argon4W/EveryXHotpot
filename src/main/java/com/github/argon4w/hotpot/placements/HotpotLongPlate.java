@@ -6,11 +6,9 @@ import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
-import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -75,7 +73,7 @@ public class HotpotLongPlate implements IHotpotPlate {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
-        boolean consume = !container.isInfiniteContent();
+        boolean consume = container.consumeContents();
 
         if (position == position1 && !itemSlot1.isEmpty()) {
             return itemSlot1.takeItem(consume);

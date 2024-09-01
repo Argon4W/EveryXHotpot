@@ -6,8 +6,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class HotpotPlacementCoords {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -19,16 +22,24 @@ public class HotpotPlacementCoords {
         this.placementContainer = blockPos.getBlockEntity() instanceof IHotpotPlacementContainer container ? Optional.of(container) : Optional.empty();
     }
 
-    public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack) {
-        placementContainer.ifPresent(placementContainer -> placementContainer.setContentByInteraction(hitPos, layer, player, hand, itemStack, blockPos));
-    }
-
-    public ItemStack getContentByTableware(Player player, InteractionHand hand, int hitPos, int layer) {
-        return placementContainer.map(placementContainer -> placementContainer.getContentByTableware(player, hand, hitPos, layer, blockPos)).orElse(ItemStack.EMPTY);
+    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack) {
+        placementContainer.ifPresent(placementContainer -> placementContainer.interact(hitPos, layer, player, hand, itemStack, blockPos));
     }
 
     public List<Integer> getOccupiedPositions(int layer) {
         return blockPos.isAir() ? List.of() : placementContainer.map(placementContainer -> placementContainer.getOccupiedPositions(layer)).orElse(List.of(5, 9, 6, 10));
+    }
+
+    public static Stream<Relative> getNearbyCoords(LevelBlockPos blockPos) {
+        return Arrays.stream(ComplexDirection.values()).map(direction -> new HotpotPlacementCoords.Relative(blockPos, direction));
+    }
+
+    public static List<Integer> getNearbyOccupiedPositions(LevelBlockPos blockPos, int layer) {
+        return getNearbyCoords(blockPos).map(relative -> relative.getRelativeOccupiedPositions(layer)).flatMap(Collection::stream).toList();
+    }
+
+    public static void interactNearbyPositions(LevelBlockPos blockPos, Player player, InteractionHand hand, ItemStack itemStack, int position, int layer) {
+        HotpotPlacementCoords.getNearbyCoords(blockPos).filter(relative -> relative.hasRelativePosition(position, layer)).findFirst().ifPresent(relative -> relative.interact(position, layer, player, hand, itemStack));
     }
 
     public static class Relative extends HotpotPlacementCoords {
@@ -48,13 +59,8 @@ public class HotpotPlacementCoords {
         }
 
         @Override
-        public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack) {
-            direction.relativeToCoords(hitPos).ifPresent(i -> super.setContentByInteraction(i, layer, player, hand, itemStack));
-        }
-
-        @Override
-        public ItemStack getContentByTableware(Player player, InteractionHand hand, int hitPos, int layer) {
-            return direction.relativeToCoords(hitPos).map(i -> super.getContentByTableware(player, hand, i, layer)).orElse(ItemStack.EMPTY);
+        public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack) {
+            direction.relativeToCoords(hitPos).ifPresent(i -> super.interact(i, layer, player, hand, itemStack));
         }
 
         public ComplexDirection getDirection() {

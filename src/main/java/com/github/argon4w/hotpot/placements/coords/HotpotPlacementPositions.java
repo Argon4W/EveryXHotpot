@@ -115,11 +115,11 @@ public class HotpotPlacementPositions {
         return getRenderZ(position) + 0.25;
     }
 
-    public static int getClickPosition(BlockPos blockPos, Vec3 location) {
-        return getClickPosition(location.subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+    public static int getPosition(BlockPos blockPos, Vec3 location) {
+        return getPosition(location.subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
     }
 
-    public static int getClickPosition(Vec3 vec) {
+    public static int getPosition(Vec3 vec) {
         return (vec.z() < 0.5 ? 0b01 : 0b10) | (vec.x() < 0.5 ? 0b0100 : 0b1000);
     }
 }

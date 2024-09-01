@@ -9,7 +9,6 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -71,7 +70,7 @@ public class HotpotSmallPlate implements IHotpotPlate {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int pos, int layer, LevelBlockPos selfPos, IHotpotPlacementContainer container, boolean tableware) {
-        return (itemSlot.isEmpty() ? plateItemSlot : itemSlot).takeItem(!container.isInfiniteContent());
+        return (itemSlot.isEmpty() ? plateItemSlot : itemSlot).takeItem(container.consumeContents());
     }
 
     @Override

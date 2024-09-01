@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IHotpotPlacementContainer extends IHotpotTablewareContainer {
     boolean canBeRemoved();
-    boolean isInfiniteContent();
+    boolean consumeContents();
     boolean isPositionValid(int position, int layer);
     List<Integer> getOccupiedPositions(int layer);
     int getLayerOffset();

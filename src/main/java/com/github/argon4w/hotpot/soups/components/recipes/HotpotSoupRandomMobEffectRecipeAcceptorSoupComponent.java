@@ -26,7 +26,7 @@ public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends Abstra
     public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRandomMobEffectRecipe> SOUP_RANDOM_MOB_EFFECT_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RANDOM_MOB_EFFECT_RECIPE_TYPE.get());
 
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int position, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }

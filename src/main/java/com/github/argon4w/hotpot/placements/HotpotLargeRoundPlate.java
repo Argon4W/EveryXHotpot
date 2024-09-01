@@ -6,7 +6,6 @@ import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
-import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -104,7 +103,7 @@ public class HotpotLargeRoundPlate implements IHotpotPlate {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
-        return (isEmpty() ? plateItemSlot : itemSlots.get(position)).takeItem(!container.isInfiniteContent());
+        return (isEmpty() ? plateItemSlot : itemSlots.get(position)).takeItem(container.consumeContents());
     }
 
     @Override

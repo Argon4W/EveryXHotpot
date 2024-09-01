@@ -9,7 +9,6 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -57,7 +56,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
-        boolean consume = !container.isInfiniteContent();
+        boolean consume = container.consumeContents();
         ItemStack paperBowl = paperBowlItemSlot.getItemStack();
 
         if (isPaperBowlUsed()) {

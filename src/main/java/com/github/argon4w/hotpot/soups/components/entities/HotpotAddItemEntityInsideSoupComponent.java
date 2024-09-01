@@ -40,7 +40,7 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
             return;
         }
 
-        hotpotBlockEntity.setItemStackContentWhenEmpty(HotpotBlockEntity.getHitPos(pos.pos(), itemEntity.position()), stack, pos);
+        hotpotBlockEntity.setItemStackContentWhenEmpty(HotpotBlockEntity.getClickPosition(pos.pos(), itemEntity.position()), stack, pos);
         itemEntity.setItem(stack);
     }
 

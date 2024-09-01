@@ -25,6 +25,7 @@ public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpot
     public abstract Codec<T> getFullCodec();
     public abstract Codec<P> getPartialCodec();
     public abstract P getPartialData(HolderLookup.Provider registryAccess);
+    public abstract void onPartialDataUpdated();
     public abstract T getData();
     public abstract void setData(T data);
     public abstract BlockEntity getBlockEntity();
@@ -55,6 +56,7 @@ public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpot
         return ClientboundBlockEntityDataPacket.create(getBlockEntity(), (blockEntity, registryAccess) -> {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.put("value", getCodec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.right(getPartialData(registryAccess))).resultOrPartial().orElse(new CompoundTag()));
+            onPartialDataUpdated();
             return compoundTag;
         });
     }

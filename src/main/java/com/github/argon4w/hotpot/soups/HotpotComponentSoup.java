@@ -63,8 +63,8 @@ public record HotpotComponentSoup(LinkedHashMap<ResourceLocation, IndexHolder<IH
         return components.sequencedEntrySet().stream().filter(EntryStreams.filterEntryValue(holder -> holder.value().shouldSendToClient())).collect(EntryStreams.ofSequenced());
     }
 
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents((component, result) -> component.getPlayerInteractionResult(hitPos, player, hand, itemStack, this, pos, result, hotpotBlockEntity));
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int position, Player player, InteractionHand hand, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return getResultFromComponents((component, result) -> component.getPlayerInteractionResult(position, player, hand, itemStack, this, pos, result, hotpotBlockEntity));
     }
 
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getContentSerializerResultFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {

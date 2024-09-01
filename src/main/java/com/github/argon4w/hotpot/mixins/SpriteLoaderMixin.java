@@ -34,7 +34,7 @@ public abstract class SpriteLoaderMixin {
         }
 
         ArrayList<SpriteContents> results = new ArrayList<>(contents);
-        results.addAll(Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().flatMap(processor -> contents.stream().map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join());
+        results.addAll(Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().flatMap(processor -> contents.stream().filter(content -> content.animatedTexture == null).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join());
 
         return results;
     }

@@ -2,17 +2,12 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
-import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -20,88 +15,97 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
-public class HotpotPlacementBlockEntity extends BlockEntity implements Clearable, IHotpotPlacementContainer {
-    private final List<IHotpotPlacement> placements = new LinkedList<>();
+public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotPlacementBlockEntity.Data, HotpotPlacementBlockEntity.PartialData> implements Clearable, IHotpotPlacementContainer {
+    public static final Codec<Data> CODEC = Codec.lazyInitialized(() ->
+            RecordCodecBuilder.create(data -> data.group(
+                    HotpotPlacementSerializers.CODEC.listOf().xmap(LinkedList::new, Function.identity()).fieldOf("placements").forGetter(Data::placements),
+                    Codec.BOOL.fieldOf("infinite_content").forGetter(Data::infiniteContent),
+                    Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved)
+            ).apply(data, Data::new))
+    );
 
+    public static final Codec<PartialData> PARTIAL_CODEC = Codec.lazyInitialized(() ->
+            RecordCodecBuilder.create(data -> data.group(
+                    HotpotPlacementSerializers.CODEC.listOf().xmap(LinkedList::new, Function.identity()).optionalFieldOf("placements").forGetter(PartialData::placements),
+                    Codec.BOOL.fieldOf("infinite_content").forGetter(PartialData::infiniteContent),
+                    Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved)
+            ).apply(data, PartialData::new))
+    );
+
+    private Data data = getDefaultData();
     private boolean contentChanged = true;
-    private boolean infiniteContent = false;
-    private boolean canBeRemoved = true;
 
     public HotpotPlacementBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         super(HotpotModEntry.HOTPOT_PLACEMENT_BLOCK_ENTITY.get(), p_155229_, p_155230_);
     }
 
     @Override
-    public void setContentByInteraction(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos selfPos) {
-        if (isEmpty()) {
-            selfPos.removeBlock(true);
-            return;
-        }
-
-        int index = getPlacementIndexInPos(hitPos);
+    public void setContentByInteraction(int position, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos pos) {
+        int index = getPlacementIndexInPos(position);
 
         if (index < 0) {
-            ComplexDirection.getNearbyCoords(selfPos).filter(relative -> relative.hasRelativePosition(hitPos, layer)).findFirst().ifPresent(relative -> relative.setContentByInteraction(hitPos, layer, player, hand, itemStack));
             return;
         }
 
-        IHotpotPlacement placement = placements.get(index);
-        placement.interact(player, hand, itemStack, hitPos, layer, selfPos, this);
+        IHotpotPlacement placement = data.placements.get(index);
+        placement.interact(player, hand, itemStack, position, layer, pos, this);
 
-        if (placement.shouldRemove(player, hand, itemStack, hitPos, layer, selfPos, this)) {
-            tryRemove(hitPos, selfPos);
+        if (placement.shouldRemove(player, hand, itemStack, position, layer, pos, this)) {
+            removePlacement(index, pos);
         }
 
         markDataChanged();
     }
 
     @Override
-    public ItemStack getContentByTableware(Player player, InteractionHand hand, int hitPos, int layer, LevelBlockPos pos) {
-        if (isEmpty()) {
-            pos.removeBlock(true);
+    public ItemStack getContentByTableware(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos) {
+        int index = getPlacementIndexInPos(position);
+
+        if (index < 0) {
             return ItemStack.EMPTY;
         }
 
-        int index = getPlacementIndexInPos(hitPos);
+        IHotpotPlacement placement = data.placements.get(index);
+        ItemStack itemStack = placement.getContent(player, hand, position, layer, pos, this, true);
 
-        if (index < 0) {
-            return ComplexDirection.getNearbyCoords(pos).filter(relative -> relative.hasRelativePosition(hitPos, layer)).findFirst().map(relative -> relative.getContentByTableware(player, hand, hitPos, layer)).orElse(ItemStack.EMPTY);
-        }
-
-        IHotpotPlacement placement = placements.get(index);
-        ItemStack itemStack = placement.getContent(player, hand, hitPos, layer, pos, this, true);
-
-        if (placement.shouldRemove(player, hand, itemStack, hitPos, layer, pos, this)) {
-            tryRemove(hitPos, pos);
+        if (placement.shouldRemove(player, hand, itemStack, position, layer, pos, this)) {
+            removePlacement(index, pos);
         }
 
         markDataChanged();
-
         return itemStack;
     }
 
     @Override
+    public void interact(int position, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos pos) {
+        if (!isEmpty()) {
+            IHotpotPlacementContainer.super.interact(position, layer, player, hand, itemStack, pos);
+        }
+
+        if (isEmpty()) {
+            pos.removeBlock(true);
+        }
+    }
+
+    @Override
     public void place(IHotpotPlacement placement, int pos, int layer) {
-        placements.add(placement);
+        data.placements.add(placement);
         markDataChanged();
     }
 
     @Override
-    public boolean isInfiniteContent() {
-        return infiniteContent;
+    public boolean consumeContents() {
+        return !data.infiniteContent;
     }
 
     @Override
     public boolean canBeRemoved() {
-        return canBeRemoved;
+        return data.canBeRemoved;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class HotpotPlacementBlockEntity extends BlockEntity implements Clearable
 
     @Override
     public List<Integer> getOccupiedPositions(int layer) {
-        return layer == 0 ? placements.stream().map(IHotpotPlacement::getPositions).flatMap(Collection::stream).toList() : List.of();
+        return layer == 0 ? data.placements.stream().map(IHotpotPlacement::getPositions).flatMap(Collection::stream).toList() : List.of();
     }
 
     @Override
@@ -119,97 +123,49 @@ public class HotpotPlacementBlockEntity extends BlockEntity implements Clearable
         return 0;
     }
 
-    public void tryRemove(int hitPos, LevelBlockPos pos) {
-        int index = getPlacementIndexInPos(hitPos);
-
-        if (index < 0) {
-            return;
-        }
-
-        removePlacement(index, pos);
-
-        if (!isEmpty()) {
-            return;
-        }
-
-        pos.removeBlock(true);
+    @Override
+    public Data getDefaultData() {
+        return new Data(new LinkedList<>(), false, true);
     }
 
-    public void onRemove(LevelBlockPos pos) {
-        placements.forEach(placement -> placement.onRemove(this, pos));
-        clearContent();
-        markDataChanged();
+    @Override
+    public Codec<Data> getFullCodec() {
+        return CODEC;
     }
 
-    public void removePlacement(int index, LevelBlockPos pos) {
-        placements.remove(index).onRemove(this, pos);
-        markDataChanged();
+    @Override
+    public Codec<PartialData> getPartialCodec() {
+        return PARTIAL_CODEC;
     }
 
-    public int getPlacementIndexInPos(int hitPos) {
-        return IntStream.range(0, placements.size()).filter(i -> placements.get(i).getPositions().contains(hitPos)).findFirst().orElse(-1);
+    @Override
+    public PartialData getPartialData(HolderLookup.Provider registryAccess) {
+        return new PartialData(contentChanged ? Optional.of(data.placements) : Optional.empty(), data.infiniteContent, data.canBeRemoved);
+    }
+
+    @Override
+    public void onPartialDataUpdated() {
+        contentChanged = false;
+    }
+
+    @Override
+    public Data getData() {
+        return data;
+    }
+
+    @Override
+    public void setData(Data data) {
+        this.data = data;
+    }
+
+    @Override
+    public BlockEntity getBlockEntity() {
+        return this;
     }
 
     @Override
     public void clearContent() {
-        this.placements.clear();
-    }
-
-    @Nullable
-    @Override //Game Tick
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, this::getUpdatePacketTag);
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        super.loadAdditional(compoundTag, registryAccess);
-
-        canBeRemoved = !compoundTag.contains("CanBeRemoved", Tag.TAG_ANY_NUMERIC) || compoundTag.getBoolean("CanBeRemoved");
-        infiniteContent = compoundTag.contains("InfiniteContent", Tag.TAG_ANY_NUMERIC) && compoundTag.getBoolean("InfiniteContent");
-
-        if (compoundTag.contains("Placements", Tag.TAG_LIST)) {
-            placements.clear();
-            HotpotPlacementSerializers.loadPlacements(compoundTag.getList("Placements", Tag.TAG_COMPOUND), registryAccess, placements);
-        }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        super.saveAdditional(compoundTag, registryAccess);
-
-        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
-        compoundTag.putBoolean("InfiniteContent", infiniteContent);
-
-        compoundTag.put("Placements", HotpotPlacementSerializers.savePlacements(placements, registryAccess));
-    }
-
-    public CompoundTag getUpdatePacketTag(BlockEntity blockEntity, HolderLookup.Provider registryAccess) {
-        CompoundTag compoundTag = new CompoundTag();
-
-        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
-        compoundTag.putBoolean("InfiniteContent", infiniteContent);
-
-        if (!contentChanged) {
-            return compoundTag;
-        }
-
-        compoundTag.put("Placements", HotpotPlacementSerializers.savePlacements(placements, registryAccess));
-        contentChanged = false;
-
-        return compoundTag;
-    }
-
-    @NotNull
-    @Override //Chunk Load
-    public CompoundTag getUpdateTag(HolderLookup.Provider registryAccess) {
-        CompoundTag compoundTag = super.getUpdateTag(registryAccess);
-
-        compoundTag.putBoolean("CanBeRemoved", canBeRemoved);
-        compoundTag.putBoolean("InfiniteContent", infiniteContent);
-        compoundTag.put("Placements", HotpotPlacementSerializers.savePlacements(placements, registryAccess));
-
-        return compoundTag;
+        data.placements.clear();
     }
 
     public void markDataChanged() {
@@ -217,17 +173,42 @@ public class HotpotPlacementBlockEntity extends BlockEntity implements Clearable
         setChanged();
     }
 
+    public void removePlacement(int index, LevelBlockPos pos) {
+        data.placements.remove(index).onRemove(this, pos);
+        markDataChanged();
+    }
+
+    public void onRemove(LevelBlockPos pos) {
+        data.placements.forEach(placement -> placement.onRemove(this, pos));
+        markDataChanged();
+    }
+
+    public int getPlacementIndexInPos(int position) {
+        return IntStream.range(0, data.placements.size()).filter(i -> data.placements.get(i).getPositions().contains(position)).findFirst().orElse(-1);
+    }
+
     public boolean isEmpty() {
-        return placements.isEmpty();
+        return data.placements.isEmpty();
     }
 
     public List<IHotpotPlacement> getPlacements() {
-        return placements;
+        return data.placements;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotPlacementBlockEntity blockEntity) {
         if (blockEntity.contentChanged) {
             level.sendBlockUpdated(pos, state, state, 3);
+        }
+    }
+
+    public record Data(LinkedList<IHotpotPlacement> placements, boolean infiniteContent, boolean canBeRemoved) {
+
+    }
+
+    public record PartialData(Optional<LinkedList<IHotpotPlacement>> placements, boolean infiniteContent, boolean canBeRemoved) implements AbstractHotpotCodecBlockEntity.PartialData<Data> {
+        @Override
+        public Data update(Data data) {
+            return new Data(placements.orElse(data.placements), infiniteContent, canBeRemoved);
         }
     }
 }

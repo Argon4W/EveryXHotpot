@@ -48,24 +48,24 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        LevelBlockPos selfPos = new LevelBlockPos(level, pos);
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (!(selfPos.getBlockEntity() instanceof HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity)) {
+        if (!(blockPos.getBlockEntity() instanceof HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, selfPos)) {
+        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (!selfPos.isServerSide()) {
+        if (!blockPos.isServerSide()) {
             return ItemInteractionResult.sidedSuccess(true);
         }
 
-        int hitPos = HotpotPlacementBlockItem.getHitPos(result);
-        int layer = HotpotPlacementBlockItem.getLayer(result);
+        int position = HotpotPlacementBlockItem.getPosition(result);
+        int layer = HotpotPlacementBlockItem.getLayer(result) + hotpotPlacementRackBlockEntity.getLayerOffset();
 
-        hotpotPlacementRackBlockEntity.interact(hitPos, layer + hotpotPlacementRackBlockEntity.getLayerOffset(), player, hand, itemStack, selfPos);
+        hotpotPlacementRackBlockEntity.interact(position, layer, player, hand, itemStack, blockPos);
 
         return ItemInteractionResult.sidedSuccess(false);
     }
@@ -76,16 +76,16 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
             return super.getCloneItemStack(state, target, levelReader, pos, player);
         }
 
-        LevelBlockPos selfPos = new LevelBlockPos(level, pos);
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (!(selfPos.getBlockEntity() instanceof HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity)) {
+        if (!(blockPos.getBlockEntity() instanceof HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity)) {
             return super.getCloneItemStack(state, target, levelReader, pos, player);
         }
 
-        int hitPos = HotpotPlacementBlockItem.getHitPos(pos, target.getLocation());
-        int layer = HotpotPlacementBlockItem.getLayer(pos, target.getLocation());
+        int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
+        int layer = HotpotPlacementBlockItem.getLayer(pos, target.getLocation()) + hotpotPlacementRackBlockEntity.getLayerOffset();
 
-        return hotpotPlacementRackBlockEntity.getPlacementInPosAndLayer(hitPos, layer).getCloneItemStack(hotpotPlacementRackBlockEntity, selfPos);
+        return hotpotPlacementRackBlockEntity.getPlacementInPosAndLayer(position, layer).getCloneItemStack(hotpotPlacementRackBlockEntity, blockPos);
     }
 
     @Override

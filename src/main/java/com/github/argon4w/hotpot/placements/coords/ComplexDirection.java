@@ -98,12 +98,4 @@ public enum ComplexDirection implements StringRepresentable {
     public static ComplexDirection between(int position1, int position2) {
         return HotpotPlacementPositions.directionBetween(position1, position2);
     }
-
-    public static Stream<HotpotPlacementCoords.Relative> getNearbyCoords(LevelBlockPos blockPos) {
-        return Arrays.stream(values()).map(direction -> new HotpotPlacementCoords.Relative(blockPos, direction));
-    }
-
-    public static List<Integer> getNearbyOccupiedPositions(LevelBlockPos blockPos, int layer) {
-        return getNearbyCoords(blockPos).map(relative -> relative.getRelativeOccupiedPositions(layer)).flatMap(Collection::stream).toList();
-    }
 }

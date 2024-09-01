@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityClientTicker;
 import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -13,6 +14,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -188,7 +190,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        int hitPos = HotpotBlockEntity.getHitPos(hitResult.getBlockPos(), hitResult.getLocation());
+        int hitPos = HotpotBlockEntity.getClickPosition(hitResult.getBlockPos(), hitResult.getLocation());
 
         if (levelPos.isServerSide()) {
             hotpotBlockEntity.interact(hitPos, 0, player, hand, itemStack, levelPos);

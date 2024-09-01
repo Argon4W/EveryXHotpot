@@ -9,7 +9,6 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
@@ -58,7 +57,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
             return;
         }
 
-        shrinkNapkinItemSlot(!container.isInfiniteContent());
+        shrinkNapkinItemSlot(container.consumeContents());
 
         if (player.getActiveEffects().isEmpty()) {
             return;

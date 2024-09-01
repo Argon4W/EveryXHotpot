@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.blocks;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.items.HotpotPlacementBlockItem;
+import com.github.argon4w.hotpot.placements.coords.HotpotPlacementCoords;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -42,22 +43,18 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        LevelBlockPos selfPos = new LevelBlockPos(level, pos);
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (!(selfPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity)) {
+        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, selfPos)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-
-        if (!selfPos.isServerSide()) {
+        if (!blockPos.isServerSide()) {
             return ItemInteractionResult.sidedSuccess(true);
         }
 
-        int hitPos = HotpotPlacementBlockItem.getHitPos(result);
-        hotpotPlacementBlockEntity.interact(hitPos, 0, player, hand, itemStack, selfPos);
+        int position = HotpotPlacementBlockItem.getPosition(result);
+        HotpotPlacementCoords.interactNearbyPositions(blockPos, player, hand, itemStack, position, 0);
 
         return ItemInteractionResult.sidedSuccess(false);
     }
@@ -68,16 +65,16 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
             return super.getCloneItemStack(state, target, levelReader, pos, player);
         }
 
-        LevelBlockPos selfPos = new LevelBlockPos(level, pos);
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (!(selfPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity)) {
+        if (!(blockPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity)) {
             return super.getCloneItemStack(state, target, levelReader, pos, player);
         }
 
-        int hitPos = HotpotPlacementBlockItem.getHitPos(pos, target.getLocation());
-        int index = hotpotPlacementBlockEntity.getPlacementIndexInPos(hitPos);
+        int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
+        int index = hotpotPlacementBlockEntity.getPlacementIndexInPos(position);
 
-        return index < 0 ? ItemStack.EMPTY : hotpotPlacementBlockEntity.getPlacements().get(index).getCloneItemStack(hotpotPlacementBlockEntity, selfPos);
+        return index < 0 ? ItemStack.EMPTY : hotpotPlacementBlockEntity.getPlacements().get(index).getCloneItemStack(hotpotPlacementBlockEntity, blockPos);
     }
 
     @Override

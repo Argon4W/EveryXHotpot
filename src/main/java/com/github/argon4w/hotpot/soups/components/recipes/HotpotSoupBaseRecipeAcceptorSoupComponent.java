@@ -30,7 +30,7 @@ public class HotpotSoupBaseRecipeAcceptorSoupComponent extends AbstractHotpotSou
     public static final HotpotSoupComponentUnitType<HotpotSoupBaseRecipeAcceptorSoupComponent> TYPE = new HotpotSoupComponentUnitType<>(UNIT, HotpotSoupComponentTypeSerializers.SOUP_BASE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER);
 
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int hitPos, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int position, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }
