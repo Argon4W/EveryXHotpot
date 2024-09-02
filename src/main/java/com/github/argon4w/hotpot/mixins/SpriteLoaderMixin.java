@@ -1,11 +1,14 @@
 package com.github.argon4w.hotpot.mixins;
 
+import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
+import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotEmptySpriteProcessor;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
 import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteLoader;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +37,11 @@ public abstract class SpriteLoaderMixin {
         }
 
         ArrayList<SpriteContents> results = new ArrayList<>(contents);
-        results.addAll(Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().flatMap(processor -> contents.stream().filter(content -> content.animatedTexture == null).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join());
+        List<SpriteContents> processedContents = Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor)).flatMap(processor -> contents.stream().filter(content -> content.name().getPath().startsWith("item/") && content.animatedTexture == null).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join();
+
+        results.addAll(processedContents);
+        SimpleModelBaker.VALID_PROCESSED_SPRITES.clear();
+        SimpleModelBaker.VALID_PROCESSED_SPRITES.addAll(processedContents.stream().map(SpriteContents::name).toList());
 
         return results;
     }

@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.function.Function;
@@ -36,6 +37,8 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
                     Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved)
             ).apply(data, PartialData::new))
     );
+
+    public static final List<Integer> PROVIDED_POSITIONS = IntStream.range(0, 16).boxed().toList();
 
     private Data data = getDefaultData();
     private boolean contentChanged = true;
@@ -99,7 +102,7 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     }
 
     @Override
-    public boolean consumeContents() {
+    public boolean canConsumeContents() {
         return !data.infiniteContent;
     }
 
@@ -109,8 +112,8 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     }
 
     @Override
-    public boolean isPositionValid(int position, int layer) {
-        return position >= 0 && position <= 15 && layer == 0;
+    public List<Integer> getProvidedPositions(int layer) {
+        return layer == 0 ? PROVIDED_POSITIONS : List.of();
     }
 
     @Override
@@ -119,7 +122,7 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     }
 
     @Override
-    public int getLayerOffset() {
+    public int getLayer(Vec3 vec3) {
         return 0;
     }
 

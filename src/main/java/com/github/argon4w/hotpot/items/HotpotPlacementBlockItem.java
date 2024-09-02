@@ -52,7 +52,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         LevelBlockPos pos = LevelBlockPos.fromUseOnContext(context);
         ComplexDirection direction = ComplexDirection.fromDirection(context.getHorizontalDirection());
         int position = getPosition(context);
-        int layer = getLayer(context);
+        int layer = 0;
 
         IHotpotPlacementSerializer<T> serializer = holder.value();
         Player player = context.getPlayer();
@@ -60,7 +60,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         ItemStack itemStack = context.getItemInHand();
 
         if (pos.getBlockEntity() instanceof IHotpotPlacementContainer placementContainer) {
-            layer += placementContainer.getLayerOffset();
+            layer += placementContainer.getLayer(getVec3(context));
         }
 
         if (!(pos.getBlockEntity() instanceof IHotpotPlacementContainer)) {
@@ -102,7 +102,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         ComplexDirection direction = ComplexDirection.fromDirection(context.getHorizontalDirection());
 
         int position = getPosition(context);
-        int layer = getLayer(context);
+        int layer = 0;
 
         IHotpotPlacementSerializer<T> serializer = holder.value();
         List<Optional<Integer>> positions = serializer.getPositions(position, direction);
@@ -162,25 +162,16 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         pos.playSound(this.getPlaceSound(pos.getBlockState(), pos.level(), pos.pos(), player), (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
     }
 
-    public static int getLayer(BlockPos pos , Vec3 location) {
-        Vec3 vec = location.subtract(pos.getX(), pos.getY(), pos.getZ());
-        return vec.y() < 0.5 ? 0 : 1;
-    }
-
     public static int getPosition(BlockPos pos, Vec3 location) {
         return HotpotPlacementPositions.getPosition(pos, location);
     }
 
-    public static int getLayer(BlockHitResult result) {
-        return getLayer(result.getBlockPos(), result.getLocation());
+    public static Vec3 getVec3(BlockPos pos , Vec3 location) {
+        return location.subtract(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static int getLayer(BlockPlaceContext context) {
-        return getLayer(context.getClickedPos(), context.getClickLocation());
-    }
-
-    public static int getLayer(UseOnContext context) {
-        return getLayer(context.getClickedPos(), context.getClickLocation());
+    public static Vec3 getVec3(UseOnContext context) {
+        return getVec3(context.getClickedPos(), context.getClickLocation());
     }
 
     public static int getPosition(BlockHitResult result) {
@@ -200,6 +191,6 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
     }
 
     public static boolean isPositionNotConflict(int position, int layer, LevelBlockPos pos) {
-        return pos.getBlockState().isAir() || pos.getBlockEntity() instanceof IHotpotPlacementContainer blockEntity && blockEntity.isPositionValid(position, layer);
+        return pos.getBlockState().isAir() || pos.getBlockEntity() instanceof IHotpotPlacementContainer blockEntity && blockEntity.getProvidedPositions(layer).contains(position);
     }
 }

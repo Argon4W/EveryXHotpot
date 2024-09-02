@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"render_type": "minecraft:translucent",
 	"textures": {
-		"0": "everyxhotpot:block/hotpot_mushroom_soup_part_0",
-		"particle": "everyxhotpot:block/hotpot_mushroom_soup_part_0"
+		"0": "everyxhotpot:soup/hotpot_mushroom_soup_part_0",
+		"particle": "everyxhotpot:soup/hotpot_mushroom_soup_part_0"
 	},
 	"elements": [
 		{

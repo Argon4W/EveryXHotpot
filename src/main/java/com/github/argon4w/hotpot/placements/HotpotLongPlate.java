@@ -73,7 +73,7 @@ public class HotpotLongPlate implements IHotpotPlate {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
-        boolean consume = container.consumeContents();
+        boolean consume = container.canConsumeContents();
 
         if (position == position1 && !itemSlot1.isEmpty()) {
             return itemSlot1.takeItem(consume);

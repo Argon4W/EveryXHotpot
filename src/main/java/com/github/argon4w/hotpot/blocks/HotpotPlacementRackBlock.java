@@ -63,7 +63,7 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
         }
 
         int position = HotpotPlacementBlockItem.getPosition(result);
-        int layer = HotpotPlacementBlockItem.getLayer(result) + hotpotPlacementRackBlockEntity.getLayerOffset();
+        int layer = HotpotPlacementRackBlockEntity.getLayerFromBlockHitResult(result);
 
         hotpotPlacementRackBlockEntity.interact(position, layer, player, hand, itemStack, blockPos);
 
@@ -83,7 +83,7 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
         }
 
         int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
-        int layer = HotpotPlacementBlockItem.getLayer(pos, target.getLocation()) + hotpotPlacementRackBlockEntity.getLayerOffset();
+        int layer = HotpotPlacementRackBlockEntity.getLayerFromHitResult(target, pos);
 
         return hotpotPlacementRackBlockEntity.getPlacementInPosAndLayer(position, layer).getCloneItemStack(hotpotPlacementRackBlockEntity, blockPos);
     }

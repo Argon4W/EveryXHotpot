@@ -3,7 +3,7 @@
 	"render_type": "minecraft:translucent",
 	"texture_size": [8, 8],
 	"textures": {
-		"12": "everyxhotpot:block/portal_soup",
+		"12": "everyxhotpot:soup/portal_soup",
 		"particle": "block/water_still"
 	},
 	"elements": [

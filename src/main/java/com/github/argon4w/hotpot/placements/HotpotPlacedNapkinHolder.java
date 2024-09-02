@@ -57,7 +57,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
             return;
         }
 
-        shrinkNapkinItemSlot(container.consumeContents());
+        shrinkNapkinItemSlot(container.canConsumeContents());
 
         if (player.getActiveEffects().isEmpty()) {
             return;

@@ -56,7 +56,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
-        boolean consume = container.consumeContents();
+        boolean consume = container.canConsumeContents();
         ItemStack paperBowl = paperBowlItemSlot.getItemStack();
 
         if (isPaperBowlUsed()) {

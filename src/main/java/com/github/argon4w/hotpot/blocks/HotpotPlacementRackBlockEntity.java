@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.serialization.Codec;
@@ -15,6 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,6 +46,8 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
                     Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved)
             ).apply(data, PartialData::new))
     );
+
+    public static final List<Integer> PROVIDED_POSITIONS = List.of(5, 9, 6, 10);
 
     private Data data = getDefaultData();
     private boolean contentChanged = true;
@@ -95,7 +101,7 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     }
 
     @Override
-    public boolean consumeContents() {
+    public boolean canConsumeContents() {
         return !data.infiniteContent;
     }
 
@@ -105,18 +111,18 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     }
 
     @Override
-    public boolean isPositionValid(int position, int layer) {
-        return position == 5 || position == 9 || position == 6 || position == 10;
-    }
-
-    @Override
     public List<Integer> getOccupiedPositions(int layer) {
         return getPlacements(layer).stream().map(IHotpotPlacement::getPositions).flatMap(Collection::stream).toList();
     }
 
     @Override
-    public int getLayerOffset() {
-        return 1;
+    public List<Integer> getProvidedPositions(int layer) {
+        return layer == 1 || layer == 2 ? PROVIDED_POSITIONS : List.of();
+    }
+
+    @Override
+    public int getLayer(Vec3 vec3) {
+        return getLayerFromVec3(vec3);
     }
 
     @Override
@@ -206,6 +212,26 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
 
     public List<IHotpotPlacement> getPlacements2() {
         return data.placements2;
+    }
+
+    public static int getLayerFromVec3(Vec3 vec3) {
+        return vec3.y() < 0.5 ? 1 : 2;
+    }
+
+    public static int getLayerFromBlockHitResult(BlockHitResult blockHitResult) {
+        return getLayerFromVec3(getVec3(blockHitResult));
+    }
+
+    public static int getLayerFromHitResult(HitResult hitResult, BlockPos pos) {
+        return getLayerFromVec3(getVec3(hitResult, pos));
+    }
+
+    public static Vec3 getVec3(HitResult hitResult, BlockPos pos) {
+        return HotpotPlacementBlockItem.getVec3(pos, hitResult.getLocation());
+    }
+
+    public static Vec3 getVec3(BlockHitResult result) {
+        return HotpotPlacementBlockItem.getVec3(result.getBlockPos(), result.getLocation());
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotPlacementRackBlockEntity blockEntity) {

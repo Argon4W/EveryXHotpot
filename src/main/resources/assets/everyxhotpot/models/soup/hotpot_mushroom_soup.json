@@ -3,8 +3,8 @@
 	"render_type": "minecraft:translucent",
 	"texture_size": [8, 8],
 	"textures": {
-		"2": "everyxhotpot:block/hotpot_mushroom_soup_part_0",
-		"particle": "everyxhotpot:block/hotpot_mushroom_soup_part_1"
+		"2": "everyxhotpot:soup/hotpot_mushroom_soup_part_0",
+		"particle": "everyxhotpot:soup/hotpot_mushroom_soup_part_1"
 	},
 	"elements": [
 		{

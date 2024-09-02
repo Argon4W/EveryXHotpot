@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"render_type": "minecraft:translucent",
 	"textures": {
-		"0": "everyxhotpot:block/hotpot_seafood_soup_part_0",
+		"0": "everyxhotpot:soup/hotpot_seafood_soup_part_0",
 		"particle": "block/water_still"
 	},
 	"elements": [

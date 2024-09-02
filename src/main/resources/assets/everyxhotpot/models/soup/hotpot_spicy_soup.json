@@ -3,9 +3,9 @@
 	"render_type": "minecraft:translucent",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "everyxhotpot:block/hotpot_spicy_soup",
-		"2": "everyxhotpot:block/hotpot_spicy_soup_part_1",
-		"particle": "everyxhotpot:block/hotpot_spicy_soup"
+		"0": "everyxhotpot:soup/hotpot_spicy_soup",
+		"2": "everyxhotpot:soup/hotpot_spicy_soup_part_1",
+		"particle": "everyxhotpot:soup/hotpot_spicy_soup"
 	},
 	"elements": [
 		{

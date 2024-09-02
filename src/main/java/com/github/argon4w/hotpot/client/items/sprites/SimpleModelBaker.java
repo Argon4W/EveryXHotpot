@@ -6,14 +6,16 @@ import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.Function;
 
 public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModels, Map<ResourceLocation, UnbakedModel> models, UnbakedModel missingModel, Function<Material, TextureAtlasSprite> spriteGetter, IHotpotSpriteProcessor processor) implements ModelBaker {
+    public static final ArrayList<ResourceLocation> VALID_PROCESSED_SPRITES = new ArrayList<>();
+
     @NotNull
     @Override
     public UnbakedModel getModel(ResourceLocation location) {
@@ -43,16 +45,6 @@ public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModel
         return model instanceof BlockModel blockModel ? new ItemModelGenerator().generateBlockModel(getModelTextureGetter(), blockModel).bake(this, blockModel, getModelTextureGetter(), BlockModelRotation.X0_Y0, false) : model.bake(this, getModelTextureGetter(), state);
     }
 
-    @Override
-    @NotNull
-    public Function<Material, TextureAtlasSprite> getModelTextureGetter() {
-        return this::getModelTexture;
-    }
-
-    public TextureAtlasSprite getModelTexture(Material material) {
-        return material.atlasLocation().equals(InventoryMenu.BLOCK_ATLAS) ? spriteGetter.apply(new Material(material.atlasLocation(), material.texture().withSuffix(processor.getSuffix()))) : spriteGetter.apply(material);
-    }
-
     @Nullable
     public BakedModel bakeUncached(UnbakedModel model, ModelState modelState) {
         return bakeUncached(model, modelState, getModelTextureGetter());
@@ -61,5 +53,15 @@ public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModel
     @Nullable
     public BakedModel bakeUncached(UnbakedModel model) {
         return bakeUncached(model, BlockModelRotation.X0_Y0);
+    }
+
+    @Override
+    @NotNull
+    public Function<Material, TextureAtlasSprite> getModelTextureGetter() {
+        return this::getModelTexture;
+    }
+
+    public TextureAtlasSprite getModelTexture(Material material) {
+        return VALID_PROCESSED_SPRITES.contains(material.texture().withSuffix(processor.getSuffix())) ? spriteGetter.apply(new Material(material.atlasLocation(), material.texture().withSuffix(processor.getSuffix()))) : spriteGetter.apply(material);
     }
 }

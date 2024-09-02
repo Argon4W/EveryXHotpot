@@ -103,7 +103,7 @@ public class HotpotLargeRoundPlate implements IHotpotPlate {
 
     @Override
     public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
-        return (isEmpty() ? plateItemSlot : itemSlots.get(position)).takeItem(container.consumeContents());
+        return (isEmpty() ? plateItemSlot : itemSlots.get(position)).takeItem(container.canConsumeContents());
     }
 
     @Override

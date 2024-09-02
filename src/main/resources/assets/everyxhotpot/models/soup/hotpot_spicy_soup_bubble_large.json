@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"render_type": "minecraft:translucent",
 	"textures": {
-		"0": "everyxhotpot:block/hotpot_spicy_soup_bubble",
-		"particle": "everyxhotpot:block/hotpot_spicy_soup_bubble"
+		"0": "everyxhotpot:soup/hotpot_spicy_soup_bubble",
+		"particle": "everyxhotpot:soup/hotpot_spicy_soup_bubble"
 	},
 	"elements": [
 		{
