@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(IBlockStateExtension.class)
 public interface IBlockStateExtensionMixin {
-    @Inject(method = "getFriction", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "getFriction", at = @At("RETURN"), cancellable = true)
     default void getFriction(LevelReader level, BlockPos pos, Entity entity, CallbackInfoReturnable<Float> cir) {
         if (!(entity instanceof LivingEntity livingEntity)) {
             return;

@@ -11,14 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotCustomColorSpriteConfig(ResourceLocation id, HotpotColor color, ResourceLocation processorResourceLocation) implements IHotpotSpriteConfig {
-    @Override
-    public Holder<IHotpotSpriteConfigSerializer<?>> getSerializerHolder() {
-        return HotpotSpriteConfigSerializers.CUSTOM_COLOR_SPRITE_CONFIG_SERIALIZER;
+    public ResourceLocation getProcessorResourceLocation() {
+        return processorResourceLocation;
     }
 
     @Override
-    public ResourceLocation getProcessorResourceLocation() {
-        return processorResourceLocation;
+    public Holder<IHotpotSpriteConfigSerializer<?>> getSerializerHolder() {
+        return HotpotSpriteConfigSerializers.CUSTOM_COLOR_SPRITE_CONFIG_SERIALIZER;
     }
 
     @Override
@@ -35,7 +34,7 @@ public record HotpotCustomColorSpriteConfig(ResourceLocation id, HotpotColor col
         public static final MapCodec<HotpotCustomColorSpriteConfig> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(config -> config.group(
                         ResourceLocation.CODEC.fieldOf("id").forGetter(HotpotCustomColorSpriteConfig::id),
-                        HotpotColor.CODEC.fieldOf("color").forGetter(HotpotCustomColorSpriteConfig::color),
+                        HotpotColor.CODEC.fieldOf("spriteConfig").forGetter(HotpotCustomColorSpriteConfig::color),
                         ResourceLocation.CODEC.fieldOf("processor_resource_location").forGetter(HotpotCustomColorSpriteConfig::processorResourceLocation)
                 ).apply(config, HotpotCustomColorSpriteConfig::new))
         );

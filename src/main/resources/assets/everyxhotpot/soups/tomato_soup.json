@@ -36,10 +36,13 @@
       "should_render_in_bowl": false
     }
   ],
-  "color": {
-    "red": 160,
-    "green": 95,
-    "blue": 35
+  "sprite_config": {
+    "processor_resource_location": "everyxhotpot:light_sauced_processor",
+    "color": {
+      "red": 160,
+      "green": 95,
+      "blue": 35
+    }
   },
   "client_tick_effects": [
     {

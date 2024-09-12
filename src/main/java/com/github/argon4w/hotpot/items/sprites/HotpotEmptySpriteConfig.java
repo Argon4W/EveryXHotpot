@@ -14,11 +14,6 @@ public record HotpotEmptySpriteConfig() implements IHotpotSpriteConfig {
     }
 
     @Override
-    public ResourceLocation getProcessorResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor");
-    }
-
-    @Override
     public ResourceLocation getResourceLocation() {
         return ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_config");
     }

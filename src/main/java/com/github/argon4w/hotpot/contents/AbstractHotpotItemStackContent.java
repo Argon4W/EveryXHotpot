@@ -40,25 +40,6 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     public abstract Optional<Double> getExperience(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
 
     @Override
-    public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        hotpotBlockEntity.awardExperience(experience, pos);
-        return itemStack;
-    }
-
-    @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        if (itemStack.isEmpty()) {
-            return;
-        }
-
-        if (!(itemStack.getItem() instanceof IHotpotUpdateAwareContentItem updateAware)) {
-            return;
-        }
-
-        itemStack = updateAware.onContentUpdate(itemStack, content, hotpotBlockEntity, pos);
-    }
-
-    @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
         if (cookingTime < 0) {
             return false;
@@ -80,6 +61,25 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         itemStack = resultOptional.get();
 
         return true;
+    }
+
+    @Override
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        if (itemStack.isEmpty()) {
+            return;
+        }
+
+        if (!(itemStack.getItem() instanceof IHotpotUpdateAwareContentItem updateAware)) {
+            return;
+        }
+
+        itemStack = updateAware.onContentUpdate(itemStack, content, hotpotBlockEntity, pos);
+    }
+
+    @Override
+    public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        hotpotBlockEntity.awardExperience(experience, pos);
+        return itemStack;
     }
 
     @Override

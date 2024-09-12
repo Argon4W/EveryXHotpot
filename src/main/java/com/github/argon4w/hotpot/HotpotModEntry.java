@@ -7,6 +7,7 @@ import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRende
 import com.github.argon4w.hotpot.client.items.HotpotItemSpecialRenderers;
 import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
+import com.github.argon4w.hotpot.client.items.sprites.processors.providers.HotpotSpriteProcessorProviders;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.client.soups.effects.HotpotSoupClientTickEffects;
@@ -157,6 +158,7 @@ public class HotpotModEntry {
         HotpotItemSpecialRenderers.ITEM_SPECIAL_RENDERERS.register(modEventBus);
         HotpotSpriteProcessors.SPRITE_PROCESSORS.register(modEventBus);
         HotpotSpriteColorProviders.SPRITE_COLOR_PROVIDERS.register(modEventBus);
+        HotpotSpriteProcessorProviders.SPRITE_PROCESSOR_PROVIDERS.register(modEventBus);
         HotpotSpriteConfigSerializers.SPRITE_CONFIGS.register(modEventBus);
     }
 }

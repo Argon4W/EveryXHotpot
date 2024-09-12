@@ -9,12 +9,14 @@
     "ItemRendererMixin",
     "MinecraftMixin",
     "ModelBakeryMixin",
-    "SpriteLoaderMixin",
-    "SodiumBakedModelEncoderMixin"
+    "SodiumBakedModelEncoderMixin",
+    "SpriteLoaderMixin"
   ],
   "mixins": [
+    "EntityMixin",
     "IBlockStateExtensionMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "NeutralMobMixin"
   ],
   "injectors": {
     "defaultRequire": 1

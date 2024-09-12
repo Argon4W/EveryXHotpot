@@ -52,7 +52,6 @@
           {
             "type": "everyxhotpot:soup_renderer_config_sprite_config",
             "id": "everyxhotpot:cheese_soup_overlay",
-            "processor_resource_location": "everyxhotpot:heavy_sauced_processor",
             "soup_renderer_config_resource_location": "everyxhotpot:cheese_soup"
           }
         ]

@@ -38,7 +38,6 @@
           {
             "type": "everyxhotpot:soup_renderer_config_sprite_config",
             "id": "everyxhotpot:spicy_soup_overlay",
-            "processor_resource_location": "everyxhotpot:light_sauced_processor",
             "soup_renderer_config_resource_location": "everyxhotpot:spicy_soup"
           }
         ]

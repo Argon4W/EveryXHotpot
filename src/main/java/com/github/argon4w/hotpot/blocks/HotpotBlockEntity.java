@@ -37,18 +37,20 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
 
     public static final Codec<Data> CODEC = Codec.lazyInitialized(() ->
             RecordCodecBuilder.create(data -> data.group(
-                Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved),
-                Codec.BOOL.fieldOf("infinite_water").forGetter(Data::isInfiniteWater),
-                Codec.INT.fieldOf("time").forGetter(Data::getTime),
-                Codec.INT.fieldOf("velocity").forGetter(Data::getVelocity),
-                Codec.DOUBLE.fieldOf("synchronized_water_level").forGetter(Data::getSynchronizedWaterLevel),
-                HotpotComponentSoupType.CODEC.fieldOf("soup").forGetter(Data::getSoup),
-                HotpotContentSerializers.LIST_INDEXED_CODEC.fieldOf("contents").forGetter(Data::getContents)
+                    Codec.BOOL.fieldOf("can_consume_contents").forGetter(Data::canConsumeContents),
+                    Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved),
+                    Codec.BOOL.fieldOf("infinite_water").forGetter(Data::isInfiniteWater),
+                    Codec.INT.fieldOf("time").forGetter(Data::getTime),
+                    Codec.INT.fieldOf("velocity").forGetter(Data::getVelocity),
+                    Codec.DOUBLE.fieldOf("synchronized_water_level").forGetter(Data::getSynchronizedWaterLevel),
+                    HotpotComponentSoupType.CODEC.fieldOf("soup").forGetter(Data::getSoup),
+                    HotpotContentSerializers.LIST_INDEXED_CODEC.fieldOf("contents").forGetter(Data::getContents)
             ).apply(data, Data::new))
     );
 
     public static final Codec<PartialData> PARTIAL_CODEC = Codec.lazyInitialized(() ->
             RecordCodecBuilder.create(data -> data.group(
+                    Codec.BOOL.fieldOf("can_consume_contents").forGetter(PartialData::canConsumeContents),
                     Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved),
                     Codec.BOOL.fieldOf("infinite_water").forGetter(PartialData::infiniteWater),
                     Codec.INT.fieldOf("time").forGetter(PartialData::time),
@@ -73,7 +75,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     @Override
     public ItemStack getContentByTableware(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos) {
         int contentPosition = getContentPosition(position);
-        return data.soup.getContentResultByTableware(data.contents.get(contentPosition), this, pos).map(c -> c.getContentItemStack(this, pos)).ifPresent(i -> setEmptyContent(contentPosition, pos)).orElse(ItemStack.EMPTY);
+        return data.soup.getContentResultByTableware(data.contents.get(contentPosition), this, pos).map(c -> c.getContentItemStack(this, pos).copy()).ifPresent(i -> setEmptyContent(contentPosition, pos)).orElse(ItemStack.EMPTY);
     }
 
     @Override
@@ -83,12 +85,12 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
 
     @Override
     public Data getDefaultData() {
-        return new Data(true, false, 0, 0, 0.0, HotpotComponentSoupType.loadEmptySoup(), NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()));
+        return new Data(true, true, false, 0, 0, 0.0, HotpotComponentSoupType.loadEmptySoup(), NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()));
     }
 
     @Override
     public PartialData getPartialData(HolderLookup.Provider registryAccess) {
-        return new PartialData(data.canBeRemoved, data.infiniteWater, data.time, data.velocity, data.synchronizedWaterLevel, data.soup, contentChanged ? Optional.of(data.contents) : Optional.empty());
+        return new PartialData(data.canConsumeContents, data.canBeRemoved, data.infiniteWater, data.time, data.velocity, data.synchronizedWaterLevel, data.soup, contentChanged ? Optional.of(data.contents) : Optional.empty());
     }
 
     @Override
@@ -173,8 +175,12 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
         getEmptyContentFromNeighbors(position, pos, (p, hotpotBlockEntity, pos2) -> hotpotBlockEntity.setContent(p, supplier.get(), pos2));
     }
 
-    public void setEmptyContent(int contentPos, LevelBlockPos pos) {
-        setContent(contentPos, HotpotContentSerializers.loadEmptyContent(), pos);
+    public void setEmptyContent(int contentPosition, LevelBlockPos pos) {
+        setContent(contentPosition, data.canConsumeContents ? HotpotContentSerializers.loadEmptyContent() : getContent(contentPosition), pos);
+    }
+
+    public void setEmptyContent(int contentPosition) {
+        this.setContent(contentPosition, HotpotContentSerializers.loadEmptyContent());
     }
 
     public boolean hasEmptyContent() {
@@ -210,7 +216,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     }
 
     public void onRemove(LevelBlockPos pos) {
-        IntStream.range(0, data.contents.size()).forEach(i -> removeContent(i, pos).ifPresent(content -> pos.dropItemStack(content.getContentItemStack(this, pos))));
+        IntStream.range(0, data.contents.size()).forEach(i -> removeContent(i, pos).ifPresent(content -> pos.dropItemStack(content.getContentItemStack(this, pos).copy())));
     }
 
     public void awardExperience(double experience, LevelBlockPos pos) {
@@ -251,6 +257,10 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
 
     public void setInfiniteWater(boolean infiniteWater) {
         this.data.infiniteWater = infiniteWater;
+    }
+
+    public boolean canConsumeContents() {
+        return data.canConsumeContents;
     }
 
     public boolean canBeRemoved() {
@@ -336,6 +346,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     }
 
     public static class Data {
+        private boolean canConsumeContents;
         private boolean canBeRemoved;
         private boolean infiniteWater;
         private int time;
@@ -344,7 +355,8 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
         private HotpotComponentSoup soup;
         private NonNullList<IHotpotContent> contents;
 
-        public Data(boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, NonNullList<IHotpotContent> contents) {
+        public Data(boolean canConsumeContents, boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, NonNullList<IHotpotContent> contents) {
+            this.canConsumeContents = canConsumeContents;
             this.canBeRemoved = canBeRemoved;
             this.infiniteWater = infiniteWater;
             this.time = time;
@@ -355,6 +367,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
         }
 
         public Data fromPartialData(PartialData partialData) {
+            this.canConsumeContents = partialData.canConsumeContents;
             this.canBeRemoved = partialData.canBeRemoved;
             this.infiniteWater = partialData.infiniteWater;
             this.time = partialData.time;
@@ -364,6 +377,10 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
             this.contents = partialData.contents.orElse(contents);
 
             return this;
+        }
+
+        public boolean canConsumeContents() {
+            return canConsumeContents;
         }
 
         public boolean canBeRemoved() {
@@ -395,7 +412,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
         }
     }
 
-    public record PartialData(boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, Optional<NonNullList<IHotpotContent>> contents) implements AbstractHotpotCodecBlockEntity.PartialData<Data> {
+    public record PartialData(boolean canConsumeContents, boolean canBeRemoved, boolean infiniteWater, int time, int velocity, double synchronizedWaterLevel, HotpotComponentSoup soup, Optional<NonNullList<IHotpotContent>> contents) implements AbstractHotpotCodecBlockEntity.PartialData<Data> {
         @Override
         public Data update(Data data) {
             return data.fromPartialData(this);

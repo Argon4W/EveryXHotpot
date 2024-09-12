@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.client.items.sprites;
 
 import com.github.argon4w.hotpot.EntryStreams;
 import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
+import com.github.argon4w.hotpot.client.items.sprites.processors.providers.HotpotSpriteProcessorProviders;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
 import com.github.argon4w.hotpot.items.sprites.IHotpotSpriteConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,7 +32,7 @@ public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
     }
 
     public BakedModel getResolvedTintedModel(IHotpotSpriteConfig config, ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {
-        return new TintedBakedModel(getAndResolve(config.getProcessorResourceLocation(), itemStack, clientLevel, livingEntity, seed), HotpotSpriteColorProviders.getColor(config));
+        return new TintedBakedModel(getAndResolve(HotpotSpriteProcessorProviders.getProcessorResourceLocation(config), itemStack, clientLevel, livingEntity, seed), HotpotSpriteColorProviders.getColor(config));
     }
 
     public BakedModel getAndResolve(ResourceLocation resourceLocation, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
@@ -47,7 +48,7 @@ public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
     }
 
     public boolean containsConfig(IHotpotSpriteConfig config) {
-        return keySet().contains(config.getProcessorResourceLocation());
+        return keySet().contains(HotpotSpriteProcessorProviders.getProcessorResourceLocation(config));
     }
 
     public BakedModel getEmptyModel() {
