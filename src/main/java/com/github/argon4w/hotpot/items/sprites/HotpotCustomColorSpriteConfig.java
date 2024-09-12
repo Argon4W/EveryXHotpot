@@ -34,7 +34,7 @@ public record HotpotCustomColorSpriteConfig(ResourceLocation id, HotpotColor col
         public static final MapCodec<HotpotCustomColorSpriteConfig> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(config -> config.group(
                         ResourceLocation.CODEC.fieldOf("id").forGetter(HotpotCustomColorSpriteConfig::id),
-                        HotpotColor.CODEC.fieldOf("spriteConfig").forGetter(HotpotCustomColorSpriteConfig::color),
+                        HotpotColor.CODEC.fieldOf("color").forGetter(HotpotCustomColorSpriteConfig::color),
                         ResourceLocation.CODEC.fieldOf("processor_resource_location").forGetter(HotpotCustomColorSpriteConfig::processorResourceLocation)
                 ).apply(config, HotpotCustomColorSpriteConfig::new))
         );
