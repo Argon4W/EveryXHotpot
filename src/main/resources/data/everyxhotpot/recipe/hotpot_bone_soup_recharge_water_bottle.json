@@ -1,0 +1,18 @@
+{
+  "type": "everyxhotpot:hotpot_soup_recharge_recipe",
+  "target_soup": "everyxhotpot:bone_soup",
+  "recharge_water_level": 0.333,
+  "ingredient": {
+    "type": "neoforge:components",
+    "items":"minecraft:potion",
+    "components": {
+      "minecraft:potion_contents": {
+        "potion":"minecraft:water"
+      }
+    }
+  },
+  "remaining_item": {
+    "id": "minecraft:glass_bottle"
+  },
+  "sound_event": "item.bottle.fill"
+}

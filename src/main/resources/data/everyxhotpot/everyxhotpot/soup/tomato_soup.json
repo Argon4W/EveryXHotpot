@@ -22,6 +22,11 @@
             "id": "everyxhotpot:warm",
             "amplifier": 0,
             "duration": 300
+          },
+          {
+            "id": "farmersdelight:comfort",
+            "amplifier": 0,
+            "duration": 1200
           }
         ]
       },

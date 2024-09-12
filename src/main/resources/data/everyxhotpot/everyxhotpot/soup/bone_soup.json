@@ -1,0 +1,25 @@
+{
+  "components": {
+    "everyxhotpot:soup": {
+      "component": "everyxhotpot:generic_cooking_soup_compound",
+      "index": 0
+    },
+    "everyxhotpot:apply_mob_effect_on_content_update": {
+      "component": "everyxhotpot:generic_apply_mob_effect_on_content_update",
+      "index": 1
+    },
+    "everyxhotpot:mob_effect_container": {
+      "component": {
+        "type": "everyxhotpot:fixed_mob_effect_container_soup_component",
+        "effects": [
+          {
+            "id": "minecraft:jump_boost",
+            "amplifier": 1,
+            "duration": 600
+          }
+        ]
+      },
+      "index": 2
+    }
+  }
+}

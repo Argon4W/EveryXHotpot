@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"render_type": "minecraft:translucent",
+	"textures": {
+		"0": "everyxhotpot:soup/hotpot_bone_soup_part_0",
+		"particle": "everyxhotpot:soup/hotpot_bone_soup_part_0"
+	},
+	"elements": [
+		{
+			"from": [-1, 0, -1],
+			"to": [1, 2, 1],
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"east": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"south": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"west": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"up": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"down": {"uv": [0, 0, 2, 2], "texture": "#0"}
+			}
+		}
+	]
+}

@@ -83,6 +83,7 @@ public class HotpotModEntry {
 
     public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_WARM = HotpotRegistries.MOB_EFFECTS.register("warm", () -> new HotpotMobEffect(MobEffectCategory.BENEFICIAL, (240 << 16) | (240 << 8) | 240));
     public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_GREASY = HotpotRegistries.MOB_EFFECTS.register("greasy", () -> new HotpotMobEffect(MobEffectCategory.HARMFUL, (235 << 16) | (235 << 8) | 25));
+    public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_SMELLY = HotpotRegistries.MOB_EFFECTS.register("smelly", () -> new HotpotMobEffect(MobEffectCategory.HARMFUL, (106 << 16) | (52 << 8) | 36));
     public static final DeferredHolder<MobEffect, MobEffect> HOTPOT_ACRID = HotpotRegistries.MOB_EFFECTS.register("acrid", () -> new HotpotMobEffect(MobEffectCategory.BENEFICIAL, (240 << 16) | (84 << 8) | 64).addAttributeModifier(Attributes.ATTACK_SPEED, ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "acrid"), 0.5f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HotpotSpicePackRecipe>> HOTPOT_SPICE_PACK_SPECIAL_RECIPE = HotpotRegistries.RECIPE_SERIALIZERS.register("crafting_special_hotpot_spice_pack", () -> new SimpleCraftingRecipeSerializer<>(HotpotSpicePackRecipe::new));

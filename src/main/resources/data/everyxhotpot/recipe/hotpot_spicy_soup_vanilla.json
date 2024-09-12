@@ -2,7 +2,7 @@
   "type": "everyxhotpot:hotpot_soup_ingredient_recipe",
   "source_soup": "everyxhotpot:clear_soup",
   "result_soup": "everyxhotpot:spicy_soup",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:not",
       "value": {

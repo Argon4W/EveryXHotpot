@@ -18,4 +18,9 @@ public abstract class LivingEntityMixin {
     public void canFreeze(CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(!hasEffect(HotpotModEntry.HOTPOT_WARM) && cir.getReturnValue());
     }
+
+    @Inject(method = "canBeSeenAsEnemy", at = @At("RETURN"), cancellable = true)
+    public void canBeSeenAsEnemy(CallbackInfoReturnable<Boolean> cir) {
+        cir.setReturnValue(cir.getReturnValue() && !hasEffect(HotpotModEntry.HOTPOT_SMELLY));
+    }
 }

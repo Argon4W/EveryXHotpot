@@ -1,0 +1,81 @@
+{
+  "soup_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup",
+  "custom_elements_renderers": [
+    {
+      "type": "everyxhotpot:floating_element_renderer",
+      "rotation_time_offset": 0.0,
+      "position_time_offset": 0.0,
+      "rotation_scale": 1.6,
+      "position_scale": 0.02,
+      "position_offset": -0.01,
+      "rotation_axis": "x",
+      "element_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_floating_bones_1",
+      "should_render_in_bowl": true
+    },
+    {
+      "type": "everyxhotpot:floating_element_renderer",
+      "rotation_time_offset": 1.0,
+      "position_time_offset": 1.0,
+      "rotation_scale": 1.6,
+      "position_scale": 0.02,
+      "position_offset": -0.01,
+      "rotation_axis": "z",
+      "element_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_floating_bones_2",
+      "should_render_in_bowl": true
+    },
+    {
+      "type": "everyxhotpot:bubble_renderer",
+      "spread": 0.21,
+      "max_scale": 0.8,
+      "amount": 35,
+      "offset_range": 5,
+      "max_time": 14.0,
+      "min_y": 0.5,
+      "max_y": 0.525,
+      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_bubble_large",
+      "should_render_in_bowl": false
+    },
+    {
+      "type": "everyxhotpot:bubble_renderer",
+      "spread": 0.35,
+      "max_scale": 0.55,
+      "amount": 45,
+      "offset_range": 5,
+      "max_time": 10.0,
+      "min_y": 0.5,
+      "max_y": 0.525,
+      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_bubble_small",
+      "should_render_in_bowl": false
+    }
+  ],
+  "client_tick_effects": [
+    {
+      "type": "everyxhotpot:empty_water_smoke_effect",
+      "particle_type": "minecraft:smoke",
+      "amount_per_tick": 25,
+      "x_offset": 0.5,
+      "y_offset": 0.9,
+      "z_offset": 0.5,
+      "x_scale": 0.35,
+      "z_scale": 0.35,
+      "x_speed": 0.0,
+      "y_speed": 0.005,
+      "z_speed": 0.0
+    },
+    {
+      "type": "everyxhotpot:vapor_effect",
+      "particle_type": "minecraft:campfire_cosy_smoke",
+      "rate_per_tick": 0.11,
+      "min_amount_per_tick": 0,
+      "max_amount_per_tick": 2,
+      "x_offset": 0.5,
+      "y_offset": 0.7,
+      "z_offset": 0.5,
+      "x_scale": 0.32,
+      "z_scale": 0.32,
+      "x_speed": 0.0,
+      "y_speed": 0.06,
+      "z_speed": 0.0
+    }
+  ]
+}
