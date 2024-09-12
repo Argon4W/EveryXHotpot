@@ -13,6 +13,11 @@
         "type": "everyxhotpot:fixed_mob_effect_container_soup_component",
         "effects": [
           {
+            "id": "everyxhotpot:warm",
+            "amplifier": 0,
+            "duration": 300
+          },
+          {
             "id": "minecraft:jump_boost",
             "amplifier": 1,
             "duration": 600

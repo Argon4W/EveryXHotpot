@@ -57,7 +57,6 @@ import java.util.stream.Stream;
 @Mod(HotpotModEntry.MODID)
 public class HotpotModEntry {
     public static final String MODID = "everyxhotpot";
-    public static final String HOTPOT_NETWORK_PROTOCOL_VERSION = "3";
     public static final int MAGIC_NUMBER = 230419;
 
     public static final DeferredBlock<HotpotBlock> HOTPOT_BLOCK = HotpotRegistries.BLOCKS.register("hotpot", HotpotBlock::new);
