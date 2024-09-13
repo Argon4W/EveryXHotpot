@@ -1,0 +1,9 @@
+{
+  "type": "everyxhotpot:hotpot_soup_base_recipe",
+  "result_soup": "everyxhotpot:oil_soup",
+  "result_water_level": 0.333,
+  "ingredient": {
+    "item": "minecraft:pitcher_pod"
+  },
+  "sound_event": "item.bucket.empty_lava"
+}

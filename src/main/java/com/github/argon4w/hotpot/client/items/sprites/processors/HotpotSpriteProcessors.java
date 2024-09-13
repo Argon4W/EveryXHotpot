@@ -16,6 +16,7 @@ public class HotpotSpriteProcessors {
 
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotLightSaucedSpriteProcessor> LIGHT_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("light_sauced_processor", HotpotLightSaucedSpriteProcessor::new);
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotHeavySaucedSpriteProcessor> HEAVY_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("heavy_sauced_processor", HotpotHeavySaucedSpriteProcessor::new);
+    public static final DeferredHolder<IHotpotSpriteProcessor, HotpotFullySaucedSpriteProcessor> FULLY_SAUCED_PROCESSOR = SPRITE_PROCESSORS.register("fully_sauced_processor", HotpotFullySaucedSpriteProcessor::new);
     public static final DeferredHolder<IHotpotSpriteProcessor, HotpotEmptySpriteProcessor> EMPTY_SPRITE_PROCESSOR = SPRITE_PROCESSORS.register("empty_sprite_processor", HotpotEmptySpriteProcessor::new);
 
     public static Registry<IHotpotSpriteProcessor> getSpriteProcessorRegistry() {

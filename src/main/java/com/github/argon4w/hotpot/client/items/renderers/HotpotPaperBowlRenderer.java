@@ -135,7 +135,8 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.translate(0.0 , 0.0, zMovement);
             poseStack.mulPose(rotationAxisX.rotationDegrees((float) rotationX));
 
-            poseStack.scale(0.88f, 0.88f, 0.88f);
+            //poseStack.scale(0.88f, 0.88f, 0.88f);
+            poseStack.scale(0.98f, 0.98f, 0.98f);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(null, bowlItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
 

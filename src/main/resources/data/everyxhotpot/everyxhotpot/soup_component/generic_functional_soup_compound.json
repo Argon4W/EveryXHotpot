@@ -1,0 +1,39 @@
+{
+  "type": "everyxhotpot:compound_soup_component",
+  "compounds": {
+    "everyxhotpot:recharge_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_recharge_recipe_acceptor",
+      "index": 0
+    },
+    "everyxhotpot:base_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_base_recipe_acceptor",
+      "index": 1
+    },
+    "everyxhotpot:add_item_stack_content_by_hand": {
+      "component": "everyxhotpot:generic_add_item_stack_content_by_hand",
+      "index": 2
+    },
+    "everyxhotpot:remove_soup_when_crouching": {
+      "component": "everyxhotpot:generic_remove_soup_when_crouching",
+      "index": 3
+    },
+    "everyxhotpot:get_content_by_hand": {
+      "component": {
+        "type": "everyxhotpot:get_content_by_hand_soup_component"
+      },
+      "index": 4
+    },
+    "everyxhotpot:cooking_recipe_content_provider": {
+      "component": "everyxhotpot:generic_cooking_recipe_content_provider",
+      "index": 5
+    },
+    "everyxhotpot:synchronize_tick": {
+      "component": "everyxhotpot:generic_synchronize_tick",
+      "index": 6
+    },
+    "everyxhotpot:water_level_container": {
+      "component": "everyxhotpot:generic_no_drop_water_level_container_compound",
+      "index": 7
+    }
+  }
+}

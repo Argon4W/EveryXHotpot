@@ -17,35 +17,4 @@ public class HotpotDisassemblingRecipeContentProviderSoupComponent extends Abstr
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getContentSerializerResultFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result) {
         return result.isPresent() || itemStack.isEmpty() ? result : IHotpotResult.success(HotpotContentSerializers.DISASSEMBLING_RECIPE_CONTENT_SERIALIZER);
     }
-
-    @Override
-    public IHotpotResult<IHotpotContent> getContentResultByHand(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        if (result.isEmpty()) {
-            return result;
-        }
-
-        if (!(result.get() instanceof HotpotDisassemblingContent disassemblingContent)) {
-            return result;
-        }
-
-        disassemblingContent.getDisassembledResultItemStacks(pos).forEach(pos::dropFloatingItemStack);
-        return IHotpotResult.pass();
-    }
-
-    @Override
-    public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        if (result.isEmpty()) {
-            return result;
-        }
-
-        if (!(result.get() instanceof HotpotDisassemblingContent disassemblingContent)) {
-            return result;
-        }
-
-        if (disassemblingContent.hasDisassembledResult(pos)) {
-            return result;
-        }
-
-        return IHotpotResult.blocked();
-    }
 }

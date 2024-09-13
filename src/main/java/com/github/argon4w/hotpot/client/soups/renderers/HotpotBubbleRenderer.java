@@ -57,6 +57,21 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         IntStream.range(0, bubbles.length).forEach(i -> renderBubble(time, renderedWaterLevel, i, poseStack, bufferSource, combinedLight, combinedOverlay));
     }
 
+    @Override
+    public boolean shouldRenderInBowl() {
+        return shouldRenderInBowl;
+    }
+
+    @Override
+    public List<ResourceLocation> getRequiredModelResourceLocations() {
+        return List.of(bubbleModelResourceLocation);
+    }
+
+    @Override
+    public Holder<IHotpotSoupCustomElementRendererSerializer<?>> getSerializer() {
+        return HotpotSoupCustomElementSerializers.BUBBLE_RENDERER_SERIALIZER;
+    }
+
     public void renderBubble(long time, double renderedWaterLevel, int bubbleIndex, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
         Bubble bubble = bubbles[bubbleIndex];
 
@@ -84,21 +99,6 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, RenderType.translucent());
 
         poseStack.popPose();
-    }
-
-    @Override
-    public boolean shouldRenderInBowl() {
-        return shouldRenderInBowl;
-    }
-
-    @Override
-    public List<ResourceLocation> getRequiredModelResourceLocations() {
-        return List.of(bubbleModelResourceLocation);
-    }
-
-    @Override
-    public Holder<IHotpotSoupCustomElementRendererSerializer<?>> getSerializer() {
-        return HotpotSoupCustomElementSerializers.BUBBLE_RENDERER_SERIALIZER;
     }
 
     public double getMaxScale() {

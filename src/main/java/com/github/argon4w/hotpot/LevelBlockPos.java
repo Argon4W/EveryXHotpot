@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -56,8 +58,24 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return new LevelBlockPos(level, function.apply(pos));
     }
 
+    public void dropCopiedItemStacks(List<ItemStack> itemStacks) {
+        itemStacks.stream().map(ItemStack::copy).forEach(this::dropItemStack);
+    }
+
+    public void dropItemStacks(List<ItemStack> itemStacks) {
+        itemStacks.forEach(this::dropItemStack);
+    }
+
     public void dropItemStack(ItemStack itemStack) {
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+    }
+
+    public void dropCopiedFloatingItemStacks(List<ItemStack> itemStacks) {
+        itemStacks.stream().map(ItemStack::copy).forEach(this::dropFloatingItemStack);
+    }
+
+    public void dropFloatingItemStacks(List<ItemStack> itemStacks) {
+        itemStacks.forEach(this::dropFloatingItemStack);
     }
 
     public void dropFloatingItemStack(ItemStack itemStack) {
@@ -104,6 +122,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return level.getRecipeManager();
     }
 
+    public LootTable getLootTable(ResourceKey<LootTable> lootTableKey) {
+        return level.getServer().reloadableRegistries().getLootTable(lootTableKey);
+    }
+
     public Vec3 toVec3() {
         return new Vec3(pos.getX(), pos.getY(), pos.getZ());
     }
@@ -136,16 +158,8 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return updatePos(BlockPos::west);
     }
 
-    public LevelBlockPos relative(Direction direction) {
-        return updatePos(pos -> pos.relative(direction));
-    }
-
     public LevelBlockPos relative(ComplexDirection direction) {
         return updatePos(pos -> direction.reduce(pos, BlockPos::relative));
-    }
-
-    public LevelBlockPos relative(List<Direction> directions) {
-        return updatePos(pos -> directions.stream().reduce(pos, BlockPos::relative, (pos1, pos2) -> pos2));
     }
 
     public boolean is(Block block) {

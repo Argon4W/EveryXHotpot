@@ -1,0 +1,9 @@
+{
+  "type": "everyxhotpot:hotpot_soup_recharge_recipe",
+  "target_soup": "everyxhotpot:monster_soup",
+  "recharge_water_level": 0.05,
+  "ingredient": {
+    "item": "minecraft:rotten_flesh"
+  },
+  "sound_event": "entity.generic.eat"
+}

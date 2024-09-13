@@ -1,0 +1,55 @@
+{
+  "soup_model_resource_location": "everyxhotpot:soup/hotpot_oil_soup",
+  "custom_elements_renderers": [
+    {
+      "type": "everyxhotpot:bubble_renderer",
+      "spread": 0.35,
+      "max_scale": 0.6,
+      "amount": 85,
+      "offset_range": 5.5,
+      "max_time": 8.0,
+      "min_y": 0.5,
+      "max_y": 0.53,
+      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_oil_soup_bubble",
+      "should_render_in_bowl": false
+    }
+  ],
+  "sprite_config": {
+    "processor_resource_location": "everyxhotpot:fully_sauced_processor",
+    "color": {
+      "red": 225,
+      "green": 165,
+      "blue": 15
+    }
+  },
+  "client_tick_effects": [
+    {
+      "type": "everyxhotpot:empty_water_smoke_effect",
+      "particle_type": "minecraft:smoke",
+      "amount_per_tick": 25,
+      "x_offset": 0.5,
+      "y_offset": 0.4,
+      "z_offset": 0.5,
+      "x_scale": 0.35,
+      "z_scale": 0.35,
+      "x_speed": 0.0,
+      "y_speed": 0.005,
+      "z_speed": 0.0
+    },
+    {
+      "type": "everyxhotpot:vapor_effect",
+      "particle_type": "minecraft:campfire_cosy_smoke",
+      "rate_per_tick": 0.03,
+      "min_amount_per_tick": 0,
+      "max_amount_per_tick": 1,
+      "x_offset": 0.5,
+      "y_offset": 0.9,
+      "z_offset": 0.5,
+      "x_scale": 0.32,
+      "z_scale": 0.32,
+      "x_speed": 0.0,
+      "y_speed": 0.06,
+      "z_speed": 0.0
+    }
+  ]
+}

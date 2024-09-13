@@ -28,7 +28,7 @@ public class HotpotGetExtraExperienceFromActivenessSoupComponent extends Abstrac
 
     @Override
     public IHotpotResult<Double> onAwardExperience(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Double> result) {
-        return result.map(experience -> experience + base + factor * soup.getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().mapToDouble(HotpotActivenessContainerSoupComponent::getActiveness).sum());
+        return result.map(experience -> experience * (base + factor * soup.getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().mapToDouble(HotpotActivenessContainerSoupComponent::getActiveness).sum()));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotGetExtraExperienceFromActivenessSoupComponent> {

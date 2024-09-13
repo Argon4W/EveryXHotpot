@@ -1,3 +1,4 @@
 {
-  "type": "everyxhotpot:get_extra_experience_from_activeness_soup_component"
+  "type": "everyxhotpot:get_extra_experience_from_activeness_soup_component",
+  "base": 1.0
 }

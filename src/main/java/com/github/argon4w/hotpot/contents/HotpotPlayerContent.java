@@ -13,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 
+import java.util.List;
+
 public class HotpotPlayerContent implements IHotpotContent {
     public static final String[] VALID_PARTS = {"head", "body", "right_arm", "left_arm", "right_leg", "left_leg"};
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
@@ -33,6 +35,11 @@ public class HotpotPlayerContent implements IHotpotContent {
     @Override
     public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return modelPartIndex == 0? getPlayerHeadByProfile() : new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2));
+    }
+
+    @Override
+    public List<ItemStack> getContentResultItemStacks(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return List.of(getContentItemStack(hotpotBlockEntity, pos));
     }
 
     @Override

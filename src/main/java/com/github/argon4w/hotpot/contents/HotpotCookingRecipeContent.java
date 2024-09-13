@@ -18,8 +18,8 @@ import java.util.Optional;
 public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
     public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupCookingRecipe> HOTPOT_COOKING_RECIPE_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_COOKING_RECIPE_TYPE.get());
 
-    public HotpotCookingRecipeContent(ItemStack itemStack, int cookingTime, double cookingProgress, double experience) {
-        super(itemStack, cookingTime, cookingProgress, experience);
+    public HotpotCookingRecipeContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+        super(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
     }
 
     public HotpotCookingRecipeContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
@@ -46,8 +46,8 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
 
     public static class Serializer extends AbstractHotpotRecipeContent.Serializer<HotpotCookingRecipeContent> {
         @Override
-        public HotpotCookingRecipeContent getFromData(ItemStack itemStack, int cookingTime, double cookingProgress, double experience) {
-            return new HotpotCookingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
+        public HotpotCookingRecipeContent getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+            return new HotpotCookingRecipeContent(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override

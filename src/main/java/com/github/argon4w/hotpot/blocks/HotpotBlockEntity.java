@@ -216,7 +216,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     }
 
     public void onRemove(LevelBlockPos pos) {
-        IntStream.range(0, data.contents.size()).forEach(i -> removeContent(i, pos).ifPresent(content -> pos.dropItemStack(content.getContentItemStack(this, pos).copy())));
+        IntStream.range(0, data.contents.size()).forEach(i -> removeContent(i, pos).ifPresent(content -> pos.dropCopiedItemStacks(content.getContentResultItemStacks(this, pos))));
     }
 
     public void awardExperience(double experience, LevelBlockPos pos) {

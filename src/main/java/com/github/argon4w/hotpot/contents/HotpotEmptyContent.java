@@ -6,10 +6,17 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+
 public class HotpotEmptyContent implements IHotpotContent {
     @Override
     public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public List<ItemStack> getContentResultItemStacks(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return List.of();
     }
 
     @Override

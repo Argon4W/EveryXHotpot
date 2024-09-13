@@ -1,5 +1,5 @@
 {
-  "type": "everyxhotpot:get_content_by_hand_soup_component",
+  "type": "everyxhotpot:hurt_player_when_interact_soup_component",
   "damage_source": {
     "damage_type": "minecraft:on_fire",
     "amount": 5.0

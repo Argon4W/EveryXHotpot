@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
+import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.items.IHotpotCustomItemStackUpdaterProvider;
 import com.github.argon4w.hotpot.items.IHotpotItemStackUpdater;
 import com.github.argon4w.hotpot.items.IHotpotUpdateAwareContentItem;
@@ -12,17 +13,21 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
-    private ItemStack itemStack;
-    private int cookingTime;
-    private double cookingProgress;
-    private double experience;
+    protected final ItemStack originalItemStack;
 
-    public AbstractHotpotItemStackContent(ItemStack itemStack, int cookingTime, double cookingProgress, double experience) {
+    protected ItemStack itemStack;
+    protected int cookingTime;
+    protected double cookingProgress;
+    protected double experience;
+
+    public AbstractHotpotItemStackContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
         this.itemStack = itemStack;
+        this.originalItemStack = originalItemStack;
         this.cookingTime = cookingTime;
         this.cookingProgress = cookingProgress;
         this.experience = experience;
@@ -30,6 +35,7 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
 
     public AbstractHotpotItemStackContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         this.itemStack = itemStack.split(1);
+        this.originalItemStack = this.itemStack.copy();
         this.cookingTime = getCookingTime(hotpotBlockEntity.getSoup(), this.itemStack, pos, hotpotBlockEntity).orElse(-1);
         this.cookingProgress = 0;
         this.experience = 0;
@@ -83,8 +89,13 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     }
 
     @Override
+    public List<ItemStack> getContentResultItemStacks(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        return List.of(getContentItemStack(hotpotBlockEntity, pos));
+    }
+
+    @Override
     public boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return false;
+        return itemStack.isEmpty();
     }
 
     public IHotpotItemStackUpdater getItemStackUpdater() {
@@ -97,6 +108,10 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
 
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    public ItemStack getOriginalItemStack() {
+        return originalItemStack;
     }
 
     public int getCookingTime() {
@@ -112,16 +127,25 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
     }
 
     public abstract static class Serializer<T extends AbstractHotpotItemStackContent> implements IHotpotContentSerializer<T> {
-        public abstract T getFromData(ItemStack itemStack, int cookingTime, double cookingProgress, double experience);
+        private final MapCodec<T> codec;
+
+        public Serializer() {
+            codec = LazyMapCodec.of(() ->
+                    RecordCodecBuilder.mapCodec(content -> content.group(
+                            ItemStack.OPTIONAL_CODEC.fieldOf("item_stack").forGetter(AbstractHotpotItemStackContent::getItemStack),
+                            ItemStack.CODEC.fieldOf("original_item_stack").forGetter(AbstractHotpotItemStackContent::getOriginalItemStack),
+                            Codec.INT.fieldOf("cooking_time").forGetter(AbstractHotpotItemStackContent::getCookingTime),
+                            Codec.DOUBLE.fieldOf("cooking_progress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
+                            Codec.DOUBLE.fieldOf("experience").forGetter(AbstractHotpotItemStackContent::getExperience)
+                    ).apply(content, this::getFromData))
+            );
+        }
+
+        public abstract T getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience);
 
         @Override
         public MapCodec<T> getCodec() {
-            return RecordCodecBuilder.mapCodec(content -> content.group(
-                    ItemStack.CODEC.fieldOf("item_stack").forGetter(AbstractHotpotItemStackContent::getItemStack),
-                    Codec.INT.fieldOf("cooking_time").forGetter(AbstractHotpotItemStackContent::getCookingTime),
-                    Codec.DOUBLE.fieldOf("cooking_progress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
-                    Codec.DOUBLE.fieldOf("experience").forGetter(AbstractHotpotItemStackContent::getExperience)
-            ).apply(content, this::getFromData));
+            return codec;
         }
     }
 }

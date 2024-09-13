@@ -14,8 +14,8 @@ import java.util.Optional;
 public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
     public static final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> SMELTING_RECIPE_CHECK = RecipeManager.createCheck(RecipeType.BLASTING);
 
-    public HotpotBlastingRecipeContent(ItemStack itemStack, int cookingTime, double cookingProgress, double experience) {
-        super(itemStack, cookingTime, cookingProgress, experience);
+    public HotpotBlastingRecipeContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+        super(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
     }
 
     public HotpotBlastingRecipeContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
@@ -34,8 +34,8 @@ public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotBlastingRecipeContent> {
         @Override
-        public HotpotBlastingRecipeContent getFromData(ItemStack itemStack, int cookingTime, double cookingProgress, double experience) {
-            return new HotpotBlastingRecipeContent(itemStack, cookingTime, cookingProgress, experience);
+        public HotpotBlastingRecipeContent getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+            return new HotpotBlastingRecipeContent(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override

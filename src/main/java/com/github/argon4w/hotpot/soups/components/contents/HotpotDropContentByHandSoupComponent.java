@@ -6,10 +6,11 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
+import net.minecraft.world.item.ItemStack;
 
 public class HotpotDropContentByHandSoupComponent extends AbstractHotpotSoupComponent {
     @Override
     public IHotpotResult<IHotpotContent> getContentResultByHand(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        return result.consume(content -> pos.dropItemStack(content.getContentItemStack(hotpotBlockEntity, pos).copy()));
+        return result.consume(content -> pos.dropCopiedItemStacks(content.getContentResultItemStacks(hotpotBlockEntity, pos)));
     }
 }

@@ -87,7 +87,7 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotCommonInputRecipe {
                         HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("result_soup").forGetter(HotpotSoupBaseRecipe::getResultSoupType),
                         Codec.FLOAT.fieldOf("result_water_level").forGetter(HotpotSoupBaseRecipe::getResultWaterLevel),
                         Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupBaseRecipe::getIngredient),
-                        ItemStack.OPTIONAL_CODEC.fieldOf("remaining_item").forGetter(HotpotSoupBaseRecipe::getRemainingItem),
+                        ItemStack.OPTIONAL_CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupBaseRecipe::getRemainingItem),
                         SoundEvent.CODEC.fieldOf("sound_event").forGetter(HotpotSoupBaseRecipe::getSoundEvent)
                 ).apply(recipe, HotpotSoupBaseRecipe::new))
         );

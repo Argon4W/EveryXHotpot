@@ -17,10 +17,24 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 @EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class HotpotGameModEvents {
+    @SubscribeEvent
+    public static void onLivingBlock(LivingShieldBlockEvent event) {
+        if (!(event.getDamageContainer().getSource().getDirectEntity() instanceof LivingEntity livingEntity)) {
+            return;
+        }
+
+        if (!livingEntity.hasEffect(HotpotModEntry.HOTPOT_CRISPY)) {
+            return;
+        }
+
+        event.setBlocked(false);
+    }
+
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!event.getSource().is(HotpotModEntry.IN_HOTPOT_DAMAGE_KEY)) {

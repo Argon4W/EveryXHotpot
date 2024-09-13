@@ -9,7 +9,7 @@
       "position_scale": 0.02,
       "position_offset": -0.01,
       "rotation_axis": "x",
-      "element_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_floating_bones_1",
+      "element_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_floating_bone_1",
       "should_render_in_bowl": true
     },
     {
@@ -20,7 +20,7 @@
       "position_scale": 0.02,
       "position_offset": -0.01,
       "rotation_axis": "z",
-      "element_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_floating_bones_2",
+      "element_model_resource_location": "everyxhotpot:soup/hotpot_bone_soup_floating_bone_2",
       "should_render_in_bowl": true
     },
     {
@@ -65,9 +65,9 @@
     {
       "type": "everyxhotpot:vapor_effect",
       "particle_type": "minecraft:campfire_cosy_smoke",
-      "rate_per_tick": 0.11,
+      "rate_per_tick": 0.05,
       "min_amount_per_tick": 0,
-      "max_amount_per_tick": 2,
+      "max_amount_per_tick": 1,
       "x_offset": 0.5,
       "y_offset": 0.7,
       "z_offset": 0.5,

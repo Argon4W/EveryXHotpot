@@ -39,6 +39,7 @@ public class HotpotContentSerializers {
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotBlastingRecipeContent.Serializer> SMELTING_RECIPE_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("blasting_recipe_content", HotpotBlastingRecipeContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotCookingRecipeContent.Serializer> COOKING_RECIPE_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("cooking_recipe_content", HotpotCookingRecipeContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotDisassemblingContent.Serializer> DISASSEMBLING_RECIPE_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("disassembling_recipe_content", HotpotDisassemblingContent.Serializer::new);
+    public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotPiglinBarterRecipeContent.Serializer> PIGLIN_BARTER_RECIPE_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("piglin_barter_recipe_content", HotpotPiglinBarterRecipeContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotPlayerContent.Serializer> PLAYER_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("player_content", HotpotPlayerContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotEmptyContent.Serializer> EMPTY_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("empty_content", HotpotEmptyContent.Serializer::new);
 

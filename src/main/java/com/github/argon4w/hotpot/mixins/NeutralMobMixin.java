@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.mixins;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.monster.Enemy;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,6 +16,10 @@ public interface NeutralMobMixin {
     default void isAngryAt(LivingEntity pTarget, CallbackInfoReturnable<Boolean> cir) {
         if (this instanceof Enemy) {
             return;
+        }
+
+        if (pTarget instanceof Sheep) {
+            System.out.println("1111");
         }
 
         if (!pTarget.hasEffect(HotpotModEntry.HOTPOT_SMELLY)) {
