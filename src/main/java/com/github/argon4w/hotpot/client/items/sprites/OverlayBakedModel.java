@@ -23,9 +23,7 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
 public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements BakedModel {
@@ -64,7 +62,7 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
     @NotNull
     @Override
     public ItemOverrides getOverrides() {
-        return new ProcessedOverrides();
+        return new OverlayOverrides();
     }
 
     @NotNull
@@ -121,15 +119,11 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
         return overlayModelMap.getOriginalModel().getRenderTypes(itemStack, fabulous);
     }
 
-    private class ProcessedOverrides extends ItemOverrides {
+    private class OverlayOverrides extends ItemOverrides {
         @Nullable
         @Override
         public BakedModel resolve(@NotNull BakedModel bakedModel, @NotNull ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int seed) {
-            BakedModel resolved = overlayModelMap.resolveOriginalModel(itemStack, clientLevel, livingEntity, seed);
-
-            if (resolved == overlayModelMap.getOriginalModel() && OverlayBakedModel.this != bakedModel) {
-                resolved = bakedModel;
-            }
+            BakedModel resolved = overlayModelMap.resolveOriginalModel(bakedModel, itemStack, clientLevel, livingEntity, seed);
 
             if (resolved == null) {
                 return null;

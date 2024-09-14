@@ -43,8 +43,8 @@ public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
         return model.getOverrides().resolve(model, itemStack, clientLevel, entity, seed);
     }
 
-    public BakedModel resolveOriginalModel(ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
-        return originalModel.getOverrides().resolve(originalModel, itemStack, clientLevel, entity, seed);
+    public BakedModel resolveOriginalModel(BakedModel bakedModel, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
+        return originalModel.getOverrides().resolve(bakedModel, itemStack, clientLevel, entity, seed);
     }
 
     public boolean containsConfig(IHotpotSpriteConfig config) {
