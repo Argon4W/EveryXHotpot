@@ -32,7 +32,7 @@ public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<H
         stack.pushPose();
 
         stack.translate(0.5, 0.5, 0.5);
-        stack.mulPose(blockPos.getY() % 2 == 0 ? Axis.YP.rotationDegrees(45) : Axis.YP.rotationDegrees(200));
+        stack.mulPose(blockPos.getY() % 2 == 0 ? Axis.YP.rotationDegrees(0) : Axis.YP.rotationDegrees(90));
         stack.translate(-0.5, -0.5, -0.5);
 
         modelRenderer.renderModel(model, stack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
