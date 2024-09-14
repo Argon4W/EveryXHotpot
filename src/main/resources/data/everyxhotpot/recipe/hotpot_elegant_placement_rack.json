@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "item": "everyxhotpot:hotpot_placement_rack"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "pattern": [
+    " C ",
+    "CRC",
+    " C "
+  ],
+  "result": {
+    "count": 2,
+    "id": "everyxhotpot:hotpot_elegant_placement_rack"
+  },
+  "show_notification": true
+}

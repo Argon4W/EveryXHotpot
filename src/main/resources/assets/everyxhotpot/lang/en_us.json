@@ -3,6 +3,7 @@
   "death.attack.in_hotpot.player": "%1$s jumps into the hotpot when escaping %2$s and becomes a member of the hotpot ingredients involuntarily.",
   "block.everyxhotpot.hotpot": "Hotpot",
   "block.everyxhotpot.hotpot_placement_rack": "Rack",
+  "block.everyxhotpot.hotpot_elegant_placement_rack": "Elegant Rack",
   "item.everyxhotpot.hotpot_chopstick": "Chopstick",
   "item.everyxhotpot.hotpot_long_plate": "Long Plate",
   "item.everyxhotpot.hotpot_small_plate": "Small Plate",

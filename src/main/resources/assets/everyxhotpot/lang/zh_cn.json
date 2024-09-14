@@ -3,6 +3,7 @@
   "death.attack.in_hotpot.player": "%1$s在逃离%2$s时被自愿当成了火锅食材",
   "block.everyxhotpot.hotpot": "火锅",
   "block.everyxhotpot.hotpot_placement_rack": "火锅餐架",
+  "block.everyxhotpot.hotpot_elegant_placement_rack": "精致的火锅餐架",
   "item.everyxhotpot.hotpot_chopstick": "筷子",
   "item.everyxhotpot.hotpot_long_plate": "长碟",
   "item.everyxhotpot.hotpot_large_round_plate": "大碟",
