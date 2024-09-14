@@ -17,6 +17,11 @@ public class HotpotFullySaucedSpriteProcessor extends AbstractHotpotGrayScaleSau
     }
 
     @Override
+    public double getRandomFactor() {
+        return 0.06f;
+    }
+
+    @Override
     public String getSuffix() {
         return "_fully_sauced";
     }

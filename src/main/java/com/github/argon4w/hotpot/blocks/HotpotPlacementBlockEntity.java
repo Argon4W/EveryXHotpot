@@ -112,12 +112,12 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     }
 
     @Override
-    public List<Integer> getProvidedPositions(int layer) {
+    public List<Integer> getProvidedPositions(int layer, LevelBlockPos pos) {
         return layer == 0 ? PROVIDED_POSITIONS : List.of();
     }
 
     @Override
-    public List<Integer> getOccupiedPositions(int layer) {
+    public List<Integer> getOccupiedPositions(int layer, LevelBlockPos pos) {
         return layer == 0 ? data.placements.stream().map(IHotpotPlacement::getPositions).flatMap(Collection::stream).toList() : List.of();
     }
 

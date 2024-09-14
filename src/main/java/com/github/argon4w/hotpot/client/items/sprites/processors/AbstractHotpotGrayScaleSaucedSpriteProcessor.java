@@ -25,7 +25,7 @@ public abstract class AbstractHotpotGrayScaleSaucedSpriteProcessor implements IH
 
             int color = original.getPixelRGBA(x, y);
             int alpha = FastColor.ABGR32.alpha(color);
-            double grayScale = Math.min(1f, getGrayScale(color) * amplifier + source.nextGaussian() * 0.1f);
+            double grayScale = Math.min(1f, getGrayScale(color) * amplifier + source.nextGaussian() * getRandomFactor());
 
             double resultAlpha = getResultAlpha(alpha, x, y, frameSize.width(), frameSize.height());
             double resultColor = base + grayScale * factor;
@@ -49,6 +49,7 @@ public abstract class AbstractHotpotGrayScaleSaucedSpriteProcessor implements IH
     public abstract double getResultAlpha(double alpha, int x, int y, double width, double height);
     public abstract double getResultGrayScaleBase();
     public abstract double getResultGrayScaleFactor();
+    public abstract double getRandomFactor();
 
     public record Point(int x, int y) {
 

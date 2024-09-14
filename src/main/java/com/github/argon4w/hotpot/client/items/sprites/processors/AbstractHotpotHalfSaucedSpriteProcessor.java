@@ -18,6 +18,11 @@ public abstract class AbstractHotpotHalfSaucedSpriteProcessor extends AbstractHo
         return 55;
     }
 
+    @Override
+    public double getRandomFactor() {
+        return 0.12f;
+    }
+
     private double sigmoid(double x) {
         return 1.0 / (1.0 + Math.exp(-x));
     }

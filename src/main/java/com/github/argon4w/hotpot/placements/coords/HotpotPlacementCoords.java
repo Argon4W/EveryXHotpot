@@ -26,8 +26,8 @@ public class HotpotPlacementCoords {
         placementContainer.ifPresent(placementContainer -> placementContainer.interact(hitPos, layer, player, hand, itemStack, blockPos));
     }
 
-    public List<Integer> getOccupiedPositions(int layer) {
-        return blockPos.isAir() ? List.of() : placementContainer.map(placementContainer -> placementContainer.getOccupiedPositions(layer)).orElse(List.of(5, 9, 6, 10));
+    public List<Integer> getOccupiedPositions(int layer, LevelBlockPos blockPos) {
+        return blockPos.isAir() ? List.of() : placementContainer.map(placementContainer -> placementContainer.getOccupiedPositions(layer, blockPos)).orElse(List.of(5, 9, 6, 10));
     }
 
     public static Stream<Relative> getNearbyCoords(LevelBlockPos blockPos) {
@@ -35,11 +35,11 @@ public class HotpotPlacementCoords {
     }
 
     public static List<Integer> getNearbyOccupiedPositions(LevelBlockPos blockPos, int layer) {
-        return getNearbyCoords(blockPos).map(relative -> relative.getRelativeOccupiedPositions(layer)).flatMap(Collection::stream).toList();
+        return getNearbyCoords(blockPos).map(relative -> relative.getRelativeOccupiedPositions(layer, blockPos)).flatMap(Collection::stream).toList();
     }
 
     public static void interactNearbyPositions(LevelBlockPos blockPos, Player player, InteractionHand hand, ItemStack itemStack, int position, int layer) {
-        HotpotPlacementCoords.getNearbyCoords(blockPos).filter(relative -> relative.hasRelativePosition(position, layer)).findFirst().ifPresent(relative -> relative.interact(position, layer, player, hand, itemStack));
+        HotpotPlacementCoords.getNearbyCoords(blockPos).filter(relative -> relative.hasRelativePosition(position, layer, blockPos)).findFirst().ifPresent(relative -> relative.interact(position, layer, player, hand, itemStack));
     }
 
     public static class Relative extends HotpotPlacementCoords {
@@ -50,12 +50,12 @@ public class HotpotPlacementCoords {
             this.direction = direction;
         }
 
-        public List<Integer> getRelativeOccupiedPositions(int layer) {
-            return super.getOccupiedPositions(layer).stream().map(i -> direction.getOpposite().relativeToCoords(i)).filter(Optional::isPresent).map(Optional::get).toList();
+        public List<Integer> getRelativeOccupiedPositions(int layer, LevelBlockPos blockPos) {
+            return super.getOccupiedPositions(layer, blockPos).stream().map(i -> direction.getOpposite().relativeToCoords(i)).filter(Optional::isPresent).map(Optional::get).toList();
         }
 
-        public boolean hasRelativePosition(int position, int layer) {
-            return direction.relativeToCoords(position).map(getOccupiedPositions(layer)::contains).orElse(false);
+        public boolean hasRelativePosition(int position, int layer, LevelBlockPos blockPos) {
+            return direction.relativeToCoords(position).map(getOccupiedPositions(layer, blockPos)::contains).orElse(false);
         }
 
         @Override

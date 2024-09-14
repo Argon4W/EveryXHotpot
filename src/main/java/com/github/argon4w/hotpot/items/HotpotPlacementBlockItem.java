@@ -191,6 +191,6 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
     }
 
     public static boolean isPositionNotConflict(int position, int layer, LevelBlockPos pos) {
-        return pos.getBlockState().isAir() || pos.getBlockEntity() instanceof IHotpotPlacementContainer blockEntity && blockEntity.getProvidedPositions(layer).contains(position);
+        return pos.getBlockState().isAir() || pos.getBlockEntity() instanceof IHotpotPlacementContainer blockEntity && blockEntity.getProvidedPositions(layer, pos).contains(position);
     }
 }

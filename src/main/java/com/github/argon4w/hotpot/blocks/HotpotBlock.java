@@ -6,7 +6,6 @@ import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityClientTicker;
 import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -14,7 +13,6 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -56,8 +54,8 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     public static final BooleanProperty SEPARATOR_WEST = BooleanProperty.create("separator_west");
     public static final BooleanProperty HOTPOT_LIT = BooleanProperty.create("hotpot_lit");
 
-    private final VoxelShape[] shapesByIndex = makeShapes();
-    private final Object2IntMap<BlockState> stateToIndex = new Object2IntOpenHashMap<>();
+    private static final VoxelShape[] SHAPES_BY_INDEX = makeShapes();
+    private static final Object2IntMap<BlockState> STATE_TO_INDEX = new Object2IntOpenHashMap<>();
 
     public HotpotBlock() {
         super(Properties.of()
@@ -87,7 +85,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         );
     }
 
-    private VoxelShape[] makeShapes() {
+    private static VoxelShape[] makeShapes() {
         VoxelShape base = box(0, 0, 0, 16, 8, 16);
         VoxelShape south = box(0, 8, 15, 16, 16, 16); //south(2^0)
         VoxelShape west = box(0, 8, 0, 1, 16, 16); //west(2^1)
@@ -166,7 +164,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
 
     @SuppressWarnings("deprecation")
     private int getShapeIndex(BlockState state) {
-        return stateToIndex.computeIntIfAbsent(state, blockState -> {
+        return STATE_TO_INDEX.computeIntIfAbsent(state, blockState -> {
             int index = 0;
 
             index = blockState.getValue(SOUTH) ? index : index | indexFor(Direction.SOUTH);
@@ -248,7 +246,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     @Override
     @SuppressWarnings("deprecation")
     public VoxelShape getCollisionShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
-        return shapesByIndex[getShapeIndex(state)];
+        return SHAPES_BY_INDEX[getShapeIndex(state)];
     }
 
     @Nullable
