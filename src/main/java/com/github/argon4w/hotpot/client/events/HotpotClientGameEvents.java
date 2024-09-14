@@ -7,9 +7,7 @@ import com.mojang.math.Transformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
@@ -31,7 +29,6 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
 import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -60,13 +57,13 @@ public class HotpotClientGameEvents {
                 context.getPoseStack().pushPose();
                 context.getPoseStack().translate(pos.getX() - startPos.getX(), pos.getY() - startPos.getY(), pos.getZ() - startPos.getZ());
 
-                renderer.renderSectionGeometry(context, new PoseStack(), pos, (model, stack, renderType, overlay, modelData) -> LightPipelineAwareModelBlockRenderer.render(context.getOrCreateChunkBuffer(renderType), context.getQuadLighter(true), context.getRegion(), new RotatedBakedModel(model, QuadTransformers.applying(new Transformation(stack.last().pose()))), region.getBlockState(pos), pos, context.getPoseStack(), false, RANDOM_SOURCE, 42L, overlay, modelData, renderType));
+                renderer.renderSectionGeometry(context, new PoseStack(), pos, (model, stack, renderType, overlay, modelData) -> LightPipelineAwareModelBlockRenderer.render(context.getOrCreateChunkBuffer(renderType), context.getQuadLighter(true), context.getRegion(), new TransformedBakedModel(model, QuadTransformers.applying(new Transformation(stack.last().pose()))), region.getBlockState(pos), pos, context.getPoseStack(), false, RANDOM_SOURCE, 42L, overlay, modelData, renderType));
                 context.getPoseStack().popPose();
             }
         });
     }
 
-    public record RotatedBakedModel(BakedModel model, IQuadTransformer transformer) implements BakedModel {
+    public record TransformedBakedModel(BakedModel model, IQuadTransformer transformer) implements BakedModel {
         @Override
         public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
             return model.getQuads(state, side, rand).stream().map(transformer::process).toList();
@@ -124,7 +121,7 @@ public class HotpotClientGameEvents {
 
         @Override
         public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
-            return new RotatedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformer);
+            return new TransformedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformer);
         }
 
         @Override
@@ -139,7 +136,7 @@ public class HotpotClientGameEvents {
 
         @Override
         public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
-            return model.getRenderPasses(itemStack, fabulous).stream().<BakedModel>map(model -> new RotatedBakedModel(model, transformer)).toList();
+            return model.getRenderPasses(itemStack, fabulous).stream().<BakedModel>map(model -> new TransformedBakedModel(model, transformer)).toList();
         }
     };
 }
