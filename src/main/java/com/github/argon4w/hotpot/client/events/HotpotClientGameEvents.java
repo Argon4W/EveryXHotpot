@@ -57,13 +57,17 @@ public class HotpotClientGameEvents {
                 context.getPoseStack().pushPose();
                 context.getPoseStack().translate(pos.getX() - startPos.getX(), pos.getY() - startPos.getY(), pos.getZ() - startPos.getZ());
 
-                renderer.renderSectionGeometry(context, new PoseStack(), pos, (model, stack, renderType, overlay, modelData) -> LightPipelineAwareModelBlockRenderer.render(context.getOrCreateChunkBuffer(renderType), context.getQuadLighter(true), context.getRegion(), new TransformedBakedModel(model, QuadTransformers.applying(new Transformation(stack.last().pose()))), region.getBlockState(pos), pos, context.getPoseStack(), false, RANDOM_SOURCE, 42L, overlay, modelData, renderType));
+                renderer.renderSectionGeometry(context, new PoseStack(), pos, (model, stack, renderType, overlay, modelData) -> LightPipelineAwareModelBlockRenderer.render(context.getOrCreateChunkBuffer(renderType), context.getQuadLighter(true), context.getRegion(), new TransformedBakedModel(model, stack), region.getBlockState(pos), pos, context.getPoseStack(), false, RANDOM_SOURCE, 42L, overlay, modelData, renderType));
                 context.getPoseStack().popPose();
             }
         });
     }
 
     public record TransformedBakedModel(BakedModel model, IQuadTransformer transformer) implements BakedModel {
+        public TransformedBakedModel(BakedModel model, PoseStack poseStack) {
+            this(model, QuadTransformers.applying(new Transformation(poseStack.last().pose())));
+        }
+
         @Override
         public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
             return model.getQuads(state, side, rand).stream().map(transformer::process).toList();
