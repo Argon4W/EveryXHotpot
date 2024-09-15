@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
@@ -12,12 +12,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, LevelBlockPos pos) {
+    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
         if (!(placement instanceof HotpotPlacedPaperBowl placedPaperBowl)) {
             return;
         }
@@ -44,5 +46,10 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
 
             poseStack.popPose();
         }
+    }
+
+    @Override
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
+
     }
 }

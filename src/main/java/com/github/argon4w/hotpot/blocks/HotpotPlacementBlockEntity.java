@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -96,7 +97,7 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     }
 
     @Override
-    public void place(IHotpotPlacement placement, int pos, int layer) {
+    public void place(IHotpotPlacement placement, int position, int layer, LevelBlockPos pos) {
         data.placements.add(placement);
         markDataChanged();
     }
@@ -144,6 +145,17 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     @Override
     public PartialData getPartialData(HolderLookup.Provider registryAccess) {
         return new PartialData(contentChanged ? Optional.of(data.placements) : Optional.empty(), data.infiniteContent, data.canBeRemoved);
+    }
+
+    @Override
+    public Data onFullDataUpdate(LevelBlockPos pos, Data data) {
+        pos.markAndNotifyClient();
+        return data;
+    }
+
+    @Override
+    public Data onFullDataUpdate(Data data) {
+        return data;
     }
 
     @Override

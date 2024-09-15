@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedNapkinHolder;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
@@ -11,14 +11,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import org.joml.Math;
+
+import java.util.Objects;
 
 public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, LevelBlockPos pos) {
+    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
         if (!(placement instanceof HotpotPlacedNapkinHolder napkinHolder)) {
             return;
         }
@@ -30,7 +34,7 @@ public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRendere
 
         int color = DyedItemColor.getOrDefault(napkinHolder.getNapkinHolderItemSlot().getItemStack(), -1);
 
-        long posHashCode = pos.pos() != null ? pos.pos().hashCode() : 1L;
+        long posHashCode = Objects.hashCode(pos);
         long randomSeed = color * napkinHolder.getPosition() * posHashCode + napkinItemSlot.getItemStack().getCount() + 42L;
 
         RandomSource randomSource = RandomSource.create();
@@ -49,5 +53,10 @@ public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRendere
         context.getItemRenderer().renderStatic(napkinHolder.getNapkinHolderItemStack(), ItemDisplayContext.NONE, combinedLight, combinedOverlay, poseStack, bufferSource, null, 0);
 
         poseStack.popPose();
+    }
+
+    @Override
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
+
     }
 }

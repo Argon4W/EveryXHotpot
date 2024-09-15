@@ -8,6 +8,7 @@ import com.github.argon4w.hotpot.placements.coords.HotpotPlacementCoords;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.IHotpotPlacementSerializer;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -151,7 +152,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         }
 
         T placement = serializer.get(positions, direction);
-        container.place(placement, position, layer);
+        container.place(placement, position, layer, pos);
 
         loadPlacement(container, pos, placement, itemStack);
         return true;

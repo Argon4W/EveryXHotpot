@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
-public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<HotpotTestBenchBlockEntity>, ISectionGeometryBLockEntityRenderer {
+public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<HotpotTestBenchBlockEntity>, ISectionGeometryBLockEntityRenderer<HotpotTestBenchBlockEntity> {
     public HotpotTestBenchBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
 
     }
@@ -26,14 +26,15 @@ public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<H
     }
 
     @Override
-    public void renderSectionGeometry(AddSectionGeometryEvent.SectionRenderingContext context, PoseStack stack, BlockPos blockPos, ModelRenderer modelRenderer) {
+    public void renderSectionGeometry(HotpotTestBenchBlockEntity blockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack stack, BlockPos blockPos, ModelRenderer modelRenderer) {
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIRT.defaultBlockState());
 
         stack.pushPose();
 
         stack.translate(0.5, 0.5, 0.5);
-        stack.mulPose(blockPos.getY() % 2 == 0 ? Axis.YP.rotationDegrees(0) : Axis.YP.rotationDegrees(90));
+        stack.mulPose(Axis.YP.rotationDegrees(45));
         stack.translate(-0.5, -0.5, -0.5);
+        stack.translate(0, 0.5, 0);
 
         modelRenderer.renderModel(model, stack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
 

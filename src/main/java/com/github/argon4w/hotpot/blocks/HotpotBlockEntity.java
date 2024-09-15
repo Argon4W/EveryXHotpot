@@ -94,6 +94,16 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     }
 
     @Override
+    public Data onFullDataUpdate(Data data) {
+        return data;
+    }
+
+    @Override
+    public Data onFullDataUpdate(LevelBlockPos pos, Data data) {
+        return data;
+    }
+
+    @Override
     public void onPartialDataUpdated() {
         contentChanged = false;
     }

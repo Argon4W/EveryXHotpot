@@ -94,7 +94,7 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     }
 
     @Override
-    public void place(IHotpotPlacement placement, int pos, int layer) {
+    public void place(IHotpotPlacement placement, int position, int layer, LevelBlockPos pos) {
         List<IHotpotPlacement> placements = getPlacements(layer);
         placements.add(placement);
         markDataChanged();
@@ -143,6 +143,17 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     @Override
     public PartialData getPartialData(HolderLookup.Provider registryAccess) {
         return new PartialData(contentChanged ? Optional.of(data.placements1) : Optional.empty(), contentChanged ? Optional.of(data.placements2) : Optional.empty(), data.infiniteContent, data.canBeRemoved);
+    }
+
+    @Override
+    public Data onFullDataUpdate(LevelBlockPos pos, Data data) {
+        pos.markAndNotifyClient();
+        return data;
+    }
+
+    @Override
+    public Data onFullDataUpdate(Data data) {
+        return data;
     }
 
     @Override

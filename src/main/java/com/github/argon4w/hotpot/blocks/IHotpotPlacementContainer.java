@@ -12,5 +12,5 @@ public interface IHotpotPlacementContainer extends IHotpotTablewareContainer {
     List<Integer> getProvidedPositions(int layer, LevelBlockPos pos);
     List<Integer> getOccupiedPositions(int layer, LevelBlockPos pos);
     int getLayer(Vec3 vec3);
-    void place(IHotpotPlacement placement, int position, int layer);
+    void place(IHotpotPlacement placement, int position, int layer, LevelBlockPos pos);
 }

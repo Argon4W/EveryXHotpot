@@ -28,6 +28,7 @@ import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
 import net.neoforged.neoforge.common.util.TriState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -49,14 +50,19 @@ public class HotpotClientGameEvents {
                     continue;
                 }
 
-                if (!(Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(blockEntity) instanceof ISectionGeometryBLockEntityRenderer renderer)) {
+                if (!(Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(blockEntity) instanceof ISectionGeometryBLockEntityRenderer<?> renderer)) {
                     continue;
                 }
 
                 context.getPoseStack().pushPose();
                 context.getPoseStack().translate(pos.getX() - startPos.getX(), pos.getY() - startPos.getY(), pos.getZ() - startPos.getZ());
 
-                renderer.renderSectionGeometry(context, new PoseStack(), pos, new SectionGeometryModelRenderer(context, pos));
+                try {
+                    renderer.renderSectionGeometry(cast(blockEntity), context, new PoseStack(), pos, new SectionGeometryModelRenderer(context, pos));
+                } catch (ClassCastException ignored) {
+
+                }
+
                 context.getPoseStack().popPose();
             }
         });
@@ -75,18 +81,21 @@ public class HotpotClientGameEvents {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public record TransformedBakedModel(BakedModel model, IQuadTransformer transformer) implements BakedModel {
         public TransformedBakedModel(BakedModel model, PoseStack poseStack) {
             this(model, QuadTransformers.applying(new Transformation(poseStack.last().pose())));
         }
 
+        @NotNull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand) {
             return model.getQuads(state, side, rand).stream().map(transformer::process).toList();
         }
 
+        @NotNull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
             return model.getQuads(state, side, rand, data, renderType).stream().map(transformer::process).toList();
         }
 
@@ -95,8 +104,9 @@ public class HotpotClientGameEvents {
             return model.useAmbientOcclusion();
         }
 
+        @NotNull
         @Override
-        public TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+        public TriState useAmbientOcclusion(@NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
             return model.useAmbientOcclusion(state, data, renderType);
         }
 
@@ -115,44 +125,57 @@ public class HotpotClientGameEvents {
             return model.isCustomRenderer();
         }
 
+        @NotNull
         @Override
         public TextureAtlasSprite getParticleIcon() {
             return model.getParticleIcon();
         }
 
+        @NotNull
         @Override
-        public TextureAtlasSprite getParticleIcon(ModelData data) {
+        public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
             return model.getParticleIcon(data);
         }
 
+        @NotNull
         @Override
         public ItemOverrides getOverrides() {
             return model.getOverrides();
         }
 
+        @NotNull
         @Override
-        public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
+        public ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
             return model.getModelData(level, pos, state, modelData);
         }
 
+        @NotNull
         @Override
-        public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        public BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
             return new TransformedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformer);
         }
 
+        @NotNull
         @Override
-        public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
+        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
             return model.getRenderTypes(state, rand, data);
         }
 
+        @NotNull
         @Override
-        public List<RenderType> getRenderTypes(ItemStack itemStack, boolean fabulous) {
+        public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
             return model.getRenderTypes(itemStack, fabulous);
         }
 
+        @NotNull
         @Override
-        public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
-            return model.getRenderPasses(itemStack, fabulous).stream().<BakedModel>map(model -> new TransformedBakedModel(model, transformer)).toList();
+        public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
+            return model.getRenderPasses(itemStack, fabulous);
         }
-    };
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends BlockEntity> T cast(BlockEntity o) {
+        return (T) o;
+    }
 }

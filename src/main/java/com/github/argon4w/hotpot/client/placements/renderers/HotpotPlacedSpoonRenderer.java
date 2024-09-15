@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
@@ -11,12 +11,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, LevelBlockPos pos) {
+    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
         if (!(placement instanceof HotpotPlacedSpoon placedSpoon)) {
             return;
         }
@@ -46,5 +47,10 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
         context.getItemRenderer().renderStatic(null, placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
 
         poseStack.popPose();
+    }
+
+    @Override
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
+
     }
 }

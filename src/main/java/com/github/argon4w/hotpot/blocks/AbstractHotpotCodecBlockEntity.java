@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.blocks;
 
+import com.github.argon4w.hotpot.LevelBlockPos;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -29,6 +30,8 @@ public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpot
     public abstract T getData();
     public abstract void setData(T data);
     public abstract BlockEntity getBlockEntity();
+    public abstract T onFullDataUpdate(T data);
+    public abstract T onFullDataUpdate(LevelBlockPos pos, T data);
 
     public Codec<Either<T, P>> getCodec() {
         return Codec.either(getFullCodec(), getPartialCodec());
@@ -36,7 +39,7 @@ public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpot
 
     @Override
     protected void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        setData(getCodec().parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), compoundTag.getCompound("value")).resultOrPartial().map(either -> either.map(Function.identity(), partial -> partial.update(getData()))).orElse(getDefaultData()));
+        setData(getCodec().parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), compoundTag.getCompound("value")).resultOrPartial().map(either -> either.map(hasLevel() ? data -> onFullDataUpdate(new LevelBlockPos(getLevel(), getBlockPos()), data) : this::onFullDataUpdate, partial -> partial.update(getData()))).orElse(getDefaultData()));
     }
 
     @Override

@@ -86,6 +86,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         level.markAndNotifyBlock(pos, getChunkAt(), getBlockState(), getBlockState(), 3, 512);
     }
 
+    public void markAndNotifyClient() {
+        level.markAndNotifyBlock(pos, getChunkAt(), getBlockState(), getBlockState(), 2, 512);
+    }
+
     public void playSound(Holder<SoundEvent> soundEventHolder) {
         playSound(soundEventHolder, 1.0f, 1.0f);
     }
