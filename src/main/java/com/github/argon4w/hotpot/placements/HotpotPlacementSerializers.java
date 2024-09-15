@@ -1,13 +1,9 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.IndexHolder;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -20,7 +16,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 public class HotpotPlacementSerializers {
     public static final Map<Integer, Direction> POS_TO_DIRECTION = Map.of(

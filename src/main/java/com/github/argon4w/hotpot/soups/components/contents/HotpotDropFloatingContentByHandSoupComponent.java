@@ -6,7 +6,6 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
-import net.minecraft.world.item.ItemStack;
 
 public class HotpotDropFloatingContentByHandSoupComponent extends AbstractHotpotSoupComponent {
     @Override

@@ -4,7 +4,6 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;

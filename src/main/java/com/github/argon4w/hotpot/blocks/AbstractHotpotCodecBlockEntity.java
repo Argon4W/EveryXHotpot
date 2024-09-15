@@ -15,8 +15,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.function.Function;
-
 public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpotCodecBlockEntity.PartialData<T>> extends BlockEntity {
     public AbstractHotpotCodecBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);

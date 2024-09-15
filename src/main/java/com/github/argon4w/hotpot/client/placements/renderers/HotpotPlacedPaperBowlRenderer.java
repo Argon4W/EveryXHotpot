@@ -6,8 +6,8 @@ import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRender
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
-import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;

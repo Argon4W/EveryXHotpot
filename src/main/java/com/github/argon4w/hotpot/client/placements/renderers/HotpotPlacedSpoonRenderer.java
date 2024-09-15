@@ -4,13 +4,14 @@ import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
+import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
-import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
@@ -18,6 +19,11 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
     @Override
     public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
+
+    }
+
+    @Override
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
         if (!(placement instanceof HotpotPlacedSpoon placedSpoon)) {
             return;
         }
@@ -44,13 +50,8 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees(137));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        context.getItemRenderer().renderStatic(null, placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+        modelRenderer.renderSimpleItem(placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, poseStack, OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
-    }
-
-    @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
-
     }
 }

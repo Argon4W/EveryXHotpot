@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.client.blocks;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotPlacementRackBlockEntity;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,7 +8,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 

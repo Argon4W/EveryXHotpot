@@ -3,7 +3,6 @@ package com.github.argon4w.hotpot;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;

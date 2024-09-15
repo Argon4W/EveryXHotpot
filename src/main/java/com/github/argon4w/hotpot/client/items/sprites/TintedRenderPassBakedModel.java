@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
 public record TintedRenderPassBakedModel(BakedModel model, HotpotColor color) implements BakedModel {

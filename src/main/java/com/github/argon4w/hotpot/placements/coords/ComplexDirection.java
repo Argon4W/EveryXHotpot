@@ -1,6 +1,5 @@
 package com.github.argon4w.hotpot.placements.coords;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Direction;
@@ -10,12 +9,10 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
-import java.util.stream.Stream;
 
 public enum ComplexDirection implements StringRepresentable {
     IDENTITY("identity", 0),

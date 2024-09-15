@@ -2,8 +2,8 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
