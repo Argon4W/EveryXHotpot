@@ -42,11 +42,13 @@ public class HotpotClientGameEvents {
 
     @SubscribeEvent
     public static void addSectionGeometry(AddSectionGeometryEvent event) {
-        event.addRenderer(context -> {
-            BlockPos startPos = event.getSectionOrigin();
-            BlockPos endPos = startPos.offset(15, 15, 15);
+        event.addRenderer(new AdditionalSectionGeometryBlockEntityRenderers(event.getSectionOrigin().immutable()));
+    }
 
-            for (BlockPos pos : BlockPos.betweenClosed(startPos, endPos)) {
+    public record AdditionalSectionGeometryBlockEntityRenderers(BlockPos regionOrigin) implements AddSectionGeometryEvent.AdditionalSectionRenderer {
+        @Override
+        public void render(AddSectionGeometryEvent.SectionRenderingContext context) {
+            for (BlockPos pos : BlockPos.betweenClosed(regionOrigin, regionOrigin.offset(15, 15, 15))) {
                 BlockEntity blockEntity = context.getRegion().getBlockEntity(pos);
 
                 if (blockEntity == null) {
@@ -58,7 +60,7 @@ public class HotpotClientGameEvents {
                 }
 
                 context.getPoseStack().pushPose();
-                context.getPoseStack().translate(pos.getX() - startPos.getX(), pos.getY() - startPos.getY(), pos.getZ() - startPos.getZ());
+                context.getPoseStack().translate(pos.getX() - regionOrigin.getX(), pos.getY() - regionOrigin.getY(), pos.getZ() - regionOrigin.getZ());
 
                 try {
                     renderer.renderSectionGeometry(cast(blockEntity), context, new PoseStack(), pos, new SectionGeometryModelRenderer(RANDOM_SOURCE, context, pos));
@@ -68,7 +70,7 @@ public class HotpotClientGameEvents {
 
                 context.getPoseStack().popPose();
             }
-        });
+        }
     }
 
     @SuppressWarnings("UnstableApiUsage")
