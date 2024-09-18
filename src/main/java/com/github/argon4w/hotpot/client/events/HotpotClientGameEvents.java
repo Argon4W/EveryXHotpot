@@ -38,8 +38,6 @@ import java.util.List;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
 public class HotpotClientGameEvents {
-    public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
-
     @SubscribeEvent
     public static void addSectionGeometry(AddSectionGeometryEvent event) {
         event.addRenderer(new AdditionalSectionGeometryBlockEntityRenderers(event.getSectionOrigin().immutable()));
@@ -63,7 +61,7 @@ public class HotpotClientGameEvents {
                 context.getPoseStack().translate(pos.getX() - regionOrigin.getX(), pos.getY() - regionOrigin.getY(), pos.getZ() - regionOrigin.getZ());
 
                 try {
-                    renderer.renderSectionGeometry(cast(blockEntity), context, new PoseStack(), pos, new SectionGeometryModelRenderer(RANDOM_SOURCE, context, pos));
+                    renderer.renderSectionGeometry(cast(blockEntity), context, new PoseStack(), pos, new SectionGeometryModelRenderer(context, pos));
                 } catch (ClassCastException ignored) {
 
                 }
@@ -75,6 +73,10 @@ public class HotpotClientGameEvents {
 
     @SuppressWarnings("UnstableApiUsage")
     public record SectionGeometryModelRenderer(RandomSource randomSource, AddSectionGeometryEvent.SectionRenderingContext context, BlockPos pos) implements ISectionGeometryBLockEntityRenderer.ModelRenderer {
+        public SectionGeometryModelRenderer(AddSectionGeometryEvent.SectionRenderingContext context, BlockPos pos) {
+            this(RandomSource.createNewThreadLocalInstance(), context, pos);
+        }
+
         @Override
         public void renderModel(BakedModel model, PoseStack stack, RenderType renderType, int overlay, ModelData modelData) {
             LightPipelineAwareModelBlockRenderer.render(context.getOrCreateChunkBuffer(renderType), context.getQuadLighter(true), context.getRegion(), new TransformedBakedModel(model, stack), context.getRegion().getBlockState(pos), pos, context.getPoseStack(), false, randomSource, 42L, overlay, modelData, renderType);
