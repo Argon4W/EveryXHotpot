@@ -9,12 +9,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
 
 public record SimpleModelBaker(Map<ModelResourceLocation, BakedModel> bakedModels, Map<ResourceLocation, UnbakedModel> models, UnbakedModel missingModel, Function<Material, TextureAtlasSprite> spriteGetter, IHotpotSpriteProcessor processor) implements ModelBaker {
-    public static final ArrayList<ResourceLocation> VALID_PROCESSED_SPRITES = new ArrayList<>();
+    public static final HashSet<ResourceLocation> VALID_PROCESSED_SPRITES = new HashSet<>();
 
     @NotNull
     @Override
