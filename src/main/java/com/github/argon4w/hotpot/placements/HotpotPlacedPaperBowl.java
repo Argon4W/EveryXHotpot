@@ -76,7 +76,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
             return ItemStack.EMPTY;
         }
 
-        ItemStack itemStack = itemStacks.getFirst();
+        ItemStack itemStack = itemStacks.getFirst().copy();
 
         if (consume) {
             itemStacks.removeFirst();
