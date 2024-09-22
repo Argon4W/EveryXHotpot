@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.blocks.*;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
+import com.github.argon4w.hotpot.client.sections.HotpotAdditionalSectionGeometryBlockEntityRenderers;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.client.soups.renderers.IHotpotSoupCustomElementRenderer;
@@ -53,6 +54,7 @@ public class HotpotClientModEvents {
     @SubscribeEvent
     public static void onBakingCompleted(ModelEvent.BakingCompleted event) {
         HotpotSoupRendererConfigManager.getAllSoupRendererConfigs().stream().map(HotpotSoupRendererConfig::customElementRenderers).flatMap(Collection::stream).forEach(IHotpotSoupCustomElementRenderer::prepareModel);
+        HotpotAdditionalSectionGeometryBlockEntityRenderers.CACHE.clear();
     }
 
     @SubscribeEvent

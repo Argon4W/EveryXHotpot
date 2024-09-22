@@ -113,6 +113,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         for (int i = 4; i < bowlSkewers.size(); i ++) {
             double xRotation = 60.0f + ((i - 4) / 3.0f) * 5.0f;
             double yRotation = ((i - 4) / 3.0f) * 90.0f;
+
             int skewerIndex = bowlSkewers.size() - i - 1;
             ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
 
@@ -137,10 +138,11 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             ItemStack bowlItemStack = bowlItems.get(contentIndex);
 
             double xPosition = 0.5 + (even1 ? -1 : 1) * 0.125;
-            double zMovement = 0.06 + i * 0.11875;
-            double xRotation = 18.0f - (i / 8.0) * 16.0;
+            double zMovement = 0.09 + i * 0.117;
+            double xRotation = 18.0f - (i / 8.0) * 18.0;
             double yRotation = even1 ? 5.0 : -5.0;
             double zRotation = (even1 ? 0 : 180) + (even2 ? -20.0 : 20.0);
+            double zScale = 1.97;
 
             poseStack.pushPose();
 
@@ -149,7 +151,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.mulPose(Axis.YP.rotationDegrees((float) yRotation));
             poseStack.mulPose(Axis.XN.rotationDegrees((float) xRotation));
             poseStack.mulPose(Axis.ZP.rotationDegrees((float) zRotation));
-            poseStack.scale(0.8f, 0.8f, 0.8f);
+            poseStack.scale(0.8f, 0.8f, (float) zScale);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(null, bowlItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
             poseStack.popPose();

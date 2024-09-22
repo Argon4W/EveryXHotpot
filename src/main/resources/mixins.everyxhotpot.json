@@ -6,17 +6,18 @@
   "refmap": "mixins.everyxhotpot.refmap.json",
   "client": [
     "BreakingItemParticleMixin",
-    "ItemRendererMixin",
+    "sprites.ItemRendererMixin",
     "MinecraftMixin",
-    "ModelBakeryMixin",
-    "SodiumBakedModelEncoderMixin",
-    "SpriteLoaderMixin"
+    "sprites.ModelBakeryMixin",
+    "sprites.SimpleBakedModelMixin",
+    "sprites.SpriteLoaderMixin",
+    "sprites.compat.SodiumBakedModelEncoderMixin"
   ],
   "mixins": [
-    "EntityMixin",
-    "IBlockStateExtensionMixin",
-    "LivingEntityMixin",
-    "NeutralMobMixin"
+    "effects.EntityMixin",
+    "effects.IBlockStateExtensionMixin",
+    "effects.LivingEntityMixin",
+    "effects.NeutralMobMixin"
   ],
   "injectors": {
     "defaultRequire": 1

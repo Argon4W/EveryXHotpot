@@ -13,13 +13,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
-public interface ISectionGeometryBLockEntityRenderer<T extends BlockEntity> {
+public interface IHotpotSectionGeometryBLockEntityRenderer<T extends BlockEntity> {
     void renderSectionGeometry(T blockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack poseStack, BlockPos pos, ModelRenderer modelRenderer);
 
     interface ModelRenderer {
-        void renderModel(BakedModel model, PoseStack stack, RenderType renderType, int overlay, ModelData modelData);
-        void renderModel(BakedModel model, BlockState blockState, PoseStack stack, RenderType renderType, int overlay, ModelData modelData);
-        void renderSimpleItem(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, int overlay);
-        void renderSimpleItem(Level level, LivingEntity entity, int seed, ItemDisplayContext displayContext, PoseStack poseStack, int overlay, ItemStack itemStack);
+        void renderModel(BakedModel model, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData);
+        void renderModel(BakedModel model, BlockState blockState, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData);
+        void renderItem(ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, int overlay);
+        void renderItem(Level level, LivingEntity entity, int seed, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, int overlay);
     }
 }

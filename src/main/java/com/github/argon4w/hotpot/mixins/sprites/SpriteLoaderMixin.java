@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.mixins;
+package com.github.argon4w.hotpot.mixins.sprites;
 
 import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotEmptySpriteProcessor;
@@ -26,8 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Mixin(SpriteLoader.class)
 public abstract class SpriteLoaderMixin {
-    @Shadow
-    private @Final ResourceLocation location;
+    @Shadow @Final private ResourceLocation location;
 
     @ModifyVariable(method = "stitch", at = @At("HEAD"), argsOnly = true, index = 1)
     private List<SpriteContents> stitch(List<SpriteContents> contents) {

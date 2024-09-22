@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRenderer;
+import com.github.argon4w.hotpot.client.blocks.IHotpotSectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
@@ -23,7 +23,7 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
     }
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, IHotpotSectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
         if (!(placement instanceof HotpotPlacedSpoon placedSpoon)) {
             return;
         }
@@ -50,7 +50,7 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees(137));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        modelRenderer.renderSimpleItem(placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, poseStack, OverlayTexture.NO_OVERLAY);
+        modelRenderer.renderItem(placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, false, poseStack, OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
     }

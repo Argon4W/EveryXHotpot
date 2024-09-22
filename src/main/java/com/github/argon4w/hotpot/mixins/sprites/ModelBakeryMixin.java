@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.mixins;
+package com.github.argon4w.hotpot.mixins.sprites;
 
 import com.github.argon4w.hotpot.client.items.sprites.OverlayBakedModel;
 import com.github.argon4w.hotpot.client.items.sprites.OverlayModelMap;
@@ -19,17 +19,11 @@ import java.util.Map;
 
 @Mixin(ModelBakery.class)
 public abstract class ModelBakeryMixin {
-    @Shadow
-    private @Final Map<ModelResourceLocation, BakedModel> bakedTopLevelModels;
-    @Shadow
-    private @Final Map<ModelResourceLocation, UnbakedModel> topLevelModels;
-    @Shadow
-    public @Final static BlockModel GENERATION_MARKER;
-    @Shadow
-    private @Final Map<ResourceLocation, UnbakedModel> unbakedCache;
-
-    @Shadow
-    private @Final UnbakedModel missingModel;
+    @Shadow @Final private Map<ModelResourceLocation, BakedModel> bakedTopLevelModels;
+    @Shadow @Final private Map<ModelResourceLocation, UnbakedModel> topLevelModels;
+    @Shadow @Final public static BlockModel GENERATION_MARKER;
+    @Shadow @Final private Map<ResourceLocation, UnbakedModel> unbakedCache;
+    @Shadow @Final private UnbakedModel missingModel;
 
     @Inject(method = "bakeModels", at = @At("RETURN"))
     public void bakeModels(ModelBakery.TextureGetter atlasSpriteGetter, CallbackInfo ci) {

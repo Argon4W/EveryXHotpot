@@ -1,19 +1,5 @@
 {
   "soup_model_resource_location": "everyxhotpot:soup/hotpot_cheese_soup",
-  "custom_elements_renderers": [
-    {
-      "type": "everyxhotpot:bubble_renderer",
-      "spread": 0.35,
-      "max_scale": 0.6,
-      "amount": 55,
-      "offset_range": 5,
-      "max_time": 10.0,
-      "min_y": 0.5,
-      "max_y": 0.525,
-      "bubble_model_resource_location": "everyxhotpot:soup/hotpot_cheese_soup_bubble",
-      "should_render_in_bowl": false
-    }
-  ],
   "sprite_config": {
     "processor_resource_location": "everyxhotpot:heavy_sauced_processor",
     "color": {

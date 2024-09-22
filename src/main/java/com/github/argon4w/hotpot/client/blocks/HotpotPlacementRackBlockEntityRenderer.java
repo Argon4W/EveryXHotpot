@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
-public class HotpotPlacementRackBlockEntityRenderer implements BlockEntityRenderer<HotpotPlacementRackBlockEntity>, ISectionGeometryBLockEntityRenderer<HotpotPlacementRackBlockEntity> {
+public class HotpotPlacementRackBlockEntityRenderer implements BlockEntityRenderer<HotpotPlacementRackBlockEntity>, IHotpotSectionGeometryBLockEntityRenderer<HotpotPlacementRackBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
 
     public HotpotPlacementRackBlockEntityRenderer(BlockEntityRendererProvider.Context context) {

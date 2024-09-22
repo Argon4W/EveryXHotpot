@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.client.blocks.ISectionGeometryBLockEntityRenderer;
+import com.github.argon4w.hotpot.client.blocks.IHotpotSectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
@@ -63,7 +63,7 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
     }
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, IHotpotSectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
 
     }
 }

@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.mixins;
+package com.github.argon4w.hotpot.mixins.effects;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import net.minecraft.core.Holder;
