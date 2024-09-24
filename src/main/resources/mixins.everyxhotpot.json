@@ -9,7 +9,7 @@
     "sprites.ItemRendererMixin",
     "MinecraftMixin",
     "sprites.ModelBakeryMixin",
-    "sprites.SimpleBakedModelMixin",
+    "SimpleBakedModelMixin",
     "sprites.SpriteLoaderMixin",
     "sprites.compat.SodiumBakedModelEncoderMixin"
   ],

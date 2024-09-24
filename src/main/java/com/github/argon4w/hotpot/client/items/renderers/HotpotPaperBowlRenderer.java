@@ -200,6 +200,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
     @Override
     public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
-        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
+        //return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model"));
     }
 }

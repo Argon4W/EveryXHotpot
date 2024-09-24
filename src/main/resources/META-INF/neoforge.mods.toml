@@ -50,12 +50,11 @@ description='''
 无论大家的朋友在哪, 哪怕没办法见面, 都能在Minecraft里, 升起炉灶, 围在一桌
 与§l所有§r朋友, 在§l所有§r时间, 享受§l所有§r§m(甚至可以是荒诞的)§r美食, 一起开开心心地吃上火锅!
 
-Though it's a last year project for TeaCon2023 aiming to achieve the subject of "热闹",
+Though this is a last year project for TeaCon2023 aiming to achieve the subject of "热闹",
 it also shows some interesting correlations with the subject of "firendship" in the TeaCon2024.
 We sit together around a bubbling hotpot, enjoying and talking, promoting out friendship at the witness of floating vapour coming out from the hotpot.
 Even if you cannot get in touch with your friends in reality, we can connect each other together in Minecraft,
-enjoying the hotpot with this Minecraft Mod, §lEVERAYone, EVERYthing, EVERYtime.
-'''
+enjoying the hotpot with this Minecraft Mod, §lEVERAYone, EVERYthing, EVERYtime.'''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]
