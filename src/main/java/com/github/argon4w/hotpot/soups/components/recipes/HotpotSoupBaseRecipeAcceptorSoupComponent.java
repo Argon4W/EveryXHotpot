@@ -44,7 +44,7 @@ public class HotpotSoupBaseRecipeAcceptorSoupComponent extends AbstractHotpotSou
         HotpotSoupBaseRecipe recipe = optional.get();
 
         HotpotItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
-        hotpotBlockEntity.setSoup(recipe.getResultSoup(), pos);
+        hotpotBlockEntity.setSoup(recipe.getResultSoup(pos.registryAccess()), pos);
         hotpotBlockEntity.setWaterLevel(recipe.getResultWaterLevel(), pos);
         pos.playSound(recipe.getSoundEvent());
 

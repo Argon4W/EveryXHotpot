@@ -7,11 +7,11 @@ import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -21,14 +21,14 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
-    private final Holder<HotpotComponentSoupType> targetSoupType;
+    private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
     private final Ingredient ingredient;
     private final ItemStack result;
     private final double experience;
     private final int cookingTime;
 
-    public HotpotSoupCookingRecipe(Holder<HotpotComponentSoupType> targetSoupType, Ingredient ingredient, ItemStack result, double experience, int cookingTime) {
-        this.targetSoupType = targetSoupType;
+    public HotpotSoupCookingRecipe(ResourceKey<HotpotComponentSoupType> targetSoupTypeKey, Ingredient ingredient, ItemStack result, double experience, int cookingTime) {
+        this.targetSoupTypeKey = targetSoupTypeKey;
         this.ingredient = ingredient;
         this.result = result;
         this.experience = experience;
@@ -37,7 +37,7 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
 
     @Override
     public boolean matches(HotpotRecipeInput input, Level level) {
-        return targetSoupType.equals(input.soup().soupTypeHolder()) && ingredient.test(input.itemStack());
+        return targetSoupTypeKey.equals(input.soup().soupTypeHolder().getKey()) && ingredient.test(input.itemStack());
     }
 
     @Override
@@ -65,8 +65,8 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
         return HotpotModEntry.HOTPOT_SOUP_COOKING_RECIPE_TYPE.get();
     }
 
-    public Holder<HotpotComponentSoupType> getTargetSoupType() {
-        return targetSoupType;
+    public ResourceKey<HotpotComponentSoupType> getTargetSoupTypeKey() {
+        return targetSoupTypeKey;
     }
 
     public Ingredient getIngredient() {
@@ -91,7 +91,7 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
 
         public static final MapCodec<HotpotSoupCookingRecipe> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("target_soup").forGetter(HotpotSoupCookingRecipe::getTargetSoupType),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupCookingRecipe::getTargetSoupTypeKey),
                         Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupCookingRecipe::getIngredient),
                         ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupCookingRecipe::getResult),
                         Codec.DOUBLE.optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE).forGetter(HotpotSoupCookingRecipe::getExperience),
@@ -101,7 +101,7 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupCookingRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
                 StreamCodec.composite(
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupCookingRecipe::getTargetSoupType,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupCookingRecipe::getTargetSoupTypeKey,
                         Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupCookingRecipe::getIngredient,
                         ItemStack.STREAM_CODEC, HotpotSoupCookingRecipe::getResult,
                         ByteBufCodecs.DOUBLE, HotpotSoupCookingRecipe::getExperience,

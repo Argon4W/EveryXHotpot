@@ -5,7 +5,6 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
-import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +30,7 @@ public class HotpotRemoveSoupWhenCrouchingSoupComponent extends AbstractHotpotSo
         }
 
         hotpotBlockEntity.onRemove(pos);
-        hotpotBlockEntity.setSoup(HotpotComponentSoupType.loadEmptySoup(), pos);
+        hotpotBlockEntity.setEmptySoup(pos);
 
         return IHotpotResult.blocked();
     }

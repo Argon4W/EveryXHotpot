@@ -11,6 +11,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -20,14 +21,14 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
-    private final Holder<HotpotComponentSoupType> targetSoupType;
+    private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
     private final float rechargeWaterLevel;
     private final Ingredient ingredient;
     private final ItemStack remainingItem;
     private final Holder<SoundEvent> soundEvent;
 
-    public HotpotSoupRechargeRecipe(Holder<HotpotComponentSoupType> targetSoupType, float rechargeWaterLevel, Ingredient ingredient, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
-        this.targetSoupType = targetSoupType;
+    public HotpotSoupRechargeRecipe(ResourceKey<HotpotComponentSoupType> targetSoupTypeKey, float rechargeWaterLevel, Ingredient ingredient, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
+        this.targetSoupTypeKey = targetSoupTypeKey;
         this.rechargeWaterLevel = rechargeWaterLevel;
         this.ingredient = ingredient;
         this.remainingItem = remainingItem;
@@ -36,15 +37,15 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
 
     @Override
     public boolean matches(HotpotRecipeInput container, Level level) {
-        return ingredient.test(container.itemStack()) && targetSoupType.equals(container.soup().soupTypeHolder());
+        return ingredient.test(container.itemStack()) && targetSoupTypeKey.equals(container.soup().soupTypeHolder().getKey());
     }
 
     public ItemStack getRemainingItem() {
         return remainingItem.copy();
     }
 
-    public Holder<HotpotComponentSoupType> getTargetSoupType() {
-        return targetSoupType;
+    public ResourceKey<HotpotComponentSoupType> getTargetSoupTypeKey() {
+        return targetSoupTypeKey;
     }
 
     public Holder<SoundEvent> getSoundEvent() {
@@ -72,7 +73,7 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
     public static class Serializer implements RecipeSerializer<HotpotSoupRechargeRecipe> {
         public static final MapCodec<HotpotSoupRechargeRecipe> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRechargeRecipe::getTargetSoupType),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRechargeRecipe::getTargetSoupTypeKey),
                         Codec.FLOAT.fieldOf("recharge_water_level").forGetter(HotpotSoupRechargeRecipe::getRechargeWaterLevel),
                         Ingredient.CODEC.fieldOf("ingredient").forGetter(HotpotSoupRechargeRecipe::getIngredient),
                         ItemStack.OPTIONAL_CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupRechargeRecipe::getRemainingItem),
@@ -82,7 +83,7 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRechargeRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
                 StreamCodec.composite(
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupRechargeRecipe::getTargetSoupType,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupRechargeRecipe::getTargetSoupTypeKey,
                         ByteBufCodecs.FLOAT, HotpotSoupRechargeRecipe::getRechargeWaterLevel,
                         Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupRechargeRecipe::getIngredient,
                         ItemStack.OPTIONAL_STREAM_CODEC, HotpotSoupRechargeRecipe::getRemainingItem,

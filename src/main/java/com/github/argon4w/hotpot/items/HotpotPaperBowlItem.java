@@ -10,8 +10,8 @@ import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -249,11 +249,11 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlSoupEmpty(ItemStack itemStack) {
-        return getPaperBowlSoupType(itemStack).equals(HotpotComponentSoupType.UNIT_TYPE_HOLDER);
+        return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY);
     }
 
-    public static Holder<HotpotComponentSoupType> getPaperBowlSoupType(ItemStack itemStack) {
-        return getDataComponent(itemStack).soupTypeHolder();
+    public static ResourceKey<HotpotComponentSoupType> getPaperBowlSoupTypeKey(ItemStack itemStack) {
+        return getDataComponent(itemStack).soupTypeKey();
     }
 
     public static HotpotSoupStatus getPaperBowlSoupStatus(ItemStack itemStack) {

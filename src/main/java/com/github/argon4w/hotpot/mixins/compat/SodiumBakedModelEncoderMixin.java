@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.mixins.sprites.compat;
+package com.github.argon4w.hotpot.mixins.compat;
 
 import com.github.argon4w.hotpot.client.items.sprites.TintedBakedQuad;
 import com.llamalad7.mixinextras.sugar.Local;

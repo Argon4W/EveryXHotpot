@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class HotpotElegantPlacementRackBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotElegantPlacementRackBlockEntity.Data, HotpotElegantPlacementRackBlockEntity.PartialData> implements Clearable, IHotpotPlacementContainer {
@@ -56,16 +57,15 @@ public class HotpotElegantPlacementRackBlockEntity extends AbstractHotpotCodecBl
     public static final List<Integer> PROVIDED_POSITIONS_RACK_WEST = List.of(5, 9);
     public static final List<Integer> PROVIDED_POSITIONS_RACK_EAST = List.of(6, 10);
 
-    public static final List<Integer> PROVIDED_POSITIONS_GROUND_SOUTH = List.of(9, 10);
-    public static final List<Integer> PROVIDED_POSITIONS_GROUND_NORTH = List.of(5, 6);
-    public static final List<Integer> PROVIDED_POSITIONS_GROUND_WEST = List.of(6, 10);
-    public static final List<Integer> PROVIDED_POSITIONS_GROUND_EAST = List.of(5, 9);
+    public static final List<Integer> PROVIDED_POSITIONS_GROUND_SOUTH = IntStream.range(0, 16).boxed().filter(Predicate.not(List.of(5, 6)::contains)).toList();
+    public static final List<Integer> PROVIDED_POSITIONS_GROUND_NORTH = IntStream.range(0, 16).boxed().filter(Predicate.not(List.of(9, 10)::contains)).toList();
+    public static final List<Integer> PROVIDED_POSITIONS_GROUND_WEST = IntStream.range(0, 16).boxed().filter(Predicate.not(List.of(5, 9)::contains)).toList();
+    public static final List<Integer> PROVIDED_POSITIONS_GROUND_EAST = IntStream.range(0, 16).boxed().filter(Predicate.not(List.of(6, 10)::contains)).toList();
 
     public static final List<List<Integer>> PROVIDED_POSITIONS_RACK_BY_INDEX = List.of(PROVIDED_POSITIONS_RACK_SOUTH, PROVIDED_POSITIONS_RACK_WEST, PROVIDED_POSITIONS_RACK_NORTH, PROVIDED_POSITIONS_RACK_EAST);
     public static final List<List<Integer>> PROVIDED_POSITIONS_GROUND_BY_INDEX = List.of(PROVIDED_POSITIONS_GROUND_SOUTH, PROVIDED_POSITIONS_GROUND_WEST, PROVIDED_POSITIONS_GROUND_NORTH, PROVIDED_POSITIONS_GROUND_EAST);
     private static final Object2IntMap<BlockState> STATE_TO_INDEX = new Object2IntOpenHashMap<>();
 
-    private Data data = getDefaultData();
     private boolean contentChanged = true;
 
     public HotpotElegantPlacementRackBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -153,7 +153,7 @@ public class HotpotElegantPlacementRackBlockEntity extends AbstractHotpotCodecBl
     }
 
     @Override
-    public Data getDefaultData() {
+    public Data getDefaultData(HolderLookup.Provider registryAccess) {
         return new Data(new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), false, true);
     }
 
@@ -186,16 +186,6 @@ public class HotpotElegantPlacementRackBlockEntity extends AbstractHotpotCodecBl
     @Override
     public void onPartialDataUpdated() {
         contentChanged = false;
-    }
-
-    @Override
-    public Data getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Data data) {
-        this.data = data;
     }
 
     @Override

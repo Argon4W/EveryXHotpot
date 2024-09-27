@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -23,15 +24,15 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import java.util.Optional;
 
 public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRecipe {
-    private final Holder<HotpotComponentSoupType> targetSoupType;
+    private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
     private final Ingredient ingredient;
     private final Holder<HotpotRandomMobEffectMap> mobEffectMapHolder;
     private final IHotpotRandomMobEffectKey.Wrapper mobEffectKey;
     private final ItemStack remainingItem;
     private final Holder<SoundEvent> soundEvent;
 
-    public HotpotSoupRandomMobEffectRecipe(Holder<HotpotComponentSoupType> targetSoupType, Ingredient ingredient, Holder<HotpotRandomMobEffectMap> mobEffectMap, IHotpotRandomMobEffectKey.Wrapper mobEffectKey, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
-        this.targetSoupType = targetSoupType;
+    public HotpotSoupRandomMobEffectRecipe(ResourceKey<HotpotComponentSoupType> targetSoupTypeKey, Ingredient ingredient, Holder<HotpotRandomMobEffectMap> mobEffectMap, IHotpotRandomMobEffectKey.Wrapper mobEffectKey, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
+        this.targetSoupTypeKey = targetSoupTypeKey;
         this.ingredient = ingredient;
         this.mobEffectMapHolder = mobEffectMap;
         this.mobEffectKey = mobEffectKey;
@@ -41,15 +42,15 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
 
     @Override
     public boolean matches(HotpotRecipeInput input, Level level) {
-        return targetSoupType.equals(input.soup().soupTypeHolder()) && ingredient.test(input.itemStack());
+        return targetSoupTypeKey.equals(input.soup().soupTypeHolder().getKey()) && ingredient.test(input.itemStack());
     }
 
     public Optional<MobEffectInstance> getMobEffect() {
         return mobEffectMapHolder.value().getEffect(mobEffectKey);
     }
 
-    public Holder<HotpotComponentSoupType> getTargetSoupType() {
-        return targetSoupType;
+    public ResourceKey<HotpotComponentSoupType> getTargetSoupTypeKey() {
+        return targetSoupTypeKey;
     }
 
     public Ingredient getIngredient() {
@@ -85,7 +86,7 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
     public static class Serializer implements RecipeSerializer<HotpotSoupRandomMobEffectRecipe> {
         public static final MapCodec<HotpotSoupRandomMobEffectRecipe> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRandomMobEffectRecipe::getTargetSoupType),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRandomMobEffectRecipe::getTargetSoupTypeKey),
                         Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupRandomMobEffectRecipe::getIngredient),
                         HotpotRandomMobEffectMap.HOLDER_CODEC.fieldOf("mob_effect_map").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder),
                         IHotpotRandomMobEffectKey.CODEC.fieldOf("mob_effect_key").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectKey),
@@ -96,7 +97,7 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRandomMobEffectRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
                 StreamCodec.composite(
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getTargetSoupType,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getTargetSoupTypeKey,
                         Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getIngredient,
                         HotpotRandomMobEffectMap.HOLDER_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder,
                         IHotpotRandomMobEffectKey.STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getMobEffectKey,

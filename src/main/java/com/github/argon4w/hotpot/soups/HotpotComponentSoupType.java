@@ -4,20 +4,16 @@ import com.github.argon4w.hotpot.EntryStreams;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.IndexHolder;
 import com.github.argon4w.hotpot.soups.components.*;
-import com.github.argon4w.hotpot.soups.components.recipes.HotpotSoupBaseRecipeAcceptorSoupComponent;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.RegistryFileCodec;
-import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -30,15 +26,16 @@ import java.util.function.Supplier;
 
 public class HotpotComponentSoupType {
     public static final ResourceKey<Registry<HotpotComponentSoupType>> COMPONENT_SOUP_TYPE_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup"));
-    public static final HotpotComponentSoupType UNIT_TYPE = new HotpotComponentSoupType(Map.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "base_soup_recipe_acceptor"), new IndexHolder<>(0, Holder.direct(HotpotSoupBaseRecipeAcceptorSoupComponent.TYPE))));
-    public static final Holder<HotpotComponentSoupType> UNIT_TYPE_HOLDER = Holder.direct(UNIT_TYPE);
-    public static final HotpotComponentSoup UNIT_SOUP = loadSoup(UNIT_TYPE_HOLDER);
+    public static final ResourceKey<HotpotComponentSoupType> EMPTY_SOUP_TYPE_KEY = ResourceKey.create(COMPONENT_SOUP_TYPE_REGISTRY_KEY, ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_soup"));
+
+    public static final Codec<ResourceKey<HotpotComponentSoupType>> KEY_CODEC = Codec.lazyInitialized(() -> ResourceKey.codec(COMPONENT_SOUP_TYPE_REGISTRY_KEY));
+    public static final StreamCodec<ByteBuf, ResourceKey<HotpotComponentSoupType>> KEY_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ResourceKey.streamCodec(COMPONENT_SOUP_TYPE_REGISTRY_KEY));
 
     public static final Codec<HotpotComponentSoupType> TYPE_CODEC = Codec.lazyInitialized(() -> Codec.unboundedMap(ResourceLocation.CODEC, IndexHolder.getIndexedCodec(HotpotSoupComponentTypeSerializers.TYPE_HOLDER_CODEC.fieldOf("component"))).fieldOf("components").codec().xmap(HotpotComponentSoupType::new, HotpotComponentSoupType::getComponentTypeHolders));
     public static final StreamCodec<RegistryFriendlyByteBuf, HotpotComponentSoupType> TYPE_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.map(LinkedHashMap::new, ResourceLocation.STREAM_CODEC, IndexHolder.getIndexedStreamCodec(HotpotSoupComponentTypeSerializers.TYPE_HOLDER_STREAM_CODEC)).map(HotpotComponentSoupType::new, type -> new LinkedHashMap<>(type.getComponentTypeHolders())));
 
-    public static final Codec<Holder<HotpotComponentSoupType>> TYPE_HOLDER_CODEC = Codec.lazyInitialized(() -> RegistryFileCodec.create(COMPONENT_SOUP_TYPE_REGISTRY_KEY, Codec.unit(UNIT_TYPE), true));
-    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<HotpotComponentSoupType>> TYPE_HOLDER_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holder(COMPONENT_SOUP_TYPE_REGISTRY_KEY, StreamCodec.unit(UNIT_TYPE)));
+    public static final Codec<Holder<HotpotComponentSoupType>> TYPE_HOLDER_CODEC = Codec.lazyInitialized(() -> RegistryFixedCodec.create(COMPONENT_SOUP_TYPE_REGISTRY_KEY));
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<HotpotComponentSoupType>> TYPE_HOLDER_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holderRegistry(COMPONENT_SOUP_TYPE_REGISTRY_KEY));
 
     public static final Codec<HotpotComponentSoup> CODEC = Codec.lazyInitialized(() -> TYPE_HOLDER_CODEC.dispatch(HotpotComponentSoup::soupTypeHolder, holder -> holder.value().getCodec(holder).fieldOf("components")));
     public static final Codec<HotpotComponentSoup> PARTIAL_CODEC = Codec.lazyInitialized(() -> TYPE_HOLDER_CODEC.dispatch(HotpotComponentSoup::soupTypeHolder, holder -> holder.value().getPartialCodec(holder).fieldOf("components")));
@@ -82,20 +79,28 @@ public class HotpotComponentSoupType {
         return componentTypeHolders;
     }
 
-    public static Tag saveSoup(HotpotComponentSoup soup, HolderLookup.Provider registryAccess) {
-        return CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), soup).resultOrPartial().orElse(new CompoundTag());
-    }
-
-    public static HotpotComponentSoup loadSoup(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        return CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), compoundTag).resultOrPartial().orElse(UNIT_SOUP);
-    }
-
     public static HotpotComponentSoup loadSoup(Holder<HotpotComponentSoupType> holder) {
         return holder.value().getComponentSoup(holder);
     }
 
-    public static HotpotComponentSoup loadEmptySoup() {
-        return UNIT_SOUP;
+    public static HotpotComponentSoup loadSoup(ResourceKey<HotpotComponentSoupType> key, HolderLookup.Provider registryAccess) {
+        return loadSoup(loadSoupTypeHolder(key, registryAccess));
+    }
+
+    public static HotpotComponentSoup loadEmptySoup(HolderLookup.Provider registryAccess) {
+        return loadSoup(loadEmptySoupTypeHolder(registryAccess));
+    }
+
+    public static Holder<HotpotComponentSoupType> loadSoupTypeHolder(ResourceKey<HotpotComponentSoupType> key, HolderLookup.Provider registryAccess) {
+        return getHolderLookup(registryAccess).get(key).map(Holder::getDelegate).orElse(loadEmptySoupTypeHolder(registryAccess));
+    }
+
+    public static Holder<HotpotComponentSoupType> loadEmptySoupTypeHolder(HolderLookup.Provider registryAccess) {
+        return getHolderLookup(registryAccess).getOrThrow(EMPTY_SOUP_TYPE_KEY);
+    }
+
+    public static HolderLookup<HotpotComponentSoupType> getHolderLookup(HolderLookup.Provider registryAccess) {
+        return registryAccess.lookupOrThrow(COMPONENT_SOUP_TYPE_REGISTRY_KEY);
     }
 
     @SuppressWarnings("unchecked")

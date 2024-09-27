@@ -9,9 +9,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -21,16 +23,16 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotSoupBaseRecipe extends AbstractHotpotCommonInputRecipe {
-    private final Holder<HotpotComponentSoupType> sourceSoupType;
-    private final Holder<HotpotComponentSoupType> resultSoupType;
+    private final ResourceKey<HotpotComponentSoupType> sourceSoupTypeKey;
+    private final ResourceKey<HotpotComponentSoupType> resultSoupTypeKey;
     private final float resultWaterLevel;
     private final Ingredient ingredient;
     private final ItemStack remainingItem;
     private final Holder<SoundEvent> soundEvent;
 
-    public HotpotSoupBaseRecipe(Holder<HotpotComponentSoupType> sourceSoupType, Holder<HotpotComponentSoupType> resultSoupType, float resultWaterLevel, Ingredient ingredient, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
-        this.sourceSoupType = sourceSoupType;
-        this.resultSoupType = resultSoupType;
+    public HotpotSoupBaseRecipe(ResourceKey<HotpotComponentSoupType> sourceSoupTypeKey, ResourceKey<HotpotComponentSoupType> resultSoupTypeKey, float resultWaterLevel, Ingredient ingredient, ItemStack remainingItem, Holder<SoundEvent> soundEvent) {
+        this.sourceSoupTypeKey = sourceSoupTypeKey;
+        this.resultSoupTypeKey = resultSoupTypeKey;
         this.resultWaterLevel = resultWaterLevel;
         this.ingredient = ingredient;
         this.remainingItem = remainingItem;
@@ -39,7 +41,7 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotCommonInputRecipe {
 
     @Override
     public boolean matches(HotpotRecipeInput container, Level level) {
-        return ingredient.test(container.itemStack()) && sourceSoupType.equals(container.soup().soupTypeHolder());
+        return ingredient.test(container.itemStack()) && sourceSoupTypeKey.equals(container.soup().soupTypeHolder().getKey());
     }
 
     public ItemStack getRemainingItem() {
@@ -50,16 +52,16 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotCommonInputRecipe {
         return ingredient;
     }
 
-    public Holder<HotpotComponentSoupType> getSourceSoupType() {
-        return sourceSoupType;
+    public ResourceKey<HotpotComponentSoupType> getSourceSoupTypeKey() {
+        return sourceSoupTypeKey;
     }
 
-    public Holder<HotpotComponentSoupType> getResultSoupType() {
-        return resultSoupType;
+    public ResourceKey<HotpotComponentSoupType> getResultSoupTypeKey() {
+        return resultSoupTypeKey;
     }
 
-    public HotpotComponentSoup getResultSoup() {
-        return HotpotComponentSoupType.loadSoup(resultSoupType);
+    public HotpotComponentSoup getResultSoup(HolderLookup.Provider registryAccess) {
+        return HotpotComponentSoupType.loadSoup(resultSoupTypeKey, registryAccess);
     }
 
     public Holder<SoundEvent> getSoundEvent() {
@@ -83,8 +85,8 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotCommonInputRecipe {
     public static class Serializer implements RecipeSerializer<HotpotSoupBaseRecipe> {
         public static final MapCodec<HotpotSoupBaseRecipe> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.optionalFieldOf("source_soup", HotpotComponentSoupType.UNIT_TYPE_HOLDER).forGetter(HotpotSoupBaseRecipe::getSourceSoupType),
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("result_soup").forGetter(HotpotSoupBaseRecipe::getResultSoupType),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("source_soup").forGetter(HotpotSoupBaseRecipe::getSourceSoupTypeKey),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("result_soup").forGetter(HotpotSoupBaseRecipe::getResultSoupTypeKey),
                         Codec.FLOAT.fieldOf("result_water_level").forGetter(HotpotSoupBaseRecipe::getResultWaterLevel),
                         Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupBaseRecipe::getIngredient),
                         ItemStack.OPTIONAL_CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupBaseRecipe::getRemainingItem),
@@ -94,8 +96,8 @@ public class HotpotSoupBaseRecipe extends AbstractHotpotCommonInputRecipe {
 
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupBaseRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
                 StreamCodec.composite(
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupBaseRecipe::getSourceSoupType,
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupBaseRecipe::getResultSoupType,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupBaseRecipe::getSourceSoupTypeKey,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupBaseRecipe::getResultSoupTypeKey,
                         ByteBufCodecs.FLOAT, HotpotSoupBaseRecipe::getResultWaterLevel,
                         Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupBaseRecipe::getIngredient,
                         ItemStack.OPTIONAL_STREAM_CODEC, HotpotSoupBaseRecipe::getRemainingItem,

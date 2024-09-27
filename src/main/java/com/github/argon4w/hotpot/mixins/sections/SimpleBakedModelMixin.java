@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.mixins;
+package com.github.argon4w.hotpot.mixins.sections;
 
 import com.github.argon4w.hotpot.client.sections.ISimpleBakedModelExtension;
 import net.minecraft.client.renderer.block.model.ItemOverrides;

@@ -11,22 +11,26 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpotCodecBlockEntity.PartialData<T>> extends BlockEntity {
+    protected T data;
+
     public AbstractHotpotCodecBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
     }
 
-    public abstract T getDefaultData();
+    public abstract T getDefaultData(HolderLookup.Provider registryAccess);
     public abstract Codec<T> getFullCodec();
     public abstract Codec<P> getPartialCodec();
     public abstract P getPartialData(HolderLookup.Provider registryAccess);
     public abstract void onPartialDataUpdated();
-    public abstract T getData();
-    public abstract void setData(T data);
     public abstract BlockEntity getBlockEntity();
     public abstract T onFullDataUpdate(T data);
     public abstract T onFullDataUpdate(LevelBlockPos pos, T data);
@@ -36,19 +40,25 @@ public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpot
     }
 
     @Override
-    protected void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        setData(getCodec().parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), compoundTag.getCompound("value")).resultOrPartial().map(either -> either.map(hasLevel() ? data -> onFullDataUpdate(new LevelBlockPos(getLevel(), getBlockPos()), data) : this::onFullDataUpdate, partial -> partial.update(getData()))).orElse(getDefaultData()));
+    public void setLevel(@NotNull Level pLevel) {
+        super.setLevel(pLevel);
+        data = data == null ? getDefaultData(pLevel.registryAccess()) : data;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registryAccess) {
-        compoundTag.put("value", getCodec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.left(getData())).resultOrPartial().orElse(new CompoundTag()));
+    protected void loadAdditional(CompoundTag compoundTag, HolderLookup.@NotNull Provider registryAccess) {
+        data = getCodec().parse(RegistryOps.create(NbtOps.INSTANCE, registryAccess), compoundTag.getCompound("value")).resultOrPartial().map(either -> either.map(hasLevel() ? data -> onFullDataUpdate(new LevelBlockPos(getLevel(), getBlockPos()), data) : this::onFullDataUpdate, partial -> partial.update(data))).orElse(getDefaultData(registryAccess));
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registryAccess) {
+    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.@NotNull Provider registryAccess) {
+        compoundTag.put("value", getCodec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.left(data)).resultOrPartial().orElse(new CompoundTag()));
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryAccess) {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("value", getCodec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.left(getData())).resultOrPartial().orElse(new CompoundTag()));
+        compoundTag.put("value", getCodec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.left(data)).resultOrPartial().orElse(new CompoundTag()));
         return compoundTag;
     }
 
@@ -60,6 +70,10 @@ public abstract class AbstractHotpotCodecBlockEntity<T, P extends AbstractHotpot
             onPartialDataUpdated();
             return compoundTag;
         });
+    }
+
+    public T getData() {
+        return Objects.requireNonNull(data, "Cannot get data before it is loaded");
     }
 
     interface PartialData<T> {

@@ -27,7 +27,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             return;
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupType(itemStack).getKey());
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupTypeKey(itemStack));
 
         List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
         List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);

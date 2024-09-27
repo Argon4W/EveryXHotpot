@@ -61,8 +61,6 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
             ).apply(data, PartialData::new))
     );
 
-    private Data data = getDefaultData();
-
     private boolean contentChanged = true;
     private boolean soupSynchronized = false;
 
@@ -70,6 +68,11 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
 
     public HotpotBlockEntity(BlockPos pos, BlockState state) {
         super(HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    @Override
+    public void setLevel(Level pLevel) {
+        super.setLevel(pLevel);
     }
 
     @Override
@@ -84,8 +87,8 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     }
 
     @Override
-    public Data getDefaultData() {
-        return new Data(true, true, false, 0, 0, 0.0, HotpotComponentSoupType.loadEmptySoup(), NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()));
+    public Data getDefaultData(HolderLookup.Provider registryAccess) {
+        return new Data(true, true, false, 0, 0, 0.0, HotpotComponentSoupType.loadEmptySoup(registryAccess), NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()));
     }
 
     @Override
@@ -119,16 +122,6 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
     }
 
     @Override
-    public Data getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Data data) {
-        this.data = data;
-    }
-
-    @Override
     public BlockEntity getBlockEntity() {
         return this;
     }
@@ -157,6 +150,10 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
         markDataChangedAndNotify(pos);
     }
 
+    public void setEmptySoup(LevelBlockPos pos) {
+        setSoup(HotpotComponentSoupType.loadEmptySoup(pos.registryAccess()), pos);
+    }
+
     public void markDataChangedAndNotify(LevelBlockPos pos) {
         markDataChanged();
         pos.markAndNotifyBlock();
@@ -174,7 +171,7 @@ public class HotpotBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotBloc
 
     public void setContent(int contentPosition, IHotpotContent content, LevelBlockPos pos) {
         setContent(contentPosition, content);
-        INGREDIENT_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotIngredientRecipeInput(this), pos.level()).map(RecipeHolder::value).ifPresent(recipe -> recipe.assemble(this).execute(this, pos));
+        INGREDIENT_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotIngredientRecipeInput(this), pos.level()).map(RecipeHolder::value).ifPresent(recipe -> recipe.assemble(this, pos.registryAccess()).execute(this, pos));
     }
 
     public void setItemStackContentWhenEmpty(int position, ItemStack itemStack, LevelBlockPos pos) {

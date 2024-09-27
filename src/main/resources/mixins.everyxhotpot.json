@@ -6,12 +6,16 @@
   "refmap": "mixins.everyxhotpot.refmap.json",
   "client": [
     "BreakingItemParticleMixin",
-    "sprites.ItemRendererMixin",
     "MinecraftMixin",
+    "sections.SimpleBakedModelMixin",
+    "compat.MaterialMixin",
+    "compat.SodiumBakedModelEncoderMixin",
+    "compat.TerrainRenderPassMixin",
+    "sections.RenderTypeMixin",
+    "sections.SectionCompilerMixin",
+    "sprites.ItemRendererMixin",
     "sprites.ModelBakeryMixin",
-    "SimpleBakedModelMixin",
-    "sprites.SpriteLoaderMixin",
-    "sprites.compat.SodiumBakedModelEncoderMixin"
+    "sprites.SpriteLoaderMixin"
   ],
   "mixins": [
     "effects.EntityMixin",

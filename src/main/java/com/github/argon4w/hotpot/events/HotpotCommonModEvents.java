@@ -13,7 +13,7 @@ public class HotpotCommonModEvents {
     @SubscribeEvent
     public static void onNewDatapackRegistry(DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(HotpotSoupComponentTypeSerializers.SOUP_COMPONENT_TYPE_REGISTRY_KEY, HotpotSoupComponentTypeSerializers.TYPE_CODEC, HotpotSoupComponentTypeSerializers.TYPE_CODEC);
-        event.dataPackRegistry(HotpotComponentSoupType.COMPONENT_SOUP_TYPE_REGISTRY_KEY, HotpotComponentSoupType.TYPE_CODEC, HotpotComponentSoupType.TYPE_CODEC);
+        event.dataPackRegistry(HotpotComponentSoupType.COMPONENT_SOUP_TYPE_REGISTRY_KEY, HotpotComponentSoupType.TYPE_CODEC, HotpotComponentSoupType.TYPE_CODEC, builder -> builder.defaultKey(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY));
         event.dataPackRegistry(HotpotRandomMobEffectMap.RANDOM_MOB_EFFECT_MAP_REGISTRY_KEY, HotpotRandomMobEffectMap.CODEC, HotpotRandomMobEffectMap.CODEC);
     }
 }

@@ -35,7 +35,7 @@ public abstract class SpriteLoaderMixin {
         }
 
         ArrayList<SpriteContents> results = new ArrayList<>(contents);
-        List<SpriteContents> processedContents = Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor)).flatMap(processor -> contents.stream().filter(content -> content.name().getPath().startsWith("item/") && content.animatedTexture == null).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join();
+        List<SpriteContents> processedContents = Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor)).flatMap(processor -> contents.stream().filter(content -> content.name().getPath().startsWith("item/") && content.animatedTexture == null && content.width() <= 32 && content.height() <= 32).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join();
 
         results.addAll(processedContents);
         SimpleModelBaker.VALID_PROCESSED_SPRITES.clear();
@@ -52,14 +52,10 @@ public abstract class SpriteLoaderMixin {
         FrameSize frameSize = metadata.getSection(AnimationMetadataSection.SERIALIZER).map(section -> section.calculateFrameSize(original.getWidth(), original.getHeight())).orElse(new FrameSize(original.getWidth(), original.getHeight()));
         NativeImage image = new NativeImage(contents.getOriginalImage().format(), contents.getOriginalImage().getWidth(), contents.getOriginalImage().getHeight(), true);
 
-        everyxhotpot$processSpriteImage(original, image, frameSize, processor);
-        return new SpriteContents(name.withSuffix(processor.getSuffix()), frameSize, image, metadata);
-    }
-
-    @Unique
-    private static void everyxhotpot$processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, IHotpotSpriteProcessor processor) {
         for (int i = 0; i < original.getHeight() / frameSize.height(); i ++) {
             processor.processSpriteImage(original, image, frameSize, i);
         }
+
+        return new SpriteContents(name.withSuffix(processor.getSuffix()), frameSize, image, metadata);
     }
 }

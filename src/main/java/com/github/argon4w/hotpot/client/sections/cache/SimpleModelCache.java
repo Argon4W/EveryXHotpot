@@ -12,11 +12,14 @@ import net.neoforged.neoforge.client.model.QuadTransformers;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class HotpotSimpleModelCache implements IHotpotModelCache {
+/**
+ * @author Argon4W
+ */
+public class SimpleModelCache implements BakedModelCache {
     private final SimpleBakedModel model;
     private final Map<Transformation, BakedModel> modelCache;
 
-    public HotpotSimpleModelCache(SimpleBakedModel model) {
+    public SimpleModelCache(SimpleBakedModel model) {
         this.model = model;
         this.modelCache = new ConcurrentHashMap<>();
     }

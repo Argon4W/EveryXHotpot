@@ -11,10 +11,11 @@ import com.github.argon4w.hotpot.soups.recipes.input.HotpotIngredientRecipeInput
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -29,23 +30,23 @@ import java.util.stream.Stream;
 
 public class HotpotSoupIngredientRecipe extends AbstractHotpotSoupRecipe<HotpotIngredientRecipeInput> {
     private final List<HotpotSoupIngredient> ingredients;
-    private final Holder<HotpotComponentSoupType> sourceSoupType, resultSoupType;
+    private final ResourceKey<HotpotComponentSoupType> sourceSoupTypeKey, resultSoupTypeKey;
     private final double resultWaterLevel;
 
-    public HotpotSoupIngredientRecipe(List<HotpotSoupIngredient> ingredients, Holder<HotpotComponentSoupType> sourceSoupType, Holder<HotpotComponentSoupType> resultSoupType, double resultWaterLevel) {
+    public HotpotSoupIngredientRecipe(List<HotpotSoupIngredient> ingredients, ResourceKey<HotpotComponentSoupType> sourceSoupTypeKey, ResourceKey<HotpotComponentSoupType> resultSoupTypeKey, double resultWaterLevel) {
         this.ingredients = ingredients;
-        this.sourceSoupType = sourceSoupType;
-        this.resultSoupType = resultSoupType;
+        this.sourceSoupTypeKey = sourceSoupTypeKey;
+        this.resultSoupTypeKey = resultSoupTypeKey;
         this.resultWaterLevel = resultWaterLevel;
     }
 
     @Override
     public boolean matches(HotpotIngredientRecipeInput container, Level level) {
-        return sourceSoupType.equals(container.hotpotBlockEntity().getSoup().soupTypeHolder()) && findMatches(container.hotpotBlockEntity(), new ArrayList<>(getExpendedSoupIngredients()), (contentIndex, ingredientIndex, ingredient) -> ingredient).size() == getExpendedSoupIngredients().size();
+        return sourceSoupTypeKey.equals(container.hotpotBlockEntity().getSoup().soupTypeHolder().getKey()) && findMatches(container.hotpotBlockEntity(), new ArrayList<>(getExpendedSoupIngredients()), (contentIndex, ingredientIndex, ingredient) -> ingredient).size() == getExpendedSoupIngredients().size();
     }
 
-    public HotpotIngredientActionExecutor assemble(HotpotBlockEntity hotpotBlockEntity) {
-        return new HotpotIngredientActionExecutor(findMatches(hotpotBlockEntity, new ArrayList<>(getExpendedSoupIngredients()), (contentIndex, ingredientIndex, ingredient) -> new HotpotIngredientActionContext(contentIndex, ingredient.action())), HotpotComponentSoupType.loadSoup(resultSoupType), resultWaterLevel);
+    public HotpotIngredientActionExecutor assemble(HotpotBlockEntity hotpotBlockEntity, HolderLookup.Provider registryAccess) {
+        return new HotpotIngredientActionExecutor(findMatches(hotpotBlockEntity, new ArrayList<>(getExpendedSoupIngredients()), (contentIndex, ingredientIndex, ingredient) -> new HotpotIngredientActionContext(contentIndex, ingredient.action())), HotpotComponentSoupType.loadSoup(resultSoupTypeKey, registryAccess), resultWaterLevel);
     }
 
     public <T> List<T> findMatches(HotpotBlockEntity hotpotBlockEntity, List<HotpotSoupIngredient> ingredients, TriFunction<Integer, Integer, HotpotSoupIngredient, T> function) {
@@ -60,12 +61,12 @@ public class HotpotSoupIngredientRecipe extends AbstractHotpotSoupRecipe<HotpotI
         return ingredients;
     }
 
-    public Holder<HotpotComponentSoupType> getSourceSoupType() {
-        return sourceSoupType;
+    public ResourceKey<HotpotComponentSoupType> getSourceSoupTypeKey() {
+        return sourceSoupTypeKey;
     }
 
-    public Holder<HotpotComponentSoupType> getResultSoupType() {
-        return resultSoupType;
+    public ResourceKey<HotpotComponentSoupType> getResultSoupTypeKey() {
+        return resultSoupTypeKey;
     }
 
     public double getResultWaterLevel() {
@@ -86,8 +87,8 @@ public class HotpotSoupIngredientRecipe extends AbstractHotpotSoupRecipe<HotpotI
         public static final MapCodec<HotpotSoupIngredientRecipe> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(recipe -> recipe.group(
                         HotpotSoupIngredient.CODEC.codec().listOf().fieldOf("ingredients").forGetter(HotpotSoupIngredientRecipe::getSoupIngredients),
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("source_soup").forGetter(HotpotSoupIngredientRecipe::getSourceSoupType),
-                        HotpotComponentSoupType.TYPE_HOLDER_CODEC.fieldOf("result_soup").forGetter(HotpotSoupIngredientRecipe::getResultSoupType),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("source_soup").forGetter(HotpotSoupIngredientRecipe::getSourceSoupTypeKey),
+                        HotpotComponentSoupType.KEY_CODEC.fieldOf("result_soup").forGetter(HotpotSoupIngredientRecipe::getResultSoupTypeKey),
                         Codec.DOUBLE.optionalFieldOf("result_water_level", 1.0).forGetter(HotpotSoupIngredientRecipe::getResultWaterLevel)
                 ).apply(recipe, HotpotSoupIngredientRecipe::new))
         );
@@ -95,8 +96,8 @@ public class HotpotSoupIngredientRecipe extends AbstractHotpotSoupRecipe<HotpotI
         public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupIngredientRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
                 StreamCodec.composite(
                         ByteBufCodecs.collection(ArrayList::new, HotpotSoupIngredient.STREAM_CODEC), HotpotSoupIngredientRecipe::getSoupIngredients,
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupIngredientRecipe::getSourceSoupType,
-                        HotpotComponentSoupType.TYPE_HOLDER_STREAM_CODEC, HotpotSoupIngredientRecipe::getResultSoupType,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupIngredientRecipe::getSourceSoupTypeKey,
+                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupIngredientRecipe::getResultSoupTypeKey,
                         ByteBufCodecs.DOUBLE, HotpotSoupIngredientRecipe::getResultWaterLevel,
                         HotpotSoupIngredientRecipe::new
                 )

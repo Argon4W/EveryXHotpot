@@ -3,8 +3,8 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.client.blocks.IHotpotSectionGeometryBLockEntityRenderer;
 import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
+import com.github.argon4w.hotpot.client.sections.SectionGeometryRenderContext;
 import com.github.argon4w.hotpot.placements.HotpotLongPlate;
 import com.github.argon4w.hotpot.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
@@ -28,30 +28,11 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
 
     @Override
     public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
-        if (!(placement instanceof HotpotLongPlate longPlate)) {
-            return;
-        }
 
-        int position1 = longPlate.getPosition1();
-        ComplexDirection direction = ComplexDirection.between(longPlate.getPosition1(), longPlate.getPosition2());
-
-        double x1 = HotpotPlacementPositions.getRenderCenterX(position1);
-        double z1 = HotpotPlacementPositions.getRenderCenterZ(position1);
-
-        int plateCount = longPlate.getPlateItemSlot().getRenderCount(8);;
-        int i = 0;
-
-        for (int k = 0; k < longPlate.getItemSlot1().getRenderCount(); k ++, i ++) {
-            renderLongPlateItem(direction, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot1(), x1, z1, i, plateCount);
-        }
-
-        for (int k = 0; k < longPlate.getItemSlot2().getRenderCount(); k ++, i ++) {
-            renderLongPlateItem(direction, context, poseStack, bufferSource, combinedLight, combinedOverlay, longPlate.getItemSlot2(), x1, z1, i, plateCount);
-        }
     }
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, IHotpotSectionGeometryBLockEntityRenderer.ModelRenderer modelRenderer) {
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, SectionGeometryRenderContext modelRenderContext) {
         if (!(placement instanceof HotpotLongPlate longPlate)) {
             return;
         }
@@ -69,7 +50,10 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         double positionX = (x1 + x2) / 2;
         double positionZ = (z1 + z2) / 2;
 
-        for (int plateCount = 0; plateCount < longPlate.getPlateItemSlot().getRenderCount(8); plateCount ++) {
+        int plateCount = 0;
+        int i = 0;
+
+        for (; plateCount < longPlate.getPlateItemSlot().getRenderCount(8); plateCount ++) {
             double positionY = plateCount * 0.0625f;
 
             poseStack.pushPose();
@@ -78,13 +62,21 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
             BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_long")));
-            modelRenderer.renderModel(model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+            modelRenderContext.renderCachedModel(model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
 
             poseStack.popPose();
         }
+
+        for (int k = 0; k < longPlate.getItemSlot1().getRenderCount(); k ++, i ++) {
+            renderLongPlateItem(modelRenderContext, poseStack, longPlate.getItemSlot1(), x1, z1, i, plateCount, direction);
+        }
+
+        for (int k = 0; k < longPlate.getItemSlot2().getRenderCount(); k ++, i ++) {
+            renderLongPlateItem(modelRenderContext, poseStack, longPlate.getItemSlot2(), x1, z1, i, plateCount, direction);
+        }
     }
 
-    public void renderLongPlateItem(ComplexDirection direction, BlockEntityRendererProvider.Context context, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, SimpleItemSlot slot, double x, double z, int index, int plateCount) {
+    public void renderLongPlateItem(SectionGeometryRenderContext modelRenderContext, PoseStack poseStack, SimpleItemSlot slot, double x, double z, int index, int plateCount, ComplexDirection direction) {
         double positionY = 0.0175 + 0.0625 * plateCount;
         double positionZ = -0.07 + index * 0.09;
 
@@ -95,7 +87,7 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.XN.rotationDegrees(75));
         poseStack.scale(0.35f, 0.35f, 0.35f);
 
-        context.getItemRenderer().renderStatic(slot.getItemStack(), ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, null, ItemDisplayContext.GROUND.ordinal());
+        modelRenderContext.renderUncachedItem(slot.getItemStack(), ItemDisplayContext.FIXED, false, poseStack, OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
     }

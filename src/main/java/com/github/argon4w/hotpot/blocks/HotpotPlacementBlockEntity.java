@@ -42,8 +42,7 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     );
 
     public static final List<Integer> PROVIDED_POSITIONS = IntStream.range(0, 16).boxed().toList();
-
-    private Data data = getDefaultData();
+    
     private boolean contentChanged = true;
 
     public HotpotPlacementBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -130,7 +129,7 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     }
 
     @Override
-    public Data getDefaultData() {
+    public Data getDefaultData(HolderLookup.Provider registryAccess) {
         return new Data(new LinkedList<>(), false, true);
     }
 
@@ -163,16 +162,6 @@ public class HotpotPlacementBlockEntity extends AbstractHotpotCodecBlockEntity<H
     @Override
     public void onPartialDataUpdated() {
         contentChanged = false;
-    }
-
-    @Override
-    public Data getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Data data) {
-        this.data = data;
     }
 
     @Override

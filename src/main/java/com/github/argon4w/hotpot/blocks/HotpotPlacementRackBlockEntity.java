@@ -49,7 +49,6 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
 
     public static final List<Integer> PROVIDED_POSITIONS = List.of(5, 9, 6, 10);
 
-    private Data data = getDefaultData();
     private boolean contentChanged = true;
 
     public HotpotPlacementRackBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -126,7 +125,7 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     }
 
     @Override
-    public Data getDefaultData() {
+    public Data getDefaultData(HolderLookup.Provider registryAccess) {
         return new Data(new LinkedList<>(), new LinkedList<>(), false, true);
     }
 
@@ -159,16 +158,6 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     @Override
     public void onPartialDataUpdated() {
         contentChanged = false;
-    }
-
-    @Override
-    public Data getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Data data) {
-        this.data = data;
     }
 
     @Override

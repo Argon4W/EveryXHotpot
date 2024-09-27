@@ -1,0 +1,8 @@
+{
+  "components": {
+    "everyxhotpot:base_soup_recipe_acceptor": {
+      "component": "everyxhotpot:generic_soup_base_recipe_acceptor",
+      "index": 0
+    }
+  }
+}

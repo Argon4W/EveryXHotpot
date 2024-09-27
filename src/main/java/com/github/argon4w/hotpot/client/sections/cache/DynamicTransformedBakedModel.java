@@ -1,6 +1,5 @@
-package com.github.argon4w.hotpot.client.sections;
+package com.github.argon4w.hotpot.client.sections.cache;
 
-import com.github.argon4w.hotpot.client.sections.cache.HotpotModelCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.RenderType;
@@ -25,9 +24,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * @author Argon4W
+ */
 @SuppressWarnings("deprecation")
-public record TransformedBakedModel(BakedModel model, Transformation transformation, IQuadTransformer transformer, HotpotModelCache cache) implements BakedModel {
-    public TransformedBakedModel(BakedModel model, Transformation transformation, HotpotModelCache cache) {
+public record DynamicTransformedBakedModel(BakedModel model, Transformation transformation, IQuadTransformer transformer, RendererBakedModelsCache cache) implements BakedModel {
+    public DynamicTransformedBakedModel(BakedModel model, Transformation transformation, RendererBakedModelsCache cache) {
         this(model, transformation, QuadTransformers.applying(transformation), cache);
     }
 
@@ -84,7 +86,7 @@ public record TransformedBakedModel(BakedModel model, Transformation transformat
     @NotNull
     @Override
     public ItemOverrides getOverrides() {
-        return model.getOverrides();
+        throw new IllegalStateException("Should not call getOverrides from DynamicTransformedBakedModel");
     }
 
     @NotNull
@@ -96,7 +98,7 @@ public record TransformedBakedModel(BakedModel model, Transformation transformat
     @NotNull
     @Override
     public BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new TransformedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformation, cache);
+        return new DynamicTransformedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformation, cache);
     }
 
     @NotNull

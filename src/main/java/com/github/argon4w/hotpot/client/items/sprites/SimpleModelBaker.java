@@ -1,16 +1,13 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
 import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
-import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.SimpleModelState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.Map;
