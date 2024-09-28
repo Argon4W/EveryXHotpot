@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot;
 
+import com.github.argon4w.hotpot.api.items.HotpotPlateItem;
 import com.github.argon4w.hotpot.blocks.*;
 import com.github.argon4w.hotpot.client.contents.HotpotContentRenderers;
 import com.github.argon4w.hotpot.client.contents.HotpotItemContentSpecialRenderers;

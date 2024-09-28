@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.mixins;
 
-import com.github.argon4w.hotpot.items.IHotpotItemContainer;
+import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.BreakingItemParticle;

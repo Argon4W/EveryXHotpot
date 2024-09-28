@@ -2,11 +2,11 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.SimpleItemSlot;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.client.sections.SectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
+import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
 import com.github.argon4w.hotpot.placements.HotpotLargeRoundPlate;
-import com.github.argon4w.hotpot.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,7 +31,7 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
     }
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, SectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryRenderContext modelRenderContext) {
         if (!(placement instanceof HotpotLargeRoundPlate largeRoundPlate)) {
             return;
         }
@@ -63,7 +63,7 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
         }
     }
 
-    public void renderLargeRoundPlateItem(SectionGeometryRenderContext modelRenderContext, PoseStack poseStack, SimpleItemSlot slot, int plateCount, int i, double centerX, double centerZ, ComplexDirection direction) {
+    public void renderLargeRoundPlateItem(ISectionGeometryRenderContext modelRenderContext, PoseStack poseStack, SimpleItemSlot slot, int plateCount, int i, double centerX, double centerZ, ComplexDirection direction) {
         double startDegree = 360.0 / 4.0 * i - direction.toYRot();
 
         for (int j = 0; j < slot.getRenderCount(); j ++) {

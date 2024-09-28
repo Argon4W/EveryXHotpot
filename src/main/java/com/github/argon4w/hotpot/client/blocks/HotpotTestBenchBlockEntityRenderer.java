@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.client.blocks;
 
 import com.github.argon4w.hotpot.blocks.HotpotTestBenchBlockEntity;
-import com.github.argon4w.hotpot.client.sections.BlockEntitySectionGeometryRenderer;
-import com.github.argon4w.hotpot.client.sections.SectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.client.sections.IBlockEntitySectionGeometryRenderer;
+import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
-public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<HotpotTestBenchBlockEntity>, BlockEntitySectionGeometryRenderer<HotpotTestBenchBlockEntity> {
+public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<HotpotTestBenchBlockEntity>, IBlockEntitySectionGeometryRenderer<HotpotTestBenchBlockEntity> {
     public HotpotTestBenchBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
 
     }
@@ -35,7 +35,7 @@ public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<H
     }
 
     @Override
-    public void renderSectionGeometry(HotpotTestBenchBlockEntity blockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack stack, BlockPos blockPos, BlockPos regionOrigin, SectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(HotpotTestBenchBlockEntity blockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack stack, BlockPos blockPos, BlockPos regionOrigin, ISectionGeometryRenderContext modelRenderContext) {
         stack.pushPose();
 
         stack.translate(0.5, 0.5, 0.5);

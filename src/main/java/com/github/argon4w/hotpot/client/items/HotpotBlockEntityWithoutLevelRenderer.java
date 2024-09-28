@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.client.items;
 
+import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;

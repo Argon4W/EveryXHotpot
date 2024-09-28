@@ -2,11 +2,11 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.SimpleItemSlot;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.client.sections.SectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
+import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
 import com.github.argon4w.hotpot.placements.HotpotLongPlate;
-import com.github.argon4w.hotpot.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -32,7 +32,7 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
     }
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, SectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryRenderContext modelRenderContext) {
         if (!(placement instanceof HotpotLongPlate longPlate)) {
             return;
         }
@@ -76,7 +76,7 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         }
     }
 
-    public void renderLongPlateItem(SectionGeometryRenderContext modelRenderContext, PoseStack poseStack, SimpleItemSlot slot, double x, double z, int index, int plateCount, ComplexDirection direction) {
+    public void renderLongPlateItem(ISectionGeometryRenderContext modelRenderContext, PoseStack poseStack, SimpleItemSlot slot, double x, double z, int index, int plateCount, ComplexDirection direction) {
         double positionY = 0.0175 + 0.0625 * plateCount;
         double positionZ = -0.07 + index * 0.09;
 

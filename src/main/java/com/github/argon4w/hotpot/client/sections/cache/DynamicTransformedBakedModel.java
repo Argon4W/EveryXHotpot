@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.client.sections.cache;
 
+import com.github.argon4w.hotpot.api.client.sections.cache.RendererBakedModelsCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.RenderType;

@@ -1,11 +1,13 @@
 package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.IHotpotContent;
+import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
-import com.github.argon4w.hotpot.items.IHotpotCustomItemStackUpdaterProvider;
-import com.github.argon4w.hotpot.items.IHotpotItemStackUpdater;
-import com.github.argon4w.hotpot.items.IHotpotUpdateAwareContentItem;
+import com.github.argon4w.hotpot.api.items.IHotpotCustomItemStackUpdaterProvider;
+import com.github.argon4w.hotpot.api.items.IHotpotItemStackUpdater;
+import com.github.argon4w.hotpot.api.items.IHotpotUpdateAwareContentItem;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;

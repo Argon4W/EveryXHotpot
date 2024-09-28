@@ -1,19 +1,19 @@
 package com.github.argon4w.hotpot.soups.components.contents;
 
-import com.github.argon4w.hotpot.IHotpotResult;
+import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
-import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
 import com.github.argon4w.hotpot.items.sprites.HotpotSpriteConfigSerializers;
-import com.github.argon4w.hotpot.items.sprites.IHotpotSpriteConfig;
+import com.github.argon4w.hotpot.api.items.sprites.IHotpotSpriteConfig;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
-import com.github.argon4w.hotpot.soups.components.IHotpotSoupComponentType;
-import com.github.argon4w.hotpot.soups.components.IHotpotSoupComponentTypeSerializer;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

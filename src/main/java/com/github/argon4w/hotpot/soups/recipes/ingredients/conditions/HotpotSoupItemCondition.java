@@ -2,11 +2,11 @@ package com.github.argon4w.hotpot.soups.recipes.ingredients.conditions;
 
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
-import com.github.argon4w.hotpot.contents.IHotpotContent;
+import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
-import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientCondition;
-import com.github.argon4w.hotpot.soups.recipes.ingredients.IHotpotSoupIngredientConditionSerializer;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientCondition;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientConditionSerializer;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

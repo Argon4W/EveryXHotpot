@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.placements;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.client.placements.renderers.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

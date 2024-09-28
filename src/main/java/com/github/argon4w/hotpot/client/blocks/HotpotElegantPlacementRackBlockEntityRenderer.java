@@ -2,8 +2,8 @@ package com.github.argon4w.hotpot.client.blocks;
 
 import com.github.argon4w.hotpot.blocks.HotpotElegantPlacementRackBlockEntity;
 import com.github.argon4w.hotpot.client.placements.HotpotPlacementRenderers;
-import com.github.argon4w.hotpot.client.sections.BlockEntitySectionGeometryRenderer;
-import com.github.argon4w.hotpot.client.sections.SectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.client.sections.IBlockEntitySectionGeometryRenderer;
+import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
-public class HotpotElegantPlacementRackBlockEntityRenderer implements BlockEntityRenderer<HotpotElegantPlacementRackBlockEntity>, BlockEntitySectionGeometryRenderer<HotpotElegantPlacementRackBlockEntity> {
+public class HotpotElegantPlacementRackBlockEntityRenderer implements BlockEntityRenderer<HotpotElegantPlacementRackBlockEntity>, IBlockEntitySectionGeometryRenderer<HotpotElegantPlacementRackBlockEntity> {
     private final BlockEntityRendererProvider.Context context;
 
     public HotpotElegantPlacementRackBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
@@ -42,7 +42,7 @@ public class HotpotElegantPlacementRackBlockEntityRenderer implements BlockEntit
     }
 
     @Override
-    public void renderSectionGeometry(HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack poseStack, BlockPos pos, BlockPos regionOrigin, SectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack poseStack, BlockPos pos, BlockPos regionOrigin, ISectionGeometryRenderContext modelRenderContext) {
         hotpotElegantPlacementRackBlockEntity.getPlacements0().forEach(placement -> placement.getPlacementSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).renderSectionGeometry(placement, context, hotpotElegantPlacementRackBlockEntity, pos, poseStack, modelRenderContext)));
 
         poseStack.pushPose();

@@ -2,10 +2,11 @@ package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupCookingRecipe;
-import com.github.argon4w.hotpot.soups.recipes.IHotpotCookingRecipeHolder;
+import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.soups.recipes.holder.HotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import net.minecraft.core.Holder;

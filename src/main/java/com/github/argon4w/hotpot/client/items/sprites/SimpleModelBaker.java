@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
-import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
+import com.github.argon4w.hotpot.api.client.items.sprites.processors.IHotpotSpriteProcessor;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

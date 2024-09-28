@@ -1,9 +1,9 @@
 package com.github.argon4w.hotpot.client.soups;
 
 import com.github.argon4w.hotpot.client.soups.effects.HotpotSoupClientTickEffects;
-import com.github.argon4w.hotpot.client.soups.effects.IHotpotSoupClientTickEffect;
+import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffect;
 import com.github.argon4w.hotpot.client.soups.renderers.HotpotSoupCustomElementSerializers;
-import com.github.argon4w.hotpot.client.soups.renderers.IHotpotSoupCustomElementRenderer;
+import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomElementRenderer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;

@@ -1,7 +1,9 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;

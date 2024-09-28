@@ -1,6 +1,8 @@
 package com.github.argon4w.hotpot.items.sprites;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.items.sprites.IHotpotSpriteConfig;
+import com.github.argon4w.hotpot.api.items.sprites.IHotpotSpriteConfigSerializer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

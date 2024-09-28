@@ -1,6 +1,8 @@
 package com.github.argon4w.hotpot.client.soups.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomElementRenderer;
+import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomElementRendererSerializer;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

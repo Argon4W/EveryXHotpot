@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.contents;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.client.contents.IHotpotContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.HotpotEmptyContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.HotpotItemContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.HotpotPlayerContentRenderer;

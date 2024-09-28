@@ -1,6 +1,8 @@
 package com.github.argon4w.hotpot.placements;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.blocks.HotpotBlockEntityRenderer;
-import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
+import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;

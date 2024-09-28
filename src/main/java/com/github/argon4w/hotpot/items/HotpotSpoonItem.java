@@ -2,9 +2,11 @@ package com.github.argon4w.hotpot.items;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareItem;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.blocks.IHotpotTablewareContainer;
+import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
+import com.github.argon4w.hotpot.api.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;

@@ -1,13 +1,13 @@
 package com.github.argon4w.hotpot.soups.components.appendents;
 
-import com.github.argon4w.hotpot.IHotpotResult;
+import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
-import com.github.argon4w.hotpot.soups.components.IHotpotSoupComponentType;
-import com.github.argon4w.hotpot.soups.components.IHotpotSoupComponentTypeSerializer;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

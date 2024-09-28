@@ -1,14 +1,14 @@
 package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.hotpot.EntryStreams;
-import com.github.argon4w.hotpot.IHotpotResult;
+import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.IndexHolder;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.contents.IHotpotContent;
-import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
-import com.github.argon4w.hotpot.soups.components.IHotpotSoupComponent;
-import com.github.argon4w.hotpot.soups.components.IHotpotSoupComponentTypeSerializer;
+import com.github.argon4w.hotpot.api.contents.IHotpotContent;
+import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponent;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupComponentSynchronizer;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;

@@ -2,6 +2,8 @@ package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.IndexHolder;
+import com.github.argon4w.hotpot.api.contents.IHotpotContent;
+import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;

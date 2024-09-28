@@ -1,6 +1,8 @@
 package com.github.argon4w.hotpot.client.soups.effects;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffect;
+import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffectSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;

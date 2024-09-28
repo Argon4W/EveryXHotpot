@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.client.sections;
 
-import com.github.argon4w.hotpot.client.sections.cache.RendererBakedModelsCache;
+import com.github.argon4w.hotpot.api.client.sections.cache.RendererBakedModelsCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
@@ -33,7 +33,7 @@ import org.joml.Matrix4f;
  * @author Argon4W
  */
 @SuppressWarnings("UnstableApiUsage")
-public record LightAwareSectionGeometryRenderContext(RandomSource randomSource, AddSectionGeometryEvent.SectionRenderingContext context, RendererBakedModelsCache cache, BlockPos pos, BlockPos regionOrigin) implements SectionGeometryRenderContext {
+public record LightAwareSectionGeometryRenderContext(RandomSource randomSource, AddSectionGeometryEvent.SectionRenderingContext context, RendererBakedModelsCache cache, BlockPos pos, BlockPos regionOrigin) implements ISectionGeometryRenderContext {
     public LightAwareSectionGeometryRenderContext(AddSectionGeometryEvent.SectionRenderingContext context, RendererBakedModelsCache cache, BlockPos pos, BlockPos regionOrigin) {
         this(RandomSource.createNewThreadLocalInstance(), context, cache, pos, regionOrigin);
     }

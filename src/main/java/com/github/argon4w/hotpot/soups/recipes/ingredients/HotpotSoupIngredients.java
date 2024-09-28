@@ -1,6 +1,8 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientActionSerializer;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientConditionSerializer;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.actions.HotpotSoupConsumeAction;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.actions.HotpotSoupReplaceItemAction;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.conditions.HotpotSoupContentCondition;

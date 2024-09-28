@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.client.items.sprites.processors;
 
+import com.github.argon4w.hotpot.api.client.items.sprites.processors.IHotpotSpriteProcessor;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.util.FastColor;

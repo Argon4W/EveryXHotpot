@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.soups.recipes.effects;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.soups.recipes.effects.IHotpotRandomMobEffectKey;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;

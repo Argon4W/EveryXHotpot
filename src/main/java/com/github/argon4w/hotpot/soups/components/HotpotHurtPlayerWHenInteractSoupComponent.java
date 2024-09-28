@@ -1,10 +1,13 @@
 package com.github.argon4w.hotpot.soups.components;
 
-import com.github.argon4w.hotpot.IHotpotResult;
+import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotDamageSource;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
-import com.github.argon4w.hotpot.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;

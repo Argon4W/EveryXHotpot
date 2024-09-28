@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.items.components;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.items.sprites.HotpotEmptySpriteConfig;
 import com.github.argon4w.hotpot.items.sprites.HotpotSpriteConfigSerializers;
-import com.github.argon4w.hotpot.items.sprites.IHotpotSpriteConfig;
+import com.github.argon4w.hotpot.api.items.sprites.IHotpotSpriteConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

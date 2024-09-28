@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.items.sprites.processors;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.client.items.sprites.processors.IHotpotSpriteProcessor;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

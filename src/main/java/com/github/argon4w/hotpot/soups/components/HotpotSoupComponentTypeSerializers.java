@@ -1,6 +1,8 @@
 package com.github.argon4w.hotpot.soups.components;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.soups.components.appendents.HotpotGetExtraContentTickSpeedFromActivenessSoupComponent;
 import com.github.argon4w.hotpot.soups.components.appendents.HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent;
 import com.github.argon4w.hotpot.soups.components.appendents.HotpotGetExtraExperienceFromActivenessSoupComponent;

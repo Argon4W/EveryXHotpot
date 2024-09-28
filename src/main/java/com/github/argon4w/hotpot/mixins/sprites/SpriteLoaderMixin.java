@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.mixins.sprites;
 import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotEmptySpriteProcessor;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
-import com.github.argon4w.hotpot.client.items.sprites.processors.IHotpotSpriteProcessor;
+import com.github.argon4w.hotpot.api.client.items.sprites.processors.IHotpotSpriteProcessor;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.texture.SpriteContents;

@@ -1,5 +1,8 @@
 package com.github.argon4w.hotpot.soups.components;
 
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponent;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
+import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

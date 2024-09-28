@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.client.sections.cache;
 
 import com.github.argon4w.hotpot.EntryStreams;
 import com.github.argon4w.hotpot.client.sections.ISimpleBakedModelExtension;
+import com.github.argon4w.hotpot.api.client.sections.cache.IBakedModelCache;
 import com.mojang.math.Transformation;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.SimpleBakedModel;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Argon4W
  */
-public class SimpleModelCache implements BakedModelCache {
+public class SimpleModelCache implements IBakedModelCache {
     private final SimpleBakedModel model;
     private final Map<Transformation, BakedModel> modelCache;
 

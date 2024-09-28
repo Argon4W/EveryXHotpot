@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.contents;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.client.contents.IHotpotItemContentSpecialRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.items.HotpotDefaultItemContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.items.HotpotSkewerItemContentRenderer;
 import net.minecraft.core.Registry;

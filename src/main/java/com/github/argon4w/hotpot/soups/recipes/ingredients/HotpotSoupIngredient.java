@@ -1,5 +1,9 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients;
 
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientAction;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientActionSerializer;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientCondition;
+import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientConditionSerializer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;

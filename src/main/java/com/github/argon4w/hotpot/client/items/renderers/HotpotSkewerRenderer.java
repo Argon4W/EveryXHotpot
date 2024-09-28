@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.client.items.IHotpotItemSpecialRenderer;
+import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotSkewerItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
