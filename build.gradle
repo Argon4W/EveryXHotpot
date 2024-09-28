@@ -131,8 +131,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation "maven.modrinth:sodium:mc1.21-0.6.0-beta.1-neoforge"
-    implementation "maven.modrinth:iris:1.8.0-beta.2+1.21-neoforge"
+    compileOnly "maven.modrinth:sodium:mc1.21-0.6.0-beta.1-neoforge"
+    compileOnly "maven.modrinth:iris:1.8.0-beta.2+1.21-neoforge"
     implementation "maven.modrinth:R2OftAxM:ovSzG9pc"
 }
 
