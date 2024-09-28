@@ -1,5 +1,7 @@
 package com.github.argon4w.hotpot.mixins.sections;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
@@ -11,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(SectionCompiler.class)
 public class SectionCompilerMixin {
-    @Redirect(method = "getOrBeginLayer", at = @At(value = "FIELD", target = "Lcom/mojang/blaze3d/vertex/DefaultVertexFormat;BLOCK:Lcom/mojang/blaze3d/vertex/VertexFormat;", opcode = Opcodes.GETSTATIC))
-    public VertexFormat formatBasedOnRenderType(@Local(argsOnly = true) RenderType renderTypeRef) {
+    @WrapOperation(method = "getOrBeginLayer", at = @At(value = "FIELD", target = "Lcom/mojang/blaze3d/vertex/DefaultVertexFormat;BLOCK:Lcom/mojang/blaze3d/vertex/VertexFormat;", opcode = Opcodes.GETSTATIC))
+    public VertexFormat wrapFormatBasedOnRenderType(Operation<VertexFormat> original, @Local(argsOnly = true) RenderType renderTypeRef) {
         return renderTypeRef.format;
     }
 }
