@@ -52,7 +52,7 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
         }
 
         @Override
-        public HotpotDropWaterLevelSoupComponent get() {
+        public HotpotDropWaterLevelSoupComponent createSoupComponent() {
             return unit;
         }
 

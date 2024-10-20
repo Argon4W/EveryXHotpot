@@ -34,6 +34,7 @@ public class HotpotClientModEvents {
         event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_SKEWER.get());
         event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_SPICE_PACK.get());
         event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_NAPKIN_HOLDER.get());
+        event.registerItem(new HotpotClientItemExtensions(), HotpotModEntry.HOTPOT_STRAINER_BASKET.get());
     }
 
     @SubscribeEvent
@@ -43,6 +44,7 @@ public class HotpotClientModEvents {
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_spice_pack_model")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model")));
+        event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_strainer_basket_model")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_skewer_model")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_long")));
         event.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));

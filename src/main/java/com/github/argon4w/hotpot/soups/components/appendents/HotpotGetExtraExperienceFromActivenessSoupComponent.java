@@ -59,7 +59,7 @@ public class HotpotGetExtraExperienceFromActivenessSoupComponent extends Abstrac
         }
 
         @Override
-        public HotpotGetExtraExperienceFromActivenessSoupComponent get() {
+        public HotpotGetExtraExperienceFromActivenessSoupComponent createSoupComponent() {
             return unit;
         }
 

@@ -52,7 +52,7 @@ public class HotpotDropPunishCooldownWhenNotEmptySoupComponent extends AbstractH
         }
 
         @Override
-        public HotpotDropPunishCooldownWhenNotEmptySoupComponent get() {
+        public HotpotDropPunishCooldownWhenNotEmptySoupComponent createSoupComponent() {
             return unit;
         }
 

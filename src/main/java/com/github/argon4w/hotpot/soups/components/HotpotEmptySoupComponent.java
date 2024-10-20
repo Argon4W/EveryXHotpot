@@ -84,6 +84,11 @@ public class HotpotEmptySoupComponent implements IHotpotSoupComponent {
     }
 
     @Override
+    public void setWaterLevelWithOverflow(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+
+    }
+
+    @Override
     public void setWaterLevel(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
 
     }

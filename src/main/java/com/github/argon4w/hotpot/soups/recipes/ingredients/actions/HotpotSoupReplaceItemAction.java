@@ -11,6 +11,7 @@ import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientActi
 import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientActionSerializer;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +20,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
     @Override
     public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos) {
-        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER).value().get(itemStack.copy(), hotpotBlockEntity, selfPos));
+        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER).value().createContent(itemStack.copy(), hotpotBlockEntity, selfPos, Direction.getRandom(selfPos.getRandomSource())));
     }
 
     @Override

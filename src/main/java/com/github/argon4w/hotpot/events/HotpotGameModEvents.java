@@ -59,9 +59,9 @@ public class HotpotGameModEvents {
 
         ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
 
-        hotpotBlockEntity.setContentWhenEmpty(0, () -> new HotpotPlayerContent(profile, true), pos);
-        hotpotBlockEntity.setContentWhenEmpty(0, () -> new HotpotPlayerContent(profile, false), pos);
-        hotpotBlockEntity.setContentWhenEmpty(0, () -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContentWhenEmpty(() -> new HotpotPlayerContent(profile, true), pos);
+        hotpotBlockEntity.setContentWhenEmpty(() -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContentWhenEmpty(() -> new HotpotPlayerContent(profile, false), pos);
     }
 
     @SubscribeEvent

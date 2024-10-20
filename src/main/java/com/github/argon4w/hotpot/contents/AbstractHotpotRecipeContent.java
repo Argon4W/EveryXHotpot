@@ -9,8 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStackContent {
-
-
     public AbstractHotpotRecipeContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
         super(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
     }

@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
+import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
@@ -38,13 +39,15 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSpicePack).assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSpicePack).assemble(this::setSpicePackCharges);
     }
 
     private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
-        HotpotSpicePackItem.addSpicePackItems(assembled, ingredient.copyWithCount(1));
-        HotpotSpicePackItem.setSpicePackCharges(assembled, 20);
-        return assembled;
+        return Util.make(assembled, assembled1 -> HotpotSpicePackItem.addSpicePackItems(assembled1, ingredient.copyWithCount(1)));
+    }
+
+    private ItemStack setSpicePackCharges(ItemStack itemStack) {
+        return Util.make(itemStack, itemStack1 -> HotpotSpicePackItem.setSpicePackCharges(itemStack1, 20));
     }
 
     @Override

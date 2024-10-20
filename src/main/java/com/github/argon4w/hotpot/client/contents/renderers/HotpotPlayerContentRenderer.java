@@ -19,7 +19,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
     public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext> PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
-    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z) {
+    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z, int index) {
         if (!(content instanceof HotpotPlayerContent playerContent)) {
             return;
         }
@@ -35,8 +35,8 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
 
         double positionX = 0.5 + x * 0.325;
         double positionZ = 0.5 + z * 0.325;
-        double positionY = 0.53 - getFloatingCurve(rotation / 360.0, 0) * 0.06 + 0.42 * waterLevel;
-        double rotationY = getFloatingCurve(rotation / 360.0, 1) * 25.0;
+        double positionY = 0.53 - curve(rotation / 360.0, 0) * 0.06 + 0.42 * waterLevel;
+        double rotationY = curve(rotation / 360.0, 1) * 25.0;
 
         poseStack.pushPose();
 
@@ -53,7 +53,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
         poseStack.popPose();
     }
 
-    public static double getFloatingCurve(double f, double offset) {
+    public static double curve(double f, double offset) {
         return Math.sin((f + offset) / 0.25 * 2 * Math.PI);
     }
 }

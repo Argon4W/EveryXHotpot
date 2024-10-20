@@ -41,7 +41,7 @@ public record HotpotPaperBowlDataComponent(ResourceKey<HotpotComponentSoupType> 
         return new HotpotPaperBowlDataComponent(soup.soupTypeHolder().getKey(), soupStatus, List.copyOf(items), List.copyOf(skewers));
     }
 
-    public HotpotPaperBowlDataComponent setDrained(HotpotSoupStatus soupStatus) {
+    public HotpotPaperBowlDataComponent setSoupStatus(HotpotSoupStatus soupStatus) {
         return new HotpotPaperBowlDataComponent(soupTypeKey, soupStatus, List.copyOf(items), List.copyOf(skewers));
     }
 

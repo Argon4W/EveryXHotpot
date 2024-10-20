@@ -33,7 +33,7 @@ public record HotpotSkewerDataComponent(List<ItemStack> itemStacks) {
         return new HotpotSkewerDataComponent(List.copyOf(itemStacks));
     }
 
-    public HotpotSkewerDataComponent applyItemStacks(Consumer<ItemStack> consumer) {
+    public HotpotSkewerDataComponent applyToItemStacks(Consumer<ItemStack> consumer) {
         return new HotpotSkewerDataComponent(itemStacks.stream().map(ItemStack::copy).peek(consumer).toList());
     }
 

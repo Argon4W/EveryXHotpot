@@ -23,6 +23,7 @@ public class HotpotPlacementRenderers {
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedChopstickRenderer> PLACED_CHOPSTICK_RENDERER = PLACEMENT_RENDERERS.register("placed_chopstick", HotpotPlacedChopstickRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedSpoonRenderer> PLACED_SPOON_RENDERER = PLACEMENT_RENDERERS.register("placed_spoon", HotpotPlacedSpoonRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlacedPaperBowlRenderer> PLACED_PAPER_BOWL_RENDERER = PLACEMENT_RENDERERS.register("placed_paper_bowl", HotpotPlacedPaperBowlRenderer::new);
+    public static final DeferredHolder<IHotpotPlacementRenderer, HotpotPlaceStrainerBasketRenderer> PLACED_STRAINER_BASKET_RENDERER = PLACEMENT_RENDERERS.register("placed_strainer_basket", HotpotPlaceStrainerBasketRenderer::new);
     public static final DeferredHolder<IHotpotPlacementRenderer, HotpotEmptyPlacementRenderer> EMPTY_PLACEMENT_RENDERER = PLACEMENT_RENDERERS.register("empty_placement", HotpotEmptyPlacementRenderer::new);
 
     public static IHotpotPlacementRenderer getEmptyPlacementRenderer() {

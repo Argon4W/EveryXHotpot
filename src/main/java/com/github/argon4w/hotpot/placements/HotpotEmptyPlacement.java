@@ -52,7 +52,7 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotEmptyPlacement> {
         @Override
-        public HotpotEmptyPlacement get(List<Integer> positions, ComplexDirection direction) {
+        public HotpotEmptyPlacement createPlacement(List<Integer> positions, ComplexDirection direction) {
             return get();
         }
 

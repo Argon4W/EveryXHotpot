@@ -59,7 +59,7 @@ public class HotpotGetExtraContentTickSpeedFromActivenessSoupComponent extends A
         }
 
         @Override
-        public HotpotGetExtraContentTickSpeedFromActivenessSoupComponent get() {
+        public HotpotGetExtraContentTickSpeedFromActivenessSoupComponent createSoupComponent() {
             return unit;
         }
 

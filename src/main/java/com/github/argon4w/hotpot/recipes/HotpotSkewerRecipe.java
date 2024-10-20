@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.items.HotpotSkewerItem;
+import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
@@ -38,12 +39,11 @@ public class HotpotSkewerRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSkewerItem).assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSkewer).assemble();
     }
 
-    private ItemStack assembleSkewerItem(ItemStack assembled, ItemStack ingredient) {
-        HotpotSkewerItem.addSkewerItems(assembled, ingredient.copyWithCount(1));
-        return assembled;
+    private ItemStack assembleSkewer(ItemStack assembled, ItemStack ingredient) {
+        return Util.make(assembled, assembled1 -> HotpotSkewerItem.addSkewerItems(assembled1, ingredient.copyWithCount(1)));
     }
 
     @Override

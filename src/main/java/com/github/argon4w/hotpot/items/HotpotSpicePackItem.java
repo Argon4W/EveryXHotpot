@@ -3,9 +3,9 @@ package com.github.argon4w.hotpot.items;
 import com.github.argon4w.hotpot.HotpotMobEffectMap;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.IHotpotItemUpdaterContent;
 import com.github.argon4w.hotpot.api.items.IHotpotUpdateAwareContentItem;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotSpicePackDataComponent;
@@ -50,12 +50,12 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
             return itemStack;
         }
 
-        if (!(content instanceof AbstractHotpotItemStackContent itemStackContent)) {
+        if (!(content instanceof IHotpotItemUpdaterContent itemUpdaterContent)) {
             return itemStack;
         }
 
-        decreaseSpicePackCharges(itemStack);
-        itemStackContent.updateItemStack(contentItemStack -> HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
+        shrinkSpicePackCharges(itemStack);
+        itemUpdaterContent.updateItemStack(contentItemStack -> HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
 
         return itemStack;
     }
@@ -100,7 +100,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
         return getSpicePackItems(itemStack).isEmpty();
     }
 
-    public static void decreaseSpicePackCharges(ItemStack itemStack) {
+    public static void shrinkSpicePackCharges(ItemStack itemStack) {
         setSpicePackCharges(itemStack, Math.max(0, getSpicePackCharges(itemStack) - 1));
     }
 

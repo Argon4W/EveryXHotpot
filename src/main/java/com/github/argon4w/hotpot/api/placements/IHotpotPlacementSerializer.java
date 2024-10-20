@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface IHotpotPlacementSerializer<T extends IHotpotPlacement> {
     MapCodec<T> getCodec();
-    T get(List<Integer> positions, ComplexDirection direction);
+    T createPlacement(List<Integer> positions, ComplexDirection direction);
     List<Optional<Integer>> getPositions(int position, ComplexDirection direction);
 }

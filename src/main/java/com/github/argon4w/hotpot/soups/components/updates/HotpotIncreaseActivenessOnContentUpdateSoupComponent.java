@@ -59,7 +59,7 @@ public class HotpotIncreaseActivenessOnContentUpdateSoupComponent extends Abstra
         }
 
         @Override
-        public HotpotIncreaseActivenessOnContentUpdateSoupComponent get() {
+        public HotpotIncreaseActivenessOnContentUpdateSoupComponent createSoupComponent() {
             return unit;
         }
 

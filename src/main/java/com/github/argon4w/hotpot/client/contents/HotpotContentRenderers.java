@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.api.client.contents.IHotpotContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.HotpotEmptyContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.HotpotItemContentRenderer;
 import com.github.argon4w.hotpot.client.contents.renderers.HotpotPlayerContentRenderer;
+import com.github.argon4w.hotpot.client.contents.renderers.HotpotStrainerBasketContentRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +24,7 @@ public class HotpotContentRenderers {
     public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> DISASSEMBLING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("disassembling_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> COOKING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("cooking_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, HotpotPlayerContentRenderer> PLAYER_CONTENT_RENDERER = CONTENT_RENDERERS.register("player_content", HotpotPlayerContentRenderer::new);
+    public static final DeferredHolder<IHotpotContentRenderer, HotpotStrainerBasketContentRenderer> STRAINER_BASKET_CONTENT_RENDERER = CONTENT_RENDERERS.register("strainer_basket_content", HotpotStrainerBasketContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, HotpotEmptyContentRenderer> EMPTY_CONTENT_RENDERER = CONTENT_RENDERERS.register("empty_content", HotpotEmptyContentRenderer::new);
 
     public static Registry<IHotpotContentRenderer> getContentRendererRegistry() {

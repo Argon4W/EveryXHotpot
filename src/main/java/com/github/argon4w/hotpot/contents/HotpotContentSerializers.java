@@ -19,9 +19,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.ArrayList;
-import java.util.function.Function;
-
 public class HotpotContentSerializers {
     public static final ResourceKey<Registry<IHotpotContentSerializer<?>>> CONTENT_SERIALIZER_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "content_serializer"));
 
@@ -29,8 +26,8 @@ public class HotpotContentSerializers {
     public static final Codec<Holder<IHotpotContentSerializer<?>>> SERIALIZER_HOLDER_CODEC = Codec.lazyInitialized(() -> getContentSerializerRegistry().holderByNameCodec());
 
     public static final MapCodec<IHotpotContent> CODEC = LazyMapCodec.of(() -> SERIALIZER_HOLDER_CODEC.dispatchMap(IHotpotContent::getContentSerializerHolder, holder -> holder.value().getCodec()));
-    public static final Codec<IndexHolder<IHotpotContent>> INDEXED_CODEC = Codec.lazyInitialized(() -> IndexHolder.getIndexedCodec(CODEC, "slot"));
-    public static final Codec<NonNullList<IHotpotContent>> LIST_INDEXED_CODEC = Codec.lazyInitialized(() -> IndexHolder.getSortedListCodec(INDEXED_CODEC).xmap(list -> new NonNullList<>(new ArrayList<>(list), loadEmptyContent()), Function.identity()));
+    public static final Codec<IndexHolder<IHotpotContent>> HOLDER_CODEC = Codec.lazyInitialized(() -> IndexHolder.getIndexedCodec(CODEC, "slot"));
+    public static final Codec<NonNullList<IHotpotContent>> HOTPOT_CONTENTS_CODEC = Codec.lazyInitialized(() -> IndexHolder.getSizedNonNullCodec(HOLDER_CODEC, 8, loadEmptyContent()));
 
     public static final ResourceLocation EMPTY_CONTENT_SERIALIZER_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_content");
 
@@ -43,13 +40,15 @@ public class HotpotContentSerializers {
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotDisassemblingContent.Serializer> DISASSEMBLING_RECIPE_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("disassembling_recipe_content", HotpotDisassemblingContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotPiglinBarterRecipeContent.Serializer> PIGLIN_BARTER_RECIPE_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("piglin_barter_recipe_content", HotpotPiglinBarterRecipeContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotPlayerContent.Serializer> PLAYER_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("player_content", HotpotPlayerContent.Serializer::new);
+    public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotStrainerBasketContent.Serializer> STRAINER_BASKET_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("strainer_basket_content", HotpotStrainerBasketContent.Serializer::new);
     public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotEmptyContent.Serializer> EMPTY_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("empty_content", HotpotEmptyContent.Serializer::new);
+    public static final DeferredHolder<IHotpotContentSerializer<?>, HotpotItemStackDummyContent.Serializer> ITEM_STACK_DUMMY_CONTENT_SERIALIZER = CONTENT_SERIALIZERS.register("item_stack_dummy_content", HotpotItemStackDummyContent.Serializer::new);
 
     public static Registry<IHotpotContentSerializer<?>> getContentSerializerRegistry() {
         return CONTENT_SERIALIZER_REGISTRY;
     }
 
     public static HotpotEmptyContent loadEmptyContent() {
-        return EMPTY_CONTENT_SERIALIZER.get().get();
+        return EMPTY_CONTENT_SERIALIZER.get().getEmptyContent();
     }
 }

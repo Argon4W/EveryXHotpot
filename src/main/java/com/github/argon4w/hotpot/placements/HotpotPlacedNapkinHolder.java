@@ -153,7 +153,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedNapkinHolder get(List<Integer> positions, ComplexDirection direction) {
+        public HotpotPlacedNapkinHolder createPlacement(List<Integer> positions, ComplexDirection direction) {
             return new HotpotPlacedNapkinHolder(positions.getFirst(), direction);
         }
 

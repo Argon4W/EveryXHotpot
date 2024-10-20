@@ -65,7 +65,7 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
         }
 
         @Override
-        public HotpotHurtPlayerWHenInteractSoupComponent get() {
+        public HotpotHurtPlayerWHenInteractSoupComponent createSoupComponent() {
             return unit;
         }
 

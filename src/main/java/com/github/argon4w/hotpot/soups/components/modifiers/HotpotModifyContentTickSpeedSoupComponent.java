@@ -58,7 +58,7 @@ public class HotpotModifyContentTickSpeedSoupComponent extends AbstractHotpotSou
         }
 
         @Override
-        public HotpotModifyContentTickSpeedSoupComponent get() {
+        public HotpotModifyContentTickSpeedSoupComponent createSoupComponent() {
             return unit;
         }
 

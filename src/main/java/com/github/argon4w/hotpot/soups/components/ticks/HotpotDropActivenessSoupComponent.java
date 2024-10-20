@@ -52,7 +52,7 @@ public class HotpotDropActivenessSoupComponent extends AbstractHotpotSoupCompone
         }
 
         @Override
-        public HotpotDropActivenessSoupComponent get() {
+        public HotpotDropActivenessSoupComponent createSoupComponent() {
             return unit;
         }
 

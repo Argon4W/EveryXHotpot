@@ -28,7 +28,7 @@ public class HotpotSynchronizeWaterLevelSoupComponent extends AbstractHotpotSoup
 
         @Override
         public void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-            soup.setWaterLevel(totalWaterLevel / size, hotpotBlockEntity, pos);
+            soup.setWaterLevelWithOverflow(Math.clamp(totalWaterLevel / size, 0.0, 1.0), hotpotBlockEntity, pos);
         }
 
         @Override

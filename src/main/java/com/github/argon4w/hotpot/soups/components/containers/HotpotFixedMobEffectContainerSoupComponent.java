@@ -50,7 +50,7 @@ public class HotpotFixedMobEffectContainerSoupComponent extends AbstractHotpotSo
         }
 
         @Override
-        public HotpotFixedMobEffectContainerSoupComponent get() {
+        public HotpotFixedMobEffectContainerSoupComponent createSoupComponent() {
             return unit;
         }
 

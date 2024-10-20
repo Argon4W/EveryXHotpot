@@ -96,7 +96,7 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedSpoon get(List<Integer> positions, ComplexDirection direction) {
+        public HotpotPlacedSpoon createPlacement(List<Integer> positions, ComplexDirection direction) {
             return new HotpotPlacedSpoon(positions.getFirst(), positions.get(1));
         }
 

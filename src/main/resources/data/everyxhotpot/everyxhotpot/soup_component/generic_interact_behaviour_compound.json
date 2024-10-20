@@ -17,17 +17,21 @@
       "component": "everyxhotpot:generic_remove_soup_when_crouching",
       "index": 3
     },
+    "everyxhotpot:try_pick_content_by_hand": {
+      "component": "everyxhotpot:generic_try_pick_content_by_hand",
+      "index": 4
+    },
     "everyxhotpot:hurt_player_when_interact": {
       "component": "everyxhotpot:generic_hurt_player_when_interact",
-      "index": 4
+      "index": 5
     },
     "everyxhotpot:get_content_by_hand": {
       "component": "everyxhotpot:generic_get_content_by_hand",
-      "index": 5
+      "index": 6
     },
     "everyxhotpot:drop_content_by_hand": {
       "component": "everyxhotpot:generic_drop_content_by_hand",
-      "index": 6
+      "index": 7
     }
   }
 }

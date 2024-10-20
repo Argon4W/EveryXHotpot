@@ -131,9 +131,10 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+    runtimeOnly "maven.modrinth:spark:1.10.109-neoforge"
+    runtimeOnly "maven.modrinth:R2OftAxM:ovSzG9pc"
     compileOnly "maven.modrinth:sodium:mc1.21-0.6.0-beta.1-neoforge"
     compileOnly "maven.modrinth:iris:1.8.0-beta.2+1.21-neoforge"
-    implementation "maven.modrinth:R2OftAxM:ovSzG9pc"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

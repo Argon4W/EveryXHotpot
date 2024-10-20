@@ -35,10 +35,10 @@ public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
     @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_NAPKIN_HOLDER)).filter(itemStack -> !itemStack.isEmpty()).filter(itemStack -> itemStack.getItem() instanceof DyeItem).feed(this::assembleSpicePack).assemble();
+        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_NAPKIN_HOLDER)).filter(itemStack -> !itemStack.isEmpty()).filter(itemStack -> itemStack.getItem() instanceof DyeItem).feed(this::assembleDyedNapkinHolder).assemble();
     }
 
-    private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
+    private ItemStack assembleDyedNapkinHolder(ItemStack assembled, ItemStack ingredient) {
         return DyedItemColor.applyDyes(assembled, List.of((DyeItem) ingredient.getItem()));
     }
 

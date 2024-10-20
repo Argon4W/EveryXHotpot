@@ -58,7 +58,7 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
         }
 
         @Override
-        public HotpotModifyExperienceSoupComponent get() {
+        public HotpotModifyExperienceSoupComponent createSoupComponent() {
             return unit;
         }
 

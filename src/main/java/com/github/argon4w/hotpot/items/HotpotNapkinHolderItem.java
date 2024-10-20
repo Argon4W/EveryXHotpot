@@ -34,7 +34,7 @@ public class HotpotNapkinHolderItem extends HotpotPlacementBlockItem<HotpotPlace
     }
 
     public static void shrinkNapkinItemSlot(ItemStack itemStack, boolean consume) {
-        setDataComponent(itemStack, getDataComponent(itemStack).shrinkNapkinItemSLot(consume));
+        setDataComponent(itemStack, getDataComponent(itemStack).shrinkNapkinItemSlot(consume));
     }
 
     public static void addNapkinItemSlot(ItemStack itemStack, ItemStack napkinItemStack) {

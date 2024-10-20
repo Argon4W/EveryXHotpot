@@ -70,7 +70,7 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
         }
 
         @Override
-        public HotpotAddItemEntityInsideSoupComponent get() {
+        public HotpotAddItemEntityInsideSoupComponent createSoupComponent() {
             return unit;
         }
 

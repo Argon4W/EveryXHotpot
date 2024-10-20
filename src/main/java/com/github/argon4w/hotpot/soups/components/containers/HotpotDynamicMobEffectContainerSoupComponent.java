@@ -97,7 +97,7 @@ public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpot
         }
 
         @Override
-        public HotpotDynamicMobEffectContainerSoupComponent get() {
+        public HotpotDynamicMobEffectContainerSoupComponent createSoupComponent() {
             return new HotpotDynamicMobEffectContainerSoupComponent(size);
         }
 

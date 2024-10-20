@@ -13,7 +13,7 @@ import net.minecraft.world.item.Item;
 
 public class HotpotItemContentRenderer implements IHotpotContentRenderer {
     @Override
-    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z) {
+    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z, int index) {
         if (!(content instanceof AbstractHotpotItemStackContent itemStackContent)) {
             return;
         }

@@ -68,7 +68,7 @@ public class HotpotPunishCooldownContainerSoupComponent extends AbstractHotpotSo
         }
 
         @Override
-        public HotpotPunishCooldownContainerSoupComponent get() {
+        public HotpotPunishCooldownContainerSoupComponent createSoupComponent() {
             return new HotpotPunishCooldownContainerSoupComponent(minCooldown, maxCooldown);
         }
 

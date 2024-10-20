@@ -5,7 +5,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.api.placements.IHotpotPlate;
+import com.github.argon4w.hotpot.api.placements.IHotpotCommonPlacement;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.Optional;
 
-public class HotpotSmallPlate implements IHotpotPlate {
+public class HotpotSmallPlate implements IHotpotCommonPlacement {
     private final int position;
     private final ComplexDirection direction;
     private final SimpleItemSlot itemSlot;
@@ -91,7 +91,7 @@ public class HotpotSmallPlate implements IHotpotPlate {
     }
 
     @Override
-    public void setPlateItemSlot(ItemStack itemStack) {
+    public void setCommonItemSlot(ItemStack itemStack) {
         plateItemSlot.set(itemStack);
     }
 
@@ -122,7 +122,7 @@ public class HotpotSmallPlate implements IHotpotPlate {
         );
 
         @Override
-        public HotpotSmallPlate get(List<Integer> positions, ComplexDirection direction) {
+        public HotpotSmallPlate createPlacement(List<Integer> positions, ComplexDirection direction) {
             return new HotpotSmallPlate(positions.getFirst(), direction);
         }
 

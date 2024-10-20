@@ -6,6 +6,7 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class SimpleRecipeAssembler {
     private final CraftingInput input;
@@ -68,5 +69,9 @@ public class SimpleRecipeAssembler {
 
     public ItemStack assemble() {
         return assembled;
+    }
+
+    public ItemStack assemble(UnaryOperator<ItemStack> function) {
+        return function.apply(assembled);
     }
 }

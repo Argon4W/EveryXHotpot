@@ -47,6 +47,7 @@ public class HotpotPlacementSerializers {
     public static final DeferredHolder<IHotpotPlacementSerializer<?>, HotpotPlacedChopstick.Serializer> PLACED_CHOPSTICK_SERIALIZER = PLACEMENT_SERIALIZERS.register("placed_chopstick", HotpotPlacedChopstick.Serializer::new);
     public static final DeferredHolder<IHotpotPlacementSerializer<?>, HotpotPlacedSpoon.Serializer> PLACED_SPOON_SERIALIZER = PLACEMENT_SERIALIZERS.register("placed_spoon", HotpotPlacedSpoon.Serializer::new);
     public static final DeferredHolder<IHotpotPlacementSerializer<?>, HotpotPlacedPaperBowl.Serializer> PLACED_PAPER_BOWL_SERIALIZER = PLACEMENT_SERIALIZERS.register("placed_paper_bowl", HotpotPlacedPaperBowl.Serializer::new);
+    public static final DeferredHolder<IHotpotPlacementSerializer<?>, HotpotPlacedStrainerBasket.Serializer> PLACED_STRAINER_BASKET_SERIALIZER = PLACEMENT_SERIALIZERS.register("placed_strainer_basket", HotpotPlacedStrainerBasket.Serializer::new);
     public static final DeferredHolder<IHotpotPlacementSerializer<?>, HotpotEmptyPlacement.Serializer> EMPTY_PLACEMENT_SERIALIZER = PLACEMENT_SERIALIZERS.register("empty_placement", HotpotEmptyPlacement.Serializer::new);
 
     public static Registry<IHotpotPlacementSerializer<?>> getPlacementSerializerRegistry() {

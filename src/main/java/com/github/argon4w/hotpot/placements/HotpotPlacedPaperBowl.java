@@ -153,7 +153,7 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedPaperBowl get(List<Integer> positions, ComplexDirection direction) {
+        public HotpotPlacedPaperBowl createPlacement(List<Integer> positions, ComplexDirection direction) {
             return new HotpotPlacedPaperBowl(positions.getFirst(), direction);
         }
 

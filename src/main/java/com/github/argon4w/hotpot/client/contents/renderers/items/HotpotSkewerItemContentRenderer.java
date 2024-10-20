@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.contents.renderers.items;
 
 import com.github.argon4w.hotpot.api.client.contents.IHotpotItemContentSpecialRenderer;
+import com.github.argon4w.hotpot.client.MappingBufferSource;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -16,7 +17,7 @@ public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecia
 
         double positionX = 0.5 + x * 0.315;
         double positionZ = 0.5 + z * 0.315;
-        double positionY = 0.56 - getFloatingCurve(rotation / 360.0, 0.0f) * 0.03 + 0.42 * waterLevel;
+        double positionY = 0.56 - curve(rotation / 360.0, 0.0f) * 0.03 + 0.42 * waterLevel;
 
         double degree = - (Math.toDegrees(Math.safeAsin( (waterLevel - 0.35) / (1.0 - 0.35))) / 90.0) * 85.0;
         double rotationY = rotation + 20.0;
@@ -29,12 +30,12 @@ public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecia
 
         poseStack.scale(0.32f, 0.32f, 0.32f);
 
-        Minecraft.getInstance().getItemRenderer().renderStatic(null, itemStackContent.getItemStack(), ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+        Minecraft.getInstance().getItemRenderer().renderStatic(null, itemStackContent.getItemStack(), ItemDisplayContext.NONE, true, poseStack, MappingBufferSource.itemBufferSource(bufferSource), null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
 
         poseStack.popPose();
     }
 
-    public double getFloatingCurve(double f, double offset) {
+    public double curve(double f, double offset) {
         return Math.sin((f + offset) / 0.25 * 2 * Math.PI);
     }
 }

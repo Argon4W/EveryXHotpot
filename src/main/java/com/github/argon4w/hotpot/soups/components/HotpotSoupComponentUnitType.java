@@ -34,7 +34,7 @@ public class HotpotSoupComponentUnitType<T extends IHotpotSoupComponent> impleme
     }
 
     @Override
-    public T get() {
+    public T createSoupComponent() {
         return unit;
     }
 

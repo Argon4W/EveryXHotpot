@@ -6,6 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IHotpotContent {
     boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos);

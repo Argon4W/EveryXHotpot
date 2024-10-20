@@ -150,7 +150,7 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
             return false;
         }
 
-        T placement = serializer.get(positions, direction);
+        T placement = serializer.createPlacement(positions, direction);
         container.place(placement, position, layer, pos);
 
         loadPlacement(container, pos, placement, itemStack);

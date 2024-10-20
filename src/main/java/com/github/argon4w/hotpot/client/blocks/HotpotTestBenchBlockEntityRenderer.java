@@ -5,17 +5,24 @@ import com.github.argon4w.hotpot.api.client.sections.IBlockEntitySectionGeometry
 import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<HotpotTestBenchBlockEntity>, IBlockEntitySectionGeometryRenderer<HotpotTestBenchBlockEntity> {
+    //private ModelPart modelPart;
+
     public HotpotTestBenchBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
 
     }
@@ -36,15 +43,17 @@ public class HotpotTestBenchBlockEntityRenderer implements BlockEntityRenderer<H
 
     @Override
     public void renderSectionGeometry(HotpotTestBenchBlockEntity blockEntity, AddSectionGeometryEvent.SectionRenderingContext context, PoseStack stack, BlockPos blockPos, BlockPos regionOrigin, ISectionGeometryRenderContext modelRenderContext) {
-        stack.pushPose();
+        //if (modelPart == null) {
+        //    modelPart = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PIG);
+        //}
 
-        stack.translate(0.5, 0.5, 0.5);
-        stack.mulPose(Axis.YP.rotationDegrees(blockPos.getY() % 2 == 0 ? 90 : 0));
-        modelRenderContext.renderUncachedItem(new ItemStack(Items.DIAMOND), ItemDisplayContext.NONE, false, stack, OverlayTexture.NO_OVERLAY);
+        //context.getPoseStack().pushPose();
+        //context.getPoseStack().translate(regionOrigin.getX(), regionOrigin.getY(), regionOrigin.getZ());
 
-        stack.translate(0, -0.3, 0.2);
-        modelRenderContext.renderUncachedItem(new ItemStack(Items.DIAMOND), ItemDisplayContext.NONE, false, stack, OverlayTexture.NO_OVERLAY);
+        //context.getPoseStack().translate(0.5, 0.5, 0.5);
+        //context.getPoseStack().mulPose(Axis.YP.rotationDegrees(blockPos.getY() % 2 == 0 ? 90 : 0));
+        //modelPart.render(context.getPoseStack(), context.getOrCreateChunkBuffer(RenderType.entityTranslucent(ResourceLocation.withDefaultNamespace("textures/entity/pig/pig.png"))), modelRenderContext.getPackedLight(), OverlayTexture.NO_OVERLAY);
 
-        stack.popPose();
+        //context.getPoseStack().popPose();
     }
 }

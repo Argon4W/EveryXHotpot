@@ -1,8 +1,9 @@
 package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.AbstractHotpotRotatingContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
-import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.contents.IHotpotItemUpdaterContent;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.api.items.IHotpotCustomItemStackUpdaterProvider;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
+public abstract class AbstractHotpotItemStackContent implements IHotpotItemUpdaterContent {
     protected final ItemStack originalItemStack;
 
     protected ItemStack itemStack;
@@ -100,12 +101,13 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         return itemStack.isEmpty();
     }
 
-    public IHotpotItemStackUpdater getItemStackUpdater() {
-        return itemStack.getItem() instanceof IHotpotCustomItemStackUpdaterProvider provider ? provider.getItemStackUpdater() : IHotpotItemStackUpdater.pass();
-    }
-
+    @Override
     public void updateItemStack(Consumer<ItemStack> consumer) {
         itemStack = getItemStackUpdater().update(itemStack, consumer);
+    }
+
+    public IHotpotItemStackUpdater getItemStackUpdater() {
+        return itemStack.getItem() instanceof IHotpotCustomItemStackUpdaterProvider provider ? provider.getItemStackUpdater() : IHotpotItemStackUpdater.pass();
     }
 
     public ItemStack getItemStack() {
@@ -128,7 +130,7 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
         return experience;
     }
 
-    public abstract static class Serializer<T extends AbstractHotpotItemStackContent> implements IHotpotContentSerializer<T> {
+    public abstract static class Serializer<T extends AbstractHotpotItemStackContent> extends AbstractHotpotRotatingContentSerializer<T> {
         private final MapCodec<T> codec;
 
         public Serializer() {
@@ -139,11 +141,11 @@ public abstract class AbstractHotpotItemStackContent implements IHotpotContent {
                             Codec.INT.fieldOf("cooking_time").forGetter(AbstractHotpotItemStackContent::getCookingTime),
                             Codec.DOUBLE.fieldOf("cooking_progress").forGetter(AbstractHotpotItemStackContent::getCookingProgress),
                             Codec.DOUBLE.fieldOf("experience").forGetter(AbstractHotpotItemStackContent::getExperience)
-                    ).apply(content, this::getFromData))
+                    ).apply(content, this::createContent))
             );
         }
 
-        public abstract T getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience);
+        public abstract T createContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience);
 
         @Override
         public MapCodec<T> getCodec() {

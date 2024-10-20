@@ -37,7 +37,7 @@ public class HotpotSoupRechargeRecipeAcceptorSoupComponent extends AbstractHotpo
         HotpotSoupRechargeRecipe recipe = optional.get();
 
         HotpotItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
-        soup.setWaterLevel(soup.getWaterLevel() + recipe.getRechargeWaterLevel(), hotpotBlockEntity, pos);
+        soup.setWaterLevelWithOverflow(soup.getWaterLevel() + recipe.getRechargeWaterLevel(), hotpotBlockEntity, pos);
         pos.playSound(recipe.getSoundEvent());
 
         return IHotpotResult.blocked();

@@ -4,8 +4,11 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.client.items.renderers.*;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -21,6 +24,7 @@ public class HotpotItemSpecialRenderers {
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotPaperBowlRenderer> PAPER_BOWL_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_paper_bowl", HotpotPaperBowlRenderer::new);
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotSkewerRenderer> SKEWER_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_skewer", HotpotSkewerRenderer::new);
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotNapkinHolderItemRenderer> NAPKIN_HOLDER_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_napkin_holder", HotpotNapkinHolderItemRenderer::new);
+    public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotStrainerBasketRenderer> NAPKIN_STRAINER_BASKET_RENDERER = ITEM_SPECIAL_RENDERERS.register("hotpot_strainer_basket", HotpotStrainerBasketRenderer::new);
     public static final DeferredHolder<IHotpotItemSpecialRenderer, HotpotEmptyItemSpecialRenderer> EMPTY_ITEM_RENDERER = ITEM_SPECIAL_RENDERERS.register("empty_item_renderer", HotpotEmptyItemSpecialRenderer::new);
 
     public static IHotpotItemSpecialRenderer getEmptyItemRenderer() {
@@ -31,7 +35,7 @@ public class HotpotItemSpecialRenderers {
         return ITEM_SPECIAL_RENDERER_REGISTRY;
     }
 
-    public static IHotpotItemSpecialRenderer getItemSpecialRenderer(ResourceLocation resourceLocation) {
-        return getItemSpecialRendererRegistry().get(resourceLocation);
+    public static IHotpotItemSpecialRenderer getItemSpecialRenderer(ItemStack itemStack) {
+        return getItemSpecialRendererRegistry().get(BuiltInRegistries.ITEM.getKey(itemStack.getItem()));
     }
 }

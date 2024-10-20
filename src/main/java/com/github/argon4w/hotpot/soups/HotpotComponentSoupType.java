@@ -66,8 +66,8 @@ public class HotpotComponentSoupType {
         return ResourceLocation.STREAM_CODEC.<RegistryFriendlyByteBuf>cast().dispatch(Map.Entry::getKey, streamCodecs::get).apply(ByteBufCodecs.list()).map(list -> list.stream().collect(EntryStreams.ofSequenced()), map -> List.copyOf(map.entrySet())).map(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
     }
 
-    public HotpotComponentSoup getComponentSoup(Holder<HotpotComponentSoupType> soupTypeHolder) {
-        return new HotpotComponentSoup(componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue(value -> value.<IHotpotSoupComponent>mapValue(holder -> holder.value().get()))).collect(EntryStreams.ofSequenced()), soupTypeHolder);
+    public HotpotComponentSoup createComponentSoup(Holder<HotpotComponentSoupType> soupTypeHolder) {
+        return new HotpotComponentSoup(componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue(value -> value.<IHotpotSoupComponent>mapValue(holder -> holder.value().createSoupComponent()))).collect(EntryStreams.ofSequenced()), soupTypeHolder);
     }
 
     public <T extends IHotpotSoupComponent> List<ResourceLocation> getComponentKeysByTypes(List<Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>>> componentTypeSerializerHolders) {
@@ -83,7 +83,7 @@ public class HotpotComponentSoupType {
     }
 
     public static HotpotComponentSoup loadSoup(Holder<HotpotComponentSoupType> holder) {
-        return holder.value().getComponentSoup(holder);
+        return holder.value().createComponentSoup(holder);
     }
 
     public static HotpotComponentSoup loadSoup(ResourceKey<HotpotComponentSoupType> key, HolderLookup.Provider registryAccess) {

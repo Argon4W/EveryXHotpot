@@ -3,8 +3,8 @@
 	"parent": "builtin/entity",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "everyxhotpot:item/hotpot_paper_bowl",
-		"particle": "everyxhotpot:item/hotpot_paper_bowl"
+		"0": "hotpot_paper_bowl_rework",
+		"particle": "hotpot_paper_bowl_rework"
 	},
 	"display": {
 		"thirdperson_righthand": {
@@ -18,12 +18,12 @@
 			"scale": [0.5, 0.5, 0.5]
 		},
 		"firstperson_righthand": {
-			"rotation": [0, -84, -6],
+			"rotation": [0, 84, -6],
 			"translation": [0.75, 3.75, -0.5],
 			"scale": [0.68, 0.68, 0.68]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, -84, -6],
+			"rotation": [0, 84, -6],
 			"translation": [0.75, 3.75, -0.5],
 			"scale": [0.68, 0.68, 0.68]
 		},

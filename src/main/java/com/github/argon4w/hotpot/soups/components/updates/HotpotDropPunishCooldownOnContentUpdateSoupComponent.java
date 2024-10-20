@@ -54,7 +54,7 @@ public class HotpotDropPunishCooldownOnContentUpdateSoupComponent extends Abstra
         }
 
         @Override
-        public HotpotDropPunishCooldownOnContentUpdateSoupComponent get() {
+        public HotpotDropPunishCooldownOnContentUpdateSoupComponent createSoupComponent() {
             return unit;
         }
 

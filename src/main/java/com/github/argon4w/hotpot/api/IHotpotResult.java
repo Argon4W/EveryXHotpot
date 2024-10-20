@@ -137,6 +137,16 @@ public interface IHotpotResult<T> {
         public T orElse(T other) {
             return value;
         }
+
+        @Override
+        public String toString() {
+            return value.toString();
+        }
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    static <T> IHotpotResult<T> fromOptional(Optional<T> optional) {
+        return optional.map(IHotpotResult::success).orElseGet(IHotpotResult::pass);
     }
 
     static <T> IHotpotResult<T> ofNullable(T value) {
@@ -153,5 +163,10 @@ public interface IHotpotResult<T> {
 
     static <T> IHotpotResult<T> success(T value) {
         return new Value<>(value);
+    }
+
+    static  <T> IHotpotResult<T> pass(Runnable runnable) {
+        runnable.run();
+        return pass();
     }
 }

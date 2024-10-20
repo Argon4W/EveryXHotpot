@@ -1,5 +1,6 @@
 package com.github.argon4w.hotpot.items;
 
+import com.github.argon4w.hotpot.HotpotItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
@@ -61,6 +62,22 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         }
 
         if (!HotpotPaperBowlItem.isPaperBowlClear(offhandItemStack)) {
+            if (!HotpotPaperBowlItem.getPaperBowlSoupStatus(offhandItemStack).canBeOverridden()) {
+                return;
+            }
+
+            if (!HotpotPaperBowlItem.isPaperBowlSameSoup(offhandItemStack, hotpotBlockEntity)) {
+                return;
+            }
+
+            if (HotpotPaperBowlItem.isPaperBowlUsed(offhandItemStack)) {
+                return;
+            }
+
+            ItemStack bowl = offhandItemStack.split(1);
+            HotpotPaperBowlItem.setPaperBowlSoupStatus(bowl, soupStatus);
+            HotpotItemUtils.addToInventory(player, bowl);
+
             return;
         }
 
@@ -93,6 +110,10 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
                 selfPos.dropItemStack(content);
                 continue;
             }
+            if (content.is(HotpotModEntry.HOTPOT_STRAINER_BASKET)) {
+                selfPos.dropItemStack(content);
+                continue;
+            }
 
             if (content.getItem() instanceof HotpotSkewerItem)  {
                 skewers.add(content);
@@ -114,10 +135,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         HotpotPaperBowlItem.setPaperBowlSoupStatus(bowl, soupStatus);
 
         selfPos.playSound(SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
-
-        if (!player.addItem(bowl)) {
-            selfPos.dropItemStack(bowl);
-        }
+        HotpotItemUtils.addToInventory(player, bowl);
     }
 
     public HotpotSoupStatus getSoupStatus() {

@@ -1,10 +1,12 @@
 package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.AbstractHotpotRotatingContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 
@@ -41,20 +43,26 @@ public class HotpotEmptyContent implements IHotpotContent {
         return HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER;
     }
 
-    public static class Serializer implements IHotpotContentSerializer<HotpotEmptyContent> {
+    public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotEmptyContent> {
+        public static final HotpotEmptyContent UNIT = new HotpotEmptyContent();
 
         @Override
-        public HotpotEmptyContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-            return get();
+        public HotpotEmptyContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+            return UNIT;
         }
 
         @Override
         public MapCodec<HotpotEmptyContent> getCodec() {
-            return MapCodec.unit(this::get);
+            return MapCodec.unit(UNIT);
         }
 
-        public HotpotEmptyContent get() {
-            return new HotpotEmptyContent();
+        @Override
+        public int getPriority() {
+            return 0;
+        }
+
+        public HotpotEmptyContent getEmptyContent() {
+            return UNIT;
         }
     }
 }

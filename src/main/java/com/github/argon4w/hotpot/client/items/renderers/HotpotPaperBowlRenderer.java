@@ -49,13 +49,8 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         double minWaterLevel = fullWaterLevel * 0.4375 - 0.06 * 6.0 + 0.5625 + 0.04;
         double minElementLevel = (fullWaterLevel - (0.06 / 0.4375) * 6.0) + 0.13;
 
-        double waterLevel = minWaterLevelNoLimit + 0.06 * size + 0.5625;
-        double elementLevel = (fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size;
-
-        if (drained) {
-            waterLevel = minWaterLevel;
-            elementLevel = minElementLevel;
-        }
+        double waterLevel = drained ? minWaterLevel : (minWaterLevelNoLimit + 0.06 * size + 0.5625);
+        double elementLevel = drained ? minElementLevel : ((fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size);
 
         RandomSource randomSource = RandomSource.create();
         randomSource.setSeed(42);

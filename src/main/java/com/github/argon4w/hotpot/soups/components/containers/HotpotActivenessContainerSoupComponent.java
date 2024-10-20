@@ -63,7 +63,7 @@ public class HotpotActivenessContainerSoupComponent extends AbstractHotpotSoupCo
         }
 
         @Override
-        public HotpotActivenessContainerSoupComponent get() {
+        public HotpotActivenessContainerSoupComponent createSoupComponent() {
             return new HotpotActivenessContainerSoupComponent(minActiveness, maxActiveness);
         }
 

@@ -3,11 +3,13 @@ package com.github.argon4w.hotpot;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
@@ -45,11 +47,15 @@ public record IndexHolder<T>(int index, T value) {
         return ByteBufCodecs.INT.<B>cast().dispatch(IndexHolder::index, i -> streamCodec.map(t -> new IndexHolder<>(i, t), IndexHolder::value));
     }
 
-    public static <T> Codec<List<T>> getSortedListCodec(Codec<IndexHolder<T>> codec) {
-        return codec.listOf().xmap(list -> list.stream().sorted(getIndexComparator(Function.identity())).map(IndexHolder::value).toList(), list -> IntStream.range(0, list.size()).mapToObj(i -> new IndexHolder<>(i, list.get(i))).toList());
+    public static <T> Codec<NonNullList<T>> getSizedNonNullCodec(Codec<IndexHolder<T>> codec, int size, T defaultValue) {
+        return codec.listOf().xmap(list -> list.stream().collect(() -> NonNullList.withSize(size, defaultValue), (nonNullList, holder) -> nonNullList.set(holder.index, holder.value), nop()), list -> IntStream.range(0, list.size()).mapToObj(i -> new IndexHolder<>(i, list.get(i))).toList());
     }
 
     public static <B extends ByteBuf, T> StreamCodec<B, List<T>> getSortedListStreamCodec(StreamCodec<B, IndexHolder<T>> streamCodec) {
         return streamCodec.apply(ByteBufCodecs.list()).map(list -> list.stream().sorted(getIndexComparator(Function.identity())).map(IndexHolder::value).toList(), list -> IntStream.range(0, list.size()).mapToObj(i -> new IndexHolder<>(i, list.get(i))).toList());
+    }
+
+    public static <T1, T2>BiConsumer<T1, T2> nop() {
+        return (t1, t2) -> {};
     }
 }

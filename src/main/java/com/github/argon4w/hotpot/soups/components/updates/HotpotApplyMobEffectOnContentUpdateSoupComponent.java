@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.soups.components.updates;
 
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.IHotpotItemUpdaterContent;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
@@ -36,15 +37,11 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
             return result;
         }
 
-        if (!(result.get() instanceof AbstractHotpotItemStackContent itemStackContent)) {
+        if (!(result.get() instanceof IHotpotItemUpdaterContent itemUpdaterContent)) {
             return result;
         }
 
-        if (itemStackContent.getCookingTime() >= 0) {
-            return result;
-        }
-
-        itemStackContent.updateItemStack(itemStack -> {
+        itemUpdaterContent.updateItemStack(itemStack -> {
             if (!itemStack.has(DataComponents.FOOD)) {
                 return;
             }
@@ -85,7 +82,7 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
         }
 
         @Override
-        public HotpotApplyMobEffectOnContentUpdateSoupComponent get() {
+        public HotpotApplyMobEffectOnContentUpdateSoupComponent createSoupComponent() {
             return unit;
         }
 

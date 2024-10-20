@@ -24,9 +24,7 @@ public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLev
             return;
         }
 
-        Item item = itemStack.getItem();
-        ResourceLocation itemResourceLocation = BuiltInRegistries.ITEM.getKey(item);
-        IHotpotItemSpecialRenderer renderer = HotpotItemSpecialRenderers.getItemSpecialRenderer(itemResourceLocation);
+        IHotpotItemSpecialRenderer renderer = HotpotItemSpecialRenderers.getItemSpecialRenderer(itemStack);
 
         renderer.getDefaultItemModelResourceLocation().ifPresent(resourceLocation -> {
             poseStack.pushPose();

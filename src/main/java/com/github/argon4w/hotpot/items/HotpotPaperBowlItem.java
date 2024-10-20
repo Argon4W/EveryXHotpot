@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
+import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotPaperBowlDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
@@ -254,6 +255,10 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY);
     }
 
+    public static boolean isPaperBowlSameSoup(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
+        return hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
+    }
+
     public static ResourceKey<HotpotComponentSoupType> getPaperBowlSoupTypeKey(ItemStack itemStack) {
         return getDataComponent(itemStack).soupTypeKey();
     }
@@ -283,6 +288,6 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static void setPaperBowlSoupStatus(ItemStack itemStack, HotpotSoupStatus soupStatus) {
-        setDataComponent(itemStack, getDataComponent(itemStack).setDrained(soupStatus));
+        setDataComponent(itemStack, getDataComponent(itemStack).setSoupStatus(soupStatus));
     }
 }

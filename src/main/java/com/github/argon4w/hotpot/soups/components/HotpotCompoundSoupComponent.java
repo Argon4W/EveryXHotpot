@@ -101,6 +101,11 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
     }
 
     @Override
+    public void setWaterLevelWithOverflow(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+        throw new IllegalStateException("Illegal call to a compound component");
+    }
+
+    @Override
     public void setWaterLevel(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
@@ -117,7 +122,7 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
 
     public record Type(Map<ResourceLocation, IndexHolder<Either<ResourceKey<IHotpotSoupComponentType<?>>, IHotpotSoupComponentType<?>>>> componentTypeHolders) implements IHotpotSoupComponentType<HotpotCompoundSoupComponent> {
         @Override
-        public HotpotCompoundSoupComponent get() {
+        public HotpotCompoundSoupComponent createSoupComponent() {
             throw new IllegalStateException("Illegal call to a compound component type");
         }
 

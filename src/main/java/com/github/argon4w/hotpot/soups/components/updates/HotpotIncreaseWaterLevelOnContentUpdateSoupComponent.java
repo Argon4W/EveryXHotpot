@@ -28,7 +28,7 @@ public class HotpotIncreaseWaterLevelOnContentUpdateSoupComponent extends Abstra
 
     @Override
     public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        return result.ifPresent(content -> soup.setWaterLevel(base + factor * soup.getWaterLevel(), hotpotBlockEntity, pos));
+        return result.ifPresent(content -> soup.setWaterLevelWithOverflow(base + factor * soup.getWaterLevel(), hotpotBlockEntity, pos));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotIncreaseWaterLevelOnContentUpdateSoupComponent> {
@@ -59,7 +59,7 @@ public class HotpotIncreaseWaterLevelOnContentUpdateSoupComponent extends Abstra
         }
 
         @Override
-        public HotpotIncreaseWaterLevelOnContentUpdateSoupComponent get() {
+        public HotpotIncreaseWaterLevelOnContentUpdateSoupComponent createSoupComponent() {
             return unit;
         }
 

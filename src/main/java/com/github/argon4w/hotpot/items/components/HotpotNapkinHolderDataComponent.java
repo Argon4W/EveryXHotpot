@@ -34,7 +34,7 @@ public record HotpotNapkinHolderDataComponent(SimpleItemSlot itemSlot) {
         return itemStack.is(Items.PAPER) ? new HotpotNapkinHolderDataComponent(itemSlot.copy().transferItem(itemStack)) : this;
     }
 
-    public HotpotNapkinHolderDataComponent shrinkNapkinItemSLot(boolean consume) {
+    public HotpotNapkinHolderDataComponent shrinkNapkinItemSlot(boolean consume) {
         return new HotpotNapkinHolderDataComponent(itemSlot.copy().shrink(consume ? 1 : 0));
     }
 

@@ -6,12 +6,16 @@
       "index": 0
     },
     "everyxhotpot:campfire_recipe_content_provider": {
-      "component": "everyxhotpot:generic_campfire_recipe_content_provider",
+      "component": "everyxhotpot:generic_strainer_basket_content_provider",
       "index": 1
+    },
+    "everyxhotpot:strainer_recipe_content_provider": {
+      "component": "everyxhotpot:generic_campfire_recipe_content_provider",
+      "index": 2
     },
     "everyxhotpot:can_be_packed": {
       "component": "everyxhotpot:generic_can_be_packed",
-      "index": 2
+      "index": 3
     }
   }
 }

@@ -58,7 +58,7 @@ public class HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent extends A
         }
 
         @Override
-        public HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent get() {
+        public HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent createSoupComponent() {
             return unit;
         }
 

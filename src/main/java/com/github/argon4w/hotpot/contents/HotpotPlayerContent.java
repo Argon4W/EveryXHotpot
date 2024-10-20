@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.contents;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.AbstractHotpotRotatingContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -8,6 +9,7 @@ import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
@@ -79,7 +81,7 @@ public class HotpotPlayerContent implements IHotpotContent {
         return itemStack;
     }
 
-    public static class Serializer implements IHotpotContentSerializer<HotpotPlayerContent> {
+    public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotPlayerContent> {
         public static final MapCodec<HotpotPlayerContent> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(content -> content.group(
                         ResolvableProfile.CODEC.fieldOf("profile").forGetter(HotpotPlayerContent::getProfile),
@@ -88,7 +90,7 @@ public class HotpotPlayerContent implements IHotpotContent {
         );
 
         @Override
-        public HotpotPlayerContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotPlayerContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             throw new IllegalStateException("Illegal call to a non-item based content");
         }
 

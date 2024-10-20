@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -61,12 +62,12 @@ public class HotpotPiglinBarterRecipeContent extends AbstractHotpotItemStackCont
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotPiglinBarterRecipeContent> {
         @Override
-        public HotpotPiglinBarterRecipeContent getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+        public HotpotPiglinBarterRecipeContent createContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
             return new HotpotPiglinBarterRecipeContent(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotPiglinBarterRecipeContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotPiglinBarterRecipeContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             return new HotpotPiglinBarterRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

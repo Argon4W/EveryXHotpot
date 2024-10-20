@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.soups.recipes.holder.BlastingRecipeHolder;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -35,12 +36,12 @@ public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotBlastingRecipeContent> {
         @Override
-        public HotpotBlastingRecipeContent getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+        public HotpotBlastingRecipeContent createContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
             return new HotpotBlastingRecipeContent(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotBlastingRecipeContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotBlastingRecipeContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             return new HotpotBlastingRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

@@ -98,7 +98,7 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
         );
 
         @Override
-        public HotpotPlacedChopstick get(List<Integer> positions, ComplexDirection direction) {
+        public HotpotPlacedChopstick createPlacement(List<Integer> positions, ComplexDirection direction) {
             return new HotpotPlacedChopstick(positions.get(0), positions.get(1));
         }
 

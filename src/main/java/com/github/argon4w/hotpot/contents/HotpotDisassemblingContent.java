@@ -5,6 +5,7 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
@@ -121,12 +122,12 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotDisassemblingContent> {
         @Override
-        public HotpotDisassemblingContent getFromData(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+        public HotpotDisassemblingContent createContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
             return new HotpotDisassemblingContent(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotDisassemblingContent get(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        public HotpotDisassemblingContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             return new HotpotDisassemblingContent(itemStack, hotpotBlockEntity, pos);
         }
     }

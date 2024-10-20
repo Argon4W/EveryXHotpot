@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.soups.components.contents;
 
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.contents.IHotpotItemUpdaterContent;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
@@ -36,11 +37,11 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
             return result;
         }
 
-        if (!(result.get() instanceof AbstractHotpotItemStackContent itemStackContent)) {
+        if (!(result.get() instanceof IHotpotItemUpdaterContent itemUpdaterContent)) {
             return result;
         }
 
-        itemStackContent.updateItemStack(itemStack -> HotpotSpriteConfigDataComponent.addSpriteConfigs(itemStack, spriteConfigs));
+        itemUpdaterContent.updateItemStack(itemStack -> HotpotSpriteConfigDataComponent.addSpriteConfigs(itemStack, spriteConfigs));
         return result;
     }
 
@@ -60,7 +61,7 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
         }
 
         @Override
-        public HotpotApplySpriteConfigsWhenGetContentSoupComponent get() {
+        public HotpotApplySpriteConfigsWhenGetContentSoupComponent createSoupComponent() {
             return unit;
         }
 

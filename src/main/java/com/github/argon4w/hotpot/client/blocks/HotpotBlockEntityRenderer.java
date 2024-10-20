@@ -33,6 +33,10 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
         double renderedWaterLevel = blockEntity.renderedWaterLevel;
         double difference = (waterLevel - renderedWaterLevel);
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup().soupTypeHolder().getKey());
+
+        renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, clientTime, partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
+        renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563, renderedWaterLevel * 0.4375 + 0.5625));
 
         double newRenderedWaterLevel = Math.abs(difference) < 0.02f ? waterLevel : (renderedWaterLevel + difference * partialTick / 8f);
         blockEntity.renderedWaterLevel = Math.max(0.35f, renderedWaterLevel < 0 ? waterLevel : newRenderedWaterLevel);
@@ -44,6 +48,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         double lastOrbitY = orbitY(interval * 7.0f + round);
 
         for (int i = 0; i < blockEntity.getContents().size(); i++) {
+            final int index = i;
             double orbitX = orbitX(interval * i + round);
             double orbitY = orbitY(interval * i + round);
 
@@ -53,13 +58,8 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             lastOrbitY = orbitY;
 
             IHotpotContent content = blockEntity.getContents().get(i);
-            content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX));
+            content.getContentSerializerHolder().unwrapKey().map(ResourceKey::location).ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(content, poseStack, bufferSource, combinedLight, combinedOverlay, rotation, renderedWaterLevel, orbitY, orbitX, index));
         }
-
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity.getSoup().soupTypeHolder().getKey());
-
-        renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, clientTime, partialTick, combinedLight, combinedOverlay, renderedWaterLevel, false);
-        renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(0.563, renderedWaterLevel * 0.4375 + 0.5625));
     }
 
     public static void renderHotpotSoup(ResourceLocation resourceLocation, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double renderedWaterLevel) {
@@ -117,6 +117,6 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
     @Override
     public int getViewDistance() {
-        return 24;
+        return 12;
     }
 }

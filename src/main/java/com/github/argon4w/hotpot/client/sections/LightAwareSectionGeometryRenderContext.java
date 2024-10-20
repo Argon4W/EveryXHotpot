@@ -184,11 +184,12 @@ public record LightAwareSectionGeometryRenderContext(RandomSource randomSource, 
         public void putBulkData(@NotNull PoseStack.Pose pose, @NotNull BakedQuad bakedQuad, float red, float green, float blue, float alpha, int packedLight, int packedOverlay, boolean readExistingColor) {
             IQuadTransformer transformer = QuadTransformers.applying(new Transformation(pose.pose()));
             QuadLighter lighter = context.getQuadLighter(false);
+            BakedQuad quad = transformer.process(bakedQuad);
 
             lighter.setup(context.getRegion(), pos, context.getRegion().getBlockState(pos));
-            lighter.computeLightingForQuad(bakedQuad);
+            lighter.computeLightingForQuad(quad);
 
-            vertexConsumer.putBulkData(context.getPoseStack().last(), transformer.process(bakedQuad), lighter.getComputedBrightness(), red, green, blue, alpha, lighter.getComputedLightmap(), packedOverlay, readExistingColor);
+            vertexConsumer.putBulkData(context.getPoseStack().last(), quad, lighter.getComputedBrightness(), red, green, blue, alpha, lighter.getComputedLightmap(), packedOverlay, readExistingColor);
             lighter.reset();
         }
     }

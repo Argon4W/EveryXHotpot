@@ -119,6 +119,10 @@ public record HotpotComponentSoup(LinkedHashMap<ResourceLocation, IndexHolder<IH
         components.values().stream().map(IndexHolder::value).forEach(component -> component.onTick(hotpotBlockEntity, this, pos));
     }
 
+    public void setWaterLevelWithOverflow(double waterLevel, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+        components.values().stream().map(IndexHolder::value).forEach(component -> component.setWaterLevelWithOverflow(waterLevel, hotpotBlockEntity, this, pos));
+    }
+
     public void setWaterLevel(double waterLevel, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         components.values().stream().map(IndexHolder::value).forEach(component -> component.setWaterLevel(waterLevel, hotpotBlockEntity, this, pos));
     }

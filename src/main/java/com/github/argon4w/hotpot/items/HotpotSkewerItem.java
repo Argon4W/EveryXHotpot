@@ -11,6 +11,7 @@ import com.github.argon4w.hotpot.contents.AbstractHotpotRecipeContent;
 import com.github.argon4w.hotpot.items.components.HotpotSkewerDataComponent;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
+import net.minecraft.Util;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -150,15 +151,12 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
             return 0;
         }
 
-        return (int) (foodItemStack.getUseDuration(livingEntity) * (0.5f / 1.5f));
+        return (int) (foodItemStack.getUseDuration(livingEntity) * 0.5);
     }
 
     @Override
     public IHotpotItemStackUpdater getItemStackUpdater() {
-        return (itemStack, consumer) -> {
-            applySkewerItems(itemStack, consumer);
-            return itemStack;
-        };
+        return HotpotSkewerItem::applyToSkewerItems;
     }
 
     @Override
@@ -215,7 +213,7 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
         setDataComponent(itemStack, getDataComponent(itemStack).addItemStack(added));
     }
 
-    public static void applySkewerItems(ItemStack itemStack, Consumer<ItemStack> consumer) {
-        setDataComponent(itemStack, getDataComponent(itemStack).applyItemStacks(consumer));
+    public static ItemStack applyToSkewerItems(ItemStack itemStack, Consumer<ItemStack> consumer) {
+        return Util.make(itemStack, itemStack1 -> setDataComponent(itemStack1, getDataComponent(itemStack).applyToItemStacks(consumer)));
     }
 }
