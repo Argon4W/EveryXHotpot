@@ -3,7 +3,7 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.github.argon4w.hotpot.placements.HotpotPlacedPaperBowl;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;

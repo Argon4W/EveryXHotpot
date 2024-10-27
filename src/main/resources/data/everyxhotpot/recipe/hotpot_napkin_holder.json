@@ -10,9 +10,9 @@
     }
   },
   "pattern": [
-    " P ",
+    "PPP",
     "PSP",
-    " P "
+    "PPP"
   ],
   "result": {
     "id": "everyxhotpot:hotpot_napkin_holder"

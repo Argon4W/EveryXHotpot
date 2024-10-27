@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;

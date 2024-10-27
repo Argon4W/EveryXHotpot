@@ -36,8 +36,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
 
     @Override
     public int getBarColor(ItemStack itemStack) {
-        float f = Math.max(0.0F, (float) getSpicePackCharges(itemStack) / 20f);
-        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+        return Mth.hsvToRgb(Math.max(0.0F, (float) getSpicePackCharges(itemStack) / 20f) / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -76,6 +75,19 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
         PotionContents.addPotionTooltip(getSpicePackEffects(itemStack).getMobEffects(), components::add, 1.0f, context.tickRate());
     }
 
+    @Override
+    public String getDescriptionId(ItemStack itemStack) {
+        if (isSpicePackEmpty(itemStack)) {
+            return super.getDescriptionId(itemStack) + ".empty";
+        }
+
+        if (isSpicePackFull(itemStack)) {
+            return super.getDescriptionId(itemStack) + ".full";
+        }
+
+        return super.getDescriptionId(itemStack);
+    }
+
     public static HotpotSpicePackDataComponent getDataComponent(ItemStack itemStack) {
         return itemStack.getOrDefault(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY);
     }
@@ -88,6 +100,10 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
         return List.copyOf(getDataComponent(itemStack).itemStacks());
     }
 
+    public static int getSpicePackItemSize(ItemStack itemStack) {
+        return getDataComponent(itemStack).itemStacks().size();
+    }
+
     public static int getSpicePackCharges(ItemStack itemStack) {
         return getDataComponent(itemStack).charges();
     }
@@ -97,7 +113,11 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
     }
 
     public static boolean isSpicePackEmpty(ItemStack itemStack) {
-        return getSpicePackItems(itemStack).isEmpty();
+        return getDataComponent(itemStack).itemStacks().isEmpty();
+    }
+
+    public static boolean isSpicePackFull(ItemStack itemStack) {
+        return getSpicePackItemSize(itemStack) >= 4;
     }
 
     public static void shrinkSpicePackCharges(ItemStack itemStack) {
@@ -113,6 +133,6 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
     }
 
     public static HotpotMobEffectMap getSpicePackEffects(ItemStack itemStack) {
-        return getDataComponent(itemStack).getFoodEffects();
+        return getDataComponent(itemStack).getSpicePackEffects();
     }
 }

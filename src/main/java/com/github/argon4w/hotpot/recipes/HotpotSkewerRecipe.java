@@ -24,8 +24,26 @@ public class HotpotSkewerRecipe extends CustomRecipe {
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
-        List<ItemStack> list = new ArrayList<>();
-        return new SimpleRecipeMatcher(input).with(this::isFood).collect(list::add).atLeast(1).with(itemStack -> matchSkewerItem(itemStack, list.size())).once().withRemaining().empty().match();
+        return new SimpleRecipeMatcher(input).with(this::isFood).count().atLeast(1).with(this::matchSkewerItem).once().withRemaining().empty().match();
+    }
+
+    @Override
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
+        return new SimpleRecipeAssembler(input).basedOn(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSkewer).assemble();
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * width >= 2;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return HotpotModEntry.HOTPOT_SKEWER_SPECIAL_RECIPE.get();
+    }
+
+    private ItemStack assembleSkewer(ItemStack assembled, ItemStack ingredient) {
+        return Util.make(assembled, assembled1 -> HotpotSkewerItem.addSkewerItems(assembled1, ingredient.copyWithCount(1)));
     }
 
     private boolean matchSkewerItem(ItemStack itemStack, int count) {
@@ -34,26 +52,5 @@ public class HotpotSkewerRecipe extends CustomRecipe {
 
     private boolean isFood(ItemStack itemStack) {
         return itemStack.has(DataComponents.FOOD) && !itemStack.hasCraftingRemainingItem();
-    }
-
-    @NotNull
-    @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SKEWER)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSkewer).assemble();
-    }
-
-    private ItemStack assembleSkewer(ItemStack assembled, ItemStack ingredient) {
-        return Util.make(assembled, assembled1 -> HotpotSkewerItem.addSkewerItems(assembled1, ingredient.copyWithCount(1)));
-    }
-
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * width >= 2;
-    }
-
-    @NotNull
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return HotpotModEntry.HOTPOT_SKEWER_SPECIAL_RECIPE.get();
     }
 }

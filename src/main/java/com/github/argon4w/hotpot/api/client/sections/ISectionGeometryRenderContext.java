@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.client.sections;
+package com.github.argon4w.hotpot.api.client.sections;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;

@@ -7,8 +7,7 @@
           {
             "items": [
               "minecraft:iron_ingot",
-              "minecraft:heavy_weighted_pressure_plate",
-              "minecraft:iron_bars"
+              "minecraft:heavy_weighted_pressure_plate"
             ]
           }
         ]

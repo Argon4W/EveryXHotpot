@@ -5,19 +5,23 @@ import net.minecraft.world.item.crafting.CraftingInput;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SimpleRecipeMatcher {
     private final List<ItemStack> items;
-    private boolean matched = true;
-
-    public SimpleRecipeMatcher(CraftingInput input) {
-        this(input.items());
-    }
+    private boolean matched;
+    private int count;
 
     public SimpleRecipeMatcher(List<ItemStack> list) {
         this.items = new ArrayList<>(list);
+        this.matched = true;
+        this.count = 0;
+    }
+
+    public SimpleRecipeMatcher(CraftingInput input) {
+        this(input.items());
     }
 
     public SimpleRecipeMatcher collect(Predicate<ItemStack> predicate, Consumer<ItemStack> consumer) {
@@ -30,8 +34,22 @@ public class SimpleRecipeMatcher {
         return this;
     }
 
+    public SimpleRecipeMatcher mismatch() {
+        this.matched = false;
+        return this;
+    }
+
+    public SimpleRecipeMatcher resetCount() {
+        this.count = 0;
+        return this;
+    }
+
     public SimpleRecipeMatchContext with(Predicate<ItemStack> predicate) {
         return new SimpleRecipeMatchContext(this, predicate);
+    }
+
+    public SimpleRecipeMatchContext with(BiPredicate<ItemStack, Integer> predicate) {
+        return new SimpleRecipeMatchContext(this, itemStack -> predicate.test(itemStack, count));
     }
 
     public SimpleRecipeMatchContext withRemaining() {
@@ -42,13 +60,16 @@ public class SimpleRecipeMatcher {
         return new SimpleRecipeMatchContext(this, ItemStack::isEmpty);
     }
 
-    public SimpleRecipeMatcher mismatch() {
-        this.matched = false;
-        return this;
+    public void addCount(int count) {
+        this.count += count;
     }
 
     public boolean match() {
         return items.isEmpty() && matched;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     public static class SimpleRecipeMatchContext {
@@ -64,6 +85,11 @@ public class SimpleRecipeMatcher {
 
         public SimpleRecipeMatchContext collect(Consumer<ItemStack> consumer) {
             collected.forEach(consumer);
+            return this;
+        }
+
+        public SimpleRecipeMatchContext count() {
+            matcher.addCount(collected.size());
             return this;
         }
 

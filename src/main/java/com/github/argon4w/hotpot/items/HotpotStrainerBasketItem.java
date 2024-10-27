@@ -137,13 +137,17 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
 
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> components, TooltipFlag tooltipFlag) {
-        super.appendHoverText(itemStack, context, components, tooltipFlag);
         components.add(Component.translatable("item.everyxhotpot.hotpot_strainer_basket.cooking_speed", ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(getStrainerBasketCookingSpeed(itemStack))).withStyle(ChatFormatting.BLUE));
     }
 
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
         return isStrainerBasketEmpty(itemStack) ? ItemStack.EMPTY : getStrainerBasketItems(itemStack).getFirst();
+    }
+
+    @Override
+    public List<ItemStack> getAllContainedItemStacks(ItemStack itemStack) {
+        return getStrainerBasketItems(itemStack);
     }
 
     public static ItemStack createStrainerBasketFromItems(List<ItemStack> itemStacks) {

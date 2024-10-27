@@ -6,6 +6,8 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,12 +15,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+
+import java.util.List;
 
 @EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class HotpotGameModEvents {
@@ -85,7 +90,7 @@ public class HotpotGameModEvents {
     }
 
     @SubscribeEvent
-    public static void onItemTooltip(ItemTooltipEvent event) {
+    public static void addEffectTooltip(ItemTooltipEvent event) {
         ItemStack itemStack = event.getItemStack();
         Item.TooltipContext context = event.getContext();
 
@@ -101,6 +106,29 @@ public class HotpotGameModEvents {
             return;
         }
 
-        PotionContents.addPotionTooltip(HotpotFoodEffectsDataComponent.getEffects(itemStack), event.getToolTip()::add, 1.0f, context.tickRate());
+        event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects").withStyle(ChatFormatting.GRAY));
+        PotionContents.addPotionTooltip(HotpotFoodEffectsDataComponent.getEffects(itemStack), component -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line", component).withStyle(ChatFormatting.GRAY)), 1.0f, context.tickRate());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void addContainerTooltip(ItemTooltipEvent event) {
+        ItemStack itemStack = event.getItemStack();
+
+        if (itemStack.isEmpty()) {
+            return;
+        }
+
+        if (!(itemStack.getItem() instanceof IHotpotItemContainer container)) {
+            return;
+        }
+
+        List<ItemStack> itemStacks = container.getAllContainedItemStacks(itemStack);
+
+        if (itemStacks.isEmpty()) {
+            return;
+        }
+
+        event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains").withStyle(ChatFormatting.GRAY));
+        itemStacks.forEach(itemStack1 -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line", itemStack1.getDisplayName()).withStyle(ChatFormatting.GRAY)));
     }
 }

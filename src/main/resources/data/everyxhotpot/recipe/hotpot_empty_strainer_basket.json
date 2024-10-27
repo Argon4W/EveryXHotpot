@@ -11,11 +11,11 @@
   },
   "pattern": [
     " s ",
-    " s ",
-    " b "
+    "bsb",
+    "bbb"
   ],
   "result": {
-    "id": "everyxhotpot:hotpot_slotted_spoon"
+    "id": "everyxhotpot:hotpot_strainer_basket"
   },
   "show_notification": true
 }

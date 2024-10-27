@@ -4,7 +4,7 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
-import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
 import com.github.argon4w.hotpot.placements.HotpotLongPlate;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;

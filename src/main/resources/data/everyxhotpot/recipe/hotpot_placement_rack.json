@@ -7,14 +7,11 @@
     },
     "P": {
       "item": "minecraft:heavy_weighted_pressure_plate"
-    },
-    "B": {
-      "item": "minecraft:iron_bars"
     }
   },
   "pattern": [
     "IPI",
-    "B B",
+    "I I",
     "IPI"
   ],
   "result": {

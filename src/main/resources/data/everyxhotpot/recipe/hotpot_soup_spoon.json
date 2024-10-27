@@ -2,14 +2,17 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
+    "s": {
+      "item": "minecraft:stick"
+    },
     "i": {
       "item": "minecraft:iron_ingot"
     }
   },
   "pattern": [
-    "  i",
-    "ii ",
-    "i  "
+    " s ",
+    " s ",
+    " i "
   ],
   "result": {
     "id": "everyxhotpot:hotpot_soup_spoon"

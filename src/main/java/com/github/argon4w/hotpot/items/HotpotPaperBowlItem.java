@@ -13,13 +13,17 @@ import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
+import com.google.common.collect.ImmutableList;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +49,11 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     @Override
     public int getMaxStackSize(ItemStack itemStack) {
         return isPaperBowlClear(itemStack) ? super.getMaxStackSize(itemStack) : 1;
+    }
+
+    @Override
+    public List<ItemStack> getAllContainedItemStacks(ItemStack itemStack) {
+        return ImmutableList.<ItemStack>builderWithExpectedSize(getPaperBowlItemSize(itemStack) + getPaperBowlSkewerSize(itemStack)).addAll(getPaperBowlItems(itemStack)).addAll(getPaperBowlSkewers(itemStack)).build();
     }
 
     @NotNull

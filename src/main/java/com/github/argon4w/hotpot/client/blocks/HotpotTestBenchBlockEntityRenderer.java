@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.client.blocks;
 
 import com.github.argon4w.hotpot.blocks.HotpotTestBenchBlockEntity;
 import com.github.argon4w.hotpot.api.client.sections.IBlockEntitySectionGeometryRenderer;
-import com.github.argon4w.hotpot.client.sections.ISectionGeometryRenderContext;
+import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

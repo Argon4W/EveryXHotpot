@@ -165,6 +165,11 @@ public class HotpotSkewerItem extends Item implements IHotpotItemContainer, IHot
     }
 
     @Override
+    public List<ItemStack> getAllContainedItemStacks(ItemStack itemStack) {
+        return getSkewerItems(itemStack);
+    }
+
+    @Override
     public int getCookingTime(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
         return getSkewerItems(itemStack).stream().map(skewerStack -> content.getCookingTime(soup, skewerStack, pos, hotpotBlockEntity)).filter(Optional::isPresent).mapToInt(Optional::get).max().orElse(-1);
     }

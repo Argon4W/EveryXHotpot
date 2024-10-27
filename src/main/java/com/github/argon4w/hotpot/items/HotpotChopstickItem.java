@@ -52,12 +52,12 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
 
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
-        return getHeldItemStack(itemStack.copy());
+        return getHeldItemStack(itemStack);
     }
 
     @Override
-    public InteractionResult interactLivingEntity(ItemStack pStack, Player pPlayer, LivingEntity pInteractionTarget, InteractionHand pUsedHand) {
-        return super.interactLivingEntity(pStack, pPlayer, pInteractionTarget, pUsedHand);
+    public List<ItemStack> getAllContainedItemStacks(ItemStack itemStack) {
+        return getHeldItemStack(itemStack).isEmpty() ? List.of() : List.of(getContainedItemStack(itemStack));
     }
 
     @NotNull

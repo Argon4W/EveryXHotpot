@@ -14,6 +14,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public record HotpotSpicePackDataComponent(int charges, List<ItemStack> itemStacks) {
@@ -42,12 +43,8 @@ public record HotpotSpicePackDataComponent(int charges, List<ItemStack> itemStac
         return itemStack.isEmpty() ? this : new HotpotSpicePackDataComponent(charges, Stream.concat(itemStacks.stream(), Stream.of(itemStack)).toList());
     }
 
-    public HotpotMobEffectMap getFoodEffects() {
-        return new HotpotMobEffectMap(itemStacks.stream().map(this::getSuspiciousEffectHolder).map(SuspiciousEffectHolder::getSuspiciousEffects).map(SuspiciousStewEffects::effects).flatMap(Collection::stream).map(SuspiciousStewEffects.Entry::createEffectInstance).toList());
-    }
-
-    private SuspiciousEffectHolder getSuspiciousEffectHolder(ItemStack itemStack) {
-        return SuspiciousEffectHolder.tryGet(itemStack.getItem());
+    public HotpotMobEffectMap getSpicePackEffects() {
+        return new HotpotMobEffectMap(itemStacks.stream().map(ItemStack::getItem).map(SuspiciousEffectHolder::tryGet).filter(Objects::nonNull).map(SuspiciousEffectHolder::getSuspiciousEffects).map(SuspiciousStewEffects::effects).flatMap(Collection::stream).map(SuspiciousStewEffects.Entry::createEffectInstance).toList());
     }
 
     @SuppressWarnings("deprecation")

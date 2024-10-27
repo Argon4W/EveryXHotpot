@@ -22,23 +22,23 @@ public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
         }
 
         List<ItemStack> itemStacks = HotpotSpicePackItem.getSpicePackItems(itemStack);
+
         float positionX = 0.3f - (0.3f / (itemStacks.size() * 3f)) * Math.max(0, itemStacks.size() - 1) + 0.2f;
+        float itemPositionX = 0.3f / (itemStacks.size() * 1.5f);
 
         poseStack.pushPose();
         poseStack.translate(positionX, 0.25f, 0.5f);
 
         for (ItemStack spiceItemStack : itemStacks) {
-            float spicePositionX = 0.3f / (itemStacks.size() * 1.5f);
-
             poseStack.pushPose();
+
             poseStack.mulPose(Axis.YP.rotationDegrees(30f));
             poseStack.scale(0.78f, 0.78f, 0.78f);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(null, spiceItemStack, ItemDisplayContext.GROUND, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
-
             poseStack.popPose();
 
-            poseStack.translate(spicePositionX, 0, 0);
+            poseStack.translate(itemPositionX, 0, 0);
         }
 
         poseStack.popPose();

@@ -24,22 +24,22 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
-        List<ItemStack> list = new ArrayList<>();
-        return new SimpleRecipeMatcher(input).with(this::hasSuspiciousEffects).collect(list::add).atLeast(1).with(itemStack -> matchSpicePackItem(itemStack, list.size())).once().withRemaining().empty().match();
+        return new SimpleRecipeMatcher(input).with(this::hasSuspiciousEffects).count().atLeast(1).with(this::matchSpicePackItem).once().withRemaining().empty().match();
     }
 
-    private boolean matchSpicePackItem(ItemStack itemStack, int count) {
-        return itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK) && HotpotSpicePackItem.getSpicePackItems(itemStack).size() + count <= 4;
-    }
-
-    private boolean hasSuspiciousEffects(ItemStack itemStack) {
-        return itemStack.is(ItemTags.SMALL_FLOWERS);
-    }
-
-    @NotNull
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).with(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSpicePack).assemble(this::setSpicePackCharges);
+        return new SimpleRecipeAssembler(input).basedOn(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSpicePack).assemble(this::setSpicePackCharges);
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * width >= 2;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return HotpotModEntry.HOTPOT_SPICE_PACK_SPECIAL_RECIPE.get();
     }
 
     private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
@@ -50,14 +50,11 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
         return Util.make(itemStack, itemStack1 -> HotpotSpicePackItem.setSpicePackCharges(itemStack1, 20));
     }
 
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * width >= 2;
+    private boolean matchSpicePackItem(ItemStack itemStack, int count) {
+        return itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK) && HotpotSpicePackItem.getSpicePackItemSize(itemStack) + count <= 4;
     }
 
-    @NotNull
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return HotpotModEntry.HOTPOT_SPICE_PACK_SPECIAL_RECIPE.get();
+    private boolean hasSuspiciousEffects(ItemStack itemStack) {
+        return itemStack.is(ItemTags.SMALL_FLOWERS);
     }
 }

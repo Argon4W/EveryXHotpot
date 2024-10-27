@@ -16,7 +16,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "everyxhotpot:hotpot_slotted_spoon"
+        "recipe": "everyxhotpot:hotpot_strainer_basket"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -29,7 +29,7 @@
   ],
   "rewards": {
     "recipes": [
-      "everyxhotpot:hotpot_slotted_spoon"
+      "everyxhotpot:hotpot_empty_strainer_basket"
     ]
   },
   "sends_telemetry_event": false
