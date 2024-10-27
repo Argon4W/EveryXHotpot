@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record HotpotPaperBowlDataComponent(ResourceKey<HotpotComponentSoupType> soupTypeKey, HotpotSoupStatus soupStatus, List<ItemStack> items, List<ItemStack> skewers) {
-    public static final HotpotPaperBowlDataComponent EMPTY = new HotpotPaperBowlDataComponent(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY, HotpotSoupStatus.FILLED, List.of(), List.of());
+    public static final HotpotPaperBowlDataComponent EMPTY = new HotpotPaperBowlDataComponent(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY, HotpotSoupStatus.DRAINED, List.of(), List.of());
 
     public static final Codec<HotpotPaperBowlDataComponent> CODEC = Codec.lazyInitialized(() ->
             RecordCodecBuilder.create(data -> data.group(

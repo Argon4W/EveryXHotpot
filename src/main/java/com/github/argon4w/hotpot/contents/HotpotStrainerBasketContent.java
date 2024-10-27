@@ -19,16 +19,19 @@ import java.util.stream.IntStream;
 
 public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHotpotItemUpdaterContent {
     private final Direction direction;
-    private final NonNullList<IHotpotContent> basketContents;
+    private final NonNullList<IHotpotContent> strainerContents;
+    private final double cookingSpeed;
 
-    public HotpotStrainerBasketContent(Direction direction, NonNullList<IHotpotContent> basketContents) {
+    public HotpotStrainerBasketContent(Direction direction, NonNullList<IHotpotContent> strainerContents) {
         this.direction = direction;
-        this.basketContents = basketContents;
+        this.strainerContents = strainerContents;
+        this.cookingSpeed = HotpotStrainerBasketItem.getStrainerBasketCookingSpeed(this.strainerContents.stream().filter(c -> !(c instanceof HotpotEmptyContent)).count());
     }
 
     public HotpotStrainerBasketContent(List<ItemStack> itemStacks, Direction direction, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         this.direction = direction;
-        this.basketContents = IntStream.range(0, Math.min(8, itemStacks.size())).collect(() -> NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()), (contents, i) -> contents.set(i, hotpotBlockEntity.getSoup().getContentSerializerResultFromItemStack(itemStacks.get(i), hotpotBlockEntity, pos).orElse(HotpotContentSerializers.ITEM_STACK_DUMMY_CONTENT_SERIALIZER).value().createContent(itemStacks.get(i).copy(), hotpotBlockEntity, pos, direction)), (contents1, contents2) -> {});
+        this.strainerContents = IntStream.range(0, Math.min(8, itemStacks.size())).collect(() -> NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()), (contents, i) -> contents.set(i, hotpotBlockEntity.getSoup().getContentSerializerResultFromItemStack(itemStacks.get(i), hotpotBlockEntity, pos).orElse(HotpotContentSerializers.ITEM_STACK_DUMMY_CONTENT_SERIALIZER).value().createContent(itemStacks.get(i).copy(), hotpotBlockEntity, pos, direction)), (contents1, contents2) -> {});
+        this.cookingSpeed = HotpotStrainerBasketItem.getStrainerBasketCookingSpeed(this.strainerContents.stream().filter(c -> !(c instanceof HotpotEmptyContent)).count());
     }
 
     @Override
@@ -38,7 +41,7 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
 
     @Override
     public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return HotpotStrainerBasketItem.createStrainerBasketFromItems(basketContents.stream().map(content -> hotpotBlockEntity.getSoup().getContentResultByTableware(content, hotpotBlockEntity, pos).map(c -> c.getContentItemStack(hotpotBlockEntity, pos).copy()).orElse(ItemStack.EMPTY)).filter(Predicate.not(ItemStack::isEmpty)).toList());
+        return HotpotStrainerBasketItem.createStrainerBasketFromItems(strainerContents.stream().map(content -> hotpotBlockEntity.getSoup().getContentResultByTableware(content, hotpotBlockEntity, pos).map(c -> c.getContentItemStack(hotpotBlockEntity, pos).copy()).orElse(ItemStack.EMPTY)).filter(Predicate.not(ItemStack::isEmpty)).toList());
     }
 
     @Override
@@ -48,8 +51,12 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
 
     @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
-        basketContents.stream().filter(content -> content.onTick(hotpotBlockEntity, pos, ticks)).peek(content -> hotpotBlockEntity.getSoup().onContentUpdate(content, hotpotBlockEntity, pos)).findAny().ifPresent(content -> hotpotBlockEntity.markDataChanged());
+        tickContents(hotpotBlockEntity, pos, ticks * cookingSpeed);
         return false;
+    }
+
+    public void tickContents(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
+        strainerContents.stream().filter(content -> content.onTick(hotpotBlockEntity, pos, ticks)).peek(content -> hotpotBlockEntity.getSoup().onContentUpdate(content, hotpotBlockEntity, pos)).findAny().ifPresent(content -> hotpotBlockEntity.markDataChanged());
     }
 
     @Override
@@ -59,7 +66,7 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
 
     @Override
     public void updateItemStack(Consumer<ItemStack> consumer) {
-        basketContents.stream().filter(content -> content instanceof IHotpotItemUpdaterContent).forEach(content -> ((IHotpotItemUpdaterContent) content).updateItemStack(consumer));
+        strainerContents.stream().filter(content -> content instanceof IHotpotItemUpdaterContent).forEach(content -> ((IHotpotItemUpdaterContent) content).updateItemStack(consumer));
     }
 
     @Override
@@ -71,15 +78,19 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
         return direction;
     }
 
-    public NonNullList<IHotpotContent> getBasketContents() {
-        return basketContents;
+    public NonNullList<IHotpotContent> getStrainerContents() {
+        return strainerContents;
+    }
+
+    public double getCookingSpeed() {
+        return cookingSpeed;
     }
 
     public static class Serializer extends AbstractHotpotFixedContentSerializer<HotpotStrainerBasketContent> {
         public static final MapCodec<HotpotStrainerBasketContent> CODEC = LazyMapCodec.of(() ->
                 RecordCodecBuilder.mapCodec(content -> content.group(
                     Direction.CODEC.fieldOf("direction").forGetter(HotpotStrainerBasketContent::getDirection),
-                    HotpotContentSerializers.HOTPOT_CONTENTS_CODEC.fieldOf("basket_contents").forGetter(HotpotStrainerBasketContent::getBasketContents)
+                    HotpotContentSerializers.HOTPOT_CONTENTS_CODEC.fieldOf("strainer_contents").forGetter(HotpotStrainerBasketContent::getStrainerContents)
                 ).apply(content, HotpotStrainerBasketContent::new))
         );
 

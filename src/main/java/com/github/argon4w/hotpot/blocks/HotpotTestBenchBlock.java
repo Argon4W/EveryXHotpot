@@ -7,14 +7,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class HotpotTestBenchBLock extends BaseEntityBlock {
-    public HotpotTestBenchBLock() {
+public class HotpotTestBenchBlock extends BaseEntityBlock {
+    public HotpotTestBenchBlock() {
         super(Properties.of().noCollission().noOcclusion());
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return MapCodec.unit(HotpotTestBenchBLock::new);
+        return MapCodec.unit(HotpotTestBenchBlock::new);
     }
 
     @Nullable

@@ -227,6 +227,10 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         return getDataComponent(itemStack).isPaperBowlEmpty();
     }
 
+    public static boolean isPaperBowlFull(ItemStack itemStack) {
+        return getPaperBowlItemSize(itemStack) + getPaperBowlSkewerSize(itemStack) >= 8;
+    }
+
     public static boolean isPaperBowlUsed(ItemStack itemStack) {
         return itemStack.isEmpty() || (isPaperBowlEmpty(itemStack) && !isPaperBowlSoupEmpty(itemStack));
     }
@@ -239,12 +243,20 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         return List.copyOf(getDataComponent(itemStack).items());
     }
 
+    public static int getPaperBowlItemSize(ItemStack itemStack) {
+        return getDataComponent(itemStack).items().size();
+    }
+
     public static boolean isPaperBowlItemsClear(ItemStack itemStack) {
         return getDataComponent(itemStack).items().isEmpty();
     }
 
     public static List<ItemStack> getPaperBowlSkewers(ItemStack itemStack) {
         return List.copyOf(getDataComponent(itemStack).skewers());
+    }
+
+    public static int getPaperBowlSkewerSize(ItemStack itemStack) {
+        return getDataComponent(itemStack).skewers().size();
     }
 
     public static boolean isPaperBowlSkewersClear(ItemStack itemStack) {
@@ -256,7 +268,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlSameSoup(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        return hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
+        return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY) || hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
     }
 
     public static ResourceKey<HotpotComponentSoupType> getPaperBowlSoupTypeKey(ItemStack itemStack) {

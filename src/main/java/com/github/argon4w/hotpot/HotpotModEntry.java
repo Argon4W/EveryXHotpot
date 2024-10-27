@@ -63,7 +63,7 @@ public class HotpotModEntry {
     public static final String MODID = "everyxhotpot";
     public static final int MAGIC_NUMBER = 230419;
 
-    public static final DeferredBlock<HotpotTestBenchBLock> HOTPOT_TEST_BENCH_BLOCK = HotpotRegistries.BLOCKS.register("hotpot_test_bench", HotpotTestBenchBLock::new);
+    public static final DeferredBlock<HotpotTestBenchBlock> HOTPOT_TEST_BENCH_BLOCK = HotpotRegistries.BLOCKS.register("hotpot_test_bench", HotpotTestBenchBlock::new);
     public static final DeferredItem<BlockItem> HOTPOT_TEST_BENCH_BLOCK_ITEM = HotpotRegistries.ITEMS.register("hotpot_test_bench", () -> new BlockItem(HOTPOT_TEST_BENCH_BLOCK.get(), new Item.Properties()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HotpotTestBenchBlockEntity>> HOTPOT_TEST_BENCH_BLOCK_ENTITY = HotpotRegistries.BLOCK_ENTITY_TYPES.register("hotpot_test_bench", () -> BlockEntityType.Builder.of(HotpotTestBenchBlockEntity::new, HOTPOT_TEST_BENCH_BLOCK.get()).build(DSL.remainderType()));
 

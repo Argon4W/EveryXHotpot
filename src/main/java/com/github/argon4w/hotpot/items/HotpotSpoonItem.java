@@ -10,6 +10,7 @@ import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
+import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
 import net.minecraft.sounds.SoundEvents;
@@ -52,6 +53,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
             return;
         }
 
+        HotpotComponentSoup soup = hotpotBlockEntity.getSoup();
         HotpotSoupStatus soupStatus = hotpotSpoonItem.getSoupStatus();
         ItemStack offhandItemStack = player.getItemInHand(InteractionHand.OFF_HAND);
 
@@ -75,6 +77,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
             }
 
             ItemStack bowl = offhandItemStack.split(1);
+            HotpotPaperBowlItem.setPaperBowlSoupType(bowl, soup);
             HotpotPaperBowlItem.setPaperBowlSoupStatus(bowl, soupStatus);
             HotpotItemUtils.addToInventory(player, bowl);
 
@@ -85,9 +88,14 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         ArrayList<ItemStack> skewers = new ArrayList<>();
 
         for (int i = 0; i < 8; i ++) {
-            ItemStack content = blockEntity.getContentByTableware(player, hand, i, 0, selfPos);
+            ItemStack content = blockEntity.getContentByTableware(player, hand, i, 0, selfPos).copy();
 
             if (content.isEmpty()) {
+                continue;
+            }
+
+            if (!content.getItem().canFitInsideContainerItems()) {
+                selfPos.dropItemStack(content);
                 continue;
             }
 
@@ -106,10 +114,6 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
                 continue;
             }
 
-            if (!content.getItem().canFitInsideContainerItems()) {
-                selfPos.dropItemStack(content);
-                continue;
-            }
             if (content.is(HotpotModEntry.HOTPOT_STRAINER_BASKET)) {
                 selfPos.dropItemStack(content);
                 continue;
@@ -129,7 +133,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
 
         ItemStack bowl = offhandItemStack.split(1);
 
-        HotpotPaperBowlItem.setPaperBowlSoupType(bowl, hotpotBlockEntity.getSoup());
+        HotpotPaperBowlItem.setPaperBowlSoupType(bowl, soup);
         HotpotPaperBowlItem.setPaperBowlItems(bowl, contents);
         HotpotPaperBowlItem.setPaperBowlSkewers(bowl, skewers);
         HotpotPaperBowlItem.setPaperBowlSoupStatus(bowl, soupStatus);

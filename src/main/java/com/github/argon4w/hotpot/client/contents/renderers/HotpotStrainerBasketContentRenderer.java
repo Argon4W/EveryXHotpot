@@ -21,7 +21,6 @@ import org.joml.Math;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HotpotStrainerBasketContentRenderer implements IHotpotContentRenderer {
     public static final double OFFSET = 1.0 / 16.0;
@@ -68,7 +67,7 @@ public class HotpotStrainerBasketContentRenderer implements IHotpotContentRender
         poseStack.pushPose();
         poseStack.translate(0, -0.5, 0);
 
-        strainerBasket.getBasketContents().stream().filter(content1 -> content1 instanceof AbstractHotpotItemStackContent).map(content1 -> ((AbstractHotpotItemStackContent) content1).getItemStack()).collect(() -> new HashMap<IHotpotStrainerBasketContentRenderer, List<ItemStack>>(), (map, itemStack1) -> map.computeIfAbsent(HotpotStrainerBasketContentRenderers.getStrainerBasketContentRenderer(itemStack1), renderer -> new ArrayList<>()).add(itemStack1), (map1, map2) -> {}).forEach((renderer, itemStacks) -> renderer.renderInSoup(itemStacks, poseStack, bufferSource, combinedLight, combinedOverlay, index, waterLevel, (1 - 0.02 - offsetY / 0.45), time));
+        strainerBasket.getStrainerContents().stream().filter(content1 -> content1 instanceof AbstractHotpotItemStackContent).map(content1 -> ((AbstractHotpotItemStackContent) content1).getItemStack()).collect(() -> new HashMap<IHotpotStrainerBasketContentRenderer, List<ItemStack>>(), (map, itemStack1) -> map.computeIfAbsent(HotpotStrainerBasketContentRenderers.getStrainerBasketContentRenderer(itemStack1), renderer -> new ArrayList<>()).add(itemStack1), (map1, map2) -> {}).forEach((renderer, itemStacks) -> renderer.renderInSoup(itemStacks, poseStack, bufferSource, combinedLight, combinedOverlay, index, waterLevel, (1 - 0.02 - offsetY / 0.45), time));
         poseStack.popPose();
 
         BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_strainer_basket_model")));
