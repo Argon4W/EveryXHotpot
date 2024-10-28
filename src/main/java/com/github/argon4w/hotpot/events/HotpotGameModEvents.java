@@ -8,6 +8,7 @@ import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -106,8 +107,19 @@ public class HotpotGameModEvents {
             return;
         }
 
+        List<MobEffectInstance> effects = HotpotFoodEffectsDataComponent.getEffects(itemStack);
+
+        if (effects.isEmpty()) {
+            return;
+        }
+
+        if (!event.getFlags().hasControlDown()) {
+            event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects.collapsed").withStyle(ChatFormatting.GRAY));
+            return;
+        }
+
         event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects").withStyle(ChatFormatting.GRAY));
-        PotionContents.addPotionTooltip(HotpotFoodEffectsDataComponent.getEffects(itemStack), component -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line", component).withStyle(ChatFormatting.GRAY)), 1.0f, context.tickRate());
+        PotionContents.addPotionTooltip(effects, component -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line.2", component).withStyle(ChatFormatting.GRAY)), 1.0f, context.tickRate());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -128,7 +140,12 @@ public class HotpotGameModEvents {
             return;
         }
 
+        if (!event.getFlags().hasShiftDown()) {
+            event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains.collapsed").withStyle(ChatFormatting.GRAY));
+            return;
+        }
+
         event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains").withStyle(ChatFormatting.GRAY));
-        itemStacks.forEach(itemStack1 -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line", itemStack1.getDisplayName()).withStyle(ChatFormatting.GRAY)));
+        itemStacks.forEach(itemStack1 -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line.1", itemStack1.getDisplayName()).withStyle(ChatFormatting.GRAY)));
     }
 }
