@@ -1,24 +1,9 @@
 ![logo](/src/main/resources/logo.png)
 # EveryXHotpot: 一起火锅
-## 基本信息:
-### 支持版本 [(下载链接)](https://www.mcmod.cn/download/12735.html):
-- NeoForge
-  - 1.20.2
-  - 1.21
-- LexForge
-  - 1.20.1
-  - 1.19.3
-  - 1.19.2
-  - 1.18.2
-  - 1.16.5
-- [Fabric](https://github.com/FishMagic/EveryXHotpot-Fabric)
-  - 1.20.1
-### 已知问题
-- 不兼容Optifine **(无计划在保持完整功能的前提下修复)**
-### 交流群号(QQ): 
-- 608309578
-### 赞助支持:
-- https://afdian.com/a/argon4w
+![支持版本](https://img.shields.io/modrinth/game-versions/346Wf89R)
+![协议](https://img.shields.io/github/license/Argon4W/EveryXHotpot)
+<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=qx11eH2YPMQzvxkGmqeEsENXr9_V-i7D&authKey=Fpgx7FR4O78VecudWkXAL5Ng6Lui2xTXzucnnO0c5p4t80lTM25jZnPybbmmQ6VO&noverify=0&group_code=608309578"> ![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-608309578-blue)</a>
+<a href="https://afdian.com/a/argon4w">  ![爱发电](https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%E6%AC%A2%E8%BF%8E%E8%B5%9E%E5%8A%A9-926BE5) </a>
 ***
 ## 概述
 ### TeaCon 2023
@@ -65,3 +50,6 @@
 4. 使涮万物贴图与Sodium/Iris兼容
 5. 优化了渲染, 使用SectionGeometry(Chunk Buffer)机制对渲染进行缓存, 大幅优化盘子等放置物帧率
 6. 继续优化涮万物贴图兼容性
+
+## 已知问题
+- 不兼容Optifine **(无计划在保持完整功能的前提下修复)**
