@@ -4,7 +4,7 @@
 ![协议](https://img.shields.io/github/license/Argon4W/EveryXHotpot)
 <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=qx11eH2YPMQzvxkGmqeEsENXr9_V-i7D&authKey=Fpgx7FR4O78VecudWkXAL5Ng6Lui2xTXzucnnO0c5p4t80lTM25jZnPybbmmQ6VO&noverify=0&group_code=608309578"> ![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-608309578-blue)</a>
 <a href="https://afdian.com/a/argon4w">  ![爱发电](https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%E6%AC%A2%E8%BF%8E%E8%B5%9E%E5%8A%A9-926BE5) </a>
-***
+
 ## 概述
 ### TeaCon 2023
 这次 TeaCon 的主题是热闹, 于是AR就顺理成章地想到了在自己印象中最能代表热闹的东西: 火锅.
