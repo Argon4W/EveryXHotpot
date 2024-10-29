@@ -1,11 +1,10 @@
 package com.github.argon4w.hotpot.mixins.sections;
 
+import com.github.argon4w.hotpot.client.events.HotpotClientRenderTypeEvents;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -18,6 +17,6 @@ public class RenderTypeMixin {
 
     @WrapOperation(method = "<clinit>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/RenderType;CHUNK_BUFFER_LAYERS:Lcom/google/common/collect/ImmutableList;"))
     private static void modifyChunkBufferLayers(ImmutableList<RenderType> value, Operation<Void> original) {
-        original.call(ImmutableList.builder().addAll(value).add(Sheets.translucentItemSheet()).build());
+        original.call(ImmutableList.builder().addAll(value).add(HotpotClientRenderTypeEvents.get()).build());
     }
 }

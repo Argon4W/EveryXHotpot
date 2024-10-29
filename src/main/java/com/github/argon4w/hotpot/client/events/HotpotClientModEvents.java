@@ -1,13 +1,13 @@
 package com.github.argon4w.hotpot.client.events;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomElementRenderer;
 import com.github.argon4w.hotpot.client.blocks.*;
 import com.github.argon4w.hotpot.client.items.HotpotBlockEntityWithoutLevelRenderer;
 import com.github.argon4w.hotpot.client.items.HotpotClientItemExtensions;
 import com.github.argon4w.hotpot.client.sections.AdditionalSectionGeometryBlockEntityRendererDispatcher;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfig;
 import com.github.argon4w.hotpot.client.soups.HotpotSoupRendererConfigManager;
-import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomElementRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;

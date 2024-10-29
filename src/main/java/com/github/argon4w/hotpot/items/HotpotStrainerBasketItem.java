@@ -21,11 +21,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPlacedStrainerBasket> implements IHotpotItemContainer {
     public HotpotStrainerBasketItem() {

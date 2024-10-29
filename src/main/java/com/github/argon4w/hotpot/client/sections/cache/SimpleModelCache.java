@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.client.sections.cache;
 
 import com.github.argon4w.hotpot.EntryStreams;
-import com.github.argon4w.hotpot.client.sections.ISimpleBakedModelExtension;
 import com.github.argon4w.hotpot.api.client.sections.cache.IBakedModelCache;
+import com.github.argon4w.hotpot.client.sections.ISimpleBakedModelExtension;
 import com.mojang.math.Transformation;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.SimpleBakedModel;

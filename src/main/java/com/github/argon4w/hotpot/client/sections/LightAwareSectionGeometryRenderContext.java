@@ -2,15 +2,13 @@ package com.github.argon4w.hotpot.client.sections;
 
 import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
 import com.github.argon4w.hotpot.api.client.sections.cache.RendererBakedModelsCache;
+import com.github.argon4w.hotpot.client.events.HotpotClientRenderTypeEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -19,18 +17,12 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
-import net.neoforged.neoforge.client.model.lighting.QuadLighter;
 import net.neoforged.neoforge.client.model.pipeline.TransformingVertexPipeline;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
 /**
  * @author Argon4W
@@ -50,7 +42,7 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
         this.cache = cache;
         this.pos = pos;
         this.randomSource = RandomSource.createNewThreadLocalInstance();
-        this.transformation = SODIUM_LOADED ? new Transformation(new Matrix4f(context.getPoseStack().last().pose())) : new Transformation(new Matrix4f(context.getPoseStack().last().pose()).translate(regionOrigin.getX(), regionOrigin.getY(), regionOrigin.getZ()));
+        this.transformation = new Transformation(context.getPoseStack().last().pose());
     }
 
     @Override
@@ -85,6 +77,6 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
 
     @Override
     public MultiBufferSource getUncachedItemBufferSource() {
-        return SODIUM_LOADED ? pRenderType -> new QuadLighterVertexConsumer(context, pos) : ignored -> new TransformingVertexPipeline(context.getOrCreateChunkBuffer(Sheets.translucentItemSheet()), transformation);
+        return SODIUM_LOADED ? pRenderType -> new QuadLighterVertexConsumer(context, pos) : ignored -> new TransformingVertexPipeline(context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
     }
 }

@@ -2,16 +2,12 @@ package com.github.argon4w.hotpot.client.events;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.client.sections.AdditionalSectionGeometryBlockEntityRendererDispatcher;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
@@ -33,7 +29,7 @@ public class HotpotClientGameEvents {
         }
 
         Vector3f position = event.getCamera().getPosition().toVector3f();
-        event.getLevelRenderer().renderSectionLayer(Sheets.translucentItemSheet(), position.x, position.y, position.z, new Matrix4f(event.getModelViewMatrix()).translate(new Vector3f(position).negate()), event.getProjectionMatrix());
-        event.getLevelRenderer().renderBuffers.bufferSource().endBatch(Sheets.translucentItemSheet());
+        event.getLevelRenderer().renderSectionLayer(HotpotClientRenderTypeEvents.get(), position.x, position.y, position.z, event.getModelViewMatrix(), event.getProjectionMatrix());
+        event.getLevelRenderer().renderBuffers.bufferSource().endBatch(HotpotClientRenderTypeEvents.get());
     }
 }

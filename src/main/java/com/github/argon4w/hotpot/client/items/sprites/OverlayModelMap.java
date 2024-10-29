@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
 import com.github.argon4w.hotpot.EntryStreams;
+import com.github.argon4w.hotpot.api.items.sprites.IHotpotSpriteConfig;
 import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorProviders;
 import com.github.argon4w.hotpot.client.items.sprites.processors.providers.HotpotSpriteProcessorProviders;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
-import com.github.argon4w.hotpot.api.items.sprites.IHotpotSpriteConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.model.BakedModel;

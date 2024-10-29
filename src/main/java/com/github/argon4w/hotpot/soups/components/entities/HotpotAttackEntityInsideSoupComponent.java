@@ -7,7 +7,8 @@ import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSe
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
-import com.github.argon4w.hotpot.soups.components.*;
+import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
+import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;

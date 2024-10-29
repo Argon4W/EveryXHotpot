@@ -2,8 +2,8 @@ package com.github.argon4w.hotpot.api.items;
 
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.api.placements.IHotpotCommonPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;

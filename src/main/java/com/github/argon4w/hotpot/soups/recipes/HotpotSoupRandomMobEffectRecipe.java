@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import com.github.argon4w.hotpot.api.soups.recipes.effects.IHotpotRandomMobEffectKey;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.recipes.effects.HotpotRandomMobEffectMap;
-import com.github.argon4w.hotpot.api.soups.recipes.effects.IHotpotRandomMobEffectKey;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

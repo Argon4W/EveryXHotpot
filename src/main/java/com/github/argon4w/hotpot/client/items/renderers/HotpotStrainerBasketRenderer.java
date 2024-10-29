@@ -5,20 +5,16 @@ import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.api.client.items.IHotpotStrainerBasketContentRenderer;
 import com.github.argon4w.hotpot.client.contents.HotpotStrainerBasketContentRenderers;
 import com.github.argon4w.hotpot.items.HotpotStrainerBasketItem;
-import com.github.argon4w.hotpot.items.components.HotpotSkewerDataComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class HotpotStrainerBasketRenderer implements IHotpotItemSpecialRenderer {
     @Override
