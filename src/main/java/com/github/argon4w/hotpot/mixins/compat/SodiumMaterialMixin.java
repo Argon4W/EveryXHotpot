@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
 @Mixin(Material.class)
-public class MaterialMixin {
+public class SodiumMaterialMixin {
     @Mutable
     @Shadow @Final public AlphaCutoffParameter alphaCutoff;
 

@@ -115,6 +115,6 @@ public record TintedRenderPassBakedModel(BakedModel model, HotpotColor color) im
     @NotNull
     @Override
     public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
-        return List.of(fabulous ? Sheets.translucentCullBlockSheet() : Sheets.translucentItemSheet());
+        return model.getRenderTypes(itemStack, fabulous);
     }
 }

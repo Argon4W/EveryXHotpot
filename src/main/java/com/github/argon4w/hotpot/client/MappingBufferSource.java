@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public record MappingBufferSource(MultiBufferSource bufferSource, Map<RenderType, RenderType> map) implements MultiBufferSource {
-    public static final Map<RenderType, RenderType> ITEM_BUFFER_SOURCE_MAP = Map.of(Sheets.translucentCullBlockSheet(), Sheets.cutoutBlockSheet());
+    public static final Map<RenderType, RenderType> ITEM_BUFFER_SOURCE_MAP = Map.of(Sheets.translucentCullBlockSheet(), Sheets.translucentItemSheet());
 
     @NotNull
     @Override

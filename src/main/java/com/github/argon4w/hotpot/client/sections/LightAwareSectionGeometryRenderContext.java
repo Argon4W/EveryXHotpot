@@ -29,7 +29,7 @@ import net.neoforged.neoforge.client.model.pipeline.TransformingVertexPipeline;
  */
 @SuppressWarnings("UnstableApiUsage")
 public class LightAwareSectionGeometryRenderContext implements ISectionGeometryRenderContext {
-    public static final boolean SODIUM_LOADED = ModList.get().isLoaded("sodium");
+    public static final boolean SODIUM_LIKE_LOADED = ModList.get().isLoaded("sodium") || ModList.get().isLoaded("embeddium");
 
     private final AddSectionGeometryEvent.SectionRenderingContext context;
     private final RendererBakedModelsCache cache;
@@ -77,6 +77,6 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
 
     @Override
     public MultiBufferSource getUncachedItemBufferSource() {
-        return SODIUM_LOADED ? pRenderType -> new QuadLighterVertexConsumer(context, pos) : ignored -> new TransformingVertexPipeline(context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
+        return SODIUM_LIKE_LOADED ? pRenderType -> new QuadLighterVertexConsumer(context, pos) : ignored -> new TransformingVertexPipeline(context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
     }
 }
