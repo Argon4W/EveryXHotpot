@@ -31,7 +31,7 @@ public class SimpleModelCache implements IBakedModelCache {
     }
 
     public BakedModel getTransformedModel(IQuadTransformer transformer) {
-        return new SimpleBakedModel(model.unculledFaces.stream().map(transformer::process).toList(), model.culledFaces.entrySet().stream().map(EntryStreams.mapEntryValue(list -> list.stream().map(transformer::process).toList())).collect(EntryStreams.of()), model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), model.getOverrides(), model instanceof ISimpleBakedModelExtension extension ? extension.everyxhotpot$getRenderTypeGroup() : RenderTypeGroup.EMPTY);
+        return new SimpleBakedModel(model.unculledFaces.stream().map(transformer::process).toList(), model.culledFaces.entrySet().stream().map(EntryStreams.mapEntryValue(list -> list.stream().map(transformer::process).toList())).collect(EntryStreams.collect()), model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), model.getOverrides(), model instanceof ISimpleBakedModelExtension extension ? extension.everyxhotpot$getRenderTypeGroup() : RenderTypeGroup.EMPTY);
     }
 
     @Override

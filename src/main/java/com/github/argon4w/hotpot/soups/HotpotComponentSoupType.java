@@ -50,25 +50,25 @@ public class HotpotComponentSoupType {
     private final Map<ResourceLocation, StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, IndexHolder<IHotpotSoupComponent>>>> streamCodecs;
 
     public HotpotComponentSoupType(Map<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>> componentTypeHolders) {
-        this.componentTypeHolders = HotpotCompoundSoupComponent.Type.expandCompoundComponents(componentTypeHolders.entrySet().stream()).collect(EntryStreams.ofSequenced());
-        this.codecs = this.componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue((resourceLocation, value) -> castCodec(value.value().value().getCodec()).xmap(component -> new IndexHolder<>(value.index(), component), IndexHolder::value).xmap(holder -> Map.entry(resourceLocation, holder), Map.Entry::getValue))).collect(EntryStreams.of());
-        this.streamCodecs = this.componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue((resourceLocation, value) -> castStreamCodec(value.value().value().getStreamCodec()).map(component -> new IndexHolder<>(value.index(), component), IndexHolder::value).map(holder -> Map.entry(resourceLocation, holder), Map.Entry::getValue))).collect(EntryStreams.of());
+        this.componentTypeHolders = HotpotCompoundSoupComponent.Type.expandCompoundComponents(componentTypeHolders.entrySet().stream()).collect(EntryStreams.collectSequenced());
+        this.codecs = this.componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue((resourceLocation, value) -> castCodec(value.value().value().getCodec()).xmap(component -> new IndexHolder<>(value.index(), component), IndexHolder::value).xmap(holder -> Map.entry(resourceLocation, holder), Map.Entry::getValue))).collect(EntryStreams.collect());
+        this.streamCodecs = this.componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue((resourceLocation, value) -> castStreamCodec(value.value().value().getStreamCodec()).map(component -> new IndexHolder<>(value.index(), component), IndexHolder::value).map(holder -> Map.entry(resourceLocation, holder), Map.Entry::getValue))).collect(EntryStreams.collect());
     }
 
     public Codec<HotpotComponentSoup> getPartialCodec(Holder<HotpotComponentSoupType> soupTypeHolder) {
-        return ResourceLocation.CODEC.dispatch("id", Map.Entry::getKey, codecs::get).listOf().xmap(list -> list.stream().collect(EntryStreams.ofSequenced()), map -> List.copyOf(map.entrySet())).xmap(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::getPartialComponents);
+        return ResourceLocation.CODEC.dispatch("id", Map.Entry::getKey, codecs::get).listOf().xmap(list -> list.stream().collect(EntryStreams.collectSequenced()), map -> List.copyOf(map.entrySet())).xmap(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::getPartialComponents);
     }
 
     public Codec<HotpotComponentSoup> getCodec(Holder<HotpotComponentSoupType> soupTypeHolder) {
-        return ResourceLocation.CODEC.dispatch("id", Map.Entry::getKey, codecs::get).listOf().xmap(list -> list.stream().sorted(IndexHolder.getIndexComparator(Map.Entry::getValue)).collect(EntryStreams.ofSequenced()), map -> List.copyOf(map.entrySet())).xmap(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
+        return ResourceLocation.CODEC.dispatch("id", Map.Entry::getKey, codecs::get).listOf().xmap(list -> list.stream().sorted(IndexHolder.getIndexComparator(Map.Entry::getValue)).collect(EntryStreams.collectSequenced()), map -> List.copyOf(map.entrySet())).xmap(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
     }
 
     public StreamCodec<RegistryFriendlyByteBuf, HotpotComponentSoup> getStreamCodec(Holder<HotpotComponentSoupType> soupTypeHolder) {
-        return ResourceLocation.STREAM_CODEC.<RegistryFriendlyByteBuf>cast().dispatch(Map.Entry::getKey, streamCodecs::get).apply(ByteBufCodecs.list()).map(list -> list.stream().collect(EntryStreams.ofSequenced()), map -> List.copyOf(map.entrySet())).map(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
+        return ResourceLocation.STREAM_CODEC.<RegistryFriendlyByteBuf>cast().dispatch(Map.Entry::getKey, streamCodecs::get).apply(ByteBufCodecs.list()).map(list -> list.stream().collect(EntryStreams.collectSequenced()), map -> List.copyOf(map.entrySet())).map(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
     }
 
     public HotpotComponentSoup createComponentSoup(Holder<HotpotComponentSoupType> soupTypeHolder) {
-        return new HotpotComponentSoup(componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue(value -> value.<IHotpotSoupComponent>mapValue(holder -> holder.value().createSoupComponent()))).collect(EntryStreams.ofSequenced()), soupTypeHolder);
+        return new HotpotComponentSoup(componentTypeHolders.entrySet().stream().map(EntryStreams.mapEntryValue(value -> value.<IHotpotSoupComponent>mapValue(holder -> holder.value().createSoupComponent()))).collect(EntryStreams.collectSequenced()), soupTypeHolder);
     }
 
     public <T extends IHotpotSoupComponent> List<ResourceLocation> getComponentKeysByTypes(List<Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>>> componentTypeSerializerHolders) {

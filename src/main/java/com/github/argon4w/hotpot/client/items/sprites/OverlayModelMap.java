@@ -24,7 +24,7 @@ public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
     }
 
     public OverlayModelMap applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
-        return entrySet().stream().collect(EntryStreams.of(() -> new OverlayModelMap(originalModel.applyTransform(transformType, poseStack, applyLeftHandTransform))));
+        return entrySet().stream().collect(EntryStreams.collect(() -> new OverlayModelMap(originalModel.applyTransform(transformType, poseStack, applyLeftHandTransform))));
     }
 
     public List<BakedModel> getResolvedTintedModels(ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {

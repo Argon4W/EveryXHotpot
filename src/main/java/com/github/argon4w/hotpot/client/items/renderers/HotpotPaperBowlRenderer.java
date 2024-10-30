@@ -32,12 +32,8 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
         List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);
 
-        int size = bowlItems.size() + bowlSkewers.size();
+        int size = Math.min(bowlItems.size() + bowlSkewers.size(), 8);
         boolean drained = HotpotPaperBowlItem.getPaperBowlSoupStatus(itemStack) == HotpotSoupStatus.DRAINED;
-
-        if (size > 8) {
-            return;
-        }
 
         double soupScale = 9.0 / 16.0;
         double soupOffset = 3.5 / 16.0;
@@ -51,9 +47,6 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
         double waterLevel = drained ? minWaterLevel : (minWaterLevelNoLimit + 0.06 * size + 0.5625);
         double elementLevel = drained ? minElementLevel : ((fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size);
-
-        RandomSource randomSource = RandomSource.create();
-        randomSource.setSeed(42);
 
         poseStack.pushPose();
 
@@ -82,28 +75,6 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
             poseStack.popPose();
         }
-
-        /*for (int i = 4; i < bowlSkewers.size(); i ++) {
-            double positionZ = 0.29 + (i - 4) * 0.15;
-            int skewerIndex = bowlSkewers.size() - i - 1;
-            ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
-
-            poseStack.pushPose();
-
-            poseStack.translate(0.2, 1.02, positionZ);
-
-            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
-
-            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f));
-            poseStack.mulPose(Axis.XP.rotationDegrees(50.0f));
-            poseStack.mulPose(Axis.YP.rotationDegrees(-30.0f));
-
-            poseStack.scale(0.72f, 0.72f, 0.72f);
-
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, skewerItemStack, ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
-
-            poseStack.popPose();
-        }*/
 
         for (int i = 4; i < bowlSkewers.size(); i ++) {
             double xRotation = 60.0f + ((i - 4) / 3.0f) * 5.0f;
@@ -152,50 +123,16 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.popPose();
         }
 
-        /*for (int i = 0; i < bowlItems.size(); i ++) {
-            boolean even = (i % 2) == 0;
-            boolean even2 = ((i - i % 2) / 2) % 2 == 0;
-
-            double yMovement = 0.06 * (i + bowlSkewers.size());
-            double zMovement = even ? 0.05 : -0.05;
-
-            double rotationX = even ? 90.0 : 80.0;
-            double rotationY = even2 ? 90.0 : 0.0;
-
-            Axis rotationAxisX = even ? Axis.XN : Axis.XP;
-
-            int contentIndex = bowlItems.size() - i - 1;
-            ItemStack bowlItemStack = bowlItems.get(contentIndex);
-
-            poseStack.pushPose();
-
-            poseStack.translate(0.5, 0.38 + 0.04, 0.5);
-            poseStack.translate(0.0, yMovement, 0.0);
-
-            poseStack.mulPose(Axis.YP.rotationDegrees((float) rotationY));
-            poseStack.translate(0.0 , 0.0, zMovement);
-            poseStack.mulPose(rotationAxisX.rotationDegrees((float) rotationX));
-
-            //poseStack.scale(0.88f, 0.88f, 0.88f);
-            poseStack.scale(0.98f, 0.98f, 0.98f);
-
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, bowlItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
-
-            poseStack.popPose();
-        }*/
-
         HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, 0, 50, combinedLight, combinedOverlay, Math.max(minElementLevel, elementLevel), true);
         HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel));
         HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel));
 
         poseStack.popPose();
-
         poseStack.popPose();
     }
 
     @Override
     public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
-        //return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_model"));
         return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model"));
     }
 }
