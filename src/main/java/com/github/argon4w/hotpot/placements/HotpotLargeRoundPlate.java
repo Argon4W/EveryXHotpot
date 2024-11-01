@@ -4,21 +4,20 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.api.placements.IHotpotCommonPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
     private final SimpleItemSlot itemSlot1;
@@ -50,11 +49,19 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
                 this.position1, this.itemSlot1,
                 this.position2, this.itemSlot2,
                 this.position3, this.itemSlot3,
-                this.position4, this.itemSlot4
-        );
+                this.position4, this.itemSlot4);
     }
 
-    public HotpotLargeRoundPlate(SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2, SimpleItemSlot itemSlot3, SimpleItemSlot itemSlot4, SimpleItemSlot plateItemSlot, int position1, int position2, int position3, int position4) {
+    public HotpotLargeRoundPlate(
+            SimpleItemSlot itemSlot1,
+            SimpleItemSlot itemSlot2,
+            SimpleItemSlot itemSlot3,
+            SimpleItemSlot itemSlot4,
+            SimpleItemSlot plateItemSlot,
+            int position1,
+            int position2,
+            int position3,
+            int position4) {
         this.itemSlot1 = itemSlot1;
         this.itemSlot2 = itemSlot2;
         this.itemSlot3 = itemSlot3;
@@ -70,12 +77,18 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
                 this.position1, this.itemSlot1,
                 this.position2, this.itemSlot2,
                 this.position3, this.itemSlot3,
-                this.position4, this.itemSlot4
-        );
+                this.position4, this.itemSlot4);
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         if (itemStack.isEmpty() && player.isCrouching() && container.canBeRemoved()) {
             onRemove(container, pos);
             return;
@@ -104,12 +117,26 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         return (isEmpty() ? plateItemSlot : itemSlots.get(position)).takeItem(container.canConsumeContents());
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return plateItemSlot.isEmpty() && container.canBeRemoved();
     }
 
@@ -178,23 +205,33 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotLargeRoundPlate> {
-        public static final MapCodec<HotpotLargeRoundPlate> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLargeRoundPlate::getItemSlot1),
-                        SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLargeRoundPlate::getItemSlot2),
-                        SimpleItemSlot.CODEC.fieldOf("item_slot_3").forGetter(HotpotLargeRoundPlate::getItemSlot3),
-                        SimpleItemSlot.CODEC.fieldOf("item_slot_4").forGetter(HotpotLargeRoundPlate::getItemSlot4),
-                        SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotLargeRoundPlate::getPlateItemSlot),
-                        Codec.INT.fieldOf("position_1").forGetter(HotpotLargeRoundPlate::getPosition1),
-                        Codec.INT.fieldOf("position_2").forGetter(HotpotLargeRoundPlate::getPosition2),
-                        Codec.INT.fieldOf("position_3").forGetter(HotpotLargeRoundPlate::getPosition3),
-                        Codec.INT.fieldOf("position_4").forGetter(HotpotLargeRoundPlate::getPosition4)
-                ).apply(plate, HotpotLargeRoundPlate::new))
-        );
+        public static final MapCodec<HotpotLargeRoundPlate> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("item_slot_1")
+                                        .forGetter(HotpotLargeRoundPlate::getItemSlot1),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("item_slot_2")
+                                        .forGetter(HotpotLargeRoundPlate::getItemSlot2),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("item_slot_3")
+                                        .forGetter(HotpotLargeRoundPlate::getItemSlot3),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("item_slot_4")
+                                        .forGetter(HotpotLargeRoundPlate::getItemSlot4),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("plate_item_slot")
+                                        .forGetter(HotpotLargeRoundPlate::getPlateItemSlot),
+                                Codec.INT.fieldOf("position_1").forGetter(HotpotLargeRoundPlate::getPosition1),
+                                Codec.INT.fieldOf("position_2").forGetter(HotpotLargeRoundPlate::getPosition2),
+                                Codec.INT.fieldOf("position_3").forGetter(HotpotLargeRoundPlate::getPosition3),
+                                Codec.INT.fieldOf("position_4").forGetter(HotpotLargeRoundPlate::getPosition4))
+                        .apply(plate, HotpotLargeRoundPlate::new)));
 
         @Override
         public HotpotLargeRoundPlate createPlacement(List<Integer> positions, ComplexDirection direction) {
-            return new HotpotLargeRoundPlate(positions.getFirst(), positions.get(1), positions.get(2), positions.get(3));
+            return new HotpotLargeRoundPlate(
+                    positions.getFirst(), positions.get(1), positions.get(2), positions.get(3));
         }
 
         @Override
@@ -204,7 +241,11 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
 
         @Override
         public List<Optional<Integer>> getPositions(int position, ComplexDirection direction) {
-            return List.of(Optional.of(position), direction.getClockWiseQuarter().relativeTo(position), direction.getClockWise().relativeTo(position), direction.relativeTo(position));
+            return List.of(
+                    Optional.of(position),
+                    direction.getClockWiseQuarter().relativeTo(position),
+                    direction.getClockWise().relativeTo(position),
+                    direction.relativeTo(position));
         }
     }
 }

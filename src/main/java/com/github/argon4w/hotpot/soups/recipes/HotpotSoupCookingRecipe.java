@@ -19,6 +19,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import org.jetbrains.annotations.NotNull;
 
 public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
     private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
@@ -27,7 +28,12 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
     private final double experience;
     private final int cookingTime;
 
-    public HotpotSoupCookingRecipe(ResourceKey<HotpotComponentSoupType> targetSoupTypeKey, Ingredient ingredient, ItemStack result, double experience, int cookingTime) {
+    public HotpotSoupCookingRecipe(
+            ResourceKey<HotpotComponentSoupType> targetSoupTypeKey,
+            Ingredient ingredient,
+            ItemStack result,
+            double experience,
+            int cookingTime) {
         this.targetSoupTypeKey = targetSoupTypeKey;
         this.ingredient = ingredient;
         this.result = result;
@@ -36,12 +42,12 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
     }
 
     @Override
-    public boolean matches(HotpotRecipeInput input, Level level) {
+    public boolean matches(HotpotRecipeInput input, @NotNull Level level) {
         return targetSoupTypeKey.equals(input.soup().soupTypeHolder().getKey()) && ingredient.test(input.itemStack());
     }
 
-    @Override
-    public ItemStack assemble(HotpotRecipeInput input, HolderLookup.Provider registryAccess) {
+    @NotNull @Override
+    public ItemStack assemble(@NotNull HotpotRecipeInput input, @NotNull HolderLookup.Provider registryAccess) {
         return result.copy();
     }
 
@@ -50,17 +56,17 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
         return true;
     }
 
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
+    @NotNull @Override
+    public ItemStack getResultItem(@NotNull HolderLookup.Provider pRegistries) {
         return result;
     }
 
-    @Override
+    @NotNull @Override
     public RecipeSerializer<?> getSerializer() {
         return HotpotModEntry.HOTPOT_SOUP_COOKING_RECIPE_SERIALIZER.get();
     }
 
-    @Override
+    @NotNull @Override
     public RecipeType<?> getType() {
         return HotpotModEntry.HOTPOT_SOUP_COOKING_RECIPE_TYPE.get();
     }
@@ -89,33 +95,43 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
         public static final int DEFAULT_COOKING_TIME = 100;
         public static final double DEFAULT_EXPERIENCE = 0;
 
-        public static final MapCodec<HotpotSoupCookingRecipe> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                        HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupCookingRecipe::getTargetSoupTypeKey),
-                        Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupCookingRecipe::getIngredient),
-                        ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupCookingRecipe::getResult),
-                        Codec.DOUBLE.optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE).forGetter(HotpotSoupCookingRecipe::getExperience),
-                        Codec.INT.optionalFieldOf("cooking_time", Serializer.DEFAULT_COOKING_TIME).forGetter(HotpotSoupCookingRecipe::getCookingTime)
-                ).apply(recipe, HotpotSoupCookingRecipe::new))
-        );
+        public static final MapCodec<HotpotSoupCookingRecipe> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                                HotpotComponentSoupType.KEY_CODEC
+                                        .fieldOf("target_soup")
+                                        .forGetter(HotpotSoupCookingRecipe::getTargetSoupTypeKey),
+                                Ingredient.CODEC_NONEMPTY
+                                        .fieldOf("ingredient")
+                                        .forGetter(HotpotSoupCookingRecipe::getIngredient),
+                                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupCookingRecipe::getResult),
+                                Codec.DOUBLE
+                                        .optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE)
+                                        .forGetter(HotpotSoupCookingRecipe::getExperience),
+                                Codec.INT
+                                        .optionalFieldOf("cooking_time", Serializer.DEFAULT_COOKING_TIME)
+                                        .forGetter(HotpotSoupCookingRecipe::getCookingTime))
+                        .apply(recipe, HotpotSoupCookingRecipe::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupCookingRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-                StreamCodec.composite(
-                        HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupCookingRecipe::getTargetSoupTypeKey,
-                        Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupCookingRecipe::getIngredient,
-                        ItemStack.STREAM_CODEC, HotpotSoupCookingRecipe::getResult,
-                        ByteBufCodecs.DOUBLE, HotpotSoupCookingRecipe::getExperience,
-                        ByteBufCodecs.INT, HotpotSoupCookingRecipe::getCookingTime,
-                        HotpotSoupCookingRecipe::new
-                )
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupCookingRecipe> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                        HotpotComponentSoupType.KEY_STREAM_CODEC,
+                        HotpotSoupCookingRecipe::getTargetSoupTypeKey,
+                        Ingredient.CONTENTS_STREAM_CODEC,
+                        HotpotSoupCookingRecipe::getIngredient,
+                        ItemStack.STREAM_CODEC,
+                        HotpotSoupCookingRecipe::getResult,
+                        ByteBufCodecs.DOUBLE,
+                        HotpotSoupCookingRecipe::getExperience,
+                        ByteBufCodecs.INT,
+                        HotpotSoupCookingRecipe::getCookingTime,
+                        HotpotSoupCookingRecipe::new));
 
-        @Override
+        @NotNull @Override
         public MapCodec<HotpotSoupCookingRecipe> codec() {
             return CODEC;
         }
 
-        @Override
+        @NotNull @Override
         public StreamCodec<RegistryFriendlyByteBuf, HotpotSoupCookingRecipe> streamCodec() {
             return STREAM_CODEC;
         }

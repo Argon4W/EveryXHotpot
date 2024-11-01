@@ -10,13 +10,12 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-import java.util.Optional;
 
 public class HotpotPlacedChopstick implements IHotpotPlacement {
     private final int position1;
@@ -36,14 +35,28 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         if (container.canBeRemoved()) {
             onRemove(container, pos);
         }
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos seposfPos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos seposfPos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         return ItemStack.EMPTY;
     }
 
@@ -53,7 +66,14 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return chopstickItemSlot.isEmpty() && container.canBeRemoved();
     }
 
@@ -89,13 +109,15 @@ public class HotpotPlacedChopstick implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedChopstick> {
-        public static final MapCodec<HotpotPlacedChopstick> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(chopstick -> chopstick.group(
-                        Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedChopstick::getPosition1),
-                        Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedChopstick::getPosition2),
-                        SimpleItemSlot.CODEC.fieldOf("chopstick_item_slot").forGetter(HotpotPlacedChopstick::getChopstickItemSlot)
-                ).apply(chopstick, HotpotPlacedChopstick::new))
-        );
+        public static final MapCodec<HotpotPlacedChopstick> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(chopstick -> chopstick
+                        .group(
+                                Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedChopstick::getPosition1),
+                                Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedChopstick::getPosition2),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("chopstick_item_slot")
+                                        .forGetter(HotpotPlacedChopstick::getChopstickItemSlot))
+                        .apply(chopstick, HotpotPlacedChopstick::new)));
 
         @Override
         public HotpotPlacedChopstick createPlacement(List<Integer> positions, ComplexDirection direction) {

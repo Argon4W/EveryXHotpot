@@ -14,14 +14,13 @@ import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSeriali
 import com.github.argon4w.hotpot.soups.components.containers.IHotpotMobEffectContainerSoupComponent;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.List;
 
 public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHotpotSoupComponent {
     private final List<ResourceLocation> keys;
@@ -31,7 +30,11 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
     }
 
     @Override
-    public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
+    public IHotpotResult<IHotpotContent> onContentUpdate(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
         if (result.isEmpty()) {
             return result;
         }
@@ -49,7 +52,17 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
                 return;
             }
 
-            soup.getComponentPairsByTypes(List.of(HotpotSoupComponentTypeSerializers.FIXED_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER, HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)).stream().filter(pair -> keys.isEmpty() || keys.contains(pair.getFirst())).map(Pair::getSecond).map(IHotpotMobEffectContainerSoupComponent::getMobEffectMap).forEach(mobEffectMap -> HotpotFoodEffectsDataComponent.addEffects(itemStack, mobEffectMap));
+            soup
+                    .getComponentPairsByTypes(List.of(
+                            HotpotSoupComponentTypeSerializers
+                                    .FIXED_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER,
+                            HotpotSoupComponentTypeSerializers
+                                    .DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER))
+                    .stream()
+                    .filter(pair -> keys.isEmpty() || keys.contains(pair.getFirst()))
+                    .map(Pair::getSecond)
+                    .map(IHotpotMobEffectContainerSoupComponent::getMobEffectMap)
+                    .forEach(mobEffectMap -> HotpotFoodEffectsDataComponent.addEffects(itemStack, mobEffectMap));
         });
 
         return result;
@@ -60,7 +73,8 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
         private final HotpotApplyMobEffectOnContentUpdateSoupComponent unit;
 
         private final MapCodec<HotpotApplyMobEffectOnContentUpdateSoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotApplyMobEffectOnContentUpdateSoupComponent> streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotApplyMobEffectOnContentUpdateSoupComponent>
+                streamCodec;
 
         public Type(List<ResourceLocation> keys) {
             this.keys = keys;
@@ -95,17 +109,28 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotApplyMobEffectOnContentUpdateSoupComponent> {
-        public static final MapCodec<Type> CODEC = ResourceLocation.CODEC.listOf().optionalFieldOf("keys", List.of()).xmap(Type::new, Type::getKeys);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()).<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getKeys);
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotApplyMobEffectOnContentUpdateSoupComponent> {
+        public static final MapCodec<Type> CODEC = ResourceLocation.CODEC
+                .listOf()
+                .optionalFieldOf("keys", List.of())
+                .xmap(Type::new, Type::getKeys);
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ResourceLocation.STREAM_CODEC
+                .apply(ByteBufCodecs.list())
+                .<RegistryFriendlyByteBuf>cast()
+                .map(Type::new, Type::getKeys);
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>> getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>>
+                getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

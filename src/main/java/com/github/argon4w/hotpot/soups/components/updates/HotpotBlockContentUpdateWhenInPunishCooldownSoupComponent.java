@@ -11,7 +11,20 @@ import com.github.argon4w.hotpot.soups.components.containers.HotpotPunishCooldow
 
 public class HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        return soup.getComponentsByType(HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().mapToInt(HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown).sum() > 0 ? IHotpotResult.blocked() : result;
+    public IHotpotResult<IHotpotContent> onContentUpdate(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
+        return soup
+                                .getComponentsByType(
+                                        HotpotSoupComponentTypeSerializers
+                                                .PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                                .stream()
+                                .mapToInt(HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown)
+                                .sum()
+                        > 0
+                ? IHotpotResult.blocked()
+                : result;
     }
 }

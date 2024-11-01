@@ -6,6 +6,8 @@ import net.minecraft.client.resources.model.BakedModel;
 
 public interface RendererBakedModelsCache {
     BakedModel getTransformedModel(BakedModel model, PoseStack poseStack);
+
     BakedModel getTransformedModel(BakedModel model, Transformation transformation);
+
     int getSize();
 }

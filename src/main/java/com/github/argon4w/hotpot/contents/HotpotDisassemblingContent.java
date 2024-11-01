@@ -1,10 +1,15 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -15,16 +20,15 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-
 public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
 
-    public HotpotDisassemblingContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
+    public HotpotDisassemblingContent(
+            ItemStack itemStack,
+            ItemStack originalItemStack,
+            int cookingTime,
+            double cookingProgress,
+            double experience) {
         super(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
     }
 
@@ -38,17 +42,20 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     }
 
     @Override
-    public Optional<Integer> getCookingTime(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Integer> getCookingTime(
+            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return hasDisassembledResult(pos) ? Optional.of(200) : Optional.empty();
     }
 
     @Override
-    public Optional<Double> getExperience(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<Double> getExperience(
+            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<ItemStack> getResult(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+    public Optional<ItemStack> getResult(
+            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         return hasDisassembledResult(pos) ? Optional.of(ItemStack.EMPTY) : Optional.empty();
     }
 
@@ -59,7 +66,16 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
 
     @Override
     public List<ItemStack> getContentResultItemStacks(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getCookingTime() > 0 ? List.of(originalItemStack) : getDisassembledResultRecipe(pos).map(recipe -> recipe.getIngredients().stream().filter(Predicate.not(Ingredient::hasNoItems)).map(Ingredient::getItems).map(this::randomItemStack).map(ItemStack::copy).toList()).orElse(List.of(originalItemStack));
+        return getCookingTime() > 0
+                ? List.of(originalItemStack)
+                : getDisassembledResultRecipe(pos)
+                        .map(recipe -> recipe.getIngredients().stream()
+                                .filter(Predicate.not(Ingredient::hasNoItems))
+                                .map(Ingredient::getItems)
+                                .map(this::randomItemStack)
+                                .map(ItemStack::copy)
+                                .toList())
+                        .orElse(List.of(originalItemStack));
     }
 
     public boolean hasDisassembledResult(LevelBlockPos pos) {
@@ -113,21 +129,32 @@ public class HotpotDisassemblingContent extends AbstractHotpotItemStackContent {
     }
 
     public boolean hasCraftingRemainingItems(Ingredient ingredient) {
-        return !ingredient.hasNoItems() && Arrays.stream(ingredient.getItems()).map(ItemStack::getCraftingRemainingItem).anyMatch(itemStack -> !itemStack.isEmpty());
+        return !ingredient.hasNoItems()
+                && Arrays.stream(ingredient.getItems())
+                        .map(ItemStack::getCraftingRemainingItem)
+                        .anyMatch(itemStack -> !itemStack.isEmpty());
     }
 
     public boolean hasDurability(Ingredient ingredient) {
-        return !ingredient.hasNoItems() && Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.has(DataComponents.MAX_DAMAGE));
+        return !ingredient.hasNoItems()
+                && Arrays.stream(ingredient.getItems()).anyMatch(itemStack -> itemStack.has(DataComponents.MAX_DAMAGE));
     }
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotDisassemblingContent> {
         @Override
-        public HotpotDisassemblingContent createContent(ItemStack itemStack, ItemStack originalItemStack, int cookingTime, double cookingProgress, double experience) {
-            return new HotpotDisassemblingContent(itemStack, originalItemStack, cookingTime, cookingProgress, experience);
+        public HotpotDisassemblingContent createContent(
+                ItemStack itemStack,
+                ItemStack originalItemStack,
+                int cookingTime,
+                double cookingProgress,
+                double experience) {
+            return new HotpotDisassemblingContent(
+                    itemStack, originalItemStack, cookingTime, cookingProgress, experience);
         }
 
         @Override
-        public HotpotDisassemblingContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+        public HotpotDisassemblingContent createContent(
+                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             return new HotpotDisassemblingContent(itemStack, hotpotBlockEntity, pos);
         }
     }

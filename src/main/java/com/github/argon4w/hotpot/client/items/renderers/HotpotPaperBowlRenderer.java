@@ -9,25 +9,30 @@ import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
-import java.util.List;
-import java.util.Optional;
-
 public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
     @Override
-    public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void render(
+            ItemStack itemStack,
+            ItemDisplayContext displayContext,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay) {
         if (HotpotPaperBowlItem.isPaperBowlEmpty(itemStack)) {
             return;
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupTypeKey(itemStack));
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(
+                HotpotPaperBowlItem.getPaperBowlSoupTypeKey(itemStack));
 
         List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
         List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);
@@ -46,7 +51,8 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         double minElementLevel = (fullWaterLevel - (0.06 / 0.4375) * 6.0) + 0.13;
 
         double waterLevel = drained ? minWaterLevel : (minWaterLevelNoLimit + 0.06 * size + 0.5625);
-        double elementLevel = drained ? minElementLevel : ((fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size);
+        double elementLevel =
+                drained ? minElementLevel : ((fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size);
 
         poseStack.pushPose();
 
@@ -55,7 +61,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
         poseStack.pushPose();
 
-        for (int i = 0; i < Math.min(4, bowlSkewers.size()); i ++) {
+        for (int i = 0; i < Math.min(4, bowlSkewers.size()); i++) {
             double positionZ = 0.215 + i * 0.19;
             int skewerIndex = bowlSkewers.size() - i - 1;
             ItemStack skewerItemStack = bowlSkewers.get(skewerIndex);
@@ -71,12 +77,24 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
             poseStack.scale(0.72f, 0.72f, 0.72f);
 
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, skewerItemStack, ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            null,
+                            skewerItemStack,
+                            ItemDisplayContext.NONE,
+                            true,
+                            poseStack,
+                            bufferSource,
+                            null,
+                            combinedLight,
+                            combinedOverlay,
+                            ItemDisplayContext.NONE.ordinal());
 
             poseStack.popPose();
         }
 
-        for (int i = 4; i < bowlSkewers.size(); i ++) {
+        for (int i = 4; i < bowlSkewers.size(); i++) {
             double xRotation = 60.0f + ((i - 4) / 3.0f) * 5.0f;
             double yRotation = ((i - 4) / 3.0f) * 90.0f;
 
@@ -93,11 +111,23 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.translate(0, 1, 0);
             poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f));
 
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, skewerItemStack, ItemDisplayContext.NONE, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            null,
+                            skewerItemStack,
+                            ItemDisplayContext.NONE,
+                            true,
+                            poseStack,
+                            bufferSource,
+                            null,
+                            combinedLight,
+                            combinedOverlay,
+                            ItemDisplayContext.NONE.ordinal());
             poseStack.popPose();
         }
 
-        for (int i = 0; i < bowlItems.size(); i ++) {
+        for (int i = 0; i < bowlItems.size(); i++) {
             boolean even1 = i % 2 == 0;
             boolean even2 = ((i - i % 2) / 2) % 2 == 0;
             int contentIndex = bowlItems.size() - i - 1;
@@ -119,20 +149,56 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             poseStack.mulPose(Axis.ZP.rotationDegrees((float) zRotation));
             poseStack.scale(0.8f, 0.8f, (float) zScale);
 
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, bowlItemStack, ItemDisplayContext.FIXED, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            null,
+                            bowlItemStack,
+                            ItemDisplayContext.FIXED,
+                            true,
+                            poseStack,
+                            bufferSource,
+                            null,
+                            combinedLight,
+                            combinedOverlay,
+                            ItemDisplayContext.FIXED.ordinal());
             poseStack.popPose();
         }
 
-        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(soupRendererConfig, poseStack, bufferSource, 0, 50, combinedLight, combinedOverlay, Math.max(minElementLevel, elementLevel), true);
-        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel));
-        HotpotBlockEntityRenderer.renderHotpotSoup(soupRendererConfig, poseStack, bufferSource, combinedLight, combinedOverlay, Math.max(minWaterLevel, waterLevel));
+        HotpotBlockEntityRenderer.renderHotpotSoupCustomElements(
+                soupRendererConfig,
+                poseStack,
+                bufferSource,
+                0,
+                50,
+                combinedLight,
+                combinedOverlay,
+                Math.max(minElementLevel, elementLevel),
+                true);
+
+        HotpotBlockEntityRenderer.renderHotpotSoup(
+                soupRendererConfig,
+                poseStack,
+                bufferSource,
+                combinedLight,
+                combinedOverlay,
+                Math.max(minWaterLevel, waterLevel));
+
+        HotpotBlockEntityRenderer.renderHotpotSoup(
+                soupRendererConfig,
+                poseStack,
+                bufferSource,
+                combinedLight,
+                combinedOverlay,
+                Math.max(minWaterLevel, waterLevel));
 
         poseStack.popPose();
         poseStack.popPose();
     }
 
     @Override
-    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
-        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model"));
+    public Optional<ResourceLocation> getItemModelResourceLocation() {
+        return Optional.of(
+                ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model"));
     }
 }

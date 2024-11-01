@@ -68,7 +68,8 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .isViewBlocking((pState, pLevel, pPos) -> false)
                 .strength(3.0F, 6.0F));
 
-        this.registerDefaultState(this.getStateDefinition().any()
+        this.registerDefaultState(this.getStateDefinition()
+                .any()
                 .setValue(HOTPOT_LIT, true)
                 .setValue(NORTH, false)
                 .setValue(SOUTH, false)
@@ -81,41 +82,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .setValue(SEPARATOR_NORTH, false)
                 .setValue(SEPARATOR_SOUTH, false)
                 .setValue(SEPARATOR_EAST, false)
-                .setValue(SEPARATOR_WEST, false)
-        );
-    }
-
-    private static VoxelShape[] makeShapes() {
-        VoxelShape base = box(0, 0, 0, 16, 8, 16);
-        VoxelShape south = box(0, 8, 15, 16, 16, 16); //south(2^0)
-        VoxelShape west = box(0, 8, 0, 1, 16, 16); //west(2^1)
-        VoxelShape north = box(0, 8, 0, 16, 16, 1); //north(2^2)
-        VoxelShape east = box(15, 8, 0, 16, 16, 16); //east(2^3)
-
-        VoxelShape[] faces = {
-                Shapes.empty(), //0000 (0)
-                south, //0001 (1)
-                west, //0010 (2)
-                Shapes.or(south, west), //0011 (3)
-                north, //0100 (4)
-                Shapes.or(north, south), //0101 (5)
-                Shapes.or(north, west), //0110 (6)
-                Shapes.or(north, west, south), //0111 (7)
-                east, //1000 (8)
-                Shapes.or(east, south), //1001 (9)
-                Shapes.or(east, west), //1010 (10)
-                Shapes.or(east, west, south), //1011 (11)
-                Shapes.or(east, north), //1100 (12)
-                Shapes.or(east, north, south), //1101 (13)
-                Shapes.or(east, north, west), //1110 (14)
-                Shapes.or(east, north, west, south) //1111 (15)
-        };
-
-        for (int i = 0; i < faces.length; i ++) {
-            faces[i] = Shapes.or(base, faces[i]);
-        }
-
-        return faces;
+                .setValue(SEPARATOR_WEST, false));
     }
 
     private BlockState updateState(BlockState state, BlockPos pos, LevelAccessor accessor) {
@@ -123,18 +90,18 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return defaultBlockState();
         }
 
-        LevelBlockPos selfPos = new LevelBlockPos(level, pos);
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
         boolean hotpotLit = true;
 
-        if (selfPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
-            hotpotLit = hotpotBlockEntity.getSoup().isHotpotLit(hotpotBlockEntity, selfPos);
+        if (blockPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity) {
+            hotpotLit = hotpotBlockEntity.getSoup().isHotpotLit(hotpotBlockEntity, blockPos);
         }
 
-        LevelBlockPos north = selfPos.north();
-        LevelBlockPos south = selfPos.south();
-        LevelBlockPos east = selfPos.east();
-        LevelBlockPos west = selfPos.west();
+        LevelBlockPos north = blockPos.north();
+        LevelBlockPos south = blockPos.south();
+        LevelBlockPos east = blockPos.east();
+        LevelBlockPos west = blockPos.west();
 
         LevelBlockPos westNorth = north.west();
         LevelBlockPos northEast = east.north();
@@ -146,8 +113,7 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         boolean eastValue = east.is(HotpotModEntry.HOTPOT_BLOCK.get());
         boolean westValue = west.is(HotpotModEntry.HOTPOT_BLOCK.get());
 
-        return state
-                .setValue(HOTPOT_LIT, hotpotLit)
+        return state.setValue(HOTPOT_LIT, hotpotLit)
                 .setValue(NORTH, northValue)
                 .setValue(SOUTH, southValue)
                 .setValue(EAST, eastValue)
@@ -156,10 +122,10 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
                 .setValue(NORTH_EAST, northValue && eastValue && northEast.is(HotpotModEntry.HOTPOT_BLOCK.get()))
                 .setValue(EAST_SOUTH, eastValue && southValue && eastSouth.is(HotpotModEntry.HOTPOT_BLOCK.get()))
                 .setValue(SOUTH_WEST, southValue && westValue && southWest.is(HotpotModEntry.HOTPOT_BLOCK.get()))
-                .setValue(SEPARATOR_NORTH, northValue && !HotpotBlockEntity.isSameSoup(selfPos, north))
-                .setValue(SEPARATOR_SOUTH, southValue && !HotpotBlockEntity.isSameSoup(selfPos, south))
-                .setValue(SEPARATOR_EAST, eastValue && !HotpotBlockEntity.isSameSoup(selfPos, east))
-                .setValue(SEPARATOR_WEST, westValue && !HotpotBlockEntity.isSameSoup(selfPos, west));
+                .setValue(SEPARATOR_NORTH, northValue && !HotpotBlockEntity.isSameSoup(blockPos, north))
+                .setValue(SEPARATOR_SOUTH, southValue && !HotpotBlockEntity.isSameSoup(blockPos, south))
+                .setValue(SEPARATOR_EAST, eastValue && !HotpotBlockEntity.isSameSoup(blockPos, east))
+                .setValue(SEPARATOR_WEST, westValue && !HotpotBlockEntity.isSameSoup(blockPos, west));
     }
 
     @SuppressWarnings("deprecation")
@@ -176,12 +142,33 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         });
     }
 
-    private static int indexFor(Direction direction) {
-        return 1 << direction.get2DDataValue();
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(
+                HOTPOT_LIT,
+                NORTH,
+                SOUTH,
+                EAST,
+                WEST,
+                WEST_NORTH,
+                NORTH_EAST,
+                EAST_SOUTH,
+                SOUTH_WEST,
+                SEPARATOR_NORTH,
+                SEPARATOR_SOUTH,
+                SEPARATOR_EAST,
+                SEPARATOR_WEST);
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(
+            @NotNull ItemStack itemStack,
+            @NotNull BlockState state,
+            @NotNull Level level,
+            @NotNull BlockPos pos,
+            @NotNull Player player,
+            @NotNull InteractionHand hand,
+            @NotNull BlockHitResult hitResult) {
         LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
         if (!(levelPos.getBlockEntity() instanceof HotpotBlockEntity hotpotBlockEntity)) {
@@ -198,24 +185,8 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
-        if (state.is(newState.getBlock())) {
-            return;
-        }
-
-        if (level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
-            hotpotBlockEntity.onRemove(new LevelBlockPos(level, pos));
-        }
-
-        super.onRemove(state, level, pos, newState, b);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        super.entityInside(state, level, pos, entity);
-
+    public void entityInside(
+            @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
         LevelBlockPos levelPos = new LevelBlockPos(level, pos);
 
         if (!levelPos.isServerSide()) {
@@ -229,57 +200,109 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
         hotpotBlockEntity.getSoup().onEntityInside(entity, hotpotBlockEntity, levelPos);
     }
 
-    @NotNull
     @Override
-    @SuppressWarnings("deprecation")
-    public BlockState updateShape(BlockState state, Direction direction, BlockState nearbyState, LevelAccessor accessor, BlockPos pos, BlockPos nearbyPos) {
+    public void onRemove(
+            BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (state.is(newState.getBlock())) {
+            return;
+        }
+
+        if (level.getBlockEntity(pos) instanceof HotpotBlockEntity hotpotBlockEntity) {
+            hotpotBlockEntity.onRemove(new LevelBlockPos(level, pos));
+        }
+
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @NotNull @Override
+    public BlockState updateShape(
+            @NotNull BlockState state,
+            @NotNull Direction direction,
+            @NotNull BlockState nearbyState,
+            @NotNull LevelAccessor accessor,
+            @NotNull BlockPos pos,
+            @NotNull BlockPos nearbyPos) {
         return updateState(state, pos, accessor);
     }
 
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntityClientTicker::tick) : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntity::tick);
+    @Nullable @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
+        return level.isClientSide
+                ? createTickerHelper(
+                        blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntityClientTicker::tick)
+                : createTickerHelper(
+                        blockEntityType, HotpotModEntry.HOTPOT_BLOCK_ENTITY.get(), HotpotBlockEntity::tick);
     }
 
-    @NotNull
-    @Override
-    @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
+    @NotNull @Override
+    public VoxelShape getCollisionShape(
+            @NotNull BlockState state,
+            @NotNull BlockGetter getter,
+            @NotNull BlockPos pos,
+            @NotNull CollisionContext context) {
         return SHAPES_BY_INDEX[getShapeIndex(state)];
     }
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    @Nullable @Override
+    public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         return updateState(super.getStateForPlacement(context), context.getClickedPos(), context.getLevel());
     }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(HOTPOT_LIT, NORTH, SOUTH, EAST, WEST, WEST_NORTH, NORTH_EAST, EAST_SOUTH, SOUTH_WEST, SEPARATOR_NORTH, SEPARATOR_SOUTH, SEPARATOR_EAST, SEPARATOR_WEST);
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    @Nullable @Override
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new HotpotBlockEntity(pos, state);
     }
 
     @Override
-    protected MapCodec<HotpotBlock> codec() {
+    protected @NotNull MapCodec<HotpotBlock> codec() {
         return MapCodec.unit(HotpotBlock::new);
     }
 
-    @NotNull
-    @Override
-    public  RenderShape getRenderShape(BlockState p_49232_) {
+    @NotNull @Override
+    public RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public EquipmentSlot getEquipmentSlot() {
         return EquipmentSlot.HEAD;
+    }
+
+    private static int indexFor(Direction direction) {
+        return 1 << direction.get2DDataValue();
+    }
+
+    private static VoxelShape[] makeShapes() {
+        VoxelShape base = box(0, 0, 0, 16, 8, 16);
+        VoxelShape south = box(0, 8, 15, 16, 16, 16); // south(2^0)
+        VoxelShape west = box(0, 8, 0, 1, 16, 16); // west(2^1)
+        VoxelShape north = box(0, 8, 0, 16, 16, 1); // north(2^2)
+        VoxelShape east = box(15, 8, 0, 16, 16, 16); // east(2^3)
+
+        VoxelShape[] faces = {
+            Shapes.empty(), // 0000 (0)
+            south, // 0001 (1)
+            west, // 0010 (2)
+            Shapes.or(south, west), // 0011 (3)
+            north, // 0100 (4)
+            Shapes.or(north, south), // 0101 (5)
+            Shapes.or(north, west), // 0110 (6)
+            Shapes.or(north, west, south), // 0111 (7)
+            east, // 1000 (8)
+            Shapes.or(east, south), // 1001 (9)
+            Shapes.or(east, west), // 1010 (10)
+            Shapes.or(east, west, south), // 1011 (11)
+            Shapes.or(east, north), // 1100 (12)
+            Shapes.or(east, north, south), // 1101 (13)
+            Shapes.or(east, north, west), // 1110 (14)
+            Shapes.or(east, north, west, south) // 1111 (15)
+        };
+
+        for (int i = 0; i < faces.length; i++) {
+            faces[i] = Shapes.or(base, faces[i]);
+        }
+
+        return faces;
     }
 }

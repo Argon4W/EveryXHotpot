@@ -13,7 +13,13 @@ import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotSoupConsumeAction implements IHotpotSoupIngredientAction {
     @Override
-    public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos) {
+    public void action(
+            int pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            IHotpotContent content,
+            HotpotComponentSoup sourceSoup,
+            HotpotComponentSoup resultSoup,
+            LevelBlockPos selfPos) {
         hotpotBlockEntity.setEmptyContent(pos);
     }
 
@@ -26,7 +32,8 @@ public class HotpotSoupConsumeAction implements IHotpotSoupIngredientAction {
         public static final HotpotSoupConsumeAction UNIT = new HotpotSoupConsumeAction();
 
         public static final MapCodec<HotpotSoupConsumeAction> CODEC = MapCodec.unit(UNIT);
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupConsumeAction> STREAM_CODEC = StreamCodec.unit(UNIT);
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupConsumeAction> STREAM_CODEC =
+                StreamCodec.unit(UNIT);
 
         @Override
         public MapCodec<HotpotSoupConsumeAction> getCodec() {

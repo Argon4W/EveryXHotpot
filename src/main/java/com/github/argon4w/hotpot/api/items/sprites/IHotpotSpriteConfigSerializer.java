@@ -6,5 +6,6 @@ import net.minecraft.network.codec.StreamCodec;
 
 public interface IHotpotSpriteConfigSerializer<T extends IHotpotSpriteConfig> {
     MapCodec<T> getCodec();
+
     StreamCodec<RegistryFriendlyByteBuf, T> getStreamCodec();
 }

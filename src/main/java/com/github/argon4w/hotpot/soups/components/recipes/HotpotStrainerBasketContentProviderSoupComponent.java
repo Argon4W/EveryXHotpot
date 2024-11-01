@@ -13,7 +13,14 @@ import net.minecraft.world.item.ItemStack;
 
 public class HotpotStrainerBasketContentProviderSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getContentSerializerResultFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result) {
-        return result.isPresent() || !itemStack.is(HotpotModEntry.HOTPOT_STRAINER_BASKET) ? result : IHotpotResult.success(HotpotContentSerializers.STRAINER_BASKET_CONTENT_SERIALIZER);
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getContentSerializerResultFromItemStack(
+            ItemStack itemStack,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Holder<IHotpotContentSerializer<?>>> result) {
+        return result.isPresent() || !itemStack.is(HotpotModEntry.HOTPOT_STRAINER_BASKET)
+                ? result
+                : IHotpotResult.success(HotpotContentSerializers.STRAINER_BASKET_CONTENT_SERIALIZER);
     }
 }

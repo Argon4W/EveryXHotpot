@@ -17,27 +17,31 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public interface IHotpotDamageSource {
     Wrapper EMPTY = new Wrapper(Either.right(new Empty()));
-    Codec<Wrapper> CODEC = Codec.lazyInitialized(() -> Codec.either(Value.CODEC, Empty.CODEC).xmap(Wrapper::new, Wrapper::either));
-    StreamCodec<RegistryFriendlyByteBuf, Wrapper> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.either(Value.STREAM_CODEC, Empty.STREAM_CODEC).map(Wrapper::new, Wrapper::either));
+    Codec<Wrapper> CODEC =
+            Codec.lazyInitialized(() -> Codec.either(Value.CODEC, Empty.CODEC).xmap(Wrapper::new, Wrapper::either));
+    StreamCodec<RegistryFriendlyByteBuf, Wrapper> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
+            () -> ByteBufCodecs.either(Value.STREAM_CODEC, Empty.STREAM_CODEC).map(Wrapper::new, Wrapper::either));
 
     void hurt(Entity entity);
+
     void hurt(Entity entity, Vec3 vec3);
 
     record Value(Holder<DamageType> damageTypeHolder, float amount) implements IHotpotDamageSource {
-        public static final Codec<Value> CODEC = Codec.lazyInitialized(() ->
-                RecordCodecBuilder.create(source -> source.group(
-                        RegistryFixedCodec.create(Registries.DAMAGE_TYPE).fieldOf("damage_type").forGetter(Value::damageTypeHolder),
-                        Codec.FLOAT.fieldOf("amount").forGetter(Value::amount)
-                ).apply(source, Value::new))
-        );
+        public static final Codec<Value> CODEC =
+                Codec.lazyInitialized(() -> RecordCodecBuilder.create(source -> source.group(
+                                RegistryFixedCodec.create(Registries.DAMAGE_TYPE)
+                                        .fieldOf("damage_type")
+                                        .forGetter(Value::damageTypeHolder),
+                                Codec.FLOAT.fieldOf("amount").forGetter(Value::amount))
+                        .apply(source, Value::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, Value> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-                StreamCodec.composite(
-                        ByteBufCodecs.holderRegistry(Registries.DAMAGE_TYPE), Value::damageTypeHolder,
-                        ByteBufCodecs.FLOAT, Value::amount,
-                        Value::new
-                )
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, Value> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                        ByteBufCodecs.holderRegistry(Registries.DAMAGE_TYPE),
+                        Value::damageTypeHolder,
+                        ByteBufCodecs.FLOAT,
+                        Value::amount,
+                        Value::new));
 
         @Override
         public void hurt(Entity entity) {
@@ -56,14 +60,10 @@ public interface IHotpotDamageSource {
         public static final StreamCodec<RegistryFriendlyByteBuf, Empty> STREAM_CODEC = StreamCodec.unit(UNIT);
 
         @Override
-        public void hurt(Entity entity) {
-
-        }
+        public void hurt(Entity entity) {}
 
         @Override
-        public void hurt(Entity entity, Vec3 vec3) {
-
-        }
+        public void hurt(Entity entity, Vec3 vec3) {}
     }
 
     record Wrapper(Either<Value, Empty> either) implements IHotpotDamageSource {

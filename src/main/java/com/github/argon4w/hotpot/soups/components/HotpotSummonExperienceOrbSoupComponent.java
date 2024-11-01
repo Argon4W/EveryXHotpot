@@ -10,7 +10,14 @@ import org.joml.Math;
 
 public class HotpotSummonExperienceOrbSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<Double> onAwardExperience(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Double> result) {
-        return result.isPresent() && pos.level() instanceof ServerLevel serverLevel ? result.consume(experience -> ExperienceOrb.award(serverLevel, pos.toVec3(), (int) Math.ceil(experience))) : result;
+    public IHotpotResult<Double> onAwardExperience(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Double> result) {
+        return result.isPresent() && pos.level() instanceof ServerLevel serverLevel
+                ? result.consume(
+                        experience -> ExperienceOrb.award(serverLevel, pos.toVec3(), (int) Math.ceil(experience)))
+                : result;
     }
 }

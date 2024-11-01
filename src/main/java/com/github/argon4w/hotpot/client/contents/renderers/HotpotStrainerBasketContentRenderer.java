@@ -9,6 +9,9 @@ import com.github.argon4w.hotpot.contents.AbstractHotpotItemStackContent;
 import com.github.argon4w.hotpot.contents.HotpotStrainerBasketContent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
@@ -18,39 +21,45 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class HotpotStrainerBasketContentRenderer implements IHotpotContentRenderer {
     public static final double OFFSET = 1.0 / 16.0;
     public static final double SIZE = (14.0 / 3.0) / 16.0;
     public static final double CENTER = SIZE / 2.0;
 
     public static final double[] Z_BY_INDEX = {
-            OFFSET + 2 * SIZE + CENTER,
-            OFFSET + 2 * SIZE + CENTER,
-            OFFSET + 1 * SIZE + CENTER,
-            OFFSET + 0 * SIZE + CENTER,
-            OFFSET + 0 * SIZE + CENTER,
-            OFFSET + 0 * SIZE + CENTER,
-            OFFSET + 1 * SIZE + CENTER,
-            OFFSET + 2 * SIZE + CENTER
+        OFFSET + 2 * SIZE + CENTER,
+        OFFSET + 2 * SIZE + CENTER,
+        OFFSET + 1 * SIZE + CENTER,
+        OFFSET + 0 * SIZE + CENTER,
+        OFFSET + 0 * SIZE + CENTER,
+        OFFSET + 0 * SIZE + CENTER,
+        OFFSET + 1 * SIZE + CENTER,
+        OFFSET + 2 * SIZE + CENTER
     };
 
     public static final double[] X_BY_INDEX = {
-            OFFSET + 1 * SIZE + CENTER,
-            OFFSET + 2 * SIZE + CENTER,
-            OFFSET + 2 * SIZE + CENTER,
-            OFFSET + 2 * SIZE + CENTER,
-            OFFSET + 1 * SIZE + CENTER,
-            OFFSET + 0 * SIZE + CENTER,
-            OFFSET + 0 * SIZE + CENTER,
-            OFFSET + 0 * SIZE + CENTER,
+        OFFSET + 1 * SIZE + CENTER,
+        OFFSET + 2 * SIZE + CENTER,
+        OFFSET + 2 * SIZE + CENTER,
+        OFFSET + 2 * SIZE + CENTER,
+        OFFSET + 1 * SIZE + CENTER,
+        OFFSET + 0 * SIZE + CENTER,
+        OFFSET + 0 * SIZE + CENTER,
+        OFFSET + 0 * SIZE + CENTER,
     };
 
     @Override
-    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z, int index) {
+    public void render(
+            IHotpotContent content,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double rotation,
+            double waterLevel,
+            double x,
+            double z,
+            int index) {
         if (!(content instanceof HotpotStrainerBasketContent strainerBasket)) {
             return;
         }
@@ -61,17 +70,52 @@ public class HotpotStrainerBasketContentRenderer implements IHotpotContentRender
         double offsetY = 0.02 + curve(time, Math.PI * index) * 0.01;
 
         poseStack.translate(X_BY_INDEX[index], 0.7875 + offsetY, Z_BY_INDEX[index]);
-        poseStack.mulPose(Axis.YP.rotationDegrees(360 - strainerBasket.getDirection().toYRot()));
+        poseStack.mulPose(
+                Axis.YP.rotationDegrees(360 - strainerBasket.getDirection().toYRot()));
         poseStack.scale(0.45f, 0.45f, 0.45f);
 
         poseStack.pushPose();
         poseStack.translate(0, -0.5, 0);
 
-        strainerBasket.getStrainerContents().stream().filter(content1 -> content1 instanceof AbstractHotpotItemStackContent).map(content1 -> ((AbstractHotpotItemStackContent) content1).getItemStack()).collect(() -> new HashMap<IHotpotStrainerBasketContentRenderer, List<ItemStack>>(), (map, itemStack1) -> map.computeIfAbsent(HotpotStrainerBasketContentRenderers.getStrainerBasketContentRenderer(itemStack1), renderer -> new ArrayList<>()).add(itemStack1), (map1, map2) -> {}).forEach((renderer, itemStacks) -> renderer.renderInSoup(itemStacks, poseStack, bufferSource, combinedLight, combinedOverlay, index, waterLevel, (1 - 0.02 - offsetY / 0.45), time));
+        strainerBasket.getStrainerContents().stream()
+                .filter(content1 -> content1 instanceof AbstractHotpotItemStackContent)
+                .map(content1 -> ((AbstractHotpotItemStackContent) content1).getItemStack())
+                .collect(
+                        () -> new HashMap<IHotpotStrainerBasketContentRenderer, List<ItemStack>>(),
+                        (map, itemStack1) -> map.computeIfAbsent(
+                                        HotpotStrainerBasketContentRenderers.getStrainerBasketContentRenderer(
+                                                itemStack1),
+                                        renderer -> new ArrayList<>())
+                                .add(itemStack1),
+                        (map1, map2) -> {})
+                .forEach((renderer, itemStacks) -> renderer.renderInSoup(
+                        itemStacks,
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        index,
+                        waterLevel,
+                        (1 - 0.02 - offsetY / 0.45),
+                        time));
         poseStack.popPose();
 
-        BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_strainer_basket_model")));
-        Minecraft.getInstance().getItemRenderer().render(HotpotModEntry.HOTPOT_STRAINER_BASKET.toStack(), ItemDisplayContext.NONE, false, poseStack, bufferSource, combinedLight, combinedOverlay, model);
+        BakedModel model = Minecraft.getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(
+                        HotpotModEntry.MODID, "item/hotpot_strainer_basket_model")));
+
+        Minecraft.getInstance()
+                .getItemRenderer()
+                .render(
+                        HotpotModEntry.HOTPOT_STRAINER_BASKET.toStack(),
+                        ItemDisplayContext.NONE,
+                        false,
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        model);
 
         poseStack.popPose();
     }

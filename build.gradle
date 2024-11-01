@@ -4,6 +4,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.165'
+    id "com.diffplug.spotless" version "7.0.0.BETA4"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -13,6 +14,16 @@ tasks.named('wrapper', Wrapper).configure {
     // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
     // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
     distributionType = Wrapper.DistributionType.BIN
+}
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        cleanthat()
+        palantirJavaFormat()
+        formatAnnotations()
+    }
 }
 
 version = mod_version
@@ -133,7 +144,7 @@ dependencies {
 
     runtimeOnly "maven.modrinth:spark:1.10.109-neoforge"
     runtimeOnly "maven.modrinth:R2OftAxM:ovSzG9pc"
-    compileOnly "maven.modrinth:sodium:mc1.21-0.6.0-beta.2-neoforge"
+    compileOnly "maven.modrinth:sodium:mc1.21.1-0.6.0-beta.4-neoforge"
     compileOnly "maven.modrinth:iris:1.8.0-beta.5+1.21-neoforge"
     compileOnly "maven.modrinth:embeddium:1.0.11+mc1.21.1"
 }

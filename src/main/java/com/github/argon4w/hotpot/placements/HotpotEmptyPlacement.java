@@ -6,34 +6,50 @@ import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
-import java.util.Optional;
-
 public class HotpotEmptyPlacement implements IHotpotPlacement {
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
-
-    }
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {}
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return false;
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {
-
-    }
+    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {}
 
     @Override
     public ItemStack getCloneItemStack(IHotpotPlacementContainer container, LevelBlockPos pos) {

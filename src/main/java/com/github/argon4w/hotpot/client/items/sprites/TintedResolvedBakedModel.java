@@ -1,6 +1,9 @@
 package com.github.argon4w.hotpot.client.items.sprites;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -20,14 +23,11 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
-
+@SuppressWarnings("deprecation")
 public record TintedResolvedBakedModel(BakedModel resolved, List<BakedModel> tintedModels) implements BakedModel {
-    @NotNull
-    @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, @NotNull RandomSource randomSource) {
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState blockState, @Nullable Direction direction, @NotNull RandomSource randomSource) {
         return resolved.getQuads(blockState, direction, randomSource);
     }
 
@@ -51,68 +51,73 @@ public record TintedResolvedBakedModel(BakedModel resolved, List<BakedModel> tin
         return resolved.isCustomRenderer();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public TextureAtlasSprite getParticleIcon() {
         return resolved.getParticleIcon();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public ItemOverrides getOverrides() {
         return resolved.getOverrides();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
-        return Stream.concat(Stream.of(resolved), tintedModels.stream()).map(bakedModel -> bakedModel.getRenderPasses(itemStack, fabulous)).flatMap(Collection::stream).toList();
+        return Stream.concat(Stream.of(resolved), tintedModels.stream())
+                .map(bakedModel -> bakedModel.getRenderPasses(itemStack, fabulous))
+                .flatMap(Collection::stream)
+                .toList();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public ItemTransforms getTransforms() {
         return resolved.getTransforms();
     }
 
-    @NotNull
-    @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType) {
         return resolved.getQuads(state, side, rand, data, renderType);
     }
 
-    @NotNull
-    @Override
-    public TriState useAmbientOcclusion(@NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
         return resolved.useAmbientOcclusion(state, data, renderType);
     }
 
-    @NotNull
-    @Override
-    public BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new TintedResolvedBakedModel(resolved.applyTransform(transformType, poseStack, applyLeftHandTransform), tintedModels);
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
+        return new TintedResolvedBakedModel(
+                resolved.applyTransform(transformType, poseStack, applyLeftHandTransform), tintedModels);
     }
 
-    @NotNull
-    @Override
-    public ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    @NotNull @Override
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
         return resolved.getModelData(level, pos, state, modelData);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return resolved.getParticleIcon();
     }
 
-    @NotNull
-    @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
         return resolved.getRenderTypes(state, rand, data);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
         return resolved.getRenderTypes(itemStack, fabulous);
     }

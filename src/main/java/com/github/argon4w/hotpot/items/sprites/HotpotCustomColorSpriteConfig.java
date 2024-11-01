@@ -12,7 +12,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-public record HotpotCustomColorSpriteConfig(ResourceLocation id, HotpotColor color, ResourceLocation processorResourceLocation) implements IHotpotSpriteConfig {
+public record HotpotCustomColorSpriteConfig(
+        ResourceLocation id, HotpotColor color, ResourceLocation processorResourceLocation)
+        implements IHotpotSpriteConfig {
     public ResourceLocation getProcessorResourceLocation() {
         return processorResourceLocation;
     }
@@ -29,26 +31,31 @@ public record HotpotCustomColorSpriteConfig(ResourceLocation id, HotpotColor col
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HotpotCustomColorSpriteConfig config && config.color.equals(color) && config.processorResourceLocation.equals(processorResourceLocation) && config.id.equals(id);
+        return obj instanceof HotpotCustomColorSpriteConfig config
+                && config.color.equals(color)
+                && config.processorResourceLocation.equals(processorResourceLocation)
+                && config.id.equals(id);
     }
 
     public static class Serializer implements IHotpotSpriteConfigSerializer<HotpotCustomColorSpriteConfig> {
-        public static final MapCodec<HotpotCustomColorSpriteConfig> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(config -> config.group(
-                        ResourceLocation.CODEC.fieldOf("id").forGetter(HotpotCustomColorSpriteConfig::id),
-                        HotpotColor.CODEC.fieldOf("color").forGetter(HotpotCustomColorSpriteConfig::color),
-                        ResourceLocation.CODEC.fieldOf("processor_resource_location").forGetter(HotpotCustomColorSpriteConfig::processorResourceLocation)
-                ).apply(config, HotpotCustomColorSpriteConfig::new))
-        );
+        public static final MapCodec<HotpotCustomColorSpriteConfig> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(config -> config.group(
+                                ResourceLocation.CODEC.fieldOf("id").forGetter(HotpotCustomColorSpriteConfig::id),
+                                HotpotColor.CODEC.fieldOf("color").forGetter(HotpotCustomColorSpriteConfig::color),
+                                ResourceLocation.CODEC
+                                        .fieldOf("processor_resource_location")
+                                        .forGetter(HotpotCustomColorSpriteConfig::processorResourceLocation))
+                        .apply(config, HotpotCustomColorSpriteConfig::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotCustomColorSpriteConfig> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-                StreamCodec.composite(
-                        ResourceLocation.STREAM_CODEC, HotpotCustomColorSpriteConfig::id,
-                        HotpotColor.STREAM_CODEC, HotpotCustomColorSpriteConfig::color,
-                        ResourceLocation.STREAM_CODEC, HotpotCustomColorSpriteConfig::processorResourceLocation,
-                        HotpotCustomColorSpriteConfig::new
-                )
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotCustomColorSpriteConfig> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                        ResourceLocation.STREAM_CODEC,
+                        HotpotCustomColorSpriteConfig::id,
+                        HotpotColor.STREAM_CODEC,
+                        HotpotCustomColorSpriteConfig::color,
+                        ResourceLocation.STREAM_CODEC,
+                        HotpotCustomColorSpriteConfig::processorResourceLocation,
+                        HotpotCustomColorSpriteConfig::new));
 
         @Override
         public MapCodec<HotpotCustomColorSpriteConfig> getCodec() {

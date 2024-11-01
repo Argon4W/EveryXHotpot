@@ -14,10 +14,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-    @Shadow @Final private ReloadableResourceManager resourceManager;
+    @Shadow
+    @Final
+    private ReloadableResourceManager resourceManager;
 
-    @Inject(method = "<init>", at = @At(value = "NEW", target = "(Lnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/color/block/BlockColors;I)Lnet/minecraft/client/resources/model/ModelManager;", shift = At.Shift.BEFORE))
+    @Inject(
+            method = "<init>",
+            at =
+                    @At(
+                            value = "NEW",
+                            target =
+                                    "(Lnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/color/block/BlockColors;I)Lnet/minecraft/client/resources/model/ModelManager;",
+                            shift = At.Shift.BEFORE))
     public void constructor(GameConfig pGameConfig, CallbackInfo ci) {
-        resourceManager.registerReloadListener(HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER = new HotpotSoupRendererConfigManager());
+        resourceManager.registerReloadListener(
+                HotpotModEntry.HOTPOT_SOUP_RENDERER_CONFIG_MANAGER = new HotpotSoupRendererConfigManager());
     }
 }

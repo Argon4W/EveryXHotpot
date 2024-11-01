@@ -27,7 +27,10 @@ public class HotpotPlayerModelRendererContext {
         slim = DefaultPlayerSkin.get(profile.gameProfile()).model().id().equals("slim");
         modelPartTextureResourceLocation = DefaultPlayerSkin.getDefaultTexture();
 
-        Minecraft.getInstance().getSkinManager().getOrLoad(profile.gameProfile()).thenAcceptAsync(this::updateModelPartTexture);
+        Minecraft.getInstance()
+                .getSkinManager()
+                .getOrLoad(profile.gameProfile())
+                .thenAcceptAsync(this::updateModelPartTexture);
         updateModelPart();
     }
 
@@ -38,7 +41,9 @@ public class HotpotPlayerModelRendererContext {
     }
 
     private void updateModelPart() {
-        ModelPart playerModelPart = Minecraft.getInstance().getEntityModels().bakeLayer(slim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER);
+        ModelPart playerModelPart = Minecraft.getInstance()
+                .getEntityModels()
+                .bakeLayer(slim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER);
         modelPart = playerModelPart.getChild(VALID_PARTS[partIndex]);
         modelPart.setPos(0, 0, 0);
         modelPart.zRot = 22.5f;

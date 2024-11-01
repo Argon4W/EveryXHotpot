@@ -1,10 +1,13 @@
 package com.github.argon4w.hotpot.mixins.sprites;
 
+import com.github.argon4w.hotpot.api.client.items.sprites.processors.IHotpotSpriteProcessor;
 import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotEmptySpriteProcessor;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
-import com.github.argon4w.hotpot.api.client.items.sprites.processors.IHotpotSpriteProcessor;
 import com.mojang.blaze3d.platform.NativeImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteLoader;
@@ -20,13 +23,11 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 @Mixin(SpriteLoader.class)
 public abstract class SpriteLoaderMixin {
-    @Shadow @Final private ResourceLocation location;
+    @Shadow
+    @Final
+    private ResourceLocation location;
 
     @ModifyVariable(method = "stitch", at = @At("HEAD"), argsOnly = true, index = 1)
     private List<SpriteContents> stitch(List<SpriteContents> contents) {
@@ -35,24 +36,43 @@ public abstract class SpriteLoaderMixin {
         }
 
         ArrayList<SpriteContents> results = new ArrayList<>(contents);
-        List<SpriteContents> processedContents = Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry().stream().filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor)).flatMap(processor -> contents.stream().filter(content -> content.name().getPath().startsWith("item/") && content.animatedTexture == null && content.width() <= 32 && content.height() <= 32).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content)))).toList()).join();
+        List<SpriteContents> processedContents = Util.sequence(
+                        HotpotSpriteProcessors.getSpriteProcessorRegistry().stream()
+                                .filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor))
+                                .flatMap(processor -> contents.stream()
+                                        .filter(content ->
+                                                content.name().getPath().startsWith("item/")
+                                                        && content.animatedTexture == null
+                                                        && content.width() <= 32
+                                                        && content.height() <= 32)
+                                        .map(content -> CompletableFuture.supplyAsync(
+                                                () -> everyxhotpot$getProcessedSpriteContents(processor, content))))
+                                .toList())
+                .join();
 
         results.addAll(processedContents);
         SimpleModelBaker.VALID_PROCESSED_SPRITES.clear();
-        SimpleModelBaker.VALID_PROCESSED_SPRITES.addAll(processedContents.stream().map(SpriteContents::name).toList());
+        SimpleModelBaker.VALID_PROCESSED_SPRITES.addAll(
+                processedContents.stream().map(SpriteContents::name).toList());
 
         return results;
     }
 
-    @Unique
-    private static SpriteContents everyxhotpot$getProcessedSpriteContents(IHotpotSpriteProcessor processor, SpriteContents contents) {
+    @Unique private static SpriteContents everyxhotpot$getProcessedSpriteContents(
+            IHotpotSpriteProcessor processor, SpriteContents contents) {
         ResourceLocation name = contents.name();
         ResourceMetadata metadata = contents.metadata();
         NativeImage original = contents.getOriginalImage();
-        FrameSize frameSize = metadata.getSection(AnimationMetadataSection.SERIALIZER).map(section -> section.calculateFrameSize(original.getWidth(), original.getHeight())).orElse(new FrameSize(original.getWidth(), original.getHeight()));
-        NativeImage image = new NativeImage(contents.getOriginalImage().format(), contents.getOriginalImage().getWidth(), contents.getOriginalImage().getHeight(), true);
+        FrameSize frameSize = metadata.getSection(AnimationMetadataSection.SERIALIZER)
+                .map(section -> section.calculateFrameSize(original.getWidth(), original.getHeight()))
+                .orElse(new FrameSize(original.getWidth(), original.getHeight()));
+        NativeImage image = new NativeImage(
+                contents.getOriginalImage().format(),
+                contents.getOriginalImage().getWidth(),
+                contents.getOriginalImage().getHeight(),
+                true);
 
-        for (int i = 0; i < original.getHeight() / frameSize.height(); i ++) {
+        for (int i = 0; i < original.getHeight() / frameSize.height(); i++) {
             processor.processSpriteImage(original, image, frameSize, i);
         }
 

@@ -9,7 +9,12 @@ import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 
 public class HotpotDropFloatingContentByHandSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<IHotpotContent> getContentResultByHand(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        return result.consume(content -> pos.dropCopiedFloatingItemStacks(content.getContentResultItemStacks(hotpotBlockEntity, pos)));
+    public IHotpotResult<IHotpotContent> getContentResultByHand(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
+        return result.consume(content ->
+                pos.dropCopiedFloatingItemStacks(content.getContentResultItemStacks(hotpotBlockEntity, pos)));
     }
 }

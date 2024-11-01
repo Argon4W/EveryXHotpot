@@ -9,6 +9,7 @@ import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -16,8 +17,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
-
-import java.util.List;
 
 public class HotpotPlayerContent implements IHotpotContent {
     public static final String[] VALID_PARTS = {"head", "body", "right_arm", "left_arm", "right_leg", "left_leg"};
@@ -38,7 +37,7 @@ public class HotpotPlayerContent implements IHotpotContent {
 
     @Override
     public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return modelPartIndex == 0? getPlayerHeadByProfile() : new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2));
+        return modelPartIndex == 0 ? getPlayerHeadByProfile() : new ItemStack(Items.BONE, RANDOM_SOURCE.nextInt(0, 2));
     }
 
     @Override
@@ -47,9 +46,7 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-
-    }
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
 
     @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
@@ -82,15 +79,15 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotPlayerContent> {
-        public static final MapCodec<HotpotPlayerContent> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(content -> content.group(
-                        ResolvableProfile.CODEC.fieldOf("profile").forGetter(HotpotPlayerContent::getProfile),
-                        Codec.INT.fieldOf("model_part_index").forGetter(HotpotPlayerContent::getModelPartIndex)
-                ).apply(content, HotpotPlayerContent::new))
-        );
+        public static final MapCodec<HotpotPlayerContent> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(content -> content.group(
+                                ResolvableProfile.CODEC.fieldOf("profile").forGetter(HotpotPlayerContent::getProfile),
+                                Codec.INT.fieldOf("model_part_index").forGetter(HotpotPlayerContent::getModelPartIndex))
+                        .apply(content, HotpotPlayerContent::new)));
 
         @Override
-        public HotpotPlayerContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+        public HotpotPlayerContent createContent(
+                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             throw new IllegalStateException("Illegal call to a non-item based content");
         }
 

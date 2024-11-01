@@ -1,8 +1,7 @@
 package com.github.argon4w.hotpot.api.items;
 
-import net.minecraft.world.item.ItemStack;
-
 import java.util.function.Consumer;
+import net.minecraft.world.item.ItemStack;
 
 @FunctionalInterface
 public interface IHotpotItemStackUpdater {

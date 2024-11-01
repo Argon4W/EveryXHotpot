@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
+import java.util.function.Predicate;
 import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.ItemTags;
@@ -13,23 +14,31 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-
 public class HotpotSpicePackRecipe extends CustomRecipe {
     public HotpotSpicePackRecipe(CraftingBookCategory category) {
         super(category);
     }
 
     @Override
-    public boolean matches(CraftingInput input, Level level) {
-        return new SimpleRecipeMatcher(input).with(this::hasSuspiciousEffects).count().atLeast(1).with(this::matchSpicePackItem).once().withRemaining().empty().match();
+    public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
+        return new SimpleRecipeMatcher(input)
+                .with(this::hasSuspiciousEffects)
+                .count()
+                .atLeast(1)
+                .with(this::matchSpicePackItem)
+                .once()
+                .withRemaining()
+                .empty()
+                .match();
     }
 
-    @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).basedOn(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)).filter(Predicate.not(ItemStack::isEmpty)).feed(this::assembleSpicePack).assemble(this::setSpicePackCharges);
+    @NotNull @Override
+    public ItemStack assemble(@NotNull CraftingInput input, @NotNull HolderLookup.Provider registryAccess) {
+        return new SimpleRecipeAssembler(input)
+                .basedOn(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK))
+                .filter(Predicate.not(ItemStack::isEmpty))
+                .feed(this::assembleSpicePack)
+                .assemble(this::setSpicePackCharges);
     }
 
     @Override
@@ -37,13 +46,15 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
         return width * width >= 2;
     }
 
-    @Override
+    @NotNull @Override
     public RecipeSerializer<?> getSerializer() {
         return HotpotModEntry.HOTPOT_SPICE_PACK_SPECIAL_RECIPE.get();
     }
 
     private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
-        return Util.make(assembled, assembled1 -> HotpotSpicePackItem.addSpicePackItems(assembled1, ingredient.copyWithCount(1)));
+        return Util.make(
+                assembled,
+                assembled1 -> HotpotSpicePackItem.addSpicePackItems(assembled1, ingredient.copyWithCount(1)));
     }
 
     private ItemStack setSpicePackCharges(ItemStack itemStack) {
@@ -51,7 +62,8 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     }
 
     private boolean matchSpicePackItem(ItemStack itemStack, int count) {
-        return itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK) && HotpotSpicePackItem.getSpicePackItemSize(itemStack) + count <= 4;
+        return itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)
+                && HotpotSpicePackItem.getSpicePackItemSize(itemStack) + count <= 4;
     }
 
     private boolean hasSuspiciousEffects(ItemStack itemStack) {

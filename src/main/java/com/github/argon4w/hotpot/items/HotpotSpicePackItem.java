@@ -9,6 +9,7 @@ import com.github.argon4w.hotpot.api.items.IHotpotUpdateAwareContentItem;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
 import com.github.argon4w.hotpot.items.components.HotpotSpicePackDataComponent;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -16,31 +17,32 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionContents;
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareContentItem {
     public HotpotSpicePackItem() {
-        super(new Properties().component(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY));
+        super(new Properties()
+                .component(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY));
     }
 
     @Override
-    public boolean isBarVisible(ItemStack itemStack) {
+    public boolean isBarVisible(@NotNull ItemStack itemStack) {
         return hasSpicePackCharges(itemStack);
     }
 
     @Override
-    public int getBarWidth(ItemStack itemStack) {
+    public int getBarWidth(@NotNull ItemStack itemStack) {
         return Math.round(((float) getSpicePackCharges(itemStack) * 13.0F) / 20f);
     }
 
     @Override
-    public int getBarColor(ItemStack itemStack) {
+    public int getBarColor(@NotNull ItemStack itemStack) {
         return Mth.hsvToRgb(Math.max(0.0F, (float) getSpicePackCharges(itemStack) / 20f) / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
-    public ItemStack onContentUpdate(ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+    public ItemStack onContentUpdate(
+            ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         if (!hasSpicePackCharges(itemStack)) {
             return itemStack;
         }
@@ -54,13 +56,18 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
         }
 
         shrinkSpicePackCharges(itemStack);
-        itemUpdaterContent.updateItemStack(contentItemStack -> HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
+        itemUpdaterContent.updateItemStack(contentItemStack ->
+                HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
 
         return itemStack;
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> components, TooltipFlag flag) {
+    public void appendHoverText(
+            @NotNull ItemStack itemStack,
+            Item.@NotNull TooltipContext context,
+            @NotNull List<Component> components,
+            @NotNull TooltipFlag flag) {
         super.appendHoverText(itemStack, context, components, flag);
 
         if (isSpicePackEmpty(itemStack)) {
@@ -71,12 +78,15 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
             return;
         }
 
-        components.add(Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpicePackCharges(itemStack)).withStyle(ChatFormatting.BLUE));
-        PotionContents.addPotionTooltip(getSpicePackEffects(itemStack).getMobEffects(), components::add, 1.0f, context.tickRate());
+        components.add(
+                Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpicePackCharges(itemStack))
+                        .withStyle(ChatFormatting.BLUE));
+        PotionContents.addPotionTooltip(
+                getSpicePackEffects(itemStack).getMobEffects(), components::add, 1.0f, context.tickRate());
     }
 
     @Override
-    public String getDescriptionId(ItemStack itemStack) {
+    public @NotNull String getDescriptionId(@NotNull ItemStack itemStack) {
         if (isSpicePackEmpty(itemStack)) {
             return super.getDescriptionId(itemStack) + ".empty";
         }
@@ -89,7 +99,8 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
     }
 
     public static HotpotSpicePackDataComponent getDataComponent(ItemStack itemStack) {
-        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY);
+        return itemStack.getOrDefault(
+                HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY);
     }
 
     public static void setDataComponent(ItemStack itemStack, HotpotSpicePackDataComponent dataComponent) {

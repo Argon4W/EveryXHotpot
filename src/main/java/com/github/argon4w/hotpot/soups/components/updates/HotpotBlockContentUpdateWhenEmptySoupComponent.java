@@ -9,7 +9,11 @@ import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 
 public class HotpotBlockContentUpdateWhenEmptySoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
+    public IHotpotResult<IHotpotContent> onContentUpdate(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
         return soup.getWaterLevel() <= 0 ? IHotpotResult.blocked() : result;
     }
 }

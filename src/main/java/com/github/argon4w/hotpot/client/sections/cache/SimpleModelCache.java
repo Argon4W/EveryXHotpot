@@ -4,14 +4,13 @@ import com.github.argon4w.hotpot.EntryStreams;
 import com.github.argon4w.hotpot.api.client.sections.cache.IBakedModelCache;
 import com.github.argon4w.hotpot.client.sections.ISimpleBakedModelExtension;
 import com.mojang.math.Transformation;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.QuadTransformers;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Argon4W
@@ -27,11 +26,26 @@ public class SimpleModelCache implements IBakedModelCache {
 
     @Override
     public BakedModel getTransformedModel(Transformation transformation) {
-        return modelCache.computeIfAbsent(transformation, transformation1 -> getTransformedModel(QuadTransformers.applying(transformation1)));
+        return modelCache.computeIfAbsent(
+                transformation, transformation1 -> getTransformedModel(QuadTransformers.applying(transformation1)));
     }
 
     public BakedModel getTransformedModel(IQuadTransformer transformer) {
-        return new SimpleBakedModel(model.unculledFaces.stream().map(transformer::process).toList(), model.culledFaces.entrySet().stream().map(EntryStreams.mapEntryValue(list -> list.stream().map(transformer::process).toList())).collect(EntryStreams.collect()), model.useAmbientOcclusion(), model.usesBlockLight(), model.isGui3d(), model.getParticleIcon(), model.getTransforms(), model.getOverrides(), model instanceof ISimpleBakedModelExtension extension ? extension.everyxhotpot$getRenderTypeGroup() : RenderTypeGroup.EMPTY);
+        return new SimpleBakedModel(
+                model.unculledFaces.stream().map(transformer::process).toList(),
+                model.culledFaces.entrySet().stream()
+                        .map(EntryStreams.mapEntryValue(
+                                list -> list.stream().map(transformer::process).toList()))
+                        .collect(EntryStreams.collect()),
+                model.useAmbientOcclusion(),
+                model.usesBlockLight(),
+                model.isGui3d(),
+                model.getParticleIcon(),
+                model.getTransforms(),
+                model.getOverrides(),
+                model instanceof ISimpleBakedModelExtension extension
+                        ? extension.everyxhotpot$getRenderTypeGroup()
+                        : RenderTypeGroup.EMPTY);
     }
 
     @Override

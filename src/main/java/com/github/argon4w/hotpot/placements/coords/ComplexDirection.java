@@ -2,17 +2,17 @@ package com.github.argon4w.hotpot.placements.coords;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.Direction;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ByIdMap;
-import net.minecraft.util.StringRepresentable;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
+import net.minecraft.core.Direction;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.NotNull;
 
 public enum ComplexDirection implements StringRepresentable {
     IDENTITY("identity", 0),
@@ -26,19 +26,19 @@ public enum ComplexDirection implements StringRepresentable {
     SOUTH_WEST("south_west", 8, Direction.SOUTH, Direction.WEST);
 
     public static final Codec<ComplexDirection> CODEC = StringRepresentable.fromEnum(ComplexDirection::values);
-    public static final IntFunction<ComplexDirection> BY_INDEX = ByIdMap.continuous(ComplexDirection::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-    public static final StreamCodec<ByteBuf, ComplexDirection> STREAM_CODEC = ByteBufCodecs.idMapper(BY_INDEX, ComplexDirection::getIndex);
+    public static final IntFunction<ComplexDirection> BY_INDEX =
+            ByIdMap.continuous(ComplexDirection::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<ByteBuf, ComplexDirection> STREAM_CODEC =
+            ByteBufCodecs.idMapper(BY_INDEX, ComplexDirection::getIndex);
 
-    public static final ComplexDirection[] FROM_DIRECTION_DATA2D = {
-            SOUTH, WEST, NORTH, EAST
-    };
+    public static final ComplexDirection[] FROM_DIRECTION_DATA2D = {SOUTH, WEST, NORTH, EAST};
 
     public static final ComplexDirection[] OPPOSITES = {
-            IDENTITY, SOUTH, NORTH, WEST, EAST, SOUTH_WEST, NORTH_WEST, SOUTH_EAST, NORTH_EAST
+        IDENTITY, SOUTH, NORTH, WEST, EAST, SOUTH_WEST, NORTH_WEST, SOUTH_EAST, NORTH_EAST
     };
 
     public static final ComplexDirection[] CLOCKWISE = {
-            IDENTITY, NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST, EAST, SOUTH, NORTH, WEST
+        IDENTITY, NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST, EAST, SOUTH, NORTH, WEST
     };
 
     private final String name;
@@ -83,7 +83,7 @@ public enum ComplexDirection implements StringRepresentable {
         return index;
     }
 
-    @Override
+    @NotNull @Override
     public String getSerializedName() {
         return name;
     }

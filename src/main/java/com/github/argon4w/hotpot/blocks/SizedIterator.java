@@ -20,7 +20,7 @@ public class SizedIterator<T> implements Iterator<T> {
 
     @Override
     public T next() {
-        count ++;
+        count++;
         return iterator.next();
     }
 }

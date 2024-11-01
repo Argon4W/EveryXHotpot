@@ -10,14 +10,12 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Direction;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-import java.util.Optional;
 
 public class HotpotPlacedStrainerBasket implements IHotpotPlacement {
     private final int position;
@@ -37,14 +35,28 @@ public class HotpotPlacedStrainerBasket implements IHotpotPlacement {
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         if (container.canBeRemoved()) {
             onRemove(container, pos);
         }
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos seposfPos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos seposfPos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         return ItemStack.EMPTY;
     }
 
@@ -54,7 +66,14 @@ public class HotpotPlacedStrainerBasket implements IHotpotPlacement {
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return strainerBasketItemSlot.isEmpty() && container.canBeRemoved();
     }
 
@@ -90,13 +109,17 @@ public class HotpotPlacedStrainerBasket implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedStrainerBasket> {
-        public static final MapCodec<HotpotPlacedStrainerBasket> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(chopstick -> chopstick.group(
-                        Codec.INT.fieldOf("pos").forGetter(HotpotPlacedStrainerBasket::getPosition),
-                        ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotPlacedStrainerBasket::getDirection),
-                        SimpleItemSlot.CODEC.fieldOf("strainer_basket_item_slot").forGetter(HotpotPlacedStrainerBasket::getStrainerBasketItemSlot)
-                ).apply(chopstick, HotpotPlacedStrainerBasket::new))
-        );
+        public static final MapCodec<HotpotPlacedStrainerBasket> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(chopstick -> chopstick
+                        .group(
+                                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedStrainerBasket::getPosition),
+                                ComplexDirection.CODEC
+                                        .fieldOf("direction")
+                                        .forGetter(HotpotPlacedStrainerBasket::getDirection),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("strainer_basket_item_slot")
+                                        .forGetter(HotpotPlacedStrainerBasket::getStrainerBasketItemSlot))
+                        .apply(chopstick, HotpotPlacedStrainerBasket::new)));
 
         @Override
         public HotpotPlacedStrainerBasket createPlacement(List<Integer> positions, ComplexDirection direction) {

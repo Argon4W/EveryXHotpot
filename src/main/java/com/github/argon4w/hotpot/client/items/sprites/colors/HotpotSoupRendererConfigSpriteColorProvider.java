@@ -10,6 +10,12 @@ import com.github.argon4w.hotpot.items.sprites.HotpotSoupRendererConfigSpriteCon
 public class HotpotSoupRendererConfigSpriteColorProvider implements IHotpotSpriteColorProvider {
     @Override
     public HotpotColor getColor(IHotpotSpriteConfig config) {
-        return config instanceof HotpotSoupRendererConfigSpriteConfig rendererConfig ? HotpotSoupRendererConfigManager.getSoupRendererConfig(rendererConfig.soupRendererConfigResourceLocation()).spriteConfig().map(HotpotSoupSpriteConfig::color).orElse(HotpotColor.WHITE) : HotpotColor.WHITE;
+        return config instanceof HotpotSoupRendererConfigSpriteConfig rendererConfig
+                ? HotpotSoupRendererConfigManager.getSoupRendererConfig(
+                                rendererConfig.soupRendererConfigResourceLocation())
+                        .spriteConfig()
+                        .map(HotpotSoupSpriteConfig::color)
+                        .orElse(HotpotColor.WHITE)
+                : HotpotColor.WHITE;
     }
 }

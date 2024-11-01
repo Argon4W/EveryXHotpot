@@ -15,13 +15,12 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
-
-import java.util.List;
 
 public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends AbstractHotpotSoupComponent {
     private final List<IHotpotSpriteConfig> spriteConfigs;
@@ -31,7 +30,11 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
     }
 
     @Override
-    public IHotpotResult<IHotpotContent> getContentResultByTableware(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
+    public IHotpotResult<IHotpotContent> getContentResultByTableware(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
         if (result.isEmpty()) {
             return result;
         }
@@ -40,7 +43,8 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
             return result;
         }
 
-        itemUpdaterContent.updateItemStack(itemStack -> HotpotSpriteConfigDataComponent.addSpriteConfigs(itemStack, spriteConfigs));
+        itemUpdaterContent.updateItemStack(
+                itemStack -> HotpotSpriteConfigDataComponent.addSpriteConfigs(itemStack, spriteConfigs));
         return result;
     }
 
@@ -49,7 +53,8 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
         private final HotpotApplySpriteConfigsWhenGetContentSoupComponent unit;
 
         private final MapCodec<HotpotApplySpriteConfigsWhenGetContentSoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotApplySpriteConfigsWhenGetContentSoupComponent> streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotApplySpriteConfigsWhenGetContentSoupComponent>
+                streamCodec;
 
         public Type(List<IHotpotSpriteConfig> spriteConfigs) {
             this.spriteConfigs = spriteConfigs;
@@ -70,13 +75,15 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, HotpotApplySpriteConfigsWhenGetContentSoupComponent> getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotApplySpriteConfigsWhenGetContentSoupComponent>
+                getStreamCodec() {
             return streamCodec;
         }
 
         @Override
         public Holder<IHotpotSoupComponentTypeSerializer<?>> getSerializerHolder() {
-            return HotpotSoupComponentTypeSerializers.APPLY_SPRITE_CONFIGS_WHEN_GET_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER;
+            return HotpotSoupComponentTypeSerializers
+                    .APPLY_SPRITE_CONFIGS_WHEN_GET_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER;
         }
 
         public List<IHotpotSpriteConfig> getSpriteConfigs() {
@@ -84,17 +91,28 @@ public class HotpotApplySpriteConfigsWhenGetContentSoupComponent extends Abstrac
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotApplySpriteConfigsWhenGetContentSoupComponent> {
-        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> HotpotSpriteConfigSerializers.CODEC.listOf().fieldOf("sprite_configs").xmap(Type::new, Type::getSpriteConfigs));
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> HotpotSpriteConfigSerializers.STREAM_CODEC.apply(ByteBufCodecs.list()).map(Type::new, Type::getSpriteConfigs));
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotApplySpriteConfigsWhenGetContentSoupComponent> {
+        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> HotpotSpriteConfigSerializers.CODEC
+                .listOf()
+                .fieldOf("sprite_configs")
+                .xmap(Type::new, Type::getSpriteConfigs));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> HotpotSpriteConfigSerializers.STREAM_CODEC
+                        .apply(ByteBufCodecs.list())
+                        .map(Type::new, Type::getSpriteConfigs));
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotApplySpriteConfigsWhenGetContentSoupComponent>> getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotApplySpriteConfigsWhenGetContentSoupComponent>>
+                getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotApplySpriteConfigsWhenGetContentSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotApplySpriteConfigsWhenGetContentSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

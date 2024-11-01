@@ -9,6 +9,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLevelRenderer {
     public HotpotBlockEntityWithoutLevelRenderer() {
@@ -16,19 +17,38 @@ public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLev
     }
 
     @Override
-    public void renderByItem(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void renderByItem(
+            ItemStack itemStack,
+            @NotNull ItemDisplayContext displayContext,
+            @NotNull PoseStack poseStack,
+            @NotNull MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay) {
         if (itemStack.isEmpty()) {
             return;
         }
 
         IHotpotItemSpecialRenderer renderer = HotpotItemSpecialRenderers.getItemSpecialRenderer(itemStack);
 
-        renderer.getDefaultItemModelResourceLocation().ifPresent(resourceLocation -> {
+        renderer.getItemModelResourceLocation().ifPresent(resourceLocation -> {
             poseStack.pushPose();
             poseStack.translate(0.5f, 0.5f, 0.5f);
 
-            BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(resourceLocation));
-            Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, true, poseStack, bufferSource, combinedLight, combinedOverlay, model);
+            BakedModel model = Minecraft.getInstance()
+                    .getModelManager()
+                    .getModel(ModelResourceLocation.standalone(resourceLocation));
+
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .render(
+                            itemStack,
+                            displayContext,
+                            true,
+                            poseStack,
+                            bufferSource,
+                            combinedLight,
+                            combinedOverlay,
+                            model);
 
             poseStack.popPose();
         });

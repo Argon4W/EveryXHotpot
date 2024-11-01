@@ -4,6 +4,8 @@ import com.github.argon4w.hotpot.client.items.sprites.OverlayBakedModel;
 import com.github.argon4w.hotpot.client.items.sprites.OverlayModelMap;
 import com.github.argon4w.hotpot.client.items.sprites.SimpleModelBaker;
 import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpriteProcessors;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -17,16 +19,27 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Mixin(ModelBakery.class)
 public abstract class ModelBakeryMixin {
-    @Shadow @Final private Map<ModelResourceLocation, BakedModel> bakedTopLevelModels;
-    @Shadow @Final private Map<ModelResourceLocation, UnbakedModel> topLevelModels;
-    @Shadow @Final public static BlockModel GENERATION_MARKER;
-    @Shadow @Final private Map<ResourceLocation, UnbakedModel> unbakedCache;
-    @Shadow @Final private UnbakedModel missingModel;
+    @Shadow
+    @Final
+    public static BlockModel GENERATION_MARKER;
+
+    @Shadow
+    @Final
+    private Map<ModelResourceLocation, BakedModel> bakedTopLevelModels;
+
+    @Shadow
+    @Final
+    private Map<ModelResourceLocation, UnbakedModel> topLevelModels;
+
+    @Shadow
+    @Final
+    private Map<ResourceLocation, UnbakedModel> unbakedCache;
+
+    @Shadow
+    @Final
+    private UnbakedModel missingModel;
 
     @Inject(method = "bakeModels", at = @At("RETURN"))
     public void bakeModels(ModelBakery.TextureGetter atlasSpriteGetter, CallbackInfo ci) {
@@ -45,7 +58,24 @@ public abstract class ModelBakeryMixin {
                 continue;
             }
 
-            bakedTopLevelModels.put(modelResourceLocation, new OverlayBakedModel(HotpotSpriteProcessors.getSpriteProcessorRegistry().holders().collect(() -> new OverlayModelMap(bakedTopLevelModels.get(modelResourceLocation)), (map, reference) -> map.put(reference.key().location(), new SimpleModelBaker(bakedTopLevelModels, unbakedCache, missingModel, material -> atlasSpriteGetter.get(modelResourceLocation, material), reference.value()).bakeUncached(unbakedModel)), HashMap::putAll)));
+            bakedTopLevelModels.put(
+                    modelResourceLocation,
+                    new OverlayBakedModel(HotpotSpriteProcessors.getSpriteProcessorRegistry()
+                            .holders()
+                            .collect(
+                                    () -> new OverlayModelMap(bakedTopLevelModels.get(modelResourceLocation)),
+                                    (map, reference) -> map.put(
+                                            reference.key().location(),
+                                            new SimpleModelBaker(
+                                                            bakedTopLevelModels,
+                                                            unbakedCache,
+                                                            topLevelModels,
+                                                            missingModel,
+                                                            material -> atlasSpriteGetter.get(
+                                                                    modelResourceLocation, material),
+                                                            reference.value())
+                                                    .bakeUncached(unbakedModel)),
+                                    HashMap::putAll)));
         }
     }
 }

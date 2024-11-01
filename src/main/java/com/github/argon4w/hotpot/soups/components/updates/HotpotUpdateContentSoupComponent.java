@@ -9,7 +9,13 @@ import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 
 public class HotpotUpdateContentSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        return result.ifPresent(content -> hotpotBlockEntity.getContents().stream().filter(content1 -> content1 != content).forEach(content1 -> content1.onContentUpdate(content, hotpotBlockEntity, pos)));
+    public IHotpotResult<IHotpotContent> onContentUpdate(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
+        return result.ifPresent(content -> hotpotBlockEntity.getContents().stream()
+                .filter(content1 -> content1 != content)
+                .forEach(content1 -> content1.onContentUpdate(content, hotpotBlockEntity, pos)));
     }
 }

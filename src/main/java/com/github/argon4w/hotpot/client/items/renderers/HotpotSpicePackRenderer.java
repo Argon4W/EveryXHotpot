@@ -5,18 +5,23 @@ import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotSpicePackItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
-import java.util.Optional;
-
 public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
     @Override
-    public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void render(
+            ItemStack itemStack,
+            ItemDisplayContext displayContext,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay) {
         if (HotpotSpicePackItem.isSpicePackEmpty(itemStack)) {
             return;
         }
@@ -35,7 +40,19 @@ public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
             poseStack.mulPose(Axis.YP.rotationDegrees(30f));
             poseStack.scale(0.78f, 0.78f, 0.78f);
 
-            Minecraft.getInstance().getItemRenderer().renderStatic(null, spiceItemStack, ItemDisplayContext.GROUND, true, poseStack, bufferSource, null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            null,
+                            spiceItemStack,
+                            ItemDisplayContext.GROUND,
+                            true,
+                            poseStack,
+                            bufferSource,
+                            null,
+                            combinedLight,
+                            combinedOverlay,
+                            ItemDisplayContext.FIXED.ordinal());
             poseStack.popPose();
 
             poseStack.translate(itemPositionX, 0, 0);
@@ -45,7 +62,7 @@ public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
     }
 
     @Override
-    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
+    public Optional<ResourceLocation> getItemModelResourceLocation() {
         return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_spice_pack_model"));
     }
 }

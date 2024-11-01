@@ -6,6 +6,13 @@ import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 
 public interface IHotpotSoupIngredientAction {
-    void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos);
+    void action(
+            int pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            IHotpotContent content,
+            HotpotComponentSoup sourceSoup,
+            HotpotComponentSoup resultSoup,
+            LevelBlockPos selfPos);
+
     IHotpotSoupIngredientActionSerializer<?> getSerializer();
 }

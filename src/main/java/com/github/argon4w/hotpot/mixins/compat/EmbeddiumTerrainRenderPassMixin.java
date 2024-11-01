@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(TerrainRenderPass.class)
 public class EmbeddiumTerrainRenderPassMixin {
-    @Shadow @Final private RenderType layer;
+    @Shadow
+    @Final
+    private RenderType layer;
 
     @Inject(method = "supportsFragmentDiscard", at = @At("RETURN"), cancellable = true)
     public void supportsFragmentDiscard(CallbackInfoReturnable<Boolean> cir) {

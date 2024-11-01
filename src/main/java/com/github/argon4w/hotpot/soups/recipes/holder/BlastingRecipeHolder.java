@@ -11,17 +11,32 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 
 public record BlastingRecipeHolder(BlastingRecipe recipe) implements IHotpotCookingRecipeHolder {
     @Override
-    public int getCookingTime(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+    public int getCookingTime(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content) {
         return recipe.getCookingTime() * 2;
     }
 
     @Override
-    public double getExperience(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+    public double getExperience(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content) {
         return recipe.getExperience();
     }
 
     @Override
-    public ItemStack getResult(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+    public ItemStack getResult(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content) {
         return recipe.assemble(new SingleRecipeInput(itemStack), pos.registryAccess());
     }
 }

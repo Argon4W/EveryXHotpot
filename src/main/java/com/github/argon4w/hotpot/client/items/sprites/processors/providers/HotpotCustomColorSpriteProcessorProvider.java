@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 public class HotpotCustomColorSpriteProcessorProvider implements IHotpotSpriteProcessorProvider {
     @Override
     public ResourceLocation getProcessorResourceLocation(IHotpotSpriteConfig config) {
-        return config instanceof HotpotCustomColorSpriteConfig customColor ? customColor.getProcessorResourceLocation() : HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR_LOCATION;
+        return config instanceof HotpotCustomColorSpriteConfig customColor
+                ? customColor.getProcessorResourceLocation()
+                : HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR_LOCATION;
     }
 }

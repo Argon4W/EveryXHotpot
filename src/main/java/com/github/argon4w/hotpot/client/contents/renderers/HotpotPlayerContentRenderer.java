@@ -8,18 +8,28 @@ import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.HashMap;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.joml.Math;
 
-import java.util.HashMap;
-
 public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
-    public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext> PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
+    public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext>
+            PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
-    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z, int index) {
+    public void render(
+            IHotpotContent content,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double rotation,
+            double waterLevel,
+            double x,
+            double z,
+            int index) {
         if (!(content instanceof HotpotPlayerContent playerContent)) {
             return;
         }
@@ -27,7 +37,10 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
         int modelPartIndex = playerContent.getModelPartIndex();
         ResolvableProfile profile = playerContent.getProfile();
 
-        HotpotPlayerModelRendererContext renderContext = HotpotPlayerContentRenderer.PLAYER_MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(new HotpotPlayerModelRendererContextCacheHolder(modelPartIndex, profile), holder -> new HotpotPlayerModelRendererContext(profile, modelPartIndex));
+        HotpotPlayerModelRendererContext renderContext =
+                HotpotPlayerContentRenderer.PLAYER_MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(
+                        new HotpotPlayerModelRendererContextCacheHolder(modelPartIndex, profile),
+                        holder -> new HotpotPlayerModelRendererContext(profile, modelPartIndex));
 
         if (!renderContext.isModelPartLoaded()) {
             renderContext.updateModelPartWithTexture();
@@ -48,7 +61,14 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
 
         poseStack.scale(0.25f, 0.25f, 0.25f);
 
-        renderContext.getModelPart().render(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(renderContext.getModelPartTextureResourceLocation())), combinedLight, combinedOverlay);
+        renderContext
+                .getModelPart()
+                .render(
+                        poseStack,
+                        bufferSource.getBuffer(
+                                RenderType.entityTranslucent(renderContext.getModelPartTextureResourceLocation())),
+                        combinedLight,
+                        combinedOverlay);
 
         poseStack.popPose();
     }

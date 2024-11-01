@@ -7,13 +7,11 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class SimpleItemSlot {
-    public static final Codec<SimpleItemSlot> CODEC = Codec.lazyInitialized(() ->
-            ItemStack.OPTIONAL_CODEC.xmap(SimpleItemSlot::new, SimpleItemSlot::getItemStack)
-    );
+    public static final Codec<SimpleItemSlot> CODEC = Codec.lazyInitialized(
+            () -> ItemStack.OPTIONAL_CODEC.xmap(SimpleItemSlot::new, SimpleItemSlot::getItemStack));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SimpleItemSlot> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-            ItemStack.OPTIONAL_STREAM_CODEC.map(SimpleItemSlot::new, SimpleItemSlot::getItemStack)
-    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, SimpleItemSlot> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
+            () -> ItemStack.OPTIONAL_STREAM_CODEC.map(SimpleItemSlot::new, SimpleItemSlot::getItemStack));
 
     private ItemStack itemStack;
 
@@ -54,7 +52,9 @@ public class SimpleItemSlot {
     }
 
     public int getRenderCountNotEmpty(float maxCount) {
-        return getMaxStackSize() < maxCount ? getCount() : Math.max(1, Math.round(getCount() / (getMaxStackSize() / maxCount)));
+        return getMaxStackSize() < maxCount
+                ? getCount()
+                : Math.max(1, Math.round(getCount() / (getMaxStackSize() / maxCount)));
     }
 
     public int getCount() {
@@ -70,7 +70,7 @@ public class SimpleItemSlot {
     }
 
     public ItemStack takeItem(boolean consume) {
-        return consume ?  itemStack.split(1) : itemStack.copyWithCount(1);
+        return consume ? itemStack.split(1) : itemStack.copyWithCount(1);
     }
 
     public boolean isEmpty() {
@@ -91,7 +91,9 @@ public class SimpleItemSlot {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof SimpleItemSlot slot && ItemStack.isSameItemSameComponents(itemStack, slot.itemStack) && itemStack.getCount() == slot.itemStack.getCount();
+        return obj instanceof SimpleItemSlot slot
+                && ItemStack.isSameItemSameComponents(itemStack, slot.itemStack)
+                && itemStack.getCount() == slot.itemStack.getCount();
     }
 
     public static ItemStack transfer(ItemStack from, ItemStack to) {

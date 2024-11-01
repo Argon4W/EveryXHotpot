@@ -12,7 +12,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-public class HotpotFixedMobEffectContainerSoupComponent extends AbstractHotpotSoupComponent implements IHotpotMobEffectContainerSoupComponent {
+public class HotpotFixedMobEffectContainerSoupComponent extends AbstractHotpotSoupComponent
+        implements IHotpotMobEffectContainerSoupComponent {
     private final HotpotMobEffectMap mobEffectMap;
 
     public HotpotFixedMobEffectContainerSoupComponent(HotpotMobEffectMap mobEffectMap) {
@@ -64,9 +65,12 @@ public class HotpotFixedMobEffectContainerSoupComponent extends AbstractHotpotSo
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotFixedMobEffectContainerSoupComponent> {
-        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> HotpotMobEffectMap.CODEC.fieldOf("effects").xmap(Type::new, Type::getMobEffectMap));
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> HotpotMobEffectMap.STREAM_CODEC.map(Type::new, Type::getMobEffectMap));
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotFixedMobEffectContainerSoupComponent> {
+        public static final MapCodec<Type> CODEC = LazyMapCodec.of(
+                () -> HotpotMobEffectMap.CODEC.fieldOf("effects").xmap(Type::new, Type::getMobEffectMap));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> HotpotMobEffectMap.STREAM_CODEC.map(Type::new, Type::getMobEffectMap));
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotFixedMobEffectContainerSoupComponent>> getCodec() {
@@ -74,7 +78,10 @@ public class HotpotFixedMobEffectContainerSoupComponent extends AbstractHotpotSo
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotFixedMobEffectContainerSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotFixedMobEffectContainerSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

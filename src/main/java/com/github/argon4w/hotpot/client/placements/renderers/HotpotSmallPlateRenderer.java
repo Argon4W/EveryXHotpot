@@ -12,7 +12,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -24,17 +23,35 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
-    }
+    public void render(
+            IHotpotPlacement placement,
+            IHotpotPlacementContainer container,
+            BlockPos pos,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            float partialTick) {}
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(
+            IHotpotPlacement placement,
+            AddSectionGeometryEvent.SectionRenderingContext context,
+            IHotpotPlacementContainer container,
+            BlockPos pos,
+            PoseStack poseStack,
+            ISectionGeometryRenderContext modelRenderContext) {
         if (!(placement instanceof HotpotSmallPlate smallPlate)) {
             return;
         }
 
         double x = HotpotPlacementPositions.getRenderCenterX(smallPlate.getPosition());
         double z = HotpotPlacementPositions.getRenderCenterZ(smallPlate.getPosition());
+
+        BakedModel model = Minecraft.getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(
+                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
 
         for (int plateCount = 0; plateCount < smallPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
             double positionY = plateCount * 0.0625;
@@ -43,13 +60,13 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.translate(x, positionY, z);
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
-            BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
-            modelRenderContext.renderCachedModel(model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+            modelRenderContext.renderCachedModel(
+                    model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
 
             poseStack.popPose();
         }
 
-        for (int i = 0; i < smallPlate.getItemSlot().getRenderCount(); i ++) {
+        for (int i = 0; i < smallPlate.getItemSlot().getRenderCount(); i++) {
             double positionY = smallPlate.getPlateItemSlot().getRenderCount(8) * 0.0625 + 0.02 * i;
             double rotationY = smallPlate.getDirection().toYRot() + (i % 2) * 20;
 
@@ -60,7 +77,12 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.mulPose(Axis.XP.rotationDegrees(90f));
             poseStack.scale(0.35f, 0.35f, 0.35f);
 
-            modelRenderContext.renderUncachedItem(smallPlate.getItemSlot().getItemStack(), ItemDisplayContext.FIXED, false, poseStack, OverlayTexture.NO_OVERLAY);
+            modelRenderContext.renderUncachedItem(
+                    smallPlate.getItemSlot().getItemStack(),
+                    ItemDisplayContext.FIXED,
+                    false,
+                    poseStack,
+                    OverlayTexture.NO_OVERLAY);
 
             poseStack.popPose();
         }

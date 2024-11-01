@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.client.items.sprites;
 
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.List;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -23,13 +24,11 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 @SuppressWarnings("deprecation")
 public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements BakedModel {
-    @NotNull
-    @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, @NotNull RandomSource randomSource) {
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state, @Nullable Direction direction, @NotNull RandomSource randomSource) {
         return overlayModelMap.getOriginalModel().getQuads(state, direction, randomSource);
     }
 
@@ -53,77 +52,83 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
         return overlayModelMap.getOriginalModel().isCustomRenderer();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public TextureAtlasSprite getParticleIcon() {
         return overlayModelMap.getOriginalModel().getParticleIcon();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public ItemOverrides getOverrides() {
         return new OverlayOverrides();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public ItemTransforms getTransforms() {
         return overlayModelMap.getOriginalModel().getTransforms();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
         return overlayModelMap.getOriginalModel().getRenderPasses(itemStack, fabulous);
     }
 
-    @NotNull
-    @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType) {
         return overlayModelMap.getOriginalModel().getQuads(state, side, rand, data, renderType);
     }
 
-    @NotNull
-    @Override
-    public TriState useAmbientOcclusion(@NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
         return overlayModelMap.getOriginalModel().useAmbientOcclusion(state, data, renderType);
     }
 
-    @NotNull
-    @Override
-    public BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
         return new OverlayBakedModel(overlayModelMap.applyTransform(transformType, poseStack, applyLeftHandTransform));
     }
 
-    @NotNull
-    @Override
-    public ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    @NotNull @Override
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
         return overlayModelMap.getOriginalModel().getModelData(level, pos, state, modelData);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return overlayModelMap.getOriginalModel().getParticleIcon();
     }
 
-    @NotNull
-    @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
         return overlayModelMap.getOriginalModel().getRenderTypes(state, rand, data);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
         return overlayModelMap.getOriginalModel().getRenderTypes(itemStack, fabulous);
     }
 
     private class OverlayOverrides extends ItemOverrides {
-        @Nullable
-        @Override
-        public BakedModel resolve(@NotNull BakedModel bakedModel, @NotNull ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int seed) {
-            BakedModel resolved = overlayModelMap.resolveOriginalModel(bakedModel, itemStack, clientLevel, livingEntity, seed);
+        @Nullable @Override
+        public BakedModel resolve(
+                @NotNull BakedModel bakedModel,
+                @NotNull ItemStack itemStack,
+                @Nullable ClientLevel clientLevel,
+                @Nullable LivingEntity livingEntity,
+                int seed) {
+            BakedModel resolved =
+                    overlayModelMap.resolveOriginalModel(bakedModel, itemStack, clientLevel, livingEntity, seed);
 
             if (resolved == null) {
                 return null;
@@ -133,7 +138,8 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
                 return resolved;
             }
 
-            return new TintedResolvedBakedModel(resolved, overlayModelMap.getResolvedTintedModels(itemStack, clientLevel, livingEntity, seed));
+            return new TintedResolvedBakedModel(
+                    resolved, overlayModelMap.getResolvedTintedModels(itemStack, clientLevel, livingEntity, seed));
         }
     }
 }

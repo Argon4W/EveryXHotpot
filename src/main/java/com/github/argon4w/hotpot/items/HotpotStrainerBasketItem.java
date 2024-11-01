@@ -9,6 +9,8 @@ import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.items.components.HotpotStrainerBasketDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedStrainerBasket;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -20,17 +22,26 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPlacedStrainerBasket> implements IHotpotItemContainer {
+public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPlacedStrainerBasket>
+        implements IHotpotItemContainer {
     public HotpotStrainerBasketItem() {
-        super(HotpotPlacementSerializers.PLACED_STRAINER_BASKET_SERIALIZER, new Properties().stacksTo(1).component(HotpotModEntry.HOTPOT_STRAINER_BASKET_DATA_COMPONENT, HotpotStrainerBasketDataComponent.EMPTY));
+        super(
+                HotpotPlacementSerializers.PLACED_STRAINER_BASKET_SERIALIZER,
+                new Properties()
+                        .stacksTo(1)
+                        .component(
+                                HotpotModEntry.HOTPOT_STRAINER_BASKET_DATA_COMPONENT,
+                                HotpotStrainerBasketDataComponent.EMPTY));
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedStrainerBasket placement, ItemStack itemStack) {
+    public void loadPlacement(
+            IHotpotPlacementContainer container,
+            LevelBlockPos pos,
+            HotpotPlacedStrainerBasket placement,
+            ItemStack itemStack) {
         placement.setStrainerBasketItemSlot(itemStack.copyWithCount(1));
     }
 
@@ -39,8 +50,9 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
         return player.isCrouching() || player.isPassenger();
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+    @NotNull @Override
+    public InteractionResultHolder<ItemStack> use(
+            @NotNull Level level, Player player, @NotNull InteractionHand usedHand) {
         ItemStack mainHandItemStack = player.getItemInHand(InteractionHand.MAIN_HAND);
         ItemStack offHandItemStack = player.getItemInHand(InteractionHand.OFF_HAND);
         LevelBlockPos pos = LevelBlockPos.fromVec3(level, player.position());
@@ -71,7 +83,7 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
         ArrayList<ItemStack> contents = new ArrayList<>(HotpotPaperBowlItem.getPaperBowlItems(paperBowlItemStack));
         ArrayList<ItemStack> skewers = new ArrayList<>(HotpotPaperBowlItem.getPaperBowlSkewers(paperBowlItemStack));
 
-        while (!strainerContents.isEmpty() && ((contents.size() + skewers.size())  < 8)) {
+        while (!strainerContents.isEmpty() && ((contents.size() + skewers.size()) < 8)) {
             ItemStack itemStack = strainerContents.removeFirst().copy();
 
             if (itemStack.isEmpty()) {
@@ -103,7 +115,7 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
                 continue;
             }
 
-            if (itemStack.getItem() instanceof HotpotSkewerItem)  {
+            if (itemStack.getItem() instanceof HotpotSkewerItem) {
                 skewers.add(itemStack);
                 continue;
             }
@@ -119,8 +131,8 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
         return InteractionResultHolder.success(player.getItemInHand(usedHand));
     }
 
-    @Override
-    public String getDescriptionId(ItemStack itemStack) {
+    @NotNull @Override
+    public String getDescriptionId(@NotNull ItemStack itemStack) {
         if (isStrainerBasketEmpty(itemStack)) {
             return super.getDescriptionId(itemStack) + ".empty";
         }
@@ -133,13 +145,23 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> components, TooltipFlag tooltipFlag) {
-        components.add(Component.translatable("item.everyxhotpot.hotpot_strainer_basket.cooking_speed", ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(getStrainerBasketCookingSpeed(itemStack))).withStyle(ChatFormatting.BLUE));
+    public void appendHoverText(
+            @NotNull ItemStack itemStack,
+            @NotNull TooltipContext context,
+            List<Component> components,
+            @NotNull TooltipFlag tooltipFlag) {
+        components.add(Component.translatable(
+                        "item.everyxhotpot.hotpot_strainer_basket.cooking_speed",
+                        ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(
+                                getStrainerBasketCookingSpeed(itemStack)))
+                .withStyle(ChatFormatting.BLUE));
     }
 
     @Override
     public ItemStack getContainedItemStack(ItemStack itemStack) {
-        return isStrainerBasketEmpty(itemStack) ? ItemStack.EMPTY : getStrainerBasketItems(itemStack).getFirst();
+        return isStrainerBasketEmpty(itemStack)
+                ? ItemStack.EMPTY
+                : getStrainerBasketItems(itemStack).getFirst();
     }
 
     @Override
@@ -148,11 +170,15 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
     }
 
     public static ItemStack createStrainerBasketFromItems(List<ItemStack> itemStacks) {
-        return Util.make(HotpotModEntry.HOTPOT_STRAINER_BASKET.toStack(), itemStack -> setDataComponent(itemStack, getDataComponent(itemStack).setItemStacks(itemStacks)));
+        return Util.make(
+                HotpotModEntry.HOTPOT_STRAINER_BASKET.toStack(),
+                itemStack ->
+                        setDataComponent(itemStack, getDataComponent(itemStack).setItemStacks(itemStacks)));
     }
 
     public static HotpotStrainerBasketDataComponent getDataComponent(ItemStack itemStack) {
-        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_STRAINER_BASKET_DATA_COMPONENT, HotpotStrainerBasketDataComponent.EMPTY);
+        return itemStack.getOrDefault(
+                HotpotModEntry.HOTPOT_STRAINER_BASKET_DATA_COMPONENT, HotpotStrainerBasketDataComponent.EMPTY);
     }
 
     public static void setDataComponent(ItemStack itemStack, HotpotStrainerBasketDataComponent dataComponent) {
@@ -184,7 +210,11 @@ public class HotpotStrainerBasketItem extends HotpotPlacementBlockItem<HotpotPla
     }
 
     public static void takeStrainerBasketItems(ItemStack itemStack, Player player) {
-        setStrainerBasketItems(itemStack, Util.make(new ArrayList<>(getStrainerBasketItems(itemStack)), itemStacks -> HotpotItemUtils.addToInventory(player, itemStacks.removeFirst())));
+        setStrainerBasketItems(
+                itemStack,
+                Util.make(
+                        new ArrayList<>(getStrainerBasketItems(itemStack)),
+                        itemStacks -> HotpotItemUtils.addToInventory(player, itemStacks.removeFirst())));
     }
 
     public static double getStrainerBasketCookingSpeed(ItemStack itemStack) {

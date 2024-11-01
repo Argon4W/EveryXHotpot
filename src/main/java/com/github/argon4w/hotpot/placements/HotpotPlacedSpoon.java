@@ -10,13 +10,12 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-import java.util.Optional;
 
 public class HotpotPlacedSpoon implements IHotpotPlacement {
     private final int position1;
@@ -36,17 +35,38 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         onRemove(container, pos);
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return spoonItemSlot.isEmpty() && container.canBeRemoved();
     }
 
@@ -87,13 +107,14 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedSpoon> {
-        public static final MapCodec<HotpotPlacedSpoon> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(spoon -> spoon.group(
-                        Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPosition1),
-                        Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPosition2),
-                        SimpleItemSlot.CODEC.fieldOf("spoon_item_slot").forGetter(HotpotPlacedSpoon::getSpoonItemSlot)
-                ).apply(spoon, HotpotPlacedSpoon::new))
-        );
+        public static final MapCodec<HotpotPlacedSpoon> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(spoon -> spoon.group(
+                                Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPosition1),
+                                Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPosition2),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("spoon_item_slot")
+                                        .forGetter(HotpotPlacedSpoon::getSpoonItemSlot))
+                        .apply(spoon, HotpotPlacedSpoon::new)));
 
         @Override
         public HotpotPlacedSpoon createPlacement(List<Integer> positions, ComplexDirection direction) {

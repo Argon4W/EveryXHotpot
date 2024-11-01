@@ -41,11 +41,47 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
                 .strength(0.5f));
     }
 
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    @NotNull @Override
+    public ItemStack getCloneItemStack(
+            @NotNull BlockState state,
+            @NotNull HitResult target,
+            @NotNull LevelReader levelReader,
+            @NotNull BlockPos pos,
+            @NotNull Player player) {
+        if (!(levelReader instanceof Level level)) {
+            return super.getCloneItemStack(state, target, levelReader, pos, player);
+        }
+
         LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
+        if (!(blockPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity)) {
+            return super.getCloneItemStack(state, target, levelReader, pos, player);
+        }
+
+        int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
+        int index = hotpotPlacementBlockEntity.getPlacementIndexInPosAndLayer(position, 0);
+
+        return index < 0
+                ? ItemStack.EMPTY
+                : hotpotPlacementBlockEntity
+                        .getPlacements(0)
+                        .get(index)
+                        .getCloneItemStack(hotpotPlacementBlockEntity, blockPos);
+    }
+
+    @NotNull @Override
+    protected ItemInteractionResult useItemOn(
+            ItemStack itemStack,
+            @NotNull BlockState state,
+            @NotNull Level level,
+            @NotNull BlockPos pos,
+            @NotNull Player player,
+            @NotNull InteractionHand hand,
+            @NotNull BlockHitResult result) {
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
+
+        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem
+                && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -60,26 +96,8 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader levelReader, BlockPos pos, Player player) {
-        if (!(levelReader instanceof Level level)) {
-            return super.getCloneItemStack(state, target, levelReader, pos, player);
-        }
-
-        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
-
-        if (!(blockPos.getBlockEntity() instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity)) {
-            return super.getCloneItemStack(state, target, levelReader, pos, player);
-        }
-
-        int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
-        int index = hotpotPlacementBlockEntity.getPlacementIndexInPos(position);
-
-        return index < 0 ? ItemStack.EMPTY : hotpotPlacementBlockEntity.getPlacements().get(index).getCloneItemStack(hotpotPlacementBlockEntity, blockPos);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
+    public void onRemove(
+            BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (state.is(newState.getBlock())) {
             return;
         }
@@ -88,30 +106,36 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
             hotpotPlacementBlockEntity.onRemove(new LevelBlockPos(level, pos));
         }
 
-        super.onRemove(state, level, pos, newState, b);
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    @NotNull
-    @Override
-    @SuppressWarnings("deprecation")
-    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
+    @Nullable @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> blockEntityType) {
+        return level.isClientSide
+                ? null
+                : createTickerHelper(
+                        blockEntityType,
+                        HotpotModEntry.HOTPOT_PLACEMENT_BLOCK_ENTITY.get(),
+                        HotpotPlacementBlockEntity::tick);
+    }
+
+    @NotNull @Override
+    public VoxelShape getShape(
+            @NotNull BlockState p_60555_,
+            @NotNull BlockGetter p_60556_,
+            @NotNull BlockPos p_60557_,
+            @NotNull CollisionContext p_60558_) {
         return SHAPE;
     }
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState blockState) {
+    @Nullable @Override
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState blockState) {
         return new HotpotPlacementBlockEntity(pos, blockState);
     }
 
-    @Override
+    @NotNull @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return MapCodec.unit(HotpotPlacementBlock::new);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_PLACEMENT_BLOCK_ENTITY.get(), HotpotPlacementBlockEntity::tick);
     }
 }

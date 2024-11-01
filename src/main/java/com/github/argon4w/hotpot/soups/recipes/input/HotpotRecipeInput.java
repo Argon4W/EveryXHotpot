@@ -3,9 +3,10 @@ package com.github.argon4w.hotpot.soups.recipes.input;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
+import org.jetbrains.annotations.NotNull;
 
 public record HotpotRecipeInput(ItemStack itemStack, HotpotComponentSoup soup) implements RecipeInput {
-    @Override
+    @NotNull @Override
     public ItemStack getItem(int slot) {
         return itemStack;
     }

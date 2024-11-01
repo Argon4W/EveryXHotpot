@@ -7,6 +7,7 @@ import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
@@ -16,9 +17,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-
-import java.util.List;
 
 public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomElementRenderer {
     private final double rotationTimeOffset;
@@ -33,7 +33,15 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     private BakedModel model;
 
-    public HotpotSoupFloatingElementRenderer(double rotationTimeOffset, double positionTimeOffset, double rotationScale, double positionScale, double positionOffset, RotationAxis rotationAxis, ResourceLocation elementModelResourceLocation, boolean shouldRenderInBowl) {
+    public HotpotSoupFloatingElementRenderer(
+            double rotationTimeOffset,
+            double positionTimeOffset,
+            double rotationScale,
+            double positionScale,
+            double positionOffset,
+            RotationAxis rotationAxis,
+            ResourceLocation elementModelResourceLocation,
+            boolean shouldRenderInBowl) {
         this.rotationTimeOffset = rotationTimeOffset;
         this.positionTimeOffset = positionTimeOffset;
         this.rotationScale = rotationScale;
@@ -47,11 +55,20 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     @Override
     public void prepareModel() {
-        model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(elementModelResourceLocation));
+        model = Minecraft.getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(elementModelResourceLocation));
     }
 
     @Override
-    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel) {
+    public void render(
+            long time,
+            float partialTick,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double waterLevel) {
         if (model == null) {
             return;
         }
@@ -66,7 +83,21 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         poseStack.translate(0, position, 0);
         poseStack.mulPose(rotationAxis.getAxis().rotationDegrees((float) rotation));
 
-        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.translucentCullBlockSheet()), null, model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.translucentCullBlockSheet());
+        Minecraft.getInstance()
+                .getBlockRenderer()
+                .getModelRenderer()
+                .renderModel(
+                        poseStack.last(),
+                        bufferSource.getBuffer(Sheets.translucentCullBlockSheet()),
+                        null,
+                        model,
+                        1,
+                        1,
+                        1,
+                        combinedLight,
+                        combinedOverlay,
+                        ModelData.EMPTY,
+                        Sheets.translucentCullBlockSheet());
 
         poseStack.popPose();
     }
@@ -115,7 +146,9 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     }
 
     public enum RotationAxis implements StringRepresentable {
-        X(Axis.XP, "x"), Y(Axis.YP, "y"), Z(Axis.ZP, "z");
+        X(Axis.XP, "x"),
+        Y(Axis.YP, "y"),
+        Z(Axis.ZP, "z");
 
         private final Axis axis;
         private final String name;
@@ -125,7 +158,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
             this.name = name;
         }
 
-        @Override
+        @NotNull @Override
         public String getSerializedName() {
             return name;
         }
@@ -135,17 +168,35 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         }
     }
 
-    public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
-        public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
-                Codec.DOUBLE.fieldOf("rotation_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getRotationTimeOffset),
-                Codec.DOUBLE.fieldOf("position_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionTimeOffset),
-                Codec.DOUBLE.fieldOf("rotation_scale").forGetter(HotpotSoupFloatingElementRenderer::getRotationScale),
-                Codec.DOUBLE.fieldOf("position_scale").forGetter(HotpotSoupFloatingElementRenderer::getPositionScale),
-                Codec.DOUBLE.fieldOf("position_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionOffset),
-                StringRepresentable.fromEnum(RotationAxis::values).fieldOf("rotation_axis").forGetter(HotpotSoupFloatingElementRenderer::getRotationAxis),
-                ResourceLocation.CODEC.fieldOf("element_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElementModelResourceLocation),
-                Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotSoupFloatingElementRenderer::shouldRenderInBowl)
-        ).apply(renderer, HotpotSoupFloatingElementRenderer::new));
+    public static class Serializer
+            implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
+        public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC =
+                RecordCodecBuilder.mapCodec(renderer -> renderer.group(
+                                Codec.DOUBLE
+                                        .fieldOf("rotation_time_offset")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getRotationTimeOffset),
+                                Codec.DOUBLE
+                                        .fieldOf("position_time_offset")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getPositionTimeOffset),
+                                Codec.DOUBLE
+                                        .fieldOf("rotation_scale")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getRotationScale),
+                                Codec.DOUBLE
+                                        .fieldOf("position_scale")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getPositionScale),
+                                Codec.DOUBLE
+                                        .fieldOf("position_offset")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getPositionOffset),
+                                StringRepresentable.fromEnum(RotationAxis::values)
+                                        .fieldOf("rotation_axis")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getRotationAxis),
+                                ResourceLocation.CODEC
+                                        .fieldOf("element_model_resource_location")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::getElementModelResourceLocation),
+                                Codec.BOOL
+                                        .fieldOf("should_render_in_bowl")
+                                        .forGetter(HotpotSoupFloatingElementRenderer::shouldRenderInBowl))
+                        .apply(renderer, HotpotSoupFloatingElementRenderer::new));
 
         @Override
         public MapCodec<HotpotSoupFloatingElementRenderer> getCodec() {

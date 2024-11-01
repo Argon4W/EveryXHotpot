@@ -6,5 +6,6 @@ import net.minecraft.core.Holder;
 
 public interface IHotpotSoupClientTickEffect {
     void tick(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity);
+
     Holder<IHotpotSoupClientTickEffectSerializer<?>> getSerializerHolder();
 }

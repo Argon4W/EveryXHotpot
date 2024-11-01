@@ -5,5 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 
 public interface IHotpotSpriteConfig {
     Holder<IHotpotSpriteConfigSerializer<?>> getSerializerHolder();
+
     ResourceLocation getResourceLocation();
 }

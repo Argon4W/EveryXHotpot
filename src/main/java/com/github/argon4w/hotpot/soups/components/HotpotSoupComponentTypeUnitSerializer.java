@@ -8,7 +8,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
-public class HotpotSoupComponentTypeUnitSerializer<T extends IHotpotSoupComponent> implements IHotpotSoupComponentTypeSerializer<T> {
+public class HotpotSoupComponentTypeUnitSerializer<T extends IHotpotSoupComponent>
+        implements IHotpotSoupComponentTypeSerializer<T> {
     private final MapCodec<? extends IHotpotSoupComponentType<T>> codec;
     private final StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<T>> streamCodec;
 
@@ -17,7 +18,8 @@ public class HotpotSoupComponentTypeUnitSerializer<T extends IHotpotSoupComponen
         this.streamCodec = StreamCodec.unit(componentType);
     }
 
-    public HotpotSoupComponentTypeUnitSerializer(T unit, Holder<IHotpotSoupComponentTypeSerializer<?>> serializerHolder) {
+    public HotpotSoupComponentTypeUnitSerializer(
+            T unit, Holder<IHotpotSoupComponentTypeSerializer<?>> serializerHolder) {
         this(new HotpotSoupComponentUnitType<>(unit, serializerHolder));
     }
 

@@ -6,11 +6,10 @@ import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
 
 public class HotpotEmptyContent implements IHotpotContent {
     @Override
@@ -24,9 +23,7 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-
-    }
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
 
     @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
@@ -47,7 +44,8 @@ public class HotpotEmptyContent implements IHotpotContent {
         public static final HotpotEmptyContent UNIT = new HotpotEmptyContent();
 
         @Override
-        public HotpotEmptyContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+        public HotpotEmptyContent createContent(
+                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             return UNIT;
         }
 

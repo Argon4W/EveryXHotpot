@@ -19,8 +19,24 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
     @Override
-    public void action(int pos, HotpotBlockEntity hotpotBlockEntity, IHotpotContent content, HotpotComponentSoup sourceSoup, HotpotComponentSoup resultSoup, LevelBlockPos selfPos) {
-        hotpotBlockEntity.setContent(pos, resultSoup.getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos).orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER).value().createContent(itemStack.copy(), hotpotBlockEntity, selfPos, Direction.getRandom(selfPos.getRandomSource())));
+    public void action(
+            int pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            IHotpotContent content,
+            HotpotComponentSoup sourceSoup,
+            HotpotComponentSoup resultSoup,
+            LevelBlockPos selfPos) {
+        hotpotBlockEntity.setContent(
+                pos,
+                resultSoup
+                        .getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos)
+                        .orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER)
+                        .value()
+                        .createContent(
+                                itemStack.copy(),
+                                hotpotBlockEntity,
+                                selfPos,
+                                Direction.getRandom(selfPos.getRandomSource())));
     }
 
     @Override
@@ -29,18 +45,16 @@ public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpo
     }
 
     public static class Serializer implements IHotpotSoupIngredientActionSerializer<HotpotSoupReplaceItemAction> {
-        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(action -> action.group(
-                        ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupReplaceItemAction::itemStack)
-                ).apply(action, HotpotSoupReplaceItemAction::new))
-        );
+        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(action -> action.group(
+                                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupReplaceItemAction::itemStack))
+                        .apply(action, HotpotSoupReplaceItemAction::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-                StreamCodec.composite(
-                        ItemStack.STREAM_CODEC, HotpotSoupReplaceItemAction::itemStack,
-                        HotpotSoupReplaceItemAction::new
-                )
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                        ItemStack.STREAM_CODEC,
+                        HotpotSoupReplaceItemAction::itemStack,
+                        HotpotSoupReplaceItemAction::new));
 
         @Override
         public MapCodec<HotpotSoupReplaceItemAction> getCodec() {

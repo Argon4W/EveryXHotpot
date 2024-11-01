@@ -17,7 +17,8 @@ public class QuadLighterVertexConsumer implements VertexConsumer {
     private final AddSectionGeometryEvent.SectionRenderingContext context;
     private final BlockPos pos;
 
-    public QuadLighterVertexConsumer(VertexConsumer vertexConsumer, AddSectionGeometryEvent.SectionRenderingContext context, BlockPos pos) {
+    public QuadLighterVertexConsumer(
+            VertexConsumer vertexConsumer, AddSectionGeometryEvent.SectionRenderingContext context, BlockPos pos) {
         this.vertexConsumer = vertexConsumer;
         this.context = context;
         this.pos = pos;
@@ -29,49 +30,60 @@ public class QuadLighterVertexConsumer implements VertexConsumer {
         this.pos = pos;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public VertexConsumer addVertex(float x, float y, float z) {
         return vertexConsumer.addVertex(x, y, z);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public VertexConsumer setColor(int red, int green, int blue, int alpha) {
         return vertexConsumer.setColor(red, green, blue, alpha);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public VertexConsumer setUv(float u, float v) {
         return vertexConsumer.setUv(u, v);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public VertexConsumer setUv1(int u, int v) {
         return vertexConsumer.setUv1(u, v);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public VertexConsumer setUv2(int u, int v) {
         return vertexConsumer.setUv2(u, v);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
         return vertexConsumer.setNormal(normalX, normalY, normalZ);
     }
 
     @Override
-    public void putBulkData(@NotNull PoseStack.Pose pose, @NotNull BakedQuad bakedQuad, float red, float green, float blue, float alpha, int packedLight, int packedOverlay) {
+    public void putBulkData(
+            @NotNull PoseStack.Pose pose,
+            @NotNull BakedQuad bakedQuad,
+            float red,
+            float green,
+            float blue,
+            float alpha,
+            int packedLight,
+            int packedOverlay) {
         putBulkData(pose, bakedQuad, red, green, blue, alpha, packedLight, packedOverlay, true);
     }
 
     @Override
-    public void putBulkData(@NotNull PoseStack.Pose pose, @NotNull BakedQuad bakedQuad, float red, float green, float blue, float alpha, int packedLight, int packedOverlay, boolean readExistingColor) {
+    public void putBulkData(
+            @NotNull PoseStack.Pose pose,
+            @NotNull BakedQuad bakedQuad,
+            float red,
+            float green,
+            float blue,
+            float alpha,
+            int packedLight,
+            int packedOverlay,
+            boolean readExistingColor) {
         IQuadTransformer transformer = QuadTransformers.applying(new Transformation(pose.pose()));
         QuadLighter lighter = context.getQuadLighter(false);
         BakedQuad quad = transformer.process(bakedQuad);
@@ -79,7 +91,17 @@ public class QuadLighterVertexConsumer implements VertexConsumer {
         lighter.setup(context.getRegion(), pos, context.getRegion().getBlockState(pos));
         lighter.computeLightingForQuad(quad);
 
-        vertexConsumer.putBulkData(context.getPoseStack().last(), quad, lighter.getComputedBrightness(), red, green, blue, alpha, lighter.getComputedLightmap(), packedOverlay, readExistingColor);
+        vertexConsumer.putBulkData(
+                context.getPoseStack().last(),
+                quad,
+                lighter.getComputedBrightness(),
+                red,
+                green,
+                blue,
+                alpha,
+                lighter.getComputedLightmap(),
+                packedOverlay,
+                readExistingColor);
         lighter.reset();
     }
 }

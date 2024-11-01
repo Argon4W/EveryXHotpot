@@ -10,6 +10,7 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRechargeRecipe;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -17,18 +18,28 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
-import java.util.Optional;
-
 public class HotpotSoupRechargeRecipeAcceptorSoupComponent extends AbstractHotpotSoupComponent {
-    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRechargeRecipe> SOUP_RECHARGE_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get());
+    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRechargeRecipe>
+            SOUP_RECHARGE_RECIPE_QUICK_CHECK =
+                    RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RECHARGE_RECIPE_TYPE.get());
 
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int position, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
+            int position,
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
+            HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }
 
-        Optional<HotpotSoupRechargeRecipe> optional = SOUP_RECHARGE_RECIPE_QUICK_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, hotpotBlockEntity.getSoup()), pos.level()).map(RecipeHolder::value);
+        Optional<HotpotSoupRechargeRecipe> optional = SOUP_RECHARGE_RECIPE_QUICK_CHECK
+                .getRecipeFor(new HotpotRecipeInput(itemStack, hotpotBlockEntity.getSoup()), pos.level())
+                .map(RecipeHolder::value);
 
         if (optional.isEmpty()) {
             return result;

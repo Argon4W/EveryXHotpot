@@ -1,13 +1,12 @@
 package com.github.argon4w.hotpot.recipes;
 
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingInput;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 
 public class SimpleRecipeMatcher {
     private final List<ItemStack> items;
@@ -106,7 +105,9 @@ public class SimpleRecipeMatcher {
         }
 
         public SimpleRecipeMatcher range(int from, int to) {
-            return (collected.size() >= from && collected.size() <= to) ? matcher.discard(collected) : matcher.mismatch();
+            return (collected.size() >= from && collected.size() <= to)
+                    ? matcher.discard(collected)
+                    : matcher.mismatch();
         }
 
         public SimpleRecipeMatcher discard() {

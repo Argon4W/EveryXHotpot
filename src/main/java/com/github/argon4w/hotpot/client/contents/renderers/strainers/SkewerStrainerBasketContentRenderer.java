@@ -4,17 +4,25 @@ import com.github.argon4w.hotpot.api.client.items.IHotpotStrainerBasketContentRe
 import com.github.argon4w.hotpot.client.MappingBufferSource;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
-import java.util.List;
-
 public class SkewerStrainerBasketContentRenderer implements IHotpotStrainerBasketContentRenderer {
     @Override
-    public void renderInSoup(List<ItemStack> itemStacks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, int contentIndex, double waterLevel, double maxHeight, double time) {
+    public void renderInSoup(
+            List<ItemStack> itemStacks,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            int contentIndex,
+            double waterLevel,
+            double maxHeight,
+            double time) {
         double offsetX = (9 / 4.0) / 16.0;
         double startPositionX = offsetX * Math.max(0, itemStacks.size() - 1) / 2.0;
         double progress = (waterLevel - 0.35) / 0.65;
@@ -31,7 +39,7 @@ public class SkewerStrainerBasketContentRenderer implements IHotpotStrainerBaske
             double positionSurfaceX = positionX + offsetSurfaceX - (0.5 / 16.0) * (1 - progress);
             double rotationZ = 90.0 - Math.toDegrees(Math.atan2(positionY, offsetSurfaceX));
 
-            double positionSurfaceZ = (i % 2 == 0 ? 0.1 : - 0.1) * (1 - progress);
+            double positionSurfaceZ = (i % 2 == 0 ? 0.1 : -0.1) * (1 - progress);
             double rotationX = 90.0 - Math.toDegrees(java.lang.Math.atan2(positionY, positionSurfaceZ));
 
             poseStack.translate(positionSurfaceX, positionY, positionSurfaceZ);
@@ -42,7 +50,17 @@ public class SkewerStrainerBasketContentRenderer implements IHotpotStrainerBaske
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
             poseStack.pushPose();
-            Minecraft.getInstance().getItemRenderer().renderStatic(itemStacks.get(i), ItemDisplayContext.NONE, combinedLight, combinedOverlay, poseStack, MappingBufferSource.itemBufferSource(bufferSource), null, 42);
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            itemStacks.get(i),
+                            ItemDisplayContext.NONE,
+                            combinedLight,
+                            combinedOverlay,
+                            poseStack,
+                            MappingBufferSource.itemBufferSource(bufferSource),
+                            null,
+                            42);
             poseStack.popPose();
 
             poseStack.popPose();
@@ -50,7 +68,12 @@ public class SkewerStrainerBasketContentRenderer implements IHotpotStrainerBaske
     }
 
     @Override
-    public void renderAsItem(List<ItemStack> itemStacks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void renderAsItem(
+            List<ItemStack> itemStacks,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay) {
         double positionY = 0.98 - 0.01 / 0.45;
         double offsetX = (9 / 4.0) / 16.0;
         double startPositionX = offsetX * Math.max(0, itemStacks.size() - 1) / 2.0;
@@ -63,7 +86,7 @@ public class SkewerStrainerBasketContentRenderer implements IHotpotStrainerBaske
             double positionSurfaceX = positionX + offsetSurfaceX - (0.5 / 16.0);
             double rotationZ = 90.0 - Math.toDegrees(Math.atan2(positionY, offsetSurfaceX));
 
-            double positionSurfaceZ = (i % 2 == 0 ? 0.1 : - 0.1);
+            double positionSurfaceZ = (i % 2 == 0 ? 0.1 : -0.1);
             double rotationX = 90.0 - Math.toDegrees(java.lang.Math.atan2(positionY, positionSurfaceZ));
 
             poseStack.translate(positionSurfaceX, positionY, positionSurfaceZ);
@@ -74,7 +97,17 @@ public class SkewerStrainerBasketContentRenderer implements IHotpotStrainerBaske
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
             poseStack.pushPose();
-            Minecraft.getInstance().getItemRenderer().renderStatic(itemStacks.get(i), ItemDisplayContext.NONE, combinedLight, combinedOverlay, poseStack, MappingBufferSource.itemBufferSource(bufferSource), null, 42);
+            Minecraft.getInstance()
+                    .getItemRenderer()
+                    .renderStatic(
+                            itemStacks.get(i),
+                            ItemDisplayContext.NONE,
+                            combinedLight,
+                            combinedOverlay,
+                            poseStack,
+                            MappingBufferSource.itemBufferSource(bufferSource),
+                            null,
+                            42);
             poseStack.popPose();
 
             poseStack.popPose();

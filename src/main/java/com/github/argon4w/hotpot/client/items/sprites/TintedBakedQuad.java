@@ -7,7 +7,13 @@ public class TintedBakedQuad extends BakedQuad {
     private final HotpotColor color;
 
     public TintedBakedQuad(BakedQuad bakedQuad, HotpotColor color) {
-        super(bakedQuad.getVertices(), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade(), bakedQuad.hasAmbientOcclusion());
+        super(
+                bakedQuad.getVertices(),
+                bakedQuad.getTintIndex(),
+                bakedQuad.getDirection(),
+                bakedQuad.getSprite(),
+                bakedQuad.isShade(),
+                bakedQuad.hasAmbientOcclusion());
         this.color = color;
     }
 

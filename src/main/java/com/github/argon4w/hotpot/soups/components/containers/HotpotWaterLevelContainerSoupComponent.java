@@ -31,13 +31,15 @@ public class HotpotWaterLevelContainerSoupComponent extends AbstractHotpotSoupCo
     }
 
     @Override
-    public void setWaterLevelWithOverflow(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public void setWaterLevelWithOverflow(
+            double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         this.waterLevel = hotpotBlockEntity.isInfiniteWater() ? 1.0 : Math.clamp(waterLevel, 0.0, 1.0);
         this.overflowWaterLevel = Math.max(0.0, waterLevel - 1.0);
     }
 
     @Override
-    public void setWaterLevel(double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public void setWaterLevel(
+            double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         this.waterLevel = hotpotBlockEntity.isInfiniteWater() ? 1.0 : Math.clamp(waterLevel, 0.0, 1.0);
     }
 
@@ -52,7 +54,8 @@ public class HotpotWaterLevelContainerSoupComponent extends AbstractHotpotSoupCo
     }
 
     @Override
-    public void onDiscardOverflowWaterLevel(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public void onDiscardOverflowWaterLevel(
+            HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         overflowWaterLevel = 0.0;
     }
 
@@ -70,16 +73,24 @@ public class HotpotWaterLevelContainerSoupComponent extends AbstractHotpotSoupCo
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotWaterLevelContainerSoupComponent> {
-        public static final MapCodec<HotpotWaterLevelContainerSoupComponent> CODEC = RecordCodecBuilder.mapCodec(component -> component.group(
-                Codec.DOUBLE.fieldOf("water_level").forGetter(HotpotWaterLevelContainerSoupComponent::getWaterLevel),
-                Codec.DOUBLE.fieldOf("overflow_water_level").forGetter(HotpotWaterLevelContainerSoupComponent::getOverflowWaterLevel)
-        ).apply(component, HotpotWaterLevelContainerSoupComponent::new));
+        public static final MapCodec<HotpotWaterLevelContainerSoupComponent> CODEC =
+                RecordCodecBuilder.mapCodec(component -> component
+                        .group(
+                                Codec.DOUBLE
+                                        .fieldOf("water_level")
+                                        .forGetter(HotpotWaterLevelContainerSoupComponent::getWaterLevel),
+                                Codec.DOUBLE
+                                        .fieldOf("overflow_water_level")
+                                        .forGetter(HotpotWaterLevelContainerSoupComponent::getOverflowWaterLevel))
+                        .apply(component, HotpotWaterLevelContainerSoupComponent::new));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotWaterLevelContainerSoupComponent> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, HotpotWaterLevelContainerSoupComponent::getWaterLevel,
-                ByteBufCodecs.DOUBLE, HotpotWaterLevelContainerSoupComponent::getOverflowWaterLevel,
-                HotpotWaterLevelContainerSoupComponent::new
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotWaterLevelContainerSoupComponent> STREAM_CODEC =
+                StreamCodec.composite(
+                        ByteBufCodecs.DOUBLE,
+                        HotpotWaterLevelContainerSoupComponent::getWaterLevel,
+                        ByteBufCodecs.DOUBLE,
+                        HotpotWaterLevelContainerSoupComponent::getOverflowWaterLevel,
+                        HotpotWaterLevelContainerSoupComponent::new);
 
         @Override
         public MapCodec<HotpotWaterLevelContainerSoupComponent> getCodec() {

@@ -2,10 +2,11 @@ package com.github.argon4w.hotpot.events;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
-import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.items.components.HotpotFoodEffectsDataComponent;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -23,8 +24,6 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-
-import java.util.List;
 
 @EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class HotpotGameModEvents {
@@ -114,12 +113,21 @@ public class HotpotGameModEvents {
         }
 
         if (!event.getFlags().hasControlDown()) {
-            event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects.collapsed").withStyle(ChatFormatting.GRAY));
+            event.getToolTip()
+                    .add(Component.translatable("item.everyxhotpot.tooltip.effects.collapsed")
+                            .withStyle(ChatFormatting.GRAY));
             return;
         }
 
-        event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects").withStyle(ChatFormatting.GRAY));
-        PotionContents.addPotionTooltip(effects, component -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line.2", component).withStyle(ChatFormatting.GRAY)), 1.0f, context.tickRate());
+        event.getToolTip()
+                .add(Component.translatable("item.everyxhotpot.tooltip.effects").withStyle(ChatFormatting.GRAY));
+        PotionContents.addPotionTooltip(
+                effects,
+                component -> event.getToolTip()
+                        .add(Component.translatable("item.everyxhotpot.tooltip.line.2", component)
+                                .withStyle(ChatFormatting.GRAY)),
+                1.0f,
+                context.tickRate());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -141,11 +149,17 @@ public class HotpotGameModEvents {
         }
 
         if (!event.getFlags().hasShiftDown()) {
-            event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains.collapsed").withStyle(ChatFormatting.GRAY));
+            event.getToolTip()
+                    .add(Component.translatable("item.everyxhotpot.tooltip.contains.collapsed")
+                            .withStyle(ChatFormatting.GRAY));
             return;
         }
 
-        event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains").withStyle(ChatFormatting.GRAY));
-        itemStacks.forEach(itemStack1 -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line.1", itemStack1.getDisplayName()).withStyle(ChatFormatting.GRAY)));
+        event.getToolTip()
+                .add(Component.translatable("item.everyxhotpot.tooltip.contains")
+                        .withStyle(ChatFormatting.GRAY));
+        itemStacks.forEach(itemStack1 -> event.getToolTip()
+                .add(Component.translatable("item.everyxhotpot.tooltip.line.1", itemStack1.getDisplayName())
+                        .withStyle(ChatFormatting.GRAY)));
     }
 }

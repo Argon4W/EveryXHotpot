@@ -7,14 +7,23 @@ import java.util.function.Function;
 
 public interface IHotpotResult<T> {
     IHotpotResult<T> consume(Consumer<T> consumer);
+
     <R> IHotpotResult<R> map(Function<T, R> function);
+
     IHotpotResult<T> ifPresent(Consumer<T> consumer);
+
     IHotpotResult<T> ifEmpty(Runnable runnable);
+
     boolean isPresent();
+
     boolean isEmpty();
+
     boolean isBlocked();
+
     Optional<T> getOptional();
+
     T get();
+
     T orElse(T other);
 
     abstract class Empty<T> implements IHotpotResult<T> {
@@ -144,11 +153,6 @@ public interface IHotpotResult<T> {
         }
     }
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    static <T> IHotpotResult<T> fromOptional(Optional<T> optional) {
-        return optional.map(IHotpotResult::success).orElseGet(IHotpotResult::pass);
-    }
-
     static <T> IHotpotResult<T> ofNullable(T value) {
         return value == null ? pass() : success(value);
     }
@@ -165,7 +169,7 @@ public interface IHotpotResult<T> {
         return new Value<>(value);
     }
 
-    static  <T> IHotpotResult<T> pass(Runnable runnable) {
+    static <T> IHotpotResult<T> pass(Runnable runnable) {
         runnable.run();
         return pass();
     }

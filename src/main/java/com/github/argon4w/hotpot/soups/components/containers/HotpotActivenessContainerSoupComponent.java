@@ -48,8 +48,18 @@ public class HotpotActivenessContainerSoupComponent extends AbstractHotpotSoupCo
             this.minActiveness = minActiveness;
             this.maxActiveness = maxActiveness;
 
-            this.codec = Codec.DOUBLE.fieldOf("activeness").xmap(activeness -> new HotpotActivenessContainerSoupComponent(minActiveness, maxActiveness, activeness), HotpotActivenessContainerSoupComponent::getActiveness);
-            this.streamCodec = ByteBufCodecs.DOUBLE.<RegistryFriendlyByteBuf>cast().map(activeness -> new HotpotActivenessContainerSoupComponent(minActiveness, maxActiveness, activeness), HotpotActivenessContainerSoupComponent::getActiveness);
+            this.codec = Codec.DOUBLE
+                    .fieldOf("activeness")
+                    .xmap(
+                            activeness -> new HotpotActivenessContainerSoupComponent(
+                                    minActiveness, maxActiveness, activeness),
+                            HotpotActivenessContainerSoupComponent::getActiveness);
+            this.streamCodec = ByteBufCodecs.DOUBLE
+                    .<RegistryFriendlyByteBuf>cast()
+                    .map(
+                            activeness -> new HotpotActivenessContainerSoupComponent(
+                                    minActiveness, maxActiveness, activeness),
+                            HotpotActivenessContainerSoupComponent::getActiveness);
         }
 
         @Override
@@ -81,17 +91,15 @@ public class HotpotActivenessContainerSoupComponent extends AbstractHotpotSoupCo
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotActivenessContainerSoupComponent> {
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotActivenessContainerSoupComponent> {
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                Codec.DOUBLE.optionalFieldOf("min_activeness", 0.0d).forGetter(Type::getMinActiveness),
-                Codec.DOUBLE.optionalFieldOf("max_activeness", 1.0d).forGetter(Type::getMinActiveness)
-        ).apply(type, Type::new));
+                        Codec.DOUBLE.optionalFieldOf("min_activeness", 0.0d).forGetter(Type::getMinActiveness),
+                        Codec.DOUBLE.optionalFieldOf("max_activeness", 1.0d).forGetter(Type::getMinActiveness))
+                .apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getMinActiveness,
-                ByteBufCodecs.DOUBLE, Type::getMaxActiveness,
-                Type::new
-        );
+                ByteBufCodecs.DOUBLE, Type::getMinActiveness, ByteBufCodecs.DOUBLE, Type::getMaxActiveness, Type::new);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotActivenessContainerSoupComponent>> getCodec() {
@@ -99,7 +107,10 @@ public class HotpotActivenessContainerSoupComponent extends AbstractHotpotSoupCo
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotActivenessContainerSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotActivenessContainerSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

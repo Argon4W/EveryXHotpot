@@ -11,14 +11,13 @@ import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     private final int position;
@@ -38,7 +37,14 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         if (isPaperBowlUsed()) {
             return;
         }
@@ -57,7 +63,14 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         boolean consume = container.canConsumeContents();
         ItemStack paperBowl = paperBowlItemSlot.getItemStack();
 
@@ -95,7 +108,14 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return isPaperBowlUsed() && container.canBeRemoved();
     }
 
@@ -144,13 +164,16 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedPaperBowl> {
-        public static final MapCodec<HotpotPlacedPaperBowl> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(bowl -> bowl.group(
-                        Codec.INT.fieldOf("pos").forGetter(HotpotPlacedPaperBowl::getPosition),
-                        ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotPlacedPaperBowl::getDirection),
-                        SimpleItemSlot.CODEC.fieldOf("paper_bowl_item_slot").forGetter(HotpotPlacedPaperBowl::getPaperBowlItemSlot)
-                ).apply(bowl, HotpotPlacedPaperBowl::new))
-        );
+        public static final MapCodec<HotpotPlacedPaperBowl> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(bowl -> bowl.group(
+                                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedPaperBowl::getPosition),
+                                ComplexDirection.CODEC
+                                        .fieldOf("direction")
+                                        .forGetter(HotpotPlacedPaperBowl::getDirection),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("paper_bowl_item_slot")
+                                        .forGetter(HotpotPlacedPaperBowl::getPaperBowlItemSlot))
+                        .apply(bowl, HotpotPlacedPaperBowl::new)));
 
         @Override
         public HotpotPlacedPaperBowl createPlacement(List<Integer> positions, ComplexDirection direction) {

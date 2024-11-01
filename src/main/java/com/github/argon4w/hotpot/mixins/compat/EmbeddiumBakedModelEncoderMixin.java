@@ -16,8 +16,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(BakedModelEncoder.class)
 public class EmbeddiumBakedModelEncoderMixin {
-    @Inject(method = "writeQuadVertices(Lorg/embeddedt/embeddium/api/vertex/buffer/VertexBufferWriter;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lorg/embeddedt/embeddium/impl/model/quad/ModelQuadView;IIIZ)V", at = @At("HEAD"), require = 0)
-    private static void writeQuadVertices(VertexBufferWriter writer, PoseStack.Pose matrices, ModelQuadView quad, int color, int light, int overlay, boolean colorize, CallbackInfo ci, @Local(index = 3, name = "color", argsOnly = true) LocalIntRef ref) {
+    @Inject(
+            method =
+                    "writeQuadVertices(Lorg/embeddedt/embeddium/api/vertex/buffer/VertexBufferWriter;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lorg/embeddedt/embeddium/impl/model/quad/ModelQuadView;IIIZ)V",
+            at = @At("HEAD"),
+            require = 0)
+    private static void writeQuadVertices(
+            VertexBufferWriter writer,
+            PoseStack.Pose matrices,
+            ModelQuadView quad,
+            int color,
+            int light,
+            int overlay,
+            boolean colorize,
+            CallbackInfo ci,
+            @Local(index = 3, name = "color", argsOnly = true) LocalIntRef ref) {
         if (quad instanceof TintedBakedQuad tintedBakedQuad) {
             ref.set(tintedBakedQuad.getColor().toABGRInt());
         }

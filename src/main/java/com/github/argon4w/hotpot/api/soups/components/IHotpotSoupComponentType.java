@@ -7,7 +7,10 @@ import net.minecraft.network.codec.StreamCodec;
 
 public interface IHotpotSoupComponentType<T extends IHotpotSoupComponent> {
     T createSoupComponent();
+
     MapCodec<T> getCodec();
+
     StreamCodec<RegistryFriendlyByteBuf, T> getStreamCodec();
+
     Holder<IHotpotSoupComponentTypeSerializer<?>> getSerializerHolder();
 }

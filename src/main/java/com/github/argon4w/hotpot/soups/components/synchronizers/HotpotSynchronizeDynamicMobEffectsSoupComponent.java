@@ -7,12 +7,12 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
 import com.github.argon4w.hotpot.soups.components.containers.HotpotDynamicMobEffectContainerSoupComponent;
-
 import java.util.Optional;
 
 public class HotpotSynchronizeDynamicMobEffectsSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public Optional<IHotpotSoupComponentSynchronizer> getSoupComponentSynchronizer(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public Optional<IHotpotSoupComponentSynchronizer> getSoupComponentSynchronizer(
+            HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         return Optional.of(new Synchronizer());
     }
 
@@ -25,12 +25,25 @@ public class HotpotSynchronizeDynamicMobEffectsSoupComponent extends AbstractHot
 
         @Override
         public void collect(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-            soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().filter(HotpotDynamicMobEffectContainerSoupComponent::isScheduled).map(HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap).forEach(mobEffectMap::putEffects);
+            soup
+                    .getComponentsByType(
+                            HotpotSoupComponentTypeSerializers
+                                    .DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                    .stream()
+                    .filter(HotpotDynamicMobEffectContainerSoupComponent::isScheduled)
+                    .map(HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap)
+                    .forEach(mobEffectMap::putEffects);
         }
 
         @Override
         public void apply(int size, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-            soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).stream().peek(HotpotDynamicMobEffectContainerSoupComponent::clearScheduledEffects).forEach(component -> component.putEffects(mobEffectMap));
+            soup
+                    .getComponentsByType(
+                            HotpotSoupComponentTypeSerializers
+                                    .DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                    .stream()
+                    .peek(HotpotDynamicMobEffectContainerSoupComponent::clearScheduledEffects)
+                    .forEach(component -> component.putEffects(mobEffectMap));
         }
 
         @Override

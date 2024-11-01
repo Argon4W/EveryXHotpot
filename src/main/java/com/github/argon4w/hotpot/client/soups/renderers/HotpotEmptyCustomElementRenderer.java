@@ -4,22 +4,24 @@ import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomEle
 import com.github.argon4w.hotpot.api.client.soups.renderers.IHotpotSoupCustomElementRendererSerializer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.List;
-
 public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElementRenderer {
     @Override
-    public void render(long time, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel) {
-
-    }
+    public void render(
+            long time,
+            float partialTick,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double waterLevel) {}
 
     @Override
-    public void prepareModel() {
-
-    }
+    public void prepareModel() {}
 
     @Override
     public boolean shouldRenderInBowl() {
@@ -36,8 +38,10 @@ public class HotpotEmptyCustomElementRenderer implements IHotpotSoupCustomElemen
         return HotpotSoupCustomElementSerializers.EMPTY_CUSTOM_ELEMENT_RENDERER_SERIALIZER;
     }
 
-    public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotEmptyCustomElementRenderer> {
-        public static final MapCodec<HotpotEmptyCustomElementRenderer> CODEC = MapCodec.unit(HotpotEmptyCustomElementRenderer::new);
+    public static class Serializer
+            implements IHotpotSoupCustomElementRendererSerializer<HotpotEmptyCustomElementRenderer> {
+        public static final MapCodec<HotpotEmptyCustomElementRenderer> CODEC =
+                MapCodec.unit(HotpotEmptyCustomElementRenderer::new);
 
         @Override
         public MapCodec<HotpotEmptyCustomElementRenderer> getCodec() {

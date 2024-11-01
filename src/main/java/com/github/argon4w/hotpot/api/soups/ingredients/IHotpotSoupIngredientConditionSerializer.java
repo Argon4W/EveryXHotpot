@@ -6,5 +6,6 @@ import net.minecraft.network.codec.StreamCodec;
 
 public interface IHotpotSoupIngredientConditionSerializer<T extends IHotpotSoupIngredientCondition> {
     MapCodec<T> getCodec();
+
     StreamCodec<RegistryFriendlyByteBuf, T> getStreamCodec();
 }

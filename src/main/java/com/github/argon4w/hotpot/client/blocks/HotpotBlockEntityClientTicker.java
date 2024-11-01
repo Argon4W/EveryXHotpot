@@ -10,6 +10,9 @@ import net.minecraft.world.level.block.state.BlockState;
 public class HotpotBlockEntityClientTicker {
     public static void tick(Level level, BlockPos pos, BlockState state, HotpotBlockEntity hotpotBlockEntity) {
         LevelBlockPos selfPos = new LevelBlockPos(level, pos);
-        HotpotSoupRendererConfigManager.getSoupRendererConfig(hotpotBlockEntity.getSoup().soupTypeHolder().getKey()).clientTickEffects().forEach(effect -> effect.tick(selfPos, hotpotBlockEntity));
+        HotpotSoupRendererConfigManager.getSoupRendererConfig(
+                        hotpotBlockEntity.getSoup().soupTypeHolder().getKey())
+                .clientTickEffects()
+                .forEach(effect -> effect.tick(selfPos, hotpotBlockEntity));
     }
 }

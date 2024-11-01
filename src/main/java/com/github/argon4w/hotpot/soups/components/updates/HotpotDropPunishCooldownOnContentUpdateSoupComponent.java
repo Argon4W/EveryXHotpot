@@ -24,8 +24,15 @@ public class HotpotDropPunishCooldownOnContentUpdateSoupComponent extends Abstra
     }
 
     @Override
-    public IHotpotResult<IHotpotContent> onContentUpdate(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<IHotpotContent> result) {
-        return result.ifPresent(content -> soup.getComponentsByType(HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER).forEach(component -> component.setEmptyWaterPunishCooldown(component.getEmptyWaterPunishCooldown() - droppedCooldown)));
+    public IHotpotResult<IHotpotContent> onContentUpdate(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<IHotpotContent> result) {
+        return result.ifPresent(content -> soup.getComponentsByType(
+                        HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                .forEach(component -> component.setEmptyWaterPunishCooldown(
+                        component.getEmptyWaterPunishCooldown() - droppedCooldown)));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotDropPunishCooldownOnContentUpdateSoupComponent> {
@@ -33,7 +40,8 @@ public class HotpotDropPunishCooldownOnContentUpdateSoupComponent extends Abstra
         private final HotpotDropPunishCooldownOnContentUpdateSoupComponent unit;
 
         private final MapCodec<HotpotDropPunishCooldownOnContentUpdateSoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownOnContentUpdateSoupComponent> streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownOnContentUpdateSoupComponent>
+                streamCodec;
 
         public Type(int droppedCooldown) {
             this.droppedCooldown = droppedCooldown;
@@ -49,7 +57,8 @@ public class HotpotDropPunishCooldownOnContentUpdateSoupComponent extends Abstra
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownOnContentUpdateSoupComponent> getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownOnContentUpdateSoupComponent>
+                getStreamCodec() {
             return streamCodec;
         }
 
@@ -60,7 +69,8 @@ public class HotpotDropPunishCooldownOnContentUpdateSoupComponent extends Abstra
 
         @Override
         public Holder<IHotpotSoupComponentTypeSerializer<?>> getSerializerHolder() {
-            return HotpotSoupComponentTypeSerializers.DROP_PUNISH_COOLDOWN_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER;
+            return HotpotSoupComponentTypeSerializers
+                    .DROP_PUNISH_COOLDOWN_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER;
         }
 
         public int getDroppedCooldown() {
@@ -68,17 +78,24 @@ public class HotpotDropPunishCooldownOnContentUpdateSoupComponent extends Abstra
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotDropPunishCooldownOnContentUpdateSoupComponent> {
-        public static final MapCodec<Type> CODEC = Codec.INT.fieldOf("dropped_cooldown").xmap(Type::new, Type::getDroppedCooldown);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getDroppedCooldown);
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotDropPunishCooldownOnContentUpdateSoupComponent> {
+        public static final MapCodec<Type> CODEC =
+                Codec.INT.fieldOf("dropped_cooldown").xmap(Type::new, Type::getDroppedCooldown);
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
+                ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getDroppedCooldown);
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotDropPunishCooldownOnContentUpdateSoupComponent>> getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotDropPunishCooldownOnContentUpdateSoupComponent>>
+                getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropPunishCooldownOnContentUpdateSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotDropPunishCooldownOnContentUpdateSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

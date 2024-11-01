@@ -12,7 +12,16 @@ import org.joml.Math;
 
 public class HotpotDefaultItemContentRenderer implements IHotpotItemContentSpecialRenderer {
     @Override
-    public void render(AbstractHotpotItemStackContent itemStackContent, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel, double rotation, double x, double z) {
+    public void render(
+            AbstractHotpotItemStackContent itemStackContent,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double waterLevel,
+            double rotation,
+            double x,
+            double z) {
         poseStack.pushPose();
 
         double positionX = 0.5 + x * 0.315;
@@ -30,7 +39,19 @@ public class HotpotDefaultItemContentRenderer implements IHotpotItemContentSpeci
 
         poseStack.scale(0.25f, 0.25f, 0.25f);
 
-        Minecraft.getInstance().getItemRenderer().renderStatic(null, itemStackContent.getItemStack(), ItemDisplayContext.FIXED, true, poseStack, MappingBufferSource.itemBufferSource(bufferSource), null, combinedLight, combinedOverlay, ItemDisplayContext.FIXED.ordinal());
+        Minecraft.getInstance()
+                .getItemRenderer()
+                .renderStatic(
+                        null,
+                        itemStackContent.getItemStack(),
+                        ItemDisplayContext.FIXED,
+                        true,
+                        poseStack,
+                        MappingBufferSource.itemBufferSource(bufferSource),
+                        null,
+                        combinedLight,
+                        combinedOverlay,
+                        ItemDisplayContext.FIXED.ordinal());
 
         poseStack.popPose();
     }

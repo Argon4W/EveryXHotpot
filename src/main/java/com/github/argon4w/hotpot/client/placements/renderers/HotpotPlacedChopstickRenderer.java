@@ -13,7 +13,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -25,18 +24,31 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
-
-    }
+    public void render(
+            IHotpotPlacement placement,
+            IHotpotPlacementContainer container,
+            BlockPos pos,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            float partialTick) {}
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(
+            IHotpotPlacement placement,
+            AddSectionGeometryEvent.SectionRenderingContext context,
+            IHotpotPlacementContainer container,
+            BlockPos pos,
+            PoseStack poseStack,
+            ISectionGeometryRenderContext modelRenderContext) {
         if (!(placement instanceof HotpotPlacedChopstick placedChopstick)) {
             return;
         }
 
         int position1 = placedChopstick.getPosition1();
         int position2 = placedChopstick.getPosition2();
+
         ComplexDirection direction = ComplexDirection.between(position1, position2);
 
         double x1 = HotpotPlacementPositions.getRenderCenterX(position1);
@@ -54,7 +66,12 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.XN.rotationDegrees(95));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        modelRenderContext.renderUncachedItem(placedChopstick.getChopstickItemSlot().getItemStack(), ItemDisplayContext.NONE, false, poseStack, OverlayTexture.NO_OVERLAY);
+        modelRenderContext.renderUncachedItem(
+                placedChopstick.getChopstickItemSlot().getItemStack(),
+                ItemDisplayContext.NONE,
+                false,
+                poseStack,
+                OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
 
@@ -63,8 +80,12 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.YN.rotationDegrees((float) direction.toYRot()));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        BakedModel model = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
-        modelRenderContext.renderCachedModel(model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+        BakedModel model = Minecraft.getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(
+                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
+        modelRenderContext.renderCachedModel(
+                model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
 
         poseStack.popPose();
     }

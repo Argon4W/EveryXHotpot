@@ -8,8 +8,12 @@ import net.minecraft.world.item.ItemStack;
 
 public interface IHotpotContentSerializer<T extends IHotpotContent> {
     T createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction);
+
     MapCodec<T> getCodec();
+
     int indexToPosition(int index, int time);
+
     int positionToIndex(int clickPosition, int time);
+
     int getPriority();
 }

@@ -29,7 +29,8 @@ import net.neoforged.neoforge.client.model.pipeline.TransformingVertexPipeline;
  */
 @SuppressWarnings("UnstableApiUsage")
 public class LightAwareSectionGeometryRenderContext implements ISectionGeometryRenderContext {
-    public static final boolean SODIUM_LIKE_LOADED = ModList.get().isLoaded("sodium") || ModList.get().isLoaded("embeddium");
+    public static final boolean SODIUM_LIKE_LOADED =
+            ModList.get().isLoaded("sodium") || ModList.get().isLoaded("embeddium");
 
     private final AddSectionGeometryEvent.SectionRenderingContext context;
     private final RendererBakedModelsCache cache;
@@ -37,7 +38,8 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
     private final RandomSource randomSource;
     private final Transformation transformation;
 
-    public LightAwareSectionGeometryRenderContext(AddSectionGeometryEvent.SectionRenderingContext context, RendererBakedModelsCache cache, BlockPos pos, BlockPos regionOrigin) {
+    public LightAwareSectionGeometryRenderContext(
+            AddSectionGeometryEvent.SectionRenderingContext context, RendererBakedModelsCache cache, BlockPos pos) {
         this.context = context;
         this.cache = cache;
         this.pos = pos;
@@ -46,37 +48,85 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
     }
 
     @Override
-    public void renderCachedModel(BakedModel model, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData) {
-        renderCachedModel(model, context.getRegion().getBlockState(pos), poseStack, renderType, overlay, modelData);
+    public void renderCachedModel(
+            BakedModel model,
+            BlockState blockState,
+            PoseStack poseStack,
+            RenderType renderType,
+            int overlay,
+            ModelData modelData) {
+        LightPipelineAwareModelBlockRenderer.render(
+                context.getOrCreateChunkBuffer(renderType),
+                context.getQuadLighter(true),
+                context.getRegion(),
+                cache.getTransformedModel(model, poseStack),
+                blockState,
+                pos,
+                context.getPoseStack(),
+                false,
+                randomSource,
+                42L,
+                overlay,
+                modelData,
+                renderType);
     }
 
     @Override
-    public void renderCachedModel(BakedModel model, BlockState blockState, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData) {
-        LightPipelineAwareModelBlockRenderer.render(context.getOrCreateChunkBuffer(renderType), context.getQuadLighter(true), context.getRegion(), cache.getTransformedModel(model, poseStack), blockState, pos, context.getPoseStack(), false, randomSource, 42L, overlay, modelData, renderType);
+    public void renderUncachedItem(
+            Level level,
+            LivingEntity entity,
+            int seed,
+            ItemStack itemStack,
+            ItemDisplayContext displayContext,
+            boolean leftHand,
+            PoseStack poseStack,
+            int overlay) {
+        Minecraft.getInstance()
+                .getItemRenderer()
+                .render(
+                        itemStack,
+                        displayContext,
+                        leftHand,
+                        poseStack,
+                        getUncachedItemBufferSource(),
+                        getPackedLight(),
+                        overlay,
+                        Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, entity, seed));
     }
 
     @Override
-    public void renderUncachedItem(ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, int overlay) {
+    public void renderUncachedItem(
+            ItemStack itemStack,
+            ItemDisplayContext displayContext,
+            boolean leftHand,
+            PoseStack poseStack,
+            int overlay) {
         renderUncachedItem(null, null, 42, itemStack, displayContext, leftHand, poseStack, overlay);
     }
 
     @Override
-    public void renderUncachedItem(Level level, LivingEntity entity, int seed, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, int overlay) {
-        Minecraft.getInstance().getItemRenderer().render(itemStack, displayContext, leftHand, poseStack, getUncachedItemBufferSource(), getPackedLight(), overlay, Minecraft.getInstance().getItemRenderer().getModel(itemStack, level, entity, seed));
+    public void renderCachedModel(
+            BakedModel model, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData) {
+        renderCachedModel(model, context.getRegion().getBlockState(pos), poseStack, renderType, overlay, modelData);
     }
 
     @Override
     public int getPackedLight() {
-        return LightTexture.pack(context.getRegion().getBrightness(LightLayer.BLOCK, pos), context.getRegion().getBrightness(LightLayer.SKY, pos));
+        return LightTexture.pack(
+                context.getRegion().getBrightness(LightLayer.BLOCK, pos),
+                context.getRegion().getBrightness(LightLayer.SKY, pos));
+    }
+
+    @Override
+    public MultiBufferSource getUncachedItemBufferSource() {
+        return SODIUM_LIKE_LOADED
+                ? pRenderType -> new QuadLighterVertexConsumer(context, pos)
+                : ignored -> new TransformingVertexPipeline(
+                        context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
     }
 
     @Override
     public MultiBufferSource getUncachedBufferSource() {
         return renderType -> new QuadLighterVertexConsumer(context.getOrCreateChunkBuffer(renderType), context, pos);
-    }
-
-    @Override
-    public MultiBufferSource getUncachedItemBufferSource() {
-        return SODIUM_LIKE_LOADED ? pRenderType -> new QuadLighterVertexConsumer(context, pos) : ignored -> new TransformingVertexPipeline(context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
     }
 }

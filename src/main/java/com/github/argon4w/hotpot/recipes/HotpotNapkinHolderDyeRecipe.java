@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
+import java.util.List;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
@@ -12,21 +13,31 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
     public HotpotNapkinHolderDyeRecipe(CraftingBookCategory category) {
         super(category);
     }
 
     @Override
-    public boolean matches(CraftingInput input, Level level) {
-        return new SimpleRecipeMatcher(input).with(this::isDyeItem).atLeast(1).with(this::matchSpicePackItem).once().withRemaining().empty().match();
+    public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
+        return new SimpleRecipeMatcher(input)
+                .with(this::isDyeItem)
+                .atLeast(1)
+                .with(this::matchSpicePackItem)
+                .once()
+                .withRemaining()
+                .empty()
+                .match();
     }
 
-    @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-        return new SimpleRecipeAssembler(input).basedOn(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_NAPKIN_HOLDER)).filter(itemStack -> !itemStack.isEmpty()).filter(itemStack -> itemStack.getItem() instanceof DyeItem).feed(this::assembleDyedNapkinHolder).assemble();
+    @NotNull @Override
+    public ItemStack assemble(@NotNull CraftingInput input, @NotNull HolderLookup.Provider registryAccess) {
+        return new SimpleRecipeAssembler(input)
+                .basedOn(itemStack -> itemStack.is(HotpotModEntry.HOTPOT_NAPKIN_HOLDER))
+                .filter(itemStack -> !itemStack.isEmpty())
+                .filter(itemStack -> itemStack.getItem() instanceof DyeItem)
+                .feed(this::assembleDyedNapkinHolder)
+                .assemble();
     }
 
     @Override
@@ -34,7 +45,7 @@ public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
         return width * width >= 2;
     }
 
-    @Override
+    @NotNull @Override
     public RecipeSerializer<?> getSerializer() {
         return HotpotModEntry.HOTPOT_NAPKIN_HOLDER_DYE_SPECIAL_RECIPE.get();
     }

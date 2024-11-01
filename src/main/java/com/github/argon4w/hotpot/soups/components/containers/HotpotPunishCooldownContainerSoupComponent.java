@@ -53,8 +53,18 @@ public class HotpotPunishCooldownContainerSoupComponent extends AbstractHotpotSo
             this.minCooldown = minCooldown;
             this.maxCooldown = maxCooldown;
 
-            this.codec = Codec.INT.fieldOf("empty_water_punish_cooldown").xmap(emptyWaterPunishCooldown -> new HotpotPunishCooldownContainerSoupComponent(minCooldown, maxCooldown, emptyWaterPunishCooldown), HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown);
-            this.streamCodec = ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().map(emptyWaterPunishCooldown -> new HotpotPunishCooldownContainerSoupComponent(minCooldown, maxCooldown, emptyWaterPunishCooldown), HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown);
+            this.codec = Codec.INT
+                    .fieldOf("empty_water_punish_cooldown")
+                    .xmap(
+                            emptyWaterPunishCooldown -> new HotpotPunishCooldownContainerSoupComponent(
+                                    minCooldown, maxCooldown, emptyWaterPunishCooldown),
+                            HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown);
+            this.streamCodec = ByteBufCodecs.INT
+                    .<RegistryFriendlyByteBuf>cast()
+                    .map(
+                            emptyWaterPunishCooldown -> new HotpotPunishCooldownContainerSoupComponent(
+                                    minCooldown, maxCooldown, emptyWaterPunishCooldown),
+                            HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown);
         }
 
         @Override
@@ -86,17 +96,15 @@ public class HotpotPunishCooldownContainerSoupComponent extends AbstractHotpotSo
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotPunishCooldownContainerSoupComponent> {
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotPunishCooldownContainerSoupComponent> {
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                Codec.INT.optionalFieldOf("min_cooldown", 0).forGetter(Type::getMinCooldown),
-                Codec.INT.fieldOf("max_cooldown").forGetter(Type::getMaxCooldown)
-        ).apply(type, Type::new));
+                        Codec.INT.optionalFieldOf("min_cooldown", 0).forGetter(Type::getMinCooldown),
+                        Codec.INT.fieldOf("max_cooldown").forGetter(Type::getMaxCooldown))
+                .apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.INT, Type::getMinCooldown,
-                ByteBufCodecs.INT, Type::getMaxCooldown,
-                Type::new
-        );
+                ByteBufCodecs.INT, Type::getMinCooldown, ByteBufCodecs.INT, Type::getMaxCooldown, Type::new);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotPunishCooldownContainerSoupComponent>> getCodec() {
@@ -104,7 +112,10 @@ public class HotpotPunishCooldownContainerSoupComponent extends AbstractHotpotSo
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotPunishCooldownContainerSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotPunishCooldownContainerSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

@@ -2,7 +2,6 @@ package com.github.argon4w.hotpot.codecs;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.*;
-
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 

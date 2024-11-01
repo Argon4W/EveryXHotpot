@@ -13,7 +13,15 @@ import net.minecraft.world.item.ItemStack;
 
 public class HotpotAddItemStackContentByHandSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int position, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
+            int position,
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
+            HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }

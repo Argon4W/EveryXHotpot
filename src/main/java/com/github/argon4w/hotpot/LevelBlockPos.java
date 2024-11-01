@@ -2,6 +2,8 @@ package com.github.argon4w.hotpot;
 
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.google.common.base.Objects;
+import java.util.List;
+import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -23,18 +25,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-import java.util.function.Function;
-
 public record LevelBlockPos(Level level, BlockPos pos) {
     public BlockEntity getBlockEntity() {
         return level.getBlockEntity(pos);
+    }
+
+    public <T extends BlockEntity> T getBlockEntity(BlockEntityType<T> blockEntityType) {
+        return blockEntityType.getBlockEntity(level, pos);
     }
 
     public BlockState getBlockState() {
@@ -109,7 +113,8 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         level.playSound(null, pos, soundEvent, soundSource, volume, pitch);
     }
 
-    public void addParticle(ParticleType<?> type, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+    public void addParticle(
+            ParticleType<?> type, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
         level.addParticle((ParticleOptions) type, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
     }
 
@@ -173,19 +178,6 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return getBlockState().isAir();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LevelBlockPos pos1 = (LevelBlockPos) o;
-        return Objects.equal(level, pos1.level) && Objects.equal(pos, pos1.pos);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(level, pos);
-    }
-
     public static LevelBlockPos fromVec3(Level level, Vec3 vec) {
         return new LevelBlockPos(level, new BlockPos((int) vec.x, (int) vec.y, (int) vec.z));
     }
@@ -196,6 +188,18 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public static LevelBlockPos fromBlockPlaceContext(BlockPlaceContext context) {
         return new LevelBlockPos(context.getLevel(), context.getClickedPos());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(level, pos);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof LevelBlockPos levelBlockPos
+                && level.equals(levelBlockPos.level)
+                && levelBlockPos.pos.equals(pos);
     }
 
     public static void dropFloatingItemStack(Level level, double x, double y, double z, ItemStack itemStack) {

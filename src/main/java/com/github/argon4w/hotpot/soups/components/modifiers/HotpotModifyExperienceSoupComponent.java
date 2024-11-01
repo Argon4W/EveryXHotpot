@@ -26,7 +26,11 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
     }
 
     @Override
-    public IHotpotResult<Double> onAwardExperience(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Double> result) {
+    public IHotpotResult<Double> onAwardExperience(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Double> result) {
         return result.map(experience -> base + factor * experience);
     }
 
@@ -78,15 +82,12 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotModifyExperienceSoupComponent> {
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
-                Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase)
-        ).apply(type, Type::new));
+                        Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
+                        Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase))
+                .apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getFactor,
-                ByteBufCodecs.DOUBLE, Type::getBase,
-                Type::new
-        );
+                ByteBufCodecs.DOUBLE, Type::getFactor, ByteBufCodecs.DOUBLE, Type::getBase, Type::new);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent>> getCodec() {
@@ -94,7 +95,10 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

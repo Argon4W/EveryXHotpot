@@ -11,27 +11,29 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotNapkinHolderDataComponent(SimpleItemSlot itemSlot) {
-    public static final HotpotNapkinHolderDataComponent EMPTY = new HotpotNapkinHolderDataComponent(new SimpleItemSlot());
+    public static final HotpotNapkinHolderDataComponent EMPTY =
+            new HotpotNapkinHolderDataComponent(new SimpleItemSlot());
 
-    public static final Codec<HotpotNapkinHolderDataComponent> CODEC = Codec.lazyInitialized(() ->
-            RecordCodecBuilder.create(data -> data.group(
-                    SimpleItemSlot.CODEC.fieldOf("item_slot").forGetter(HotpotNapkinHolderDataComponent::itemSlot)
-            ).apply(data, HotpotNapkinHolderDataComponent::new))
-    );
+    public static final Codec<HotpotNapkinHolderDataComponent> CODEC =
+            Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(SimpleItemSlot.CODEC
+                            .fieldOf("item_slot")
+                            .forGetter(HotpotNapkinHolderDataComponent::itemSlot))
+                    .apply(data, HotpotNapkinHolderDataComponent::new)));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotNapkinHolderDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-            StreamCodec.composite(
-                    SimpleItemSlot.STREAM_CODEC, HotpotNapkinHolderDataComponent::itemSlot,
-                    HotpotNapkinHolderDataComponent::new
-            )
-    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotNapkinHolderDataComponent> STREAM_CODEC =
+            NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                    SimpleItemSlot.STREAM_CODEC,
+                    HotpotNapkinHolderDataComponent::itemSlot,
+                    HotpotNapkinHolderDataComponent::new));
 
     public HotpotNapkinHolderDataComponent dropNapkinItemSlot(LevelBlockPos pos) {
         return new HotpotNapkinHolderDataComponent(itemSlot().copy().dropItem(pos));
     }
 
     public HotpotNapkinHolderDataComponent addNapkinItemSlot(ItemStack itemStack) {
-        return itemStack.is(Items.PAPER) ? new HotpotNapkinHolderDataComponent(itemSlot.copy().transferItem(itemStack)) : this;
+        return itemStack.is(Items.PAPER)
+                ? new HotpotNapkinHolderDataComponent(itemSlot.copy().transferItem(itemStack))
+                : this;
     }
 
     public HotpotNapkinHolderDataComponent shrinkNapkinItemSlot(boolean consume) {

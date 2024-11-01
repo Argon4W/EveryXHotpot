@@ -4,20 +4,19 @@ import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
-import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.api.placements.IHotpotCommonPlacement;
+import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
 import com.github.argon4w.hotpot.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-import java.util.Optional;
 
 public class HotpotLongPlate implements IHotpotCommonPlacement {
     private final int position1;
@@ -35,7 +34,12 @@ public class HotpotLongPlate implements IHotpotCommonPlacement {
         this.plateItemSlot = new SimpleItemSlot();
     }
 
-    public HotpotLongPlate(int position1, int position2, SimpleItemSlot itemSlot1, SimpleItemSlot itemSlot2, SimpleItemSlot plateItemSlot) {
+    public HotpotLongPlate(
+            int position1,
+            int position2,
+            SimpleItemSlot itemSlot1,
+            SimpleItemSlot itemSlot2,
+            SimpleItemSlot plateItemSlot) {
         this.position1 = position1;
         this.position2 = position2;
 
@@ -45,7 +49,14 @@ public class HotpotLongPlate implements IHotpotCommonPlacement {
     }
 
     @Override
-    public void interact(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public void interact(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         if (itemStack.isEmpty() && player.isCrouching() && container.canBeRemoved()) {
             onRemove(container, pos);
             return;
@@ -74,7 +85,14 @@ public class HotpotLongPlate implements IHotpotCommonPlacement {
     }
 
     @Override
-    public ItemStack getContent(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container, boolean tableware) {
+    public ItemStack getContent(
+            Player player,
+            InteractionHand hand,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container,
+            boolean tableware) {
         boolean consume = container.canConsumeContents();
 
         if (position == position1 && !itemSlot1.isEmpty()) {
@@ -96,7 +114,14 @@ public class HotpotLongPlate implements IHotpotCommonPlacement {
     }
 
     @Override
-    public boolean shouldRemove(Player player, InteractionHand hand, ItemStack itemStack, int position, int layer, LevelBlockPos pos, IHotpotPlacementContainer container) {
+    public boolean shouldRemove(
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            int position,
+            int layer,
+            LevelBlockPos pos,
+            IHotpotPlacementContainer container) {
         return plateItemSlot.isEmpty() && container.canBeRemoved();
     }
 
@@ -141,15 +166,16 @@ public class HotpotLongPlate implements IHotpotCommonPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotLongPlate> {
-        public static final MapCodec<HotpotLongPlate> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(plate -> plate.group(
-                        Codec.INT.fieldOf("pos_1").forGetter(HotpotLongPlate::getPosition1),
-                        Codec.INT.fieldOf("pos_2").forGetter(HotpotLongPlate::getPosition2),
-                        SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLongPlate::getItemSlot1),
-                        SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLongPlate::getItemSlot2),
-                        SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotLongPlate::getPlateItemSlot)
-                ).apply(plate, HotpotLongPlate::new))
-        );
+        public static final MapCodec<HotpotLongPlate> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
+                                Codec.INT.fieldOf("pos_1").forGetter(HotpotLongPlate::getPosition1),
+                                Codec.INT.fieldOf("pos_2").forGetter(HotpotLongPlate::getPosition2),
+                                SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLongPlate::getItemSlot1),
+                                SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLongPlate::getItemSlot2),
+                                SimpleItemSlot.CODEC
+                                        .fieldOf("plate_item_slot")
+                                        .forGetter(HotpotLongPlate::getPlateItemSlot))
+                        .apply(plate, HotpotLongPlate::new)));
 
         @Override
         public HotpotLongPlate createPlacement(List<Integer> positions, ComplexDirection direction) {

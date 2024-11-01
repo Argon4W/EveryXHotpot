@@ -25,7 +25,8 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
     }
 
     @Override
-    public void onEntityInside(Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public void onEntityInside(
+            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         if (!(entity instanceof ItemEntity itemEntity)) {
             return;
         }
@@ -40,7 +41,8 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
             return;
         }
 
-        hotpotBlockEntity.setItemStackContentWhenEmpty(HotpotBlockEntity.getClickPosition(pos.pos(), itemEntity.position()), stack, pos);
+        hotpotBlockEntity.setItemStackContentWhenEmpty(
+                HotpotBlockEntity.getClickPosition(pos.pos(), itemEntity.position()), stack, pos);
         itemEntity.setItem(stack);
     }
 
@@ -84,9 +86,12 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotAddItemEntityInsideSoupComponent> {
-        public static final MapCodec<Type> CODEC = Codec.BOOL.optionalFieldOf("delayed", false).xmap(Type::new, Type::isDelayed);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.BOOL.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::isDelayed);
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotAddItemEntityInsideSoupComponent> {
+        public static final MapCodec<Type> CODEC =
+                Codec.BOOL.optionalFieldOf("delayed", false).xmap(Type::new, Type::isDelayed);
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
+                ByteBufCodecs.BOOL.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::isDelayed);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent>> getCodec() {
@@ -94,9 +99,11 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }
 }
-

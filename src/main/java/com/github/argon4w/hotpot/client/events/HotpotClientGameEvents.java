@@ -14,12 +14,12 @@ import org.joml.Vector3f;
 public class HotpotClientGameEvents {
     @SubscribeEvent
     public static void addSectionGeometry(AddSectionGeometryEvent event) {
-        event.addRenderer(new AdditionalSectionGeometryBlockEntityRendererDispatcher(event.getSectionOrigin().immutable()));
+        event.addRenderer(new AdditionalSectionGeometryBlockEntityRendererDispatcher(
+                event.getSectionOrigin().immutable()));
     }
 
     @SubscribeEvent
-    public static void onRenderSectionRenderType(RenderLevelStageEvent event)
-    {
+    public static void onRenderSectionRenderType(RenderLevelStageEvent event) {
         if (ModList.get().isLoaded("sodium")) {
             return;
         }
@@ -29,7 +29,14 @@ public class HotpotClientGameEvents {
         }
 
         Vector3f position = event.getCamera().getPosition().toVector3f();
-        event.getLevelRenderer().renderSectionLayer(HotpotClientRenderTypeEvents.get(), position.x, position.y, position.z, event.getModelViewMatrix(), event.getProjectionMatrix());
+        event.getLevelRenderer()
+                .renderSectionLayer(
+                        HotpotClientRenderTypeEvents.get(),
+                        position.x,
+                        position.y,
+                        position.z,
+                        event.getModelViewMatrix(),
+                        event.getProjectionMatrix());
         event.getLevelRenderer().renderBuffers.bufferSource().endBatch(HotpotClientRenderTypeEvents.get());
     }
 }

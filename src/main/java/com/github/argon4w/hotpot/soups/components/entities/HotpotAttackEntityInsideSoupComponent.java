@@ -24,7 +24,8 @@ public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupCom
     }
 
     @Override
-    public void onEntityInside(Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public void onEntityInside(
+            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
         if (entity.isAttackable()) {
             damageSourceWrapper.hurt(entity, pos.toVec3());
         }
@@ -70,9 +71,13 @@ public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupCom
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotAttackEntityInsideSoupComponent> {
-        private static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> IHotpotDamageSource.CODEC.optionalFieldOf("damage_source", IHotpotDamageSource.EMPTY).xmap(Type::new, Type::getDamageSourceWrapper));
-        private static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> IHotpotDamageSource.STREAM_CODEC.map(Type::new, Type::getDamageSourceWrapper));
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotAttackEntityInsideSoupComponent> {
+        private static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> IHotpotDamageSource.CODEC
+                .optionalFieldOf("damage_source", IHotpotDamageSource.EMPTY)
+                .xmap(Type::new, Type::getDamageSourceWrapper));
+        private static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
+                () -> IHotpotDamageSource.STREAM_CODEC.map(Type::new, Type::getDamageSourceWrapper));
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent>> getCodec() {
@@ -80,7 +85,10 @@ public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupCom
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

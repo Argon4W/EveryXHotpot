@@ -6,6 +6,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public interface IHotpotTablewareItem {
-    void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, IHotpotTablewareContainer blockEntity, LevelBlockPos selfPos);
+public interface IHotpotTablewareInteraction {
+    void interact(
+            int position,
+            int layer,
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            IHotpotTablewareContainer blockEntity,
+            LevelBlockPos pos);
 }

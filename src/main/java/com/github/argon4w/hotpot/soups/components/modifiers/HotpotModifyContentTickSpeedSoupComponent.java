@@ -26,7 +26,11 @@ public class HotpotModifyContentTickSpeedSoupComponent extends AbstractHotpotSou
     }
 
     @Override
-    public IHotpotResult<Double> getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Double> result) {
+    public IHotpotResult<Double> getContentTickSpeed(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Double> result) {
         return result.map(speed -> base + factor * speed);
     }
 
@@ -76,17 +80,15 @@ public class HotpotModifyContentTickSpeedSoupComponent extends AbstractHotpotSou
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotModifyContentTickSpeedSoupComponent> {
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotModifyContentTickSpeedSoupComponent> {
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
-                Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase)
-        ).apply(type, Type::new));
+                        Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
+                        Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase))
+                .apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getFactor,
-                ByteBufCodecs.DOUBLE, Type::getBase,
-                Type::new
-        );
+                ByteBufCodecs.DOUBLE, Type::getFactor, ByteBufCodecs.DOUBLE, Type::getBase, Type::new);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotModifyContentTickSpeedSoupComponent>> getCodec() {
@@ -94,7 +96,10 @@ public class HotpotModifyContentTickSpeedSoupComponent extends AbstractHotpotSou
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotModifyContentTickSpeedSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotModifyContentTickSpeedSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

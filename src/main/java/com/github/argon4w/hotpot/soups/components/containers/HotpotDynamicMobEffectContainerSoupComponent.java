@@ -16,11 +16,13 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpotSoupComponent implements IHotpotMobEffectContainerSoupComponent {
+public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpotSoupComponent
+        implements IHotpotMobEffectContainerSoupComponent {
     private final HotpotMobEffectMap.Sized mobEffectMap;
     private final HotpotMobEffectMap.Sized scheduledMobEffectMap;
 
-    public HotpotDynamicMobEffectContainerSoupComponent(HotpotMobEffectMap.Sized mobEffectMap, HotpotMobEffectMap.Sized scheduledMobEffectMap) {
+    public HotpotDynamicMobEffectContainerSoupComponent(
+            HotpotMobEffectMap.Sized mobEffectMap, HotpotMobEffectMap.Sized scheduledMobEffectMap) {
         this.mobEffectMap = mobEffectMap;
         this.scheduledMobEffectMap = scheduledMobEffectMap;
     }
@@ -67,23 +69,25 @@ public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpot
         public Type(int size) {
             this.size = size;
 
-            this.sizedMobEffectMapCodec = HotpotMobEffectMap.getSizedCodec(size);
-            this.sizedMobEffectMapStreamCodec = HotpotMobEffectMap.getSizedStreamCodec(size);
+            this.sizedMobEffectMapCodec = HotpotMobEffectMap.getCodec(size);
+            this.sizedMobEffectMapStreamCodec = HotpotMobEffectMap.getStreamCodec(size);
 
-            this.codec = LazyMapCodec.of(() ->
-                    RecordCodecBuilder.mapCodec(component -> component.group(
-                            sizedMobEffectMapCodec.fieldOf("effects").forGetter(HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap),
-                            sizedMobEffectMapCodec.fieldOf("scheduled_effects").forGetter(HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap)
-                    ).apply(component, HotpotDynamicMobEffectContainerSoupComponent::new))
-            );
+            this.codec = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(component -> component
+                    .group(
+                            sizedMobEffectMapCodec
+                                    .fieldOf("effects")
+                                    .forGetter(HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap),
+                            sizedMobEffectMapCodec
+                                    .fieldOf("scheduled_effects")
+                                    .forGetter(HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap))
+                    .apply(component, HotpotDynamicMobEffectContainerSoupComponent::new)));
 
-            this.streamCodec = NeoForgeStreamCodecs.lazy(() ->
-                    StreamCodec.composite(
-                            sizedMobEffectMapStreamCodec, HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap,
-                            sizedMobEffectMapStreamCodec, HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap,
-                            HotpotDynamicMobEffectContainerSoupComponent::new
-                    )
-            );
+            this.streamCodec = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                    sizedMobEffectMapStreamCodec,
+                    HotpotDynamicMobEffectContainerSoupComponent::getMobEffectMap,
+                    sizedMobEffectMapStreamCodec,
+                    HotpotDynamicMobEffectContainerSoupComponent::getScheduledMobEffectMap,
+                    HotpotDynamicMobEffectContainerSoupComponent::new));
         }
 
         @Override
@@ -111,9 +115,11 @@ public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpot
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotDynamicMobEffectContainerSoupComponent> {
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotDynamicMobEffectContainerSoupComponent> {
         public static final MapCodec<Type> CODEC = Codec.INT.fieldOf("size").xmap(Type::new, Type::getSize);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getSize);
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
+                ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getSize);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotDynamicMobEffectContainerSoupComponent>> getCodec() {
@@ -121,7 +127,10 @@ public class HotpotDynamicMobEffectContainerSoupComponent extends AbstractHotpot
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDynamicMobEffectContainerSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotDynamicMobEffectContainerSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

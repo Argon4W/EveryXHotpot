@@ -6,22 +6,22 @@ import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
-import com.github.argon4w.hotpot.api.items.IHotpotTablewareItem;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.placements.HotpotPlacedSpoon;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
+import java.util.ArrayList;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-
-public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon> implements IHotpotTablewareItem {
+public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
+        implements IHotpotTablewareInteraction {
     private final HotpotSoupStatus soupStatus;
 
     public HotpotSpoonItem(HotpotSoupStatus soupStatus) {
@@ -35,17 +35,27 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedSpoon placement, ItemStack itemStack) {
+    public void loadPlacement(
+            IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedSpoon placement, ItemStack itemStack) {
         placement.setSpoonItemSlot(itemStack);
     }
 
     @Override
-    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, IHotpotTablewareContainer blockEntity, LevelBlockPos selfPos) {
+    public void interact(
+            int position,
+            int layer,
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            IHotpotTablewareContainer blockEntity,
+            LevelBlockPos pos) {
         if (!(blockEntity instanceof HotpotBlockEntity hotpotBlockEntity)) {
             return;
         }
 
-        if (!hotpotBlockEntity.getSoup().hasComponentType(HotpotSoupComponentTypeSerializers.CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER)) {
+        if (!hotpotBlockEntity
+                .getSoup()
+                .hasComponentType(HotpotSoupComponentTypeSerializers.CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER)) {
             return;
         }
 
@@ -87,39 +97,40 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         ArrayList<ItemStack> contents = new ArrayList<>();
         ArrayList<ItemStack> skewers = new ArrayList<>();
 
-        for (int i = 0; i < 8; i ++) {
-            ItemStack content = blockEntity.getContentByTableware(player, hand, i, 0, selfPos).copy();
+        for (int i = 0; i < 8; i++) {
+            ItemStack content =
+                    blockEntity.getContentByTableware(player, hand, i, 0, pos).copy();
 
             if (content.isEmpty()) {
                 continue;
             }
 
             if (!content.getItem().canFitInsideContainerItems()) {
-                selfPos.dropItemStack(content);
+                pos.dropItemStack(content);
                 continue;
             }
 
             if (content.is(HotpotModEntry.HOTPOT_SPICE_PACK)) {
-                selfPos.dropItemStack(content);
+                pos.dropItemStack(content);
                 continue;
             }
 
             if (content.is(HotpotModEntry.HOTPOT_CHOPSTICK)) {
-                selfPos.dropItemStack(content);
+                pos.dropItemStack(content);
                 continue;
             }
 
             if (content.is(HotpotModEntry.HOTPOT_PAPER_BOWL)) {
-                selfPos.dropItemStack(content);
+                pos.dropItemStack(content);
                 continue;
             }
 
             if (content.is(HotpotModEntry.HOTPOT_STRAINER_BASKET)) {
-                selfPos.dropItemStack(content);
+                pos.dropItemStack(content);
                 continue;
             }
 
-            if (content.getItem() instanceof HotpotSkewerItem)  {
+            if (content.getItem() instanceof HotpotSkewerItem) {
                 skewers.add(content);
                 continue;
             }
@@ -138,7 +149,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         HotpotPaperBowlItem.setPaperBowlSkewers(bowl, skewers);
         HotpotPaperBowlItem.setPaperBowlSoupStatus(bowl, soupStatus);
 
-        selfPos.playSound(SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
+        pos.playSound(SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
         HotpotItemUtils.addToInventory(player, bowl);
     }
 

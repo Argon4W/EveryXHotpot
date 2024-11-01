@@ -5,15 +5,16 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractHotpotSoupRecipe<T extends RecipeInput> implements Recipe<T> {
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider access) {
+    @NotNull @Override
+    public ItemStack getResultItem(@NotNull HolderLookup.Provider access) {
         return ItemStack.EMPTY;
     }
 
-    @Override
-    public ItemStack assemble(T container, HolderLookup.Provider access) {
+    @NotNull @Override
+    public ItemStack assemble(@NotNull T container, @NotNull HolderLookup.Provider access) {
         return ItemStack.EMPTY;
     }
 
@@ -22,7 +23,7 @@ public abstract class AbstractHotpotSoupRecipe<T extends RecipeInput> implements
         return true;
     }
 
-    @Override
+    @NotNull @Override
     public ItemStack getToastSymbol() {
         return new ItemStack(HotpotModEntry.HOTPOT_BLOCK.get());
     }

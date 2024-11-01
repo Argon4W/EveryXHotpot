@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.client.sections.cache;
 import com.github.argon4w.hotpot.api.client.sections.cache.RendererBakedModelsCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
+import java.util.List;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -23,27 +24,35 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 /**
  * @author Argon4W
  */
 @SuppressWarnings("deprecation")
-public record DynamicTransformedBakedModel(BakedModel model, Transformation transformation, IQuadTransformer transformer, RendererBakedModelsCache cache) implements BakedModel {
-    public DynamicTransformedBakedModel(BakedModel model, Transformation transformation, RendererBakedModelsCache cache) {
+public record DynamicTransformedBakedModel(
+        BakedModel model, Transformation transformation, IQuadTransformer transformer, RendererBakedModelsCache cache)
+        implements BakedModel {
+    public DynamicTransformedBakedModel(
+            BakedModel model, Transformation transformation, RendererBakedModelsCache cache) {
         this(model, transformation, QuadTransformers.applying(transformation), cache);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand) {
-        return model.getQuads(state, side, rand).stream().map(transformer::process).toList();
+        return model.getQuads(state, side, rand).stream()
+                .map(transformer::process)
+                .toList();
     }
 
-    @NotNull
-    @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
-        return model.getQuads(state, side, rand, data, renderType).stream().map(transformer::process).toList();
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType) {
+        return model.getQuads(state, side, rand, data, renderType).stream()
+                .map(transformer::process)
+                .toList();
     }
 
     @Override
@@ -51,9 +60,9 @@ public record DynamicTransformedBakedModel(BakedModel model, Transformation tran
         return model.useAmbientOcclusion();
     }
 
-    @NotNull
-    @Override
-    public TriState useAmbientOcclusion(@NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
         return model.useAmbientOcclusion(state, data, renderType);
     }
 
@@ -72,51 +81,52 @@ public record DynamicTransformedBakedModel(BakedModel model, Transformation tran
         return model.isCustomRenderer();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public TextureAtlasSprite getParticleIcon() {
         return model.getParticleIcon();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return model.getParticleIcon(data);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public ItemOverrides getOverrides() {
         throw new IllegalStateException("Should not call getOverrides from DynamicTransformedBakedModel");
     }
 
-    @NotNull
-    @Override
-    public ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    @NotNull @Override
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
         return model.getModelData(level, pos, state, modelData);
     }
 
-    @NotNull
-    @Override
-    public BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new DynamicTransformedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformation, cache);
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
+        return new DynamicTransformedBakedModel(
+                model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformation, cache);
     }
 
-    @NotNull
-    @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
         return model.getRenderTypes(state, rand, data);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
         return model.getRenderTypes(itemStack, fabulous);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
-        return model.getRenderPasses(itemStack, fabulous).stream().map(model1 -> cache.getTransformedModel(model, transformation)).toList();
+        return model.getRenderPasses(itemStack, fabulous).stream()
+                .map(model1 -> cache.getTransformedModel(model, transformation))
+                .toList();
     }
 }

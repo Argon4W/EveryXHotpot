@@ -9,9 +9,7 @@ import net.minecraft.core.Holder;
 
 public class HotpotEmptySoupClientTickEffect implements IHotpotSoupClientTickEffect {
     @Override
-    public void tick(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-
-    }
+    public void tick(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {}
 
     @Override
     public Holder<IHotpotSoupClientTickEffectSerializer<?>> getSerializerHolder() {
@@ -19,7 +17,8 @@ public class HotpotEmptySoupClientTickEffect implements IHotpotSoupClientTickEff
     }
 
     public static class Serializer implements IHotpotSoupClientTickEffectSerializer<HotpotEmptySoupClientTickEffect> {
-        public static final MapCodec<HotpotEmptySoupClientTickEffect> CODEC = MapCodec.unit(HotpotEmptySoupClientTickEffect::new);
+        public static final MapCodec<HotpotEmptySoupClientTickEffect> CODEC =
+                MapCodec.unit(HotpotEmptySoupClientTickEffect::new);
 
         @Override
         public MapCodec<HotpotEmptySoupClientTickEffect> getCodec() {

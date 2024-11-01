@@ -67,8 +67,10 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
     }
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotDropWaterLevelSoupComponent> {
-        public static final MapCodec<Type> CODEC = Codec.DOUBLE.fieldOf("water_level_drop_rate").xmap(Type::new, Type::getWaterLevelDropRate);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.DOUBLE.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getWaterLevelDropRate);
+        public static final MapCodec<Type> CODEC =
+                Codec.DOUBLE.fieldOf("water_level_drop_rate").xmap(Type::new, Type::getWaterLevelDropRate);
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
+                ByteBufCodecs.DOUBLE.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getWaterLevelDropRate);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent>> getCodec() {
@@ -76,7 +78,9 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }

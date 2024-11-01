@@ -13,7 +13,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
-public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> contentSerializerHolder) implements IHotpotSoupIngredientCondition {
+public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> contentSerializerHolder)
+        implements IHotpotSoupIngredientCondition {
     @Override
     public boolean matches(IHotpotContent content, HotpotComponentSoup soup) {
         return content.getContentSerializerHolder().equals(contentSerializerHolder);
@@ -25,14 +26,18 @@ public record HotpotSoupContentCondition(Holder<IHotpotContentSerializer<?>> con
     }
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupContentCondition> {
-        public static final MapCodec<HotpotSoupContentCondition> CODEC = RecordCodecBuilder.mapCodec(condition -> condition.group(
-                HotpotContentSerializers.SERIALIZER_HOLDER_CODEC.fieldOf("content").forGetter(HotpotSoupContentCondition::contentSerializerHolder)
-        ).apply(condition, HotpotSoupContentCondition::new));
+        public static final MapCodec<HotpotSoupContentCondition> CODEC =
+                RecordCodecBuilder.mapCodec(condition -> condition
+                        .group(HotpotContentSerializers.SERIALIZER_HOLDER_CODEC
+                                .fieldOf("content")
+                                .forGetter(HotpotSoupContentCondition::contentSerializerHolder))
+                        .apply(condition, HotpotSoupContentCondition::new));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC = StreamCodec.composite(
-                HotpotContentSerializers.SERIALIZER_HOLDER_STREAM_CODEC, HotpotSoupContentCondition::contentSerializerHolder,
-                HotpotSoupContentCondition::new
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupContentCondition> STREAM_CODEC =
+                StreamCodec.composite(
+                        HotpotContentSerializers.SERIALIZER_HOLDER_STREAM_CODEC,
+                        HotpotSoupContentCondition::contentSerializerHolder,
+                        HotpotSoupContentCondition::new);
 
         @Override
         public MapCodec<HotpotSoupContentCondition> getCodec() {

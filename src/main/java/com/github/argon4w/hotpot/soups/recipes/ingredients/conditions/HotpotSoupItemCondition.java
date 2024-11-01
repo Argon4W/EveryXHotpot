@@ -17,7 +17,8 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotSoupIngredientCondition {
     @Override
     public boolean matches(IHotpotContent content, HotpotComponentSoup soup) {
-        return content instanceof AbstractHotpotItemStackContent itemStackContent && ingredient.test(itemStackContent.getItemStack());
+        return content instanceof AbstractHotpotItemStackContent itemStackContent
+                && ingredient.test(itemStackContent.getItemStack());
     }
 
     @Override
@@ -26,18 +27,16 @@ public record HotpotSoupItemCondition(Ingredient ingredient) implements IHotpotS
     }
 
     public static class Serializer implements IHotpotSoupIngredientConditionSerializer<HotpotSoupItemCondition> {
-        public static final MapCodec<HotpotSoupItemCondition> CODEC = LazyMapCodec.of(() ->
-                RecordCodecBuilder.mapCodec(condition -> condition.group(
-                        Ingredient.CODEC.fieldOf("predicate").forGetter(HotpotSoupItemCondition::ingredient)
-                ).apply(condition, HotpotSoupItemCondition::new))
-        );
+        public static final MapCodec<HotpotSoupItemCondition> CODEC =
+                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(condition -> condition
+                        .group(Ingredient.CODEC.fieldOf("predicate").forGetter(HotpotSoupItemCondition::ingredient))
+                        .apply(condition, HotpotSoupItemCondition::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() ->
-                StreamCodec.composite(
-                        Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupItemCondition::ingredient,
-                        HotpotSoupItemCondition::new
-                )
-        );
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupItemCondition> STREAM_CODEC =
+                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                        Ingredient.CONTENTS_STREAM_CODEC,
+                        HotpotSoupItemCondition::ingredient,
+                        HotpotSoupItemCondition::new));
 
         @Override
         public MapCodec<HotpotSoupItemCondition> getCodec() {

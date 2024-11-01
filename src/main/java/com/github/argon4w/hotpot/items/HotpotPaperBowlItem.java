@@ -14,6 +14,8 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.HotpotSoupStatus;
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
@@ -25,12 +27,15 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPaperBowl> implements IHotpotItemContainer {
+public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPaperBowl>
+        implements IHotpotItemContainer {
     public HotpotPaperBowlItem() {
-        super(HotpotPlacementSerializers.PLACED_PAPER_BOWL_SERIALIZER, new Properties().stacksTo(64).component(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
+        super(
+                HotpotPlacementSerializers.PLACED_PAPER_BOWL_SERIALIZER,
+                new Properties()
+                        .stacksTo(64)
+                        .component(
+                                HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
     }
 
     @Override
@@ -39,23 +44,30 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedPaperBowl placement, ItemStack itemStack) {
+    public void loadPlacement(
+            IHotpotPlacementContainer container,
+            LevelBlockPos pos,
+            HotpotPlacedPaperBowl placement,
+            ItemStack itemStack) {
         placement.setPaperBowlItemSlot(itemStack.copyWithCount(1));
     }
 
     @Override
-    public int getMaxStackSize(ItemStack itemStack) {
+    public int getMaxStackSize(@NotNull ItemStack itemStack) {
         return isPaperBowlClear(itemStack) ? super.getMaxStackSize(itemStack) : 1;
     }
 
     @Override
     public List<ItemStack> getAllContainedItemStacks(ItemStack itemStack) {
-        return ImmutableList.<ItemStack>builderWithExpectedSize(getPaperBowlItemSize(itemStack) + getPaperBowlSkewerSize(itemStack)).addAll(getPaperBowlItems(itemStack)).addAll(getPaperBowlSkewers(itemStack)).build();
+        return ImmutableList.<ItemStack>builderWithExpectedSize(
+                        getPaperBowlItemSize(itemStack) + getPaperBowlSkewerSize(itemStack))
+                .addAll(getPaperBowlItems(itemStack))
+                .addAll(getPaperBowlSkewers(itemStack))
+                .build();
     }
 
-    @NotNull
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    @NotNull @Override
+    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (isPaperBowlClear(itemStack)) {
@@ -96,9 +108,9 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         return InteractionResultHolder.pass(player.getItemInHand(hand));
     }
 
-    @NotNull
-    @Override
-    public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity) {
+    @NotNull @Override
+    public ItemStack finishUsingItem(
+            @NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity) {
         if (!(livingEntity instanceof Player player)) {
             return itemStack;
         }
@@ -139,9 +151,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         return itemStack;
     }
 
-    @NotNull
-    @Override
-    public UseAnim getUseAnimation(ItemStack itemStack) {
+    @NotNull @Override
+    public UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
         ArrayList<ItemStack> items = new ArrayList<>(getPaperBowlItems(itemStack));
         ArrayList<ItemStack> skewers = new ArrayList<>(getPaperBowlSkewers(itemStack));
 
@@ -165,7 +176,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     @Override
-    public int getUseDuration(ItemStack itemStack, LivingEntity livingEntity) {
+    public int getUseDuration(@NotNull ItemStack itemStack, @NotNull LivingEntity livingEntity) {
         ArrayList<ItemStack> items = new ArrayList<>(getPaperBowlItems(itemStack));
         ArrayList<ItemStack> skewers = new ArrayList<>(getPaperBowlSkewers(itemStack));
 
@@ -185,7 +196,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return 0;
         }
 
-        return (int) (foodItemStack.getUseDuration(livingEntity) * getPaperBowlSoupStatus(itemStack).getUseDurationFactor());
+        return (int) (foodItemStack.getUseDuration(livingEntity)
+                * getPaperBowlSoupStatus(itemStack).getUseDurationFactor());
     }
 
     @Override
@@ -208,8 +220,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         return containedItemStack;
     }
 
-    @Override
-    public String getDescriptionId(ItemStack itemStack) {
+    @NotNull @Override
+    public String getDescriptionId(@NotNull ItemStack itemStack) {
         if (isPaperBowlEmpty(itemStack)) {
             return super.getDescriptionId(itemStack);
         }
@@ -218,7 +230,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return super.getDescriptionId(itemStack) + ".skewer";
         }
 
-        return super.getDescriptionId(itemStack) + getPaperBowlSoupStatus(itemStack).getSuffix();
+        return super.getDescriptionId(itemStack)
+                + getPaperBowlSoupStatus(itemStack).getSuffix();
     }
 
     public static boolean isFood(ItemStack itemStack) {
@@ -226,7 +239,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean canEatInPaperBowl(ItemStack itemStack) {
-        return isFood(itemStack) || (itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && !HotpotSkewerItem.isSkewerEmpty(itemStack));
+        return isFood(itemStack)
+                || (itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && !HotpotSkewerItem.isSkewerEmpty(itemStack));
     }
 
     public static boolean isPaperBowlEmpty(ItemStack itemStack) {
@@ -274,7 +288,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlSameSoup(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY) || hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
+        return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY)
+                || hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
     }
 
     public static ResourceKey<HotpotComponentSoupType> getPaperBowlSoupTypeKey(ItemStack itemStack) {
@@ -286,7 +301,8 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static HotpotPaperBowlDataComponent getDataComponent(ItemStack itemStack) {
-        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY);
+        return itemStack.getOrDefault(
+                HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY);
     }
 
     public static void setDataComponent(ItemStack itemStack, HotpotPaperBowlDataComponent dataComponent) {

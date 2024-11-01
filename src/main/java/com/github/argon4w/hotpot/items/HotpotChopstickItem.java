@@ -6,10 +6,11 @@ import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.blocks.IHotpotTablewareContainer;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
-import com.github.argon4w.hotpot.api.items.IHotpotTablewareItem;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.items.components.HotpotChopstickDataComponent;
 import com.github.argon4w.hotpot.placements.HotpotPlacedChopstick;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
+import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -25,18 +26,34 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
-public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedChopstick> implements IHotpotTablewareItem, IHotpotItemContainer {
+public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedChopstick>
+        implements IHotpotTablewareInteraction, IHotpotItemContainer {
     public HotpotChopstickItem() {
-        super(HotpotPlacementSerializers.PLACED_CHOPSTICK_SERIALIZER, new Properties()
-                .stacksTo(1)
-                .component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY)
-                .attributes(new ItemAttributeModifiers(List.of(
-                        new ItemAttributeModifiers.Entry(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "chopstick_block_range_modifier"), 4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND),
-                        new ItemAttributeModifiers.Entry(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "chopstick_entity_range_modifier"), 4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                ), true))
-        );
+        super(
+                HotpotPlacementSerializers.PLACED_CHOPSTICK_SERIALIZER,
+                new Properties()
+                        .stacksTo(1)
+                        .component(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY)
+                        .attributes(new ItemAttributeModifiers(
+                                List.of(
+                                        new ItemAttributeModifiers.Entry(
+                                                Attributes.BLOCK_INTERACTION_RANGE,
+                                                new AttributeModifier(
+                                                        ResourceLocation.fromNamespaceAndPath(
+                                                                HotpotModEntry.MODID, "chopstick_block_range_modifier"),
+                                                        4,
+                                                        AttributeModifier.Operation.ADD_VALUE),
+                                                EquipmentSlotGroup.MAINHAND),
+                                        new ItemAttributeModifiers.Entry(
+                                                Attributes.ENTITY_INTERACTION_RANGE,
+                                                new AttributeModifier(
+                                                        ResourceLocation.fromNamespaceAndPath(
+                                                                HotpotModEntry.MODID,
+                                                                "chopstick_entity_range_modifier"),
+                                                        4,
+                                                        AttributeModifier.Operation.ADD_VALUE),
+                                                EquipmentSlotGroup.MAINHAND)),
+                                true)));
     }
 
     @Override
@@ -45,7 +62,11 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedChopstick placement, ItemStack itemStack) {
+    public void loadPlacement(
+            IHotpotPlacementContainer container,
+            LevelBlockPos pos,
+            HotpotPlacedChopstick placement,
+            ItemStack itemStack) {
         placement.setChopstickItemSlot(itemStack);
     }
 
@@ -59,9 +80,8 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
         return getHeldItemStack(itemStack).isEmpty() ? List.of() : List.of(getContainedItemStack(itemStack));
     }
 
-    @NotNull
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    @NotNull @Override
+    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
         ItemStack heldItemStack = getHeldItemStack(itemStack);
 
@@ -83,9 +103,9 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
         return InteractionResultHolder.pass(player.getItemInHand(hand));
     }
 
-    @NotNull
-    @Override
-    public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity) {
+    @NotNull @Override
+    public ItemStack finishUsingItem(
+            @NotNull ItemStack itemStack, @NotNull Level level, @NotNull LivingEntity livingEntity) {
         ItemStack heldItemStack = getHeldItemStack(itemStack);
 
         if (heldItemStack.isEmpty()) {
@@ -99,9 +119,8 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
         return itemStack;
     }
 
-    @NotNull
-    @Override
-    public UseAnim getUseAnimation(ItemStack itemStack) {
+    @NotNull @Override
+    public UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
         ItemStack heldItemStack = getHeldItemStack(itemStack);
 
         if (heldItemStack.isEmpty()) {
@@ -116,7 +135,7 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     @Override
-    public int getUseDuration(ItemStack itemStack, LivingEntity livingEntity) {
+    public int getUseDuration(@NotNull ItemStack itemStack, @NotNull LivingEntity livingEntity) {
         ItemStack heldItemStack = getHeldItemStack(itemStack);
 
         if (heldItemStack.isEmpty()) {
@@ -131,20 +150,29 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     @Override
-    public void interact(int hitPos, int layer, Player player, InteractionHand hand, ItemStack itemStack, IHotpotTablewareContainer blockEntity, LevelBlockPos selfPos) {
+    public void interact(
+            int position,
+            int layer,
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            IHotpotTablewareContainer blockEntity,
+            LevelBlockPos pos) {
         if (!(itemStack.getItem() instanceof HotpotChopstickItem)) {
             return;
         }
 
         ItemStack heldItemStack = HotpotChopstickItem.getHeldItemStack(itemStack);
-        heldItemStack = heldItemStack.isEmpty() ? blockEntity.getContentByTableware(player, hand, hitPos, layer, selfPos) : blockEntity.setContentByTableware(hitPos, layer, player, hand, heldItemStack, selfPos);
+        heldItemStack = heldItemStack.isEmpty()
+                ? blockEntity.getContentByTableware(player, hand, position, layer, pos)
+                : blockEntity.setContentByTableware(position, layer, player, hand, heldItemStack, pos);
 
         if (heldItemStack.getItem().canFitInsideContainerItems()) {
             HotpotChopstickItem.setHeldItemStack(itemStack, heldItemStack);
             return;
         }
 
-        selfPos.dropItemStack(heldItemStack);
+        pos.dropItemStack(heldItemStack);
         HotpotChopstickItem.setHeldItemStack(itemStack, ItemStack.EMPTY);
     }
 
@@ -157,7 +185,8 @@ public class HotpotChopstickItem extends HotpotPlacementBlockItem<HotpotPlacedCh
     }
 
     public static HotpotChopstickDataComponent getDataComponent(ItemStack itemStack) {
-        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY);
+        return itemStack.getOrDefault(
+                HotpotModEntry.HOTPOT_CHOPSTICK_DATA_COMPONENT, HotpotChopstickDataComponent.EMPTY);
     }
 
     public static void setDataComponent(ItemStack itemStack, HotpotChopstickDataComponent dataComponent) {

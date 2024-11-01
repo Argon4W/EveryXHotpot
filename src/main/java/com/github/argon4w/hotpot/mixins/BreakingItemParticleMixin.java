@@ -19,8 +19,16 @@ public abstract class BreakingItemParticleMixin extends TextureSheetParticle {
         super(p_108323_, p_108324_, p_108325_, p_108326_);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/client/multiplayer/ClientLevel;DDDLnet/minecraft/world/item/ItemStack;)V", at = @At("RETURN"))
-    public void constructor(ClientLevel level, double p_105666_, double p_105667_, double p_105668_, ItemStack itemStack, CallbackInfo ci) {
+    @Inject(
+            method = "<init>(Lnet/minecraft/client/multiplayer/ClientLevel;DDDLnet/minecraft/world/item/ItemStack;)V",
+            at = @At("RETURN"))
+    public void constructor(
+            ClientLevel level,
+            double p_105666_,
+            double p_105667_,
+            double p_105668_,
+            ItemStack itemStack,
+            CallbackInfo ci) {
         if (!(itemStack.getItem() instanceof IHotpotItemContainer itemContainer)) {
             return;
         }

@@ -26,7 +26,15 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
     }
 
     @Override
-    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(int position, Player player, InteractionHand hand, ItemStack itemStack, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Holder<IHotpotContentSerializer<?>>> result, HotpotBlockEntity hotpotBlockEntity) {
+    public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
+            int position,
+            Player player,
+            InteractionHand hand,
+            ItemStack itemStack,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
+            HotpotBlockEntity hotpotBlockEntity) {
         if (result.isPresent()) {
             return result;
         }
@@ -79,9 +87,13 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
         }
     }
 
-    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotHurtPlayerWHenInteractSoupComponent> {
-        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> IHotpotDamageSource.CODEC.optionalFieldOf("damage_source", IHotpotDamageSource.EMPTY).xmap(Type::new, Type::getDamageSourceWrapper));
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> IHotpotDamageSource.STREAM_CODEC.map(Type::new, Type::getDamageSourceWrapper));
+    public static class Serializer
+            implements IHotpotSoupComponentTypeSerializer<HotpotHurtPlayerWHenInteractSoupComponent> {
+        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> IHotpotDamageSource.CODEC
+                .optionalFieldOf("damage_source", IHotpotDamageSource.EMPTY)
+                .xmap(Type::new, Type::getDamageSourceWrapper));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
+                () -> IHotpotDamageSource.STREAM_CODEC.map(Type::new, Type::getDamageSourceWrapper));
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent>> getCodec() {
@@ -89,9 +101,11 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent>> getStreamCodec() {
+        public StreamCodec<
+                        RegistryFriendlyByteBuf,
+                        ? extends IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent>>
+                getStreamCodec() {
             return STREAM_CODEC;
         }
     }
 }
-

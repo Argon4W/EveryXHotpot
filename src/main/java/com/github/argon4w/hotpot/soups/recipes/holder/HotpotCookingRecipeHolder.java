@@ -11,17 +11,32 @@ import net.minecraft.world.item.ItemStack;
 
 public record HotpotCookingRecipeHolder(HotpotSoupCookingRecipe recipe) implements IHotpotCookingRecipeHolder {
     @Override
-    public int getCookingTime(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+    public int getCookingTime(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content) {
         return recipe.getCookingTime();
     }
 
     @Override
-    public double getExperience(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+    public double getExperience(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content) {
         return recipe.getExperience();
     }
 
     @Override
-    public ItemStack getResult(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content) {
+    public ItemStack getResult(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content) {
         return recipe.assemble(new HotpotRecipeInput(itemStack, soup), pos.registryAccess());
     }
 }

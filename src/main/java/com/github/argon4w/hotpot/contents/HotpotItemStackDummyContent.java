@@ -6,11 +6,10 @@ import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
 
 public record HotpotItemStackDummyContent(ItemStack itemStack) implements IHotpotContent {
     @Override
@@ -34,9 +33,7 @@ public record HotpotItemStackDummyContent(ItemStack itemStack) implements IHotpo
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-
-    }
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
 
     @Override
     public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
@@ -44,10 +41,13 @@ public record HotpotItemStackDummyContent(ItemStack itemStack) implements IHotpo
     }
 
     public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotItemStackDummyContent> {
-        public static final MapCodec<HotpotItemStackDummyContent> CODEC = ItemStack.CODEC.fieldOf("item_stack").xmap(HotpotItemStackDummyContent::new, HotpotItemStackDummyContent::itemStack);
+        public static final MapCodec<HotpotItemStackDummyContent> CODEC = ItemStack.CODEC
+                .fieldOf("item_stack")
+                .xmap(HotpotItemStackDummyContent::new, HotpotItemStackDummyContent::itemStack);
 
         @Override
-        public HotpotItemStackDummyContent createContent(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+        public HotpotItemStackDummyContent createContent(
+                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
             return new HotpotItemStackDummyContent(itemStack);
         }
 

@@ -6,15 +6,14 @@ import com.github.argon4w.hotpot.client.items.sprites.colors.HotpotSpriteColorPr
 import com.github.argon4w.hotpot.client.items.sprites.processors.providers.HotpotSpriteProcessorProviders;
 import com.github.argon4w.hotpot.items.components.HotpotSpriteConfigDataComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.HashMap;
+import java.util.List;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
     private final BakedModel originalModel;
@@ -23,27 +22,53 @@ public class OverlayModelMap extends HashMap<ResourceLocation, BakedModel> {
         this.originalModel = originalModel;
     }
 
-    public OverlayModelMap applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
-        return entrySet().stream().collect(EntryStreams.collect(() -> new OverlayModelMap(originalModel.applyTransform(transformType, poseStack, applyLeftHandTransform))));
+    public BakedModel getResolvedTintedModel(
+            IHotpotSpriteConfig config,
+            ItemStack itemStack,
+            ClientLevel clientLevel,
+            LivingEntity livingEntity,
+            int seed) {
+        return new TintedBakedModel(
+                getAndResolve(
+                        HotpotSpriteProcessorProviders.getProcessorResourceLocation(config),
+                        itemStack,
+                        clientLevel,
+                        livingEntity,
+                        seed),
+                HotpotSpriteColorProviders.getColor(config));
     }
 
-    public List<BakedModel> getResolvedTintedModels(ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {
-        return HotpotSpriteConfigDataComponent.getSpriteConfigs(itemStack).stream().filter(this::containsConfig).map(config -> getResolvedTintedModel(config, itemStack, clientLevel, livingEntity, seed)).toList();
-    }
-
-    public BakedModel getResolvedTintedModel(IHotpotSpriteConfig config, ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {
-        return new TintedBakedModel(getAndResolve(HotpotSpriteProcessorProviders.getProcessorResourceLocation(config), itemStack, clientLevel, livingEntity, seed), HotpotSpriteColorProviders.getColor(config));
-    }
-
-    public BakedModel getAndResolve(ResourceLocation resourceLocation, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
+    public BakedModel getAndResolve(
+            ResourceLocation resourceLocation,
+            ItemStack itemStack,
+            ClientLevel clientLevel,
+            LivingEntity entity,
+            int seed) {
         return resolveOverrides(getOrDefault(resourceLocation, getEmptyModel()), itemStack, clientLevel, entity, seed);
     }
 
-    public BakedModel resolveOverrides(BakedModel model, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
+    public List<BakedModel> getResolvedTintedModels(
+            ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {
+        return HotpotSpriteConfigDataComponent.getSpriteConfigs(itemStack).stream()
+                .filter(this::containsConfig)
+                .map(config -> getResolvedTintedModel(config, itemStack, clientLevel, livingEntity, seed))
+                .toList();
+    }
+
+    public OverlayModelMap applyTransform(
+            ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        return entrySet().stream()
+                .collect(EntryStreams.collect(() -> new OverlayModelMap(
+                        originalModel.applyTransform(transformType, poseStack, applyLeftHandTransform))));
+    }
+
+    public BakedModel resolveOverrides(
+            BakedModel model, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
         return model.getOverrides().resolve(model, itemStack, clientLevel, entity, seed);
     }
 
-    public BakedModel resolveOriginalModel(BakedModel bakedModel, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
+    public BakedModel resolveOriginalModel(
+            BakedModel bakedModel, ItemStack itemStack, ClientLevel clientLevel, LivingEntity entity, int seed) {
         return originalModel.getOverrides().resolve(bakedModel, itemStack, clientLevel, entity, seed);
     }
 

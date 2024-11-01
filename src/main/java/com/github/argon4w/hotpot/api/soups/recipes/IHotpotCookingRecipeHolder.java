@@ -7,7 +7,24 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import net.minecraft.world.item.ItemStack;
 
 public interface IHotpotCookingRecipeHolder {
-    int getCookingTime(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content);
-    double getExperience(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content);
-    ItemStack getResult(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity, AbstractHotpotRecipeContent content);
+    int getCookingTime(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content);
+
+    double getExperience(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content);
+
+    ItemStack getResult(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity,
+            AbstractHotpotRecipeContent content);
 }

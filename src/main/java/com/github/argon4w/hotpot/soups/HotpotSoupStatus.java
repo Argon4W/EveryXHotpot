@@ -12,7 +12,8 @@ public enum HotpotSoupStatus implements StringRepresentable {
     DRAINED("drained", ".drained", 20, 1.0, true);
 
     public static final Codec<HotpotSoupStatus> CODEC = StringRepresentable.fromEnum(HotpotSoupStatus::values);
-    public static final StreamCodec<FriendlyByteBuf, HotpotSoupStatus> STREAM_CODEC = NeoForgeStreamCodecs.enumCodec(HotpotSoupStatus.class);
+    public static final StreamCodec<FriendlyByteBuf, HotpotSoupStatus> STREAM_CODEC =
+            NeoForgeStreamCodecs.enumCodec(HotpotSoupStatus.class);
 
     private final String name;
     private final String suffix;
@@ -44,8 +45,7 @@ public enum HotpotSoupStatus implements StringRepresentable {
         return canBeOverridden;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getSerializedName() {
         return name;
     }

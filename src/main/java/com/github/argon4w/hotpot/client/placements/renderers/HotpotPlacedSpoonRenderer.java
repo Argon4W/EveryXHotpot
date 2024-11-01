@@ -10,7 +10,6 @@ import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -18,18 +17,31 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
     @Override
-    public void render(IHotpotPlacement placement, BlockEntityRendererProvider.Context context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, float partialTick) {
-
-    }
+    public void render(
+            IHotpotPlacement placement,
+            IHotpotPlacementContainer container,
+            BlockPos pos,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            float partialTick) {}
 
     @Override
-    public void renderSectionGeometry(IHotpotPlacement placement, AddSectionGeometryEvent.SectionRenderingContext context, IHotpotPlacementContainer container, BlockPos pos, PoseStack poseStack, ISectionGeometryRenderContext modelRenderContext) {
+    public void renderSectionGeometry(
+            IHotpotPlacement placement,
+            AddSectionGeometryEvent.SectionRenderingContext context,
+            IHotpotPlacementContainer container,
+            BlockPos pos,
+            PoseStack poseStack,
+            ISectionGeometryRenderContext modelRenderContext) {
         if (!(placement instanceof HotpotPlacedSpoon placedSpoon)) {
             return;
         }
 
         int position1 = placedSpoon.getPosition1();
         int position2 = placedSpoon.getPosition2();
+
         ComplexDirection direction = ComplexDirection.between(position1, position2);
 
         double x1 = HotpotPlacementPositions.getRenderCenterX(position1);
@@ -50,7 +62,12 @@ public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees(137));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        modelRenderContext.renderUncachedItem(placedSpoon.getSpoonItemSlot().getItemStack(), ItemDisplayContext.NONE, false, poseStack, OverlayTexture.NO_OVERLAY);
+        modelRenderContext.renderUncachedItem(
+                placedSpoon.getSpoonItemSlot().getItemStack(),
+                ItemDisplayContext.NONE,
+                false,
+                poseStack,
+                OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
     }

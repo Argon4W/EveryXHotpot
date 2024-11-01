@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
@@ -18,14 +19,26 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
-import java.util.Optional;
-
 public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRenderer {
     @Override
-    public void render(ItemStack itemStack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void render(
+            ItemStack itemStack,
+            ItemDisplayContext displayContext,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay) {
         SimpleItemSlot napkinItemSlot = HotpotNapkinHolderItem.getNapkinItemSlot(itemStack);
-        BakedModel napkinHolderModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_napkin_holder_model")));
-        BakedModel napkinModel = Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
+
+        BakedModel napkinHolderModel = Minecraft.getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(
+                        HotpotModEntry.MODID, "item/hotpot_napkin_holder_model")));
+
+        BakedModel napkinModel = Minecraft.getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(
+                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
 
         int color = DyedItemColor.getOrDefault(itemStack, -1);
         float r = FastColor.ARGB32.red(color) / 255.0f;
@@ -33,14 +46,30 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
         float b = FastColor.ARGB32.blue(color) / 255.0f;
 
         poseStack.pushPose();
-        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, napkinHolderModel, r, g, b, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
+
+        Minecraft.getInstance()
+                .getBlockRenderer()
+                .getModelRenderer()
+                .renderModel(
+                        poseStack.last(),
+                        bufferSource.getBuffer(Sheets.solidBlockSheet()),
+                        null,
+                        napkinHolderModel,
+                        r,
+                        g,
+                        b,
+                        combinedLight,
+                        combinedOverlay,
+                        ModelData.EMPTY,
+                        Sheets.solidBlockSheet());
+
         poseStack.popPose();
 
         if (napkinItemSlot.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < napkinItemSlot.getRenderCount(); i ++) {
+        for (int i = 0; i < napkinItemSlot.getRenderCount(); i++) {
             float positionY = 0.0625f + 0.05f * i;
             float rotationY = (i % 2 == 0 ? 1 : -1) * 3;
 
@@ -49,14 +78,28 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
             poseStack.translate(0.5f, positionY, 0.5f);
             poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
 
-            Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()), null, napkinModel, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, Sheets.solidBlockSheet());
+            Minecraft.getInstance()
+                    .getBlockRenderer()
+                    .getModelRenderer()
+                    .renderModel(
+                            poseStack.last(),
+                            bufferSource.getBuffer(Sheets.solidBlockSheet()),
+                            null,
+                            napkinModel,
+                            1,
+                            1,
+                            1,
+                            combinedLight,
+                            combinedOverlay,
+                            ModelData.EMPTY,
+                            Sheets.solidBlockSheet());
 
             poseStack.popPose();
         }
     }
 
     @Override
-    public Optional<ResourceLocation> getDefaultItemModelResourceLocation() {
+    public Optional<ResourceLocation> getItemModelResourceLocation() {
         return Optional.empty();
     }
 }

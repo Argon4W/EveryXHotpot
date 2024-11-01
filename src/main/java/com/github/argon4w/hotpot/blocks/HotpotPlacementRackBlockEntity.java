@@ -2,18 +2,23 @@ package com.github.argon4w.hotpot.blocks;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.hotpot.api.blocks.AbstractCodecBlockEntity;
+import com.github.argon4w.hotpot.api.blocks.AbstractHotpotPlacementBlockEntity;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.placements.HotpotPlacementSerializers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.Clearable;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,32 +26,41 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.IntStream;
+public class HotpotPlacementRackBlockEntity
+        extends AbstractHotpotPlacementBlockEntity<
+                HotpotPlacementRackBlockEntity.Data, HotpotPlacementRackBlockEntity.PartialData>
+        implements Clearable, IHotpotPlacementContainer {
 
-public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEntity<HotpotPlacementRackBlockEntity.Data, HotpotPlacementRackBlockEntity.PartialData> implements Clearable, IHotpotPlacementContainer {
-
-    public static final Codec<Data> CODEC = Codec.lazyInitialized(() ->
-            RecordCodecBuilder.create(data -> data.group(
-                    HotpotPlacementSerializers.CODEC.listOf().xmap(LinkedList::new, Function.identity()).fieldOf("placements1").forGetter(Data::placements1),
-                    HotpotPlacementSerializers.CODEC.listOf().xmap(LinkedList::new, Function.identity()).fieldOf("placements2").forGetter(Data::placements2),
+    public static final Codec<Data> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(
+                    HotpotPlacementSerializers.CODEC
+                            .listOf()
+                            .xmap(LinkedList::new, Function.identity())
+                            .fieldOf("placements1")
+                            .forGetter(Data::placements1),
+                    HotpotPlacementSerializers.CODEC
+                            .listOf()
+                            .xmap(LinkedList::new, Function.identity())
+                            .fieldOf("placements2")
+                            .forGetter(Data::placements2),
                     Codec.BOOL.fieldOf("infinite_content").forGetter(Data::infiniteContent),
-                    Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved)
-            ).apply(data, Data::new))
-    );
+                    Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved))
+            .apply(data, Data::new)));
 
-    public static final Codec<PartialData> PARTIAL_CODEC = Codec.lazyInitialized(() ->
-            RecordCodecBuilder.create(data -> data.group(
-                    HotpotPlacementSerializers.CODEC.listOf().xmap(LinkedList::new, Function.identity()).optionalFieldOf("placements1").forGetter(PartialData::placements1),
-                    HotpotPlacementSerializers.CODEC.listOf().xmap(LinkedList::new, Function.identity()).optionalFieldOf("placements2").forGetter(PartialData::placements2),
-                    Codec.BOOL.fieldOf("infinite_content").forGetter(PartialData::infiniteContent),
-                    Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved)
-            ).apply(data, PartialData::new))
-    );
+    public static final Codec<PartialData> PARTIAL_CODEC =
+            Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(
+                            HotpotPlacementSerializers.CODEC
+                                    .listOf()
+                                    .xmap(LinkedList::new, Function.identity())
+                                    .optionalFieldOf("placements1")
+                                    .forGetter(PartialData::placements1),
+                            HotpotPlacementSerializers.CODEC
+                                    .listOf()
+                                    .xmap(LinkedList::new, Function.identity())
+                                    .optionalFieldOf("placements2")
+                                    .forGetter(PartialData::placements2),
+                            Codec.BOOL.fieldOf("infinite_content").forGetter(PartialData::infiniteContent),
+                            Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved))
+                    .apply(data, PartialData::new)));
 
     public static final List<Integer> PROVIDED_POSITIONS = List.of(5, 9, 6, 10);
 
@@ -57,47 +71,23 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     }
 
     @Override
-    public void setContentByInteraction(int position, int layer, Player player, InteractionHand hand, ItemStack itemStack, LevelBlockPos pos) {
-        int index = getPlacementIndexInPosAndLayer(position, layer);
-
-        if (index < 0) {
-            return;
-        }
-
-        IHotpotPlacement placement = getPlacements(layer).get(index);
-        placement.interact(player, hand, itemStack, position, layer, pos, this);
-
-        if (placement.shouldRemove(player, hand, itemStack, position, layer, pos, this)) {
-            removePlacement(index, layer, pos);
-        }
-
-        markDataChanged();
-    }
-
-    @Override
-    public ItemStack getContentByTableware(Player player, InteractionHand hand, int position, int layer, LevelBlockPos pos) {
-        int index = getPlacementIndexInPosAndLayer(position, layer);
-
-        if (index < 0) {
-            return ItemStack.EMPTY;
-        }
-
-        IHotpotPlacement placement = getPlacements(layer).get(index);
-        ItemStack itemStack = placement.getContent(player, hand, position, layer, pos, this, true);
-
-        if (placement.shouldRemove(player, hand, itemStack, position, layer, pos, this)) {
-            removePlacement(index, layer, pos);
-        }
-
-        markDataChanged();
-        return itemStack;
-    }
-
-    @Override
     public void place(IHotpotPlacement placement, int position, int layer, LevelBlockPos pos) {
         List<IHotpotPlacement> placements = getPlacements(layer);
         placements.add(placement);
         markDataChanged();
+    }
+
+    @Override
+    public List<Integer> getOccupiedPositions(int layer, LevelBlockPos pos) {
+        return getPlacements(layer).stream()
+                .map(IHotpotPlacement::getPositions)
+                .flatMap(Collection::stream)
+                .toList();
+    }
+
+    @Override
+    public List<Integer> getProvidedPositions(int layer, LevelBlockPos pos) {
+        return layer == 1 || layer == 2 ? PROVIDED_POSITIONS : List.of();
     }
 
     @Override
@@ -111,18 +101,23 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     }
 
     @Override
-    public List<Integer> getOccupiedPositions(int layer, LevelBlockPos pos) {
-        return getPlacements(layer).stream().map(IHotpotPlacement::getPositions).flatMap(Collection::stream).toList();
-    }
-
-    @Override
-    public List<Integer> getProvidedPositions(int layer, LevelBlockPos pos) {
-        return layer == 1 || layer == 2 ? PROVIDED_POSITIONS : List.of();
-    }
-
-    @Override
     public int getLayer(Vec3 vec3) {
         return getLayerFromVec3(vec3);
+    }
+
+    @Override
+    public PartialData getPartialData(HolderLookup.Provider registryAccess) {
+        return new PartialData(
+                contentChanged ? Optional.of(data.placements1) : Optional.empty(),
+                contentChanged ? Optional.of(data.placements2) : Optional.empty(),
+                data.infiniteContent,
+                data.canBeRemoved);
+    }
+
+    @Override
+    public Data onFullDataUpdate(LevelBlockPos pos, Data data) {
+        pos.markAndNotifyClient();
+        return data;
     }
 
     @Override
@@ -138,17 +133,6 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
     @Override
     public Codec<PartialData> getPartialCodec() {
         return PARTIAL_CODEC;
-    }
-
-    @Override
-    public PartialData getPartialData(HolderLookup.Provider registryAccess) {
-        return new PartialData(contentChanged ? Optional.of(data.placements1) : Optional.empty(), contentChanged ? Optional.of(data.placements2) : Optional.empty(), data.infiniteContent, data.canBeRemoved);
-    }
-
-    @Override
-    public Data onFullDataUpdate(LevelBlockPos pos, Data data) {
-        pos.markAndNotifyClient();
-        return data;
     }
 
     @Override
@@ -172,6 +156,16 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
         data.placements2.clear();
     }
 
+    @Override
+    public int getPlacementIndexInPosAndLayer(int position, int layer) {
+        List<IHotpotPlacement> placements = getPlacements(layer);
+        return IntStream.range(0, placements.size())
+                .filter(i -> placements.get(i).getPositions().contains(position))
+                .findFirst()
+                .orElse(-1);
+    }
+
+    @Override
     public List<IHotpotPlacement> getPlacements(int layer) {
         return switch (layer) {
             case 1 -> data.placements1;
@@ -180,31 +174,30 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
         };
     }
 
-    public void onRemove(LevelBlockPos pos) {
-        data.placements1.forEach(placement -> placement.onRemove(this, pos));
-        data.placements2.forEach(placement -> placement.onRemove(this, pos));
-        markDataChanged();
-    }
-
+    @Override
     public void removePlacement(int index, int layer, LevelBlockPos pos) {
         List<IHotpotPlacement> placements = getPlacements(layer);
         placements.remove(index).onRemove(this, pos);
         markDataChanged();
     }
-    
-    public int getPlacementIndexInPosAndLayer(int position, int layer) {
-        List<IHotpotPlacement> placements = getPlacements(layer);
-        return IntStream.range(0, placements.size()).filter(i -> placements.get(i).getPositions().contains(position)).findFirst().orElse(-1);
+
+    @Override
+    public void markDataChanged() {
+        contentChanged = true;
+        setChanged();
     }
 
     public IHotpotPlacement getPlacementInPosAndLayer(int position, int layer) {
         int i = getPlacementIndexInPosAndLayer(position, layer);
-        return i < 0 ? HotpotPlacementSerializers.loadEmptyPlacement() : getPlacements(layer).get(i);
+        return i < 0
+                ? HotpotPlacementSerializers.loadEmptyPlacement()
+                : getPlacements(layer).get(i);
     }
 
-    public void markDataChanged() {
-        contentChanged = true;
-        setChanged();
+    public void onRemove(LevelBlockPos pos) {
+        data.placements1.forEach(placement -> placement.onRemove(this, pos));
+        data.placements2.forEach(placement -> placement.onRemove(this, pos));
+        markDataChanged();
     }
 
     public List<IHotpotPlacement> getPlacements1() {
@@ -241,14 +234,25 @@ public class HotpotPlacementRackBlockEntity extends AbstractHotpotCodecBlockEnti
         }
     }
 
-    public record Data(LinkedList<IHotpotPlacement> placements1, LinkedList<IHotpotPlacement> placements2, boolean infiniteContent, boolean canBeRemoved) {
+    public record Data(
+            LinkedList<IHotpotPlacement> placements1,
+            LinkedList<IHotpotPlacement> placements2,
+            boolean infiniteContent,
+            boolean canBeRemoved) {}
 
-    }
-
-    public record PartialData(Optional<LinkedList<IHotpotPlacement>> placements1, Optional<LinkedList<IHotpotPlacement>> placements2, boolean infiniteContent, boolean canBeRemoved) implements AbstractHotpotCodecBlockEntity.PartialData<Data> {
+    public record PartialData(
+            Optional<LinkedList<IHotpotPlacement>> placements1,
+            Optional<LinkedList<IHotpotPlacement>> placements2,
+            boolean infiniteContent,
+            boolean canBeRemoved)
+            implements AbstractCodecBlockEntity.PartialData<Data> {
         @Override
         public Data update(Data data) {
-            return new Data(placements1.orElse(data.placements1), placements2.orElse(data.placements2), infiniteContent, canBeRemoved);
+            return new Data(
+                    placements1.orElse(data.placements1),
+                    placements2.orElse(data.placements2),
+                    infiniteContent,
+                    canBeRemoved);
         }
     }
 }

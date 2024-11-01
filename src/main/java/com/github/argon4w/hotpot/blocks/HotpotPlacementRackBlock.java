@@ -28,10 +28,12 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class HotpotPlacementRackBlock extends BaseEntityBlock {
-    public static final VoxelShape SHAPE = Shapes.or(box(0.0f, 0.0f, 0.0f, 16.0f, 2.5f, 16.0f), box(0.0f, 10.5f, 0.0f, 16.0f, 12.5f, 16.0f));
+    public static final VoxelShape SHAPE =
+            Shapes.or(box(0.0f, 0.0f, 0.0f, 16.0f, 2.5f, 16.0f), box(0.0f, 10.5f, 0.0f, 16.0f, 12.5f, 16.0f));
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public HotpotPlacementRackBlock() {
@@ -47,14 +49,22 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected @NotNull ItemInteractionResult useItemOn(
+            @NotNull ItemStack itemStack,
+            @NotNull BlockState state,
+            @NotNull Level level,
+            @NotNull BlockPos pos,
+            @NotNull Player player,
+            @NotNull InteractionHand hand,
+            @NotNull BlockHitResult result) {
         LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
         if (!(blockPos.getBlockEntity() instanceof HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
+        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem
+                && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -71,7 +81,12 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader levelReader, BlockPos pos, Player player) {
+    public @NotNull ItemStack getCloneItemStack(
+            @NotNull BlockState state,
+            @NotNull HitResult target,
+            @NotNull LevelReader levelReader,
+            @NotNull BlockPos pos,
+            @NotNull Player player) {
         if (!(levelReader instanceof Level level)) {
             return super.getCloneItemStack(state, target, levelReader, pos, player);
         }
@@ -85,12 +100,14 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
         int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
         int layer = HotpotPlacementRackBlockEntity.getLayerFromHitResult(target, pos);
 
-        return hotpotPlacementRackBlockEntity.getPlacementInPosAndLayer(position, layer).getCloneItemStack(hotpotPlacementRackBlockEntity, blockPos);
+        return hotpotPlacementRackBlockEntity
+                .getPlacementInPosAndLayer(position, layer)
+                .getCloneItemStack(hotpotPlacementRackBlockEntity, blockPos);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
+    public void onRemove(
+            BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean b) {
         if (state.is(newState.getBlock())) {
             return;
         }
@@ -102,50 +119,60 @@ public class HotpotPlacementRackBlock extends BaseEntityBlock {
         super.onRemove(state, level, pos, newState, b);
     }
 
+    @Nullable @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> blockEntityType) {
+        return level.isClientSide
+                ? null
+                : createTickerHelper(
+                        blockEntityType,
+                        HotpotModEntry.HOTPOT_PLACEMENT_RACK_BLOCK_ENTITY.get(),
+                        HotpotPlacementRackBlockEntity::tick);
+    }
+
+    @Override
+    protected @NotNull VoxelShape getShape(
+            @NotNull BlockState state,
+            @NotNull BlockGetter blockGetter,
+            @NotNull BlockPos pos,
+            @NotNull CollisionContext context) {
+        return SHAPE;
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        return this.defaultBlockState()
+                .setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+    }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    @SuppressWarnings("deprecation")
+    protected @NotNull BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    protected @NotNull BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter blockGetter, BlockPos pos, CollisionContext context) {
-        return SHAPE;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    public  RenderShape getRenderShape(BlockState blockState) {
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState blockState) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
+    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return MapCodec.unit(HotpotPlacementRackBlock::new);
     }
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState blockState) {
+    @Nullable @Override
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState blockState) {
         return new HotpotPlacementRackBlockEntity(pos, blockState);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_PLACEMENT_RACK_BLOCK_ENTITY.get(), HotpotPlacementRackBlockEntity::tick);
     }
 }

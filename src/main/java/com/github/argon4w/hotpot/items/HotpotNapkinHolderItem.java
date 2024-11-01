@@ -13,16 +13,26 @@ import net.minecraft.world.item.Items;
 
 public class HotpotNapkinHolderItem extends HotpotPlacementBlockItem<HotpotPlacedNapkinHolder> {
     public HotpotNapkinHolderItem() {
-        super(HotpotPlacementSerializers.NAPKIN_HOLDER_SERIALIZER, new Properties().component(HotpotModEntry.HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT, HotpotNapkinHolderDataComponent.EMPTY));
+        super(
+                HotpotPlacementSerializers.NAPKIN_HOLDER_SERIALIZER,
+                new Properties()
+                        .component(
+                                HotpotModEntry.HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT,
+                                HotpotNapkinHolderDataComponent.EMPTY));
     }
 
     @Override
-    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, HotpotPlacedNapkinHolder placement, ItemStack itemStack) {
+    public void loadPlacement(
+            IHotpotPlacementContainer container,
+            LevelBlockPos pos,
+            HotpotPlacedNapkinHolder placement,
+            ItemStack itemStack) {
         placement.setNapkinHolderItemSlot(itemStack.copyWithCount(1));
     }
 
     public static HotpotNapkinHolderDataComponent getDataComponent(ItemStack itemStack) {
-        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT, HotpotNapkinHolderDataComponent.EMPTY);
+        return itemStack.getOrDefault(
+                HotpotModEntry.HOTPOT_NAPKIN_HOLDER_DATA_COMPONENT, HotpotNapkinHolderDataComponent.EMPTY);
     }
 
     public static void setDataComponent(ItemStack itemStack, HotpotNapkinHolderDataComponent dataComponent) {

@@ -29,7 +29,8 @@ public record HotpotEmptySpriteConfig() implements IHotpotSpriteConfig {
         public static final HotpotEmptySpriteConfig UNIT = new HotpotEmptySpriteConfig();
 
         public static final MapCodec<HotpotEmptySpriteConfig> CODEC = MapCodec.unit(UNIT);
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotEmptySpriteConfig> STREAM_CODEC = StreamCodec.unit(UNIT);
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotEmptySpriteConfig> STREAM_CODEC =
+                StreamCodec.unit(UNIT);
 
         @Override
         public MapCodec<HotpotEmptySpriteConfig> getCodec() {

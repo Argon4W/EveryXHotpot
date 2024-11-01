@@ -7,7 +7,15 @@ import net.minecraft.client.renderer.MultiBufferSource;
 
 public class HotpotEmptyContentRenderer implements IHotpotContentRenderer {
     @Override
-    public void render(IHotpotContent content, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double rotation, double waterLevel, double x, double z, int index) {
-
-    }
+    public void render(
+            IHotpotContent content,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double rotation,
+            double waterLevel,
+            double x,
+            double z,
+            int index) {}
 }

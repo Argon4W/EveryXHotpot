@@ -12,14 +12,23 @@ import org.joml.Math;
 
 public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecialRenderer {
     @Override
-    public void render(AbstractHotpotItemStackContent itemStackContent, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, double waterLevel, double rotation, double x, double z) {
+    public void render(
+            AbstractHotpotItemStackContent itemStackContent,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            int combinedLight,
+            int combinedOverlay,
+            double waterLevel,
+            double rotation,
+            double x,
+            double z) {
         poseStack.pushPose();
 
         double positionX = 0.5 + x * 0.315;
         double positionZ = 0.5 + z * 0.315;
         double positionY = 0.56 - curve(rotation / 360.0, 0.0f) * 0.03 + 0.42 * waterLevel;
 
-        double degree = - (Math.toDegrees(Math.safeAsin( (waterLevel - 0.35) / (1.0 - 0.35))) / 90.0) * 85.0;
+        double degree = -(Math.toDegrees(Math.safeAsin((waterLevel - 0.35) / (1.0 - 0.35))) / 90.0) * 85.0;
         double rotationY = rotation + 20.0;
         double rotationX = 270.0 + degree;
 
@@ -30,7 +39,19 @@ public class HotpotSkewerItemContentRenderer implements IHotpotItemContentSpecia
 
         poseStack.scale(0.32f, 0.32f, 0.32f);
 
-        Minecraft.getInstance().getItemRenderer().renderStatic(null, itemStackContent.getItemStack(), ItemDisplayContext.NONE, true, poseStack, MappingBufferSource.itemBufferSource(bufferSource), null, combinedLight, combinedOverlay, ItemDisplayContext.NONE.ordinal());
+        Minecraft.getInstance()
+                .getItemRenderer()
+                .renderStatic(
+                        null,
+                        itemStackContent.getItemStack(),
+                        ItemDisplayContext.NONE,
+                        true,
+                        poseStack,
+                        MappingBufferSource.itemBufferSource(bufferSource),
+                        null,
+                        combinedLight,
+                        combinedOverlay,
+                        ItemDisplayContext.NONE.ordinal());
 
         poseStack.popPose();
     }

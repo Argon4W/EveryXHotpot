@@ -7,7 +7,11 @@ import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 
 public class HotpotNoLitSoupComponent extends AbstractHotpotSoupComponent {
     @Override
-    public IHotpotResult<Boolean> getHotpotLit(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos, IHotpotResult<Boolean> result) {
+    public IHotpotResult<Boolean> getHotpotLit(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos,
+            IHotpotResult<Boolean> result) {
         return IHotpotResult.success(false);
     }
 }
