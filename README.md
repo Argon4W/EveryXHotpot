@@ -1,9 +1,11 @@
 ![logo](/src/main/resources/logo.png)
 # EveryXHotpot: 一起火锅
-![支持版本](https://img.shields.io/modrinth/game-versions/346Wf89R)
-![协议](https://img.shields.io/github/license/Argon4W/EveryXHotpot)
-<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=qx11eH2YPMQzvxkGmqeEsENXr9_V-i7D&authKey=Fpgx7FR4O78VecudWkXAL5Ng6Lui2xTXzucnnO0c5p4t80lTM25jZnPybbmmQ6VO&noverify=0&group_code=608309578"> ![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-608309578-blue)</a>
-<a href="https://afdian.com/a/argon4w">  ![爱发电](https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%E6%AC%A2%E8%BF%8E%E8%B5%9E%E5%8A%A9-926BE5) </a>
+![支持版本](https://cf.way2muchnoise.eu/versions/1130390.svg)
+![GitHub协议](https://img.shields.io/github/license/Argon4W/EveryXHotpot?style=flat&color=A41931)
+<a href="https://modrinth.com/mod/every-x-hotpot"> ![Modrinth下载](https://img.shields.io/modrinth/dt/346Wf89R?logo=modrinth&color=00AF5C)</a>
+<a href=""> ![CurseForge下载](https://img.shields.io/curseforge/dt/1130390?style=flat&logo=curseforge&color=F16436) </a>
+<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=qx11eH2YPMQzvxkGmqeEsENXr9_V-i7D&authKey=Fpgx7FR4O78VecudWkXAL5Ng6Lui2xTXzucnnO0c5p4t80lTM25jZnPybbmmQ6VO&noverify=0&group_code=608309578"> ![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-608309578-blue?style=flat&color=1191FF)</a>
+<a href="https://afdian.com/a/argon4w"> ![爱发电](https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%E6%AC%A2%E8%BF%8E%E8%B5%9E%E5%8A%A9-purple?style=flat&color=916AE4)</a>
 
 ## 概述
 ### TeaCon 2023
@@ -18,11 +20,11 @@
 无论大家的朋友在哪, 哪怕没办法见面, 都能在Minecraft里, 升起炉灶, 围坐一桌, 一起开开心心地吃上火锅!
 
 ### 模组介绍
-一起火锅为Minecraft添加了带有丰富机制的火锅, 与配套的筷子, 漏勺, 汤勺, 纸碗, 碟子, 笊篱, 与可以放在火锅中提供炖菜药水效果的香料包.
-可以将食物放入火锅进入烹饪, 拿起筷子或纸碗与勺子将食物捞起, 品尝不同锅底带来的丰富的机制与效果, 或是将不同锅底组合为鸳鸯锅, 抑或是抄起笊篱, 成为最棒的麻辣烫小贩.
+一起火锅为Minecraft添加了带有丰富机制的火锅, 与配套的筷子, 漏勺, 汤勺, 纸碗, 碟子, 笊篱, 还有可以提供额外药水效果的香料包.
+用火锅烹饪美食, 用筷子或勺子捞起, 品尝不同锅底带来的丰富的机制与效果, 或是将不同锅底组合为鸳鸯锅, 与朋友们大快朵颐, 抑或是抄起笊篱, 原地起摊, 成为最棒的麻辣烫小贩.
 
-火锅那必不可少的就是汤底啦, 一起火锅还添加了清汤, 麻辣, 奶酪, 番茄, 海鲜, 骨汤, 油锅, 还有能冶炼矿石的岩浆锅底, 能获得随机效果的菌菇锅底, 能与怪物为友的怪物锅底, 能与猪灵跨维度交易的地狱锅底.
-如果还不觉得够的话, 一起火锅还提供的非常丰富灵活的组件系统用于自定义锅底的的制作, 发挥你的想象力, 制作出独属于你自己的锅底!
+提起火锅, 那必不可少的就是汤底, 一起火锅添加了清汤, 麻辣, 奶酪, 番茄, 海鲜, 骨汤, 油锅, 还有能冶炼矿石的岩浆锅底, 能获得随机效果的菌菇锅底, 能与怪物为友的怪物锅底, 能与猪灵跨维度交易的地狱锅底.
+如果还不觉得够, 一起火锅还提供的非常丰富灵活的组件系统用于自定义锅底的的制作, 发挥你的想象力, 制作出独属于你自己的锅底!
 
 ## 更新日志:
 ### 2023-11-19 1.1.1-TeaCon2023:
