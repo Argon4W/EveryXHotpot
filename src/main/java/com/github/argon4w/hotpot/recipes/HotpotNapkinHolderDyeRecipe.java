@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotNapkinHolderDyeRecipe extends CustomRecipe {
+
     public HotpotNapkinHolderDyeRecipe(CraftingBookCategory category) {
         super(category);
     }

@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import com.mojang.serialization.Codec;
@@ -22,6 +22,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
+
     private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
     private final Ingredient ingredient;
     private final ItemStack result;
@@ -92,39 +93,25 @@ public class HotpotSoupCookingRecipe implements Recipe<HotpotRecipeInput> {
     }
 
     public static class Serializer implements RecipeSerializer<HotpotSoupCookingRecipe> {
+
         public static final int DEFAULT_COOKING_TIME = 100;
         public static final double DEFAULT_EXPERIENCE = 0;
 
-        public static final MapCodec<HotpotSoupCookingRecipe> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                                HotpotComponentSoupType.KEY_CODEC
-                                        .fieldOf("target_soup")
-                                        .forGetter(HotpotSoupCookingRecipe::getTargetSoupTypeKey),
-                                Ingredient.CODEC_NONEMPTY
-                                        .fieldOf("ingredient")
-                                        .forGetter(HotpotSoupCookingRecipe::getIngredient),
-                                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupCookingRecipe::getResult),
-                                Codec.DOUBLE
-                                        .optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE)
-                                        .forGetter(HotpotSoupCookingRecipe::getExperience),
-                                Codec.INT
-                                        .optionalFieldOf("cooking_time", Serializer.DEFAULT_COOKING_TIME)
-                                        .forGetter(HotpotSoupCookingRecipe::getCookingTime))
-                        .apply(recipe, HotpotSoupCookingRecipe::new)));
+        public static final MapCodec<HotpotSoupCookingRecipe> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupCookingRecipe::getTargetSoupTypeKey),
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupCookingRecipe::getIngredient),
+                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupCookingRecipe::getResult),
+                Codec.DOUBLE.optionalFieldOf("experience", Serializer.DEFAULT_EXPERIENCE).forGetter(HotpotSoupCookingRecipe::getExperience),
+                Codec.INT.optionalFieldOf("cooking_time", Serializer.DEFAULT_COOKING_TIME).forGetter(HotpotSoupCookingRecipe::getCookingTime)
+        ).apply(recipe, HotpotSoupCookingRecipe::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupCookingRecipe> STREAM_CODEC =
-                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-                        HotpotComponentSoupType.KEY_STREAM_CODEC,
-                        HotpotSoupCookingRecipe::getTargetSoupTypeKey,
-                        Ingredient.CONTENTS_STREAM_CODEC,
-                        HotpotSoupCookingRecipe::getIngredient,
-                        ItemStack.STREAM_CODEC,
-                        HotpotSoupCookingRecipe::getResult,
-                        ByteBufCodecs.DOUBLE,
-                        HotpotSoupCookingRecipe::getExperience,
-                        ByteBufCodecs.INT,
-                        HotpotSoupCookingRecipe::getCookingTime,
-                        HotpotSoupCookingRecipe::new));
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupCookingRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupCookingRecipe::getTargetSoupTypeKey,
+                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupCookingRecipe::getIngredient,
+                ItemStack.STREAM_CODEC, HotpotSoupCookingRecipe::getResult,
+                ByteBufCodecs.DOUBLE, HotpotSoupCookingRecipe::getExperience,
+                ByteBufCodecs.INT, HotpotSoupCookingRecipe::getCookingTime,
+                HotpotSoupCookingRecipe::new));
 
         @NotNull @Override
         public MapCodec<HotpotSoupCookingRecipe> codec() {

@@ -9,60 +9,28 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
 public class HotpotPlacementPositions {
-    /*
-    0, 4, 8,  12
-    1, 5, 9,  13
-    2, 6, 10, 14
-    3, 7 ,11, 15
-    */
 
-    public static final Map<ComplexDirection, Function<Integer, Optional<Integer>>> DIRECTION_TO_POS_MAP =
-            new HashMap<>(Map.of(
-                    ComplexDirection.IDENTITY, Util.memoize(Optional::of),
-                    ComplexDirection.NORTH, Util.memoize(i -> isNorthLimit(i) ? Optional.empty() : Optional.of(i - 1)),
-                    ComplexDirection.SOUTH, Util.memoize(i -> isSouthLimit(i) ? Optional.empty() : Optional.of(i + 1)),
-                    ComplexDirection.EAST, Util.memoize(i -> isEastLimit(i) ? Optional.empty() : Optional.of(i + 4)),
-                    ComplexDirection.WEST, Util.memoize(i -> isWestLimit(i) ? Optional.empty() : Optional.of(i - 4)),
-                    ComplexDirection.NORTH_EAST,
-                            Util.memoize(
-                                    i -> isNorthLimit(i) || isEastLimit(i) ? Optional.empty() : Optional.of(i - 1 + 4)),
-                    ComplexDirection.SOUTH_EAST,
-                            Util.memoize(
-                                    i -> isSouthLimit(i) || isEastLimit(i) ? Optional.empty() : Optional.of(i + 1 + 4)),
-                    ComplexDirection.NORTH_WEST,
-                            Util.memoize(
-                                    i -> isNorthLimit(i) || isWestLimit(i) ? Optional.empty() : Optional.of(i - 1 - 4)),
-                    ComplexDirection.SOUTH_WEST,
-                            Util.memoize(i ->
-                                    isSouthLimit(i) || isWestLimit(i) ? Optional.empty() : Optional.of(i + 1 - 4))));
+    public static final Map<ComplexDirection, Function<Integer, Optional<Integer>>> DIRECTION_TO_POS_MAP = new HashMap<>(Map.of(
+            ComplexDirection.IDENTITY, Util.memoize(Optional::of),
+            ComplexDirection.NORTH, Util.memoize(i -> isNorthLimit(i) ? Optional.empty() : Optional.of(i - 1)),
+            ComplexDirection.SOUTH, Util.memoize(i -> isSouthLimit(i) ? Optional.empty() : Optional.of(i + 1)),
+            ComplexDirection.EAST, Util.memoize(i -> isEastLimit(i) ? Optional.empty() : Optional.of(i + 4)),
+            ComplexDirection.WEST, Util.memoize(i -> isWestLimit(i) ? Optional.empty() : Optional.of(i - 4)),
+            ComplexDirection.NORTH_EAST, Util.memoize(i -> isNorthLimit(i) || isEastLimit(i) ? Optional.empty() : Optional.of(i - 1 + 4)),
+            ComplexDirection.SOUTH_EAST, Util.memoize(i -> isSouthLimit(i) || isEastLimit(i) ? Optional.empty() : Optional.of(i + 1 + 4)),
+            ComplexDirection.NORTH_WEST, Util.memoize(i -> isNorthLimit(i) || isWestLimit(i) ? Optional.empty() : Optional.of(i - 1 - 4)),
+            ComplexDirection.SOUTH_WEST, Util.memoize(i -> isSouthLimit(i) || isWestLimit(i) ? Optional.empty() : Optional.of(i + 1 - 4))));
 
-    public static Map<ComplexDirection, Function<Integer, Optional<Integer>>> DIRECTION_TO_COORDS_MAP =
-            new HashMap<>(Map.of(
-                    ComplexDirection.IDENTITY, Util.memoize(Optional::of),
-                    ComplexDirection.NORTH,
-                            Util.memoize(i -> isNorthCoordsLimit(i) ? Optional.empty() : Optional.of(i + 2)),
-                    ComplexDirection.SOUTH,
-                            Util.memoize(i -> isSouthCoordsLimit(i) ? Optional.empty() : Optional.of(i - 2)),
-                    ComplexDirection.EAST,
-                            Util.memoize(i -> isEastCoordsLimit(i) ? Optional.empty() : Optional.of(i - 8)),
-                    ComplexDirection.WEST,
-                            Util.memoize(i -> isWestCoordsLimit(i) ? Optional.empty() : Optional.of(i + 8)),
-                    ComplexDirection.NORTH_EAST,
-                            Util.memoize(i -> isNorthCoordsLimit(i) || isEastCoordsLimit(i)
-                                    ? Optional.empty()
-                                    : Optional.of(i + 2 - 8)),
-                    ComplexDirection.SOUTH_EAST,
-                            Util.memoize(i -> isSouthCoordsLimit(i) || isEastCoordsLimit(i)
-                                    ? Optional.empty()
-                                    : Optional.of(i - 2 - 8)),
-                    ComplexDirection.NORTH_WEST,
-                            Util.memoize(i -> isNorthCoordsLimit(i) || isWestCoordsLimit(i)
-                                    ? Optional.empty()
-                                    : Optional.of(i + 2 + 8)),
-                    ComplexDirection.SOUTH_WEST,
-                            Util.memoize(i -> isSouthCoordsLimit(i) || isWestCoordsLimit(i)
-                                    ? Optional.empty()
-                                    : Optional.of(i - 2 + 8))));
+    public static Map<ComplexDirection, Function<Integer, Optional<Integer>>> DIRECTION_TO_COORDS_MAP = new HashMap<>(Map.of(
+            ComplexDirection.IDENTITY, Util.memoize(Optional::of),
+            ComplexDirection.NORTH, Util.memoize(i -> isNorthCoordsLimit(i) ? Optional.empty() : Optional.of(i + 2)),
+            ComplexDirection.SOUTH, Util.memoize(i -> isSouthCoordsLimit(i) ? Optional.empty() : Optional.of(i - 2)),
+            ComplexDirection.EAST, Util.memoize(i -> isEastCoordsLimit(i) ? Optional.empty() : Optional.of(i - 8)),
+            ComplexDirection.WEST, Util.memoize(i -> isWestCoordsLimit(i) ? Optional.empty() : Optional.of(i + 8)),
+            ComplexDirection.NORTH_EAST, Util.memoize(i -> isNorthCoordsLimit(i) || isEastCoordsLimit(i) ? Optional.empty() : Optional.of(i + 2 - 8)),
+            ComplexDirection.SOUTH_EAST, Util.memoize(i -> isSouthCoordsLimit(i) || isEastCoordsLimit(i) ? Optional.empty() : Optional.of(i - 2 - 8)),
+            ComplexDirection.NORTH_WEST, Util.memoize(i -> isNorthCoordsLimit(i) || isWestCoordsLimit(i) ? Optional.empty() : Optional.of(i + 2 + 8)),
+            ComplexDirection.SOUTH_WEST, Util.memoize(i -> isSouthCoordsLimit(i) || isWestCoordsLimit(i) ? Optional.empty() : Optional.of(i - 2 + 8))));
 
     public static final Map<Integer, ComplexDirection> POS_TO_DIRECTION_MAP = new HashMap<>(Map.of(
             0, ComplexDirection.IDENTITY,

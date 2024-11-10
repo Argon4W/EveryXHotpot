@@ -11,7 +11,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("DataFlowIssue")
 public class HotpotBlockEntityWithoutLevelRenderer extends BlockEntityWithoutLevelRenderer {
+
     public HotpotBlockEntityWithoutLevelRenderer() {
         super(null, null);
     }

@@ -29,8 +29,8 @@ import net.neoforged.neoforge.client.model.pipeline.TransformingVertexPipeline;
  */
 @SuppressWarnings("UnstableApiUsage")
 public class LightAwareSectionGeometryRenderContext implements ISectionGeometryRenderContext {
-    public static final boolean SODIUM_LIKE_LOADED =
-            ModList.get().isLoaded("sodium") || ModList.get().isLoaded("embeddium");
+
+    public static final boolean SODIUM_LIKE_LOADED = ModList.get().isLoaded("sodium") || ModList.get().isLoaded("embeddium");
 
     private final AddSectionGeometryEvent.SectionRenderingContext context;
     private final RendererBakedModelsCache cache;
@@ -39,7 +39,9 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
     private final Transformation transformation;
 
     public LightAwareSectionGeometryRenderContext(
-            AddSectionGeometryEvent.SectionRenderingContext context, RendererBakedModelsCache cache, BlockPos pos) {
+            AddSectionGeometryEvent.SectionRenderingContext context,
+            RendererBakedModelsCache cache,
+            BlockPos pos) {
         this.context = context;
         this.cache = cache;
         this.pos = pos;
@@ -106,7 +108,11 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
 
     @Override
     public void renderCachedModel(
-            BakedModel model, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData) {
+            BakedModel model,
+            PoseStack poseStack,
+            RenderType renderType,
+            int overlay,
+            ModelData modelData) {
         renderCachedModel(model, context.getRegion().getBlockState(pos), poseStack, renderType, overlay, modelData);
     }
 
@@ -121,8 +127,7 @@ public class LightAwareSectionGeometryRenderContext implements ISectionGeometryR
     public MultiBufferSource getUncachedItemBufferSource() {
         return SODIUM_LIKE_LOADED
                 ? pRenderType -> new QuadLighterVertexConsumer(context, pos)
-                : ignored -> new TransformingVertexPipeline(
-                        context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
+                : ignored -> new TransformingVertexPipeline(context.getOrCreateChunkBuffer(HotpotClientRenderTypeEvents.get()), transformation);
     }
 
     @Override

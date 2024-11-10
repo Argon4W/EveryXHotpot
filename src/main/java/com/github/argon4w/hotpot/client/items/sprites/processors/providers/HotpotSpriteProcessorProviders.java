@@ -10,27 +10,16 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class HotpotSpriteProcessorProviders {
-    public static final ResourceKey<Registry<IHotpotSpriteProcessorProvider>> SPRITE_PROCESSOR_PROVIDER_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(
-                    ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "sprite_processor_provider"));
 
-    public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_PROVIDER_LOCATION =
-            ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor_provider");
-    public static final DeferredRegister<IHotpotSpriteProcessorProvider> SPRITE_PROCESSOR_PROVIDERS =
-            DeferredRegister.create(SPRITE_PROCESSOR_PROVIDER_REGISTRY_KEY, HotpotModEntry.MODID);
-    public static final Registry<IHotpotSpriteProcessorProvider> SPRITE_PROCESSOR_PROVIDER_REGISTRY =
-            SPRITE_PROCESSOR_PROVIDERS.makeRegistry(
-                    builder -> builder.defaultKey(EMPTY_SPRITE_PROCESSOR_PROVIDER_LOCATION));
+    public static final ResourceKey<Registry<IHotpotSpriteProcessorProvider>> SPRITE_PROCESSOR_PROVIDER_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "sprite_processor_provider"));
 
-    public static final DeferredHolder<IHotpotSpriteProcessorProvider, HotpotSoupRendererConfigSpriteProcessorProvider>
-            SOUP_RENDERER_CONFIG_SPRITE_PROCESSOR_PROVIDER = SPRITE_PROCESSOR_PROVIDERS.register(
-                    "soup_renderer_config_sprite_config", HotpotSoupRendererConfigSpriteProcessorProvider::new);
-    public static final DeferredHolder<IHotpotSpriteProcessorProvider, HotpotCustomColorSpriteProcessorProvider>
-            CUSTOM_COLOR_SPRITE_PROCESSOR_PROVIDER = SPRITE_PROCESSOR_PROVIDERS.register(
-                    "custom_color_sprite_config", HotpotCustomColorSpriteProcessorProvider::new);
-    public static final DeferredHolder<IHotpotSpriteProcessorProvider, HotpotEmptySpriteProcessorProvider>
-            EMPTY_SPRITE_PROCESSOR_PROVIDER = SPRITE_PROCESSOR_PROVIDERS.register(
-                    "empty_sprite_processor_provider", HotpotEmptySpriteProcessorProvider::new);
+    public static final ResourceLocation EMPTY_SPRITE_PROCESSOR_PROVIDER_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_sprite_processor_provider");
+    public static final DeferredRegister<IHotpotSpriteProcessorProvider> SPRITE_PROCESSOR_PROVIDERS = DeferredRegister.create(SPRITE_PROCESSOR_PROVIDER_REGISTRY_KEY, HotpotModEntry.MODID);
+    public static final Registry<IHotpotSpriteProcessorProvider> SPRITE_PROCESSOR_PROVIDER_REGISTRY = SPRITE_PROCESSOR_PROVIDERS.makeRegistry(builder -> builder.defaultKey(EMPTY_SPRITE_PROCESSOR_PROVIDER_LOCATION));
+
+    public static final DeferredHolder<IHotpotSpriteProcessorProvider, HotpotSoupRendererConfigSpriteProcessorProvider> SOUP_RENDERER_CONFIG_SPRITE_PROCESSOR_PROVIDER = SPRITE_PROCESSOR_PROVIDERS.register("soup_renderer_config_sprite_config", HotpotSoupRendererConfigSpriteProcessorProvider::new);
+    public static final DeferredHolder<IHotpotSpriteProcessorProvider, HotpotCustomColorSpriteProcessorProvider> CUSTOM_COLOR_SPRITE_PROCESSOR_PROVIDER = SPRITE_PROCESSOR_PROVIDERS.register("custom_color_sprite_config", HotpotCustomColorSpriteProcessorProvider::new);
+    public static final DeferredHolder<IHotpotSpriteProcessorProvider, HotpotEmptySpriteProcessorProvider> EMPTY_SPRITE_PROCESSOR_PROVIDER = SPRITE_PROCESSOR_PROVIDERS.register("empty_sprite_processor_provider", HotpotEmptySpriteProcessorProvider::new);
 
     public static HotpotEmptySpriteProcessorProvider getEmptySpriteProcessorProvider() {
         return EMPTY_SPRITE_PROCESSOR_PROVIDER.get();

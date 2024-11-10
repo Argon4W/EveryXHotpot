@@ -18,10 +18,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Argon4W
  */
-public class AdditionalSectionGeometryBlockEntityRendererDispatcher
-        implements AddSectionGeometryEvent.AdditionalSectionRenderer {
-    public static final Map<IBlockEntitySectionGeometryRenderer<?>, RendererBakedModelsCache> CACHE =
-            new ConcurrentHashMap<>();
+public class AdditionalSectionGeometryBlockEntityRendererDispatcher implements AddSectionGeometryEvent.AdditionalSectionRenderer {
+
+    public static final Map<IBlockEntitySectionGeometryRenderer<?>, RendererBakedModelsCache> CACHE = new ConcurrentHashMap<>();
 
     private final BlockPos regionOrigin;
 
@@ -46,11 +45,9 @@ public class AdditionalSectionGeometryBlockEntityRendererDispatcher
     }
 
     public RendererBakedModelsCache getOrCreateCache(IBlockEntitySectionGeometryRenderer<?> renderer) {
-        return CACHE.compute(
-                renderer,
-                (renderer1, cache) -> cache == null
-                        ? createCache(renderer1)
-                        : (cache.getSize() > 128 ? new UncachedRendererBakedModelsCache() : cache));
+        return CACHE.compute(renderer, (renderer1, cache) -> cache == null
+                ? createCache(renderer1)
+                : (cache.getSize() > 128 ? new UncachedRendererBakedModelsCache() : cache));
     }
 
     public void renderAt(BlockPos pos, AddSectionGeometryEvent.SectionRenderingContext context) {
@@ -65,21 +62,18 @@ public class AdditionalSectionGeometryBlockEntityRendererDispatcher
             return;
         }
 
-        if (renderer instanceof ConditionalBlockEntitySectionGeometryRenderer<?> conditional
-                && !conditional.shouldRender(
-                        cast(blockEntity),
-                        pos,
-                        regionOrigin,
-                        Minecraft.getInstance().gameRenderer.getMainCamera().getPosition())) {
+        if (renderer instanceof ConditionalBlockEntitySectionGeometryRenderer<?> conditional && !conditional.shouldRender(
+                cast(blockEntity),
+                pos, regionOrigin,
+                Minecraft.getInstance().gameRenderer.getMainCamera().getPosition())) {
             return;
         }
 
         context.getPoseStack().pushPose();
-        context.getPoseStack()
-                .translate(
-                        pos.getX() - regionOrigin.getX(),
-                        pos.getY() - regionOrigin.getY(),
-                        pos.getZ() - regionOrigin.getZ());
+        context.getPoseStack().translate(
+                pos.getX() - regionOrigin.getX(),
+                pos.getY() - regionOrigin.getY(),
+                pos.getZ() - regionOrigin.getZ());
 
         try {
             renderer.renderSectionGeometry(

@@ -4,6 +4,7 @@ import com.github.argon4w.hotpot.client.HotpotColor;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 
 public class TintedBakedQuad extends BakedQuad {
+
     private final HotpotColor color;
 
     public TintedBakedQuad(BakedQuad bakedQuad, HotpotColor color) {

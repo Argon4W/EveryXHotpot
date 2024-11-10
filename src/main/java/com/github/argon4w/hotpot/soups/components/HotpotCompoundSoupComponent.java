@@ -1,18 +1,19 @@
 package com.github.argon4w.hotpot.soups.components;
 
-import com.github.argon4w.hotpot.EntryStreams;
-import com.github.argon4w.hotpot.IndexHolder;
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.streams.EntryStream;
+import com.github.argon4w.fancytoys.codecs.Sorted;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponent;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
-import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupComponentSynchronizer;
+import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupSyncData;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -20,30 +21,27 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
+
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
+
     @Override
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
-            int position,
-            Player player,
-            InteractionHand hand,
+            IHotpotTablewareInteraction.Context context,
             ItemStack itemStack,
-            HotpotComponentSoup soup,
-            LevelBlockPos pos,
             IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
-            HotpotBlockEntity hotpotBlockEntity) {
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
@@ -94,16 +92,6 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
     }
 
     @Override
-    public IHotpotResult<Double> getWaterLevel(IHotpotResult<Double> result) {
-        throw new IllegalStateException("Illegal call to a compound component");
-    }
-
-    @Override
-    public IHotpotResult<Double> getOverflowWaterLevel(IHotpotResult<Double> result) {
-        throw new IllegalStateException("Illegal call to a compound component");
-    }
-
-    @Override
     public IHotpotResult<Double> onAwardExperience(
             HotpotBlockEntity hotpotBlockEntity,
             HotpotComponentSoup soup,
@@ -123,36 +111,62 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
 
     @Override
     public void onDiscardOverflowWaterLevel(
-            HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
     @Override
     public void onEntityInside(
-            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            Entity entity,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
     @Override
-    public void onTick(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public void onTick(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
     @Override
     public void setWaterLevelWithOverflow(
-            double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            double waterLevel,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
     @Override
     public void setWaterLevel(
-            double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            double waterLevel,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
     @Override
-    public Optional<IHotpotSoupComponentSynchronizer> getSoupComponentSynchronizer(
-            HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public Optional<IHotpotSoupSyncData> getSoupComponenentSyncData(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
+        throw new IllegalStateException("Illegal call to a compound component");
+    }
+
+    @Override
+    public IHotpotResult<Double> getWaterLevel(IHotpotResult<Double> result) {
+        throw new IllegalStateException("Illegal call to a compound component");
+    }
+
+    @Override
+    public IHotpotResult<Double> getOverflowWaterLevel(IHotpotResult<Double> result) {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
@@ -161,12 +175,8 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
         throw new IllegalStateException("Illegal call to a compound component");
     }
 
-    public record Type(
-            Map<
-                            ResourceLocation,
-                            IndexHolder<Either<ResourceKey<IHotpotSoupComponentType<?>>, IHotpotSoupComponentType<?>>>>
-                    componentTypeHolders)
-            implements IHotpotSoupComponentType<HotpotCompoundSoupComponent> {
+    public record Type(Map<ResourceLocation, Sorted<Either<ResourceKey<IHotpotSoupComponentType<?>>, IHotpotSoupComponentType<?>>>> componentTypeHolders) implements IHotpotSoupComponentType<HotpotCompoundSoupComponent> {
+
         @Override
         public HotpotCompoundSoupComponent createSoupComponent() {
             throw new IllegalStateException("Illegal call to a compound component type");
@@ -187,78 +197,46 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
             return HotpotSoupComponentTypeSerializers.COMPOUND_SOUP_COMPONENT_TYPE_SERIALIZER;
         }
 
-        public Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>>
-                getComponentTypeHolderEntryStream(
-                        Holder<IHotpotSoupComponentType<?>> componentTypeHolder,
-                        int base,
-                        AtomicInteger self,
-                        AtomicInteger parent) {
-            return componentTypeHolder instanceof Holder.Reference<IHotpotSoupComponentType<?>> reference
-                            && reference.unwrapLookup() != null
-                    ? componentTypeHolders.entrySet().stream()
-                            .map(EntryStreams.mapEntryValue(
-                                    holder -> holder.mapValue(either -> either.<Holder<IHotpotSoupComponentType<?>>>map(
-                                            resourceKey ->
-                                                    reference.unwrapLookup().getOrThrow(resourceKey),
-                                            Holder::direct))))
-                            .flatMap(entry -> expandCompoundComponents(entry, base, self, parent))
-                    : Stream.empty();
+        public EntryStream<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> getComponentTypes(HolderLookup<IHotpotSoupComponentType<?>> lookup, AtomicInteger index) {
+            return EntryStream
+                    .fromMap(componentTypeHolders)
+                    .sortedValue(Sorted.comparator())
+                    .<Sorted<Holder<IHotpotSoupComponentType<?>>>>mapValue(Sorted.valueMapper(either -> either.map(lookup::getOrThrow, Holder::direct)))
+                    .flatMap((location, sorted) -> expand(location, sorted, index));
         }
 
-        public static Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>>
-                expandCompoundComponents(
-                        Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>> entry,
-                        int base,
-                        AtomicInteger self,
-                        AtomicInteger parent) {
-            return entry.getValue().value().value() instanceof HotpotCompoundSoupComponent.Type type
-                    ? type.getComponentTypeHolderEntryStream(
-                            entry.getValue().value(), entry.getValue().index(), new AtomicInteger(self.get()), self)
-                    : Stream.of(entry)
-                            .map(EntryStreams.mapEntryValue(
-                                    holder -> holder.mapIndex(i -> base + parent.updateAndGet(v -> self.get() + i))));
+        public EntryStream<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> getComponentTypes(Sorted<Holder<IHotpotSoupComponentType<?>>> sorted, AtomicInteger index) {
+            return Sorted
+                    .lookup(sorted)
+                    .map(lookup -> getComponentTypes(lookup, index))
+                    .orElse(EntryStream.empty());
         }
 
-        public static Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>>
-                expandCompoundComponents(
-                        Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>> entry,
-                        AtomicInteger self) {
-            return expandCompoundComponents(entry, 0, self, new AtomicInteger(0));
+        public static EntryStream<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> expand(ResourceLocation location, Sorted<Holder<IHotpotSoupComponentType<?>>> sorted, AtomicInteger index) {
+            return sorted.value().value() instanceof Type type
+                    ? type.getComponentTypes(sorted, index)
+                    : EntryStream.fromKeyValue(location, sorted);
         }
 
-        public static Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>>
-                expandCompoundComponents(
-                        Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>> stream,
-                        AtomicInteger self) {
-            return stream.flatMap(entry -> expandCompoundComponents(entry, self));
-        }
-
-        public static Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>>
-                expandCompoundComponents(
-                        Stream<Map.Entry<ResourceLocation, IndexHolder<Holder<IHotpotSoupComponentType<?>>>>> stream) {
-            return expandCompoundComponents(stream, new AtomicInteger(0));
+        public static EntryStream<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> expand(EntryStream<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> stream, AtomicInteger index) {
+            return stream
+                    .sequential()
+                    .sortedValue(Sorted.comparator())
+                    .flatMap((location, sorted) -> expand(location, sorted, index))
+                    .mapValue(Sorted.posMapper(index::getAndIncrement));
         }
     }
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotCompoundSoupComponent> {
-        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> Codec.unboundedMap(
-                        ResourceLocation.CODEC,
-                        IndexHolder.getCodec(Codec.either(
-                                        ResourceKey.codec(
-                                                HotpotSoupComponentTypeSerializers.SOUP_COMPONENT_TYPE_REGISTRY_KEY),
-                                        HotpotSoupComponentTypeSerializers.TYPE_CODEC)
-                                .fieldOf("component")))
+
+        public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> Codec
+                .unboundedMap(ResourceLocation.CODEC, Sorted.codec(Codec.either(HotpotSoupComponentTypeSerializers.KEY_CODEC, HotpotSoupComponentTypeSerializers.TYPE_CODEC).fieldOf("component")))
                 .xmap(Type::new, Type::componentTypeHolders)
                 .fieldOf("compounds"));
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
-                NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.map(
-                                LinkedHashMap::new,
-                                ResourceLocation.STREAM_CODEC,
-                                IndexHolder.getStreamCodec(ByteBufCodecs.either(
-                                        ResourceKey.streamCodec(
-                                                HotpotSoupComponentTypeSerializers.SOUP_COMPONENT_TYPE_REGISTRY_KEY),
-                                        HotpotSoupComponentTypeSerializers.TYPE_STREAM_CODEC)))
-                        .map(Type::new, type -> new LinkedHashMap<>(type.componentTypeHolders())));
+
+         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs
+                .map(LinkedHashMap::new, ResourceLocation.STREAM_CODEC, Sorted.streamCodec(ByteBufCodecs.either(HotpotSoupComponentTypeSerializers.KEY_STREAM_CODEC, HotpotSoupComponentTypeSerializers.TYPE_STREAM_CODEC)))
+                .map(Type::new, type -> new LinkedHashMap<>(type.componentTypeHolders())));
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotCompoundSoupComponent>> getCodec() {
@@ -266,8 +244,7 @@ public class HotpotCompoundSoupComponent implements IHotpotSoupComponent {
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotCompoundSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotCompoundSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

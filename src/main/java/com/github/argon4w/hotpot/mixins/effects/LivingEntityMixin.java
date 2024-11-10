@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends EntityMixin {
-    @Shadow
-    public abstract boolean hasEffect(Holder<MobEffect> pEffect);
+
+    @Shadow public abstract boolean hasEffect(Holder<MobEffect> pEffect);
 
     @Inject(method = "canFreeze", at = @At("RETURN"), cancellable = true)
     public void canFreeze(CallbackInfoReturnable<Boolean> cir) {
@@ -35,13 +35,13 @@ public abstract class LivingEntityMixin extends EntityMixin {
         cir.setReturnValue(false);
     }
 
-    @Inject(
-            method =
-                    "canAttack(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;)Z",
+    @Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;)Z",
             at = @At("RETURN"),
             cancellable = true)
     public void canAttack(
-            LivingEntity pLivingentity, TargetingConditions pCondition, CallbackInfoReturnable<Boolean> cir) {
+            LivingEntity pLivingentity,
+            TargetingConditions pCondition,
+            CallbackInfoReturnable<Boolean> cir) {
         if (!(this instanceof Enemy)) {
             return;
         }

@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 
 public class HotpotCampfireRecipeContent extends AbstractHotpotRecipeContent {
-    public static final RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> COOKING_RECIPE_CHECK =
-            RecipeManager.createCheck(RecipeType.CAMPFIRE_COOKING);
+
+    public static final RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> COOKING_RECIPE_CHECK = RecipeManager.createCheck(RecipeType.CAMPFIRE_COOKING);
 
     public HotpotCampfireRecipeContent(
             ItemStack itemStack,
@@ -31,7 +31,9 @@ public class HotpotCampfireRecipeContent extends AbstractHotpotRecipeContent {
 
     @Override
     public Optional<IHotpotCookingRecipeHolder> getRecipe(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos) {
         return HotpotCampfireRecipeContent.COOKING_RECIPE_CHECK
                 .getRecipeFor(new SingleRecipeInput(itemStack), pos.level())
                 .map(RecipeHolder::value)
@@ -44,6 +46,7 @@ public class HotpotCampfireRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotCampfireRecipeContent> {
+
         @Override
         public HotpotCampfireRecipeContent createContent(
                 ItemStack itemStack,
@@ -52,12 +55,19 @@ public class HotpotCampfireRecipeContent extends AbstractHotpotRecipeContent {
                 double cookingProgress,
                 double experience) {
             return new HotpotCampfireRecipeContent(
-                    itemStack, originalItemStack, cookingTime, cookingProgress, experience);
+                    itemStack,
+                    originalItemStack,
+                    cookingTime,
+                    cookingProgress,
+                    experience);
         }
 
         @Override
         public HotpotCampfireRecipeContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return new HotpotCampfireRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

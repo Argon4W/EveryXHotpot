@@ -25,9 +25,8 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(SpriteLoader.class)
 public abstract class SpriteLoaderMixin {
-    @Shadow
-    @Final
-    private ResourceLocation location;
+
+    @Shadow @Final private ResourceLocation location;
 
     @ModifyVariable(method = "stitch", at = @At("HEAD"), argsOnly = true, index = 1)
     private List<SpriteContents> stitch(List<SpriteContents> contents) {
@@ -36,36 +35,31 @@ public abstract class SpriteLoaderMixin {
         }
 
         ArrayList<SpriteContents> results = new ArrayList<>(contents);
-        List<SpriteContents> processedContents = Util.sequence(
-                        HotpotSpriteProcessors.getSpriteProcessorRegistry().stream()
-                                .filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor))
-                                .flatMap(processor -> contents.stream()
-                                        .filter(content ->
-                                                content.name().getPath().startsWith("item/")
-                                                        && content.animatedTexture == null
-                                                        && content.width() <= 32
-                                                        && content.height() <= 32)
-                                        .map(content -> CompletableFuture.supplyAsync(
-                                                () -> everyxhotpot$getProcessedSpriteContents(processor, content))))
-                                .toList())
-                .join();
+        List<SpriteContents> processedContents = Util.sequence(HotpotSpriteProcessors.getSpriteProcessorRegistry()
+                .stream()
+                .filter(processor -> !(processor instanceof HotpotEmptySpriteProcessor))
+                .flatMap(processor -> contents.stream().filter(content -> content.name().getPath().startsWith("item/") && content.animatedTexture == null && content.width() <= 32 && content.height() <= 32).map(content -> CompletableFuture.supplyAsync(() -> everyxhotpot$getProcessedSpriteContents(processor, content))))
+                .toList()).join();
 
         results.addAll(processedContents);
         SimpleModelBaker.VALID_PROCESSED_SPRITES.clear();
-        SimpleModelBaker.VALID_PROCESSED_SPRITES.addAll(
-                processedContents.stream().map(SpriteContents::name).toList());
+        SimpleModelBaker.VALID_PROCESSED_SPRITES.addAll(processedContents.stream().map(SpriteContents::name).toList());
 
         return results;
     }
 
-    @Unique private static SpriteContents everyxhotpot$getProcessedSpriteContents(
-            IHotpotSpriteProcessor processor, SpriteContents contents) {
+    @Unique
+    private static SpriteContents everyxhotpot$getProcessedSpriteContents(
+            IHotpotSpriteProcessor processor,
+            SpriteContents contents) {
         ResourceLocation name = contents.name();
         ResourceMetadata metadata = contents.metadata();
         NativeImage original = contents.getOriginalImage();
+
         FrameSize frameSize = metadata.getSection(AnimationMetadataSection.SERIALIZER)
                 .map(section -> section.calculateFrameSize(original.getWidth(), original.getHeight()))
                 .orElse(new FrameSize(original.getWidth(), original.getHeight()));
+
         NativeImage image = new NativeImage(
                 contents.getOriginalImage().format(),
                 contents.getOriginalImage().getWidth(),

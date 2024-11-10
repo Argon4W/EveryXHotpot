@@ -3,6 +3,7 @@ package com.github.argon4w.hotpot.client.items.sprites.processors;
 import org.joml.Math;
 
 public abstract class AbstractHotpotHalfSaucedSpriteProcessor extends AbstractHotpotGrayScaleSaucedSpriteProcessor {
+
     @Override
     public double getResultAlpha(double alpha, int x, int y, double width, double height) {
         return alpha * sigmoid(((height - 2f * y) / height) * 10f) * getAlphaModifier();

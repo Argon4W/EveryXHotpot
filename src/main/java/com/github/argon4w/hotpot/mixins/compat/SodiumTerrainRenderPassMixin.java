@@ -13,9 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(TerrainRenderPass.class)
 public class SodiumTerrainRenderPassMixin {
-    @Shadow
-    @Final
-    private RenderType renderType;
+
+    @Shadow @Final private RenderType renderType;
 
     @Inject(method = "supportsFragmentDiscard", at = @At("RETURN"), cancellable = true)
     public void supportsFragmentDiscard(CallbackInfoReturnable<Boolean> cir) {

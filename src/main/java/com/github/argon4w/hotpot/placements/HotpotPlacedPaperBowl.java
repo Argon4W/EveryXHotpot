@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.items.HotpotPaperBowlItem;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotPlacedPaperBowl implements IHotpotPlacement {
+
     private final int position;
     private final ComplexDirection direction;
     private final SimpleItemSlot paperBowlItemSlot;
@@ -164,16 +165,12 @@ public class HotpotPlacedPaperBowl implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedPaperBowl> {
-        public static final MapCodec<HotpotPlacedPaperBowl> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(bowl -> bowl.group(
-                                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedPaperBowl::getPosition),
-                                ComplexDirection.CODEC
-                                        .fieldOf("direction")
-                                        .forGetter(HotpotPlacedPaperBowl::getDirection),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("paper_bowl_item_slot")
-                                        .forGetter(HotpotPlacedPaperBowl::getPaperBowlItemSlot))
-                        .apply(bowl, HotpotPlacedPaperBowl::new)));
+
+        public static final MapCodec<HotpotPlacedPaperBowl> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(bowl -> bowl.group(
+                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedPaperBowl::getPosition),
+                ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotPlacedPaperBowl::getDirection),
+                SimpleItemSlot.CODEC.fieldOf("paper_bowl_item_slot").forGetter(HotpotPlacedPaperBowl::getPaperBowlItemSlot)
+        ).apply(bowl, HotpotPlacedPaperBowl::new)));
 
         @Override
         public HotpotPlacedPaperBowl createPlacement(List<Integer> positions, ComplexDirection direction) {

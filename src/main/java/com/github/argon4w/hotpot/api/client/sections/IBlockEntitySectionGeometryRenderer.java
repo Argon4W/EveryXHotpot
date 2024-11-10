@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public interface IBlockEntitySectionGeometryRenderer<T extends BlockEntity> {
+
     void renderSectionGeometry(
             T blockEntity,
             AddSectionGeometryEvent.SectionRenderingContext context,

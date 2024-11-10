@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.updates;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
@@ -18,6 +18,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotIncreaseActivenessOnContentUpdateSoupComponent extends AbstractHotpotSoupComponent {
+
     private final double factor;
     private final double base;
 
@@ -32,19 +33,19 @@ public class HotpotIncreaseActivenessOnContentUpdateSoupComponent extends Abstra
             HotpotComponentSoup soup,
             LevelBlockPos pos,
             IHotpotResult<IHotpotContent> result) {
-        return result.ifPresent(content -> soup.getComponentsByType(
-                        HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+        return result.ifPresent(content -> soup
+                .getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
                 .forEach(component -> component.setActiveness(base + factor * component.getActiveness())));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotIncreaseActivenessOnContentUpdateSoupComponent> {
+
         private final double factor;
         private final double base;
         private final HotpotIncreaseActivenessOnContentUpdateSoupComponent unit;
 
         private final MapCodec<HotpotIncreaseActivenessOnContentUpdateSoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotIncreaseActivenessOnContentUpdateSoupComponent>
-                streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotIncreaseActivenessOnContentUpdateSoupComponent> streamCodec;
 
         public Type(double factor, double base) {
             this.factor = factor;
@@ -61,8 +62,7 @@ public class HotpotIncreaseActivenessOnContentUpdateSoupComponent extends Abstra
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, HotpotIncreaseActivenessOnContentUpdateSoupComponent>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotIncreaseActivenessOnContentUpdateSoupComponent> getStreamCodec() {
             return streamCodec;
         }
 
@@ -73,8 +73,7 @@ public class HotpotIncreaseActivenessOnContentUpdateSoupComponent extends Abstra
 
         @Override
         public Holder<IHotpotSoupComponentTypeSerializer<?>> getSerializerHolder() {
-            return HotpotSoupComponentTypeSerializers
-                    .INCREASE_ACTIVENESS_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER;
+            return HotpotSoupComponentTypeSerializers.INCREASE_ACTIVENESS_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER;
         }
 
         public double getFactor() {
@@ -86,27 +85,25 @@ public class HotpotIncreaseActivenessOnContentUpdateSoupComponent extends Abstra
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotIncreaseActivenessOnContentUpdateSoupComponent> {
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotIncreaseActivenessOnContentUpdateSoupComponent> {
+
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                        Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
-                        Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase))
-                .apply(type, Type::new));
+                Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
+                Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase)
+        ).apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getFactor, ByteBufCodecs.DOUBLE, Type::getBase, Type::new);
+                ByteBufCodecs.DOUBLE, Type::getFactor,
+                ByteBufCodecs.DOUBLE, Type::getBase,
+                Type::new);
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotIncreaseActivenessOnContentUpdateSoupComponent>>
-                getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotIncreaseActivenessOnContentUpdateSoupComponent>> getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotIncreaseActivenessOnContentUpdateSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotIncreaseActivenessOnContentUpdateSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

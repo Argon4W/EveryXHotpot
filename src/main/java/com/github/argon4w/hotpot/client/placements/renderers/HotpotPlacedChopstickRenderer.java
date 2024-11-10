@@ -23,6 +23,7 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -80,12 +81,17 @@ public class HotpotPlacedChopstickRenderer implements IHotpotPlacementRenderer {
         poseStack.mulPose(Axis.YN.rotationDegrees((float) direction.toYRot()));
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-        BakedModel model = Minecraft.getInstance()
+        BakedModel model = Minecraft
+                .getInstance()
                 .getModelManager()
-                .getModel(ModelResourceLocation.standalone(
-                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_chopstick_stand")));
+
         modelRenderContext.renderCachedModel(
-                model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+                model,
+                poseStack,
+                RenderType.solid(),
+                OverlayTexture.NO_OVERLAY,
+                ModelData.EMPTY);
 
         poseStack.popPose();
     }

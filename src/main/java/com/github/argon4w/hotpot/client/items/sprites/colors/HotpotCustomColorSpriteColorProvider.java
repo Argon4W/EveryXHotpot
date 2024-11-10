@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.client.HotpotColor;
 import com.github.argon4w.hotpot.items.sprites.HotpotCustomColorSpriteConfig;
 
 public class HotpotCustomColorSpriteColorProvider implements IHotpotSpriteColorProvider {
+
     @Override
     public HotpotColor getColor(IHotpotSpriteConfig config) {
         return config instanceof HotpotCustomColorSpriteConfig customColor ? customColor.color() : HotpotColor.WHITE;

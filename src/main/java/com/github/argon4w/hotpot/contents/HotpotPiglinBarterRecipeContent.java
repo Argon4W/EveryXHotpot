@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class HotpotPiglinBarterRecipeContent extends AbstractHotpotItemStackContent {
+
     public HotpotPiglinBarterRecipeContent(
             ItemStack itemStack,
             ItemStack originalItemStack,
@@ -27,7 +28,9 @@ public class HotpotPiglinBarterRecipeContent extends AbstractHotpotItemStackCont
     }
 
     public HotpotPiglinBarterRecipeContent(
-            ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+            ItemStack itemStack,
+            HotpotBlockEntity hotpotBlockEntity,
+            LevelBlockPos pos) {
         super(itemStack, hotpotBlockEntity, pos);
     }
 
@@ -38,19 +41,28 @@ public class HotpotPiglinBarterRecipeContent extends AbstractHotpotItemStackCont
 
     @Override
     public Optional<Integer> getCookingTime(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity) {
         return hasBarterResponseItemStacks() ? Optional.of(300) : Optional.empty();
     }
 
     @Override
     public Optional<Double> getExperience(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity) {
         return Optional.empty();
     }
 
     @Override
     public Optional<ItemStack> getResult(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity) {
         return hasBarterResponseItemStacks() ? Optional.of(ItemStack.EMPTY) : Optional.empty();
     }
 
@@ -65,18 +77,14 @@ public class HotpotPiglinBarterRecipeContent extends AbstractHotpotItemStackCont
 
     @Override
     public List<ItemStack> getContentResultItemStacks(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return cookingTime > 0
-                ? List.of(originalItemStack)
-                : pos.level() instanceof ServerLevel serverLevel && hasBarterResponseItemStacks()
-                        ? pos.getLootTable(BuiltInLootTables.PIGLIN_BARTERING)
-                                .getRandomItems(new LootParams.Builder(serverLevel)
-                                        .withParameter(LootContextParams.ORIGIN, pos.toVec3())
-                                        .withParameter(LootContextParams.BLOCK_ENTITY, hotpotBlockEntity)
-                                        .create(LootContextParamSets.EMPTY))
-                        : List.of(originalItemStack);
+        return cookingTime > 0 ? List.of(originalItemStack) : pos.level() instanceof ServerLevel serverLevel && hasBarterResponseItemStacks() ? pos.getLootTable(BuiltInLootTables.PIGLIN_BARTERING).getRandomItems(new LootParams.Builder(serverLevel)
+                .withParameter(LootContextParams.ORIGIN, pos.toVec3())
+                .withParameter(LootContextParams.BLOCK_ENTITY, hotpotBlockEntity)
+                .create(LootContextParamSets.EMPTY)) : List.of(originalItemStack);
     }
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotPiglinBarterRecipeContent> {
+
         @Override
         public HotpotPiglinBarterRecipeContent createContent(
                 ItemStack itemStack,
@@ -85,12 +93,19 @@ public class HotpotPiglinBarterRecipeContent extends AbstractHotpotItemStackCont
                 double cookingProgress,
                 double experience) {
             return new HotpotPiglinBarterRecipeContent(
-                    itemStack, originalItemStack, cookingTime, cookingProgress, experience);
+                    itemStack,
+                    originalItemStack,
+                    cookingTime,
+                    cookingProgress,
+                    experience);
         }
 
         @Override
         public HotpotPiglinBarterRecipeContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return new HotpotPiglinBarterRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

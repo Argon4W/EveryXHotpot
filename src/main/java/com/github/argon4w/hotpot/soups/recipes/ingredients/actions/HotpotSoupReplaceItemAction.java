@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.soups.recipes.ingredients.actions;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientAction;
 import com.github.argon4w.hotpot.api.soups.ingredients.IHotpotSoupIngredientActionSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.contents.HotpotContentSerializers;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.recipes.ingredients.HotpotSoupIngredients;
@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpotSoupIngredientAction {
+
     @Override
     public void action(
             int pos,
@@ -26,17 +27,11 @@ public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpo
             HotpotComponentSoup sourceSoup,
             HotpotComponentSoup resultSoup,
             LevelBlockPos selfPos) {
-        hotpotBlockEntity.setContent(
-                pos,
-                resultSoup
-                        .getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos)
-                        .orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER)
-                        .value()
-                        .createContent(
-                                itemStack.copy(),
-                                hotpotBlockEntity,
-                                selfPos,
-                                Direction.getRandom(selfPos.getRandomSource())));
+        hotpotBlockEntity.setContent(pos, resultSoup
+                .getContentSerializerResultFromItemStack(itemStack.copy(), hotpotBlockEntity, selfPos)
+                .orElse(HotpotContentSerializers.EMPTY_CONTENT_SERIALIZER)
+                .value()
+                .createContent(itemStack.copy(), hotpotBlockEntity, selfPos, Direction.getRandom(selfPos.getRandomSource())));
     }
 
     @Override
@@ -45,16 +40,13 @@ public record HotpotSoupReplaceItemAction(ItemStack itemStack) implements IHotpo
     }
 
     public static class Serializer implements IHotpotSoupIngredientActionSerializer<HotpotSoupReplaceItemAction> {
-        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(action -> action.group(
-                                ItemStack.CODEC.fieldOf("result").forGetter(HotpotSoupReplaceItemAction::itemStack))
-                        .apply(action, HotpotSoupReplaceItemAction::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC =
-                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-                        ItemStack.STREAM_CODEC,
-                        HotpotSoupReplaceItemAction::itemStack,
-                        HotpotSoupReplaceItemAction::new));
+        public static final MapCodec<HotpotSoupReplaceItemAction> CODEC = LazyMapCodec.of(() -> ItemStack.CODEC
+                .fieldOf("result")
+                .xmap(HotpotSoupReplaceItemAction::new, HotpotSoupReplaceItemAction::itemStack));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupReplaceItemAction> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ItemStack.STREAM_CODEC
+                .map(HotpotSoupReplaceItemAction::new, HotpotSoupReplaceItemAction::itemStack));
 
         @Override
         public MapCodec<HotpotSoupReplaceItemAction> getCodec() {

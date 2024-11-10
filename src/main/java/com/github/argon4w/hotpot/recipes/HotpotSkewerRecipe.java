@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotSkewerRecipe extends CustomRecipe {
+
     public HotpotSkewerRecipe(CraftingBookCategory category) {
         super(category);
     }
@@ -52,13 +53,11 @@ public class HotpotSkewerRecipe extends CustomRecipe {
     }
 
     private ItemStack assembleSkewer(ItemStack assembled, ItemStack ingredient) {
-        return Util.make(
-                assembled, assembled1 -> HotpotSkewerItem.addSkewerItems(assembled1, ingredient.copyWithCount(1)));
+        return Util.make(assembled, assembled1 -> HotpotSkewerItem.addSkewerItems(assembled1, ingredient.copyWithCount(1)));
     }
 
     private boolean matchSkewerItem(ItemStack itemStack, int count) {
-        return itemStack.is(HotpotModEntry.HOTPOT_SKEWER)
-                && HotpotSkewerItem.getSkewerItems(itemStack).size() + count <= 3;
+        return itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && HotpotSkewerItem.getSkewerItems(itemStack).size() + count <= 3;
     }
 
     private boolean isFood(ItemStack itemStack) {

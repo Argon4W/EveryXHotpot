@@ -8,14 +8,11 @@ import com.github.argon4w.hotpot.client.soups.HotpotSoupSpriteConfig;
 import com.github.argon4w.hotpot.items.sprites.HotpotSoupRendererConfigSpriteConfig;
 
 public class HotpotSoupRendererConfigSpriteColorProvider implements IHotpotSpriteColorProvider {
+
     @Override
     public HotpotColor getColor(IHotpotSpriteConfig config) {
         return config instanceof HotpotSoupRendererConfigSpriteConfig rendererConfig
-                ? HotpotSoupRendererConfigManager.getSoupRendererConfig(
-                                rendererConfig.soupRendererConfigResourceLocation())
-                        .spriteConfig()
-                        .map(HotpotSoupSpriteConfig::color)
-                        .orElse(HotpotColor.WHITE)
+                ? HotpotSoupRendererConfigManager.getSoupRendererConfig(rendererConfig.soupRendererConfigResourceLocation()).spriteConfig().map(HotpotSoupSpriteConfig::color).orElse(HotpotColor.WHITE)
                 : HotpotColor.WHITE;
     }
 }

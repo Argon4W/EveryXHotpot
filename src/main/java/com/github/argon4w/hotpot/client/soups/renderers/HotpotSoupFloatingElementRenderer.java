@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
 public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomElementRenderer {
+
     private final double rotationTimeOffset;
     private final double positionTimeOffset;
     private final double rotationScale;
@@ -55,7 +56,8 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
 
     @Override
     public void prepareModel() {
-        model = Minecraft.getInstance()
+        model = Minecraft
+                .getInstance()
                 .getModelManager()
                 .getModel(ModelResourceLocation.standalone(elementModelResourceLocation));
     }
@@ -146,6 +148,7 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
     }
 
     public enum RotationAxis implements StringRepresentable {
+
         X(Axis.XP, "x"),
         Y(Axis.YP, "y"),
         Z(Axis.ZP, "z");
@@ -168,35 +171,18 @@ public class HotpotSoupFloatingElementRenderer implements IHotpotSoupCustomEleme
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
-        public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC =
-                RecordCodecBuilder.mapCodec(renderer -> renderer.group(
-                                Codec.DOUBLE
-                                        .fieldOf("rotation_time_offset")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getRotationTimeOffset),
-                                Codec.DOUBLE
-                                        .fieldOf("position_time_offset")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getPositionTimeOffset),
-                                Codec.DOUBLE
-                                        .fieldOf("rotation_scale")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getRotationScale),
-                                Codec.DOUBLE
-                                        .fieldOf("position_scale")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getPositionScale),
-                                Codec.DOUBLE
-                                        .fieldOf("position_offset")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getPositionOffset),
-                                StringRepresentable.fromEnum(RotationAxis::values)
-                                        .fieldOf("rotation_axis")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getRotationAxis),
-                                ResourceLocation.CODEC
-                                        .fieldOf("element_model_resource_location")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::getElementModelResourceLocation),
-                                Codec.BOOL
-                                        .fieldOf("should_render_in_bowl")
-                                        .forGetter(HotpotSoupFloatingElementRenderer::shouldRenderInBowl))
-                        .apply(renderer, HotpotSoupFloatingElementRenderer::new));
+    public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotSoupFloatingElementRenderer> {
+
+        public static final MapCodec<HotpotSoupFloatingElementRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
+                Codec.DOUBLE.fieldOf("rotation_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getRotationTimeOffset),
+                Codec.DOUBLE.fieldOf("position_time_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionTimeOffset),
+                Codec.DOUBLE.fieldOf("rotation_scale").forGetter(HotpotSoupFloatingElementRenderer::getRotationScale),
+                Codec.DOUBLE.fieldOf("position_scale").forGetter(HotpotSoupFloatingElementRenderer::getPositionScale),
+                Codec.DOUBLE.fieldOf("position_offset").forGetter(HotpotSoupFloatingElementRenderer::getPositionOffset),
+                StringRepresentable.fromEnum(RotationAxis::values).fieldOf("rotation_axis").forGetter(HotpotSoupFloatingElementRenderer::getRotationAxis),
+                ResourceLocation.CODEC.fieldOf("element_model_resource_location").forGetter(HotpotSoupFloatingElementRenderer::getElementModelResourceLocation),
+                Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotSoupFloatingElementRenderer::shouldRenderInBowl)
+        ).apply(renderer, HotpotSoupFloatingElementRenderer::new));
 
         @Override
         public MapCodec<HotpotSoupFloatingElementRenderer> getCodec() {

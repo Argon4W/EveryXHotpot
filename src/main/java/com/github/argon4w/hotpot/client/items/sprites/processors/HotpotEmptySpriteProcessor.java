@@ -5,8 +5,11 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 
 public class HotpotEmptySpriteProcessor implements IHotpotSpriteProcessor {
+
     @Override
-    public void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, int frame) {}
+    public void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, int frame) {
+
+    }
 
     @Override
     public String getSuffix() {

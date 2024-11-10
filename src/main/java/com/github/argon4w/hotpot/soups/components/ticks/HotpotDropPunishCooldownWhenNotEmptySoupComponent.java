@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.ticks;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -15,6 +15,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotDropPunishCooldownWhenNotEmptySoupComponent extends AbstractHotpotSoupComponent {
+
     private final int cooldownDropRate;
 
     public HotpotDropPunishCooldownWhenNotEmptySoupComponent(int cooldownDropRate) {
@@ -23,21 +24,20 @@ public class HotpotDropPunishCooldownWhenNotEmptySoupComponent extends AbstractH
 
     @Override
     public void onTick(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-        soup.getComponentsByType(
-                        HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
-                .forEach(component -> component.setEmptyWaterPunishCooldown(
-                        soup.getWaterLevel() > 0
-                                ? (component.getEmptyWaterPunishCooldown() - cooldownDropRate)
-                                : component.getEmptyWaterPunishCooldown()));
+        soup
+                .getComponentsByType(HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                .forEach(component -> component.setEmptyWaterPunishCooldown(soup.getWaterLevel() > 0
+                        ? (component.getEmptyWaterPunishCooldown() - cooldownDropRate)
+                        : component.getEmptyWaterPunishCooldown()));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotDropPunishCooldownWhenNotEmptySoupComponent> {
+
         private final int cooldownDropRate;
         private final HotpotDropPunishCooldownWhenNotEmptySoupComponent unit;
 
         private final MapCodec<HotpotDropPunishCooldownWhenNotEmptySoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownWhenNotEmptySoupComponent>
-                streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownWhenNotEmptySoupComponent> streamCodec;
 
         public Type(int cooldownDropRate) {
             this.cooldownDropRate = cooldownDropRate;
@@ -53,8 +53,7 @@ public class HotpotDropPunishCooldownWhenNotEmptySoupComponent extends AbstractH
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownWhenNotEmptySoupComponent>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotDropPunishCooldownWhenNotEmptySoupComponent> getStreamCodec() {
             return streamCodec;
         }
 
@@ -65,8 +64,7 @@ public class HotpotDropPunishCooldownWhenNotEmptySoupComponent extends AbstractH
 
         @Override
         public Holder<IHotpotSoupComponentTypeSerializer<?>> getSerializerHolder() {
-            return HotpotSoupComponentTypeSerializers
-                    .DROP_PUNISH_COOLDOWN_WHEN_NOT_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER;
+            return HotpotSoupComponentTypeSerializers.DROP_PUNISH_COOLDOWN_WHEN_NOT_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER;
         }
 
         public int getCooldownDropRate() {
@@ -74,24 +72,23 @@ public class HotpotDropPunishCooldownWhenNotEmptySoupComponent extends AbstractH
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotDropPunishCooldownWhenNotEmptySoupComponent> {
-        public static final MapCodec<Type> CODEC =
-                Codec.INT.fieldOf("cooldown_drop_rate").xmap(Type::new, Type::getCooldownDropRate);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
-                ByteBufCodecs.INT.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getCooldownDropRate);
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotDropPunishCooldownWhenNotEmptySoupComponent> {
+
+        public static final MapCodec<Type> CODEC = Codec.INT
+                .fieldOf("cooldown_drop_rate")
+                .xmap(Type::new, Type::getCooldownDropRate);
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.INT
+                .<RegistryFriendlyByteBuf>cast()
+                .map(Type::new, Type::getCooldownDropRate);
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotDropPunishCooldownWhenNotEmptySoupComponent>>
-                getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotDropPunishCooldownWhenNotEmptySoupComponent>> getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotDropPunishCooldownWhenNotEmptySoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropPunishCooldownWhenNotEmptySoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

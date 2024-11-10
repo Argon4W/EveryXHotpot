@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.contents;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -17,9 +17,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
-    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupCookingRecipe>
-            HOTPOT_COOKING_RECIPE_CHECK =
-                    RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_COOKING_RECIPE_TYPE.get());
+
+    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupCookingRecipe> HOTPOT_COOKING_RECIPE_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_COOKING_RECIPE_TYPE.get());
 
     public HotpotCookingRecipeContent(
             ItemStack itemStack,
@@ -36,7 +35,9 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
 
     @Override
     public Optional<IHotpotCookingRecipeHolder> getRecipe(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos) {
         return getHotpotCookingRecipe(soup, itemStack, pos)
                 .map(RecipeHolder::value)
                 .map(HotpotCookingRecipeHolder::new);
@@ -47,13 +48,15 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
         return HotpotContentSerializers.COOKING_RECIPE_CONTENT_SERIALIZER;
     }
 
-    public static boolean hasRecipe(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
-        return getHotpotCookingRecipe(soup, itemStack, pos).isPresent();
+    public static Optional<RecipeHolder<HotpotSoupCookingRecipe>> getHotpotCookingRecipe(
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos) {
+        return HOTPOT_COOKING_RECIPE_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, soup), pos.level());
     }
 
-    public static Optional<RecipeHolder<HotpotSoupCookingRecipe>> getHotpotCookingRecipe(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
-        return HOTPOT_COOKING_RECIPE_CHECK.getRecipeFor(new HotpotRecipeInput(itemStack, soup), pos.level());
+    public static boolean hasRecipe(HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
+        return getHotpotCookingRecipe(soup, itemStack, pos).isPresent();
     }
 
     public static class Serializer extends AbstractHotpotRecipeContent.Serializer<HotpotCookingRecipeContent> {
@@ -65,12 +68,19 @@ public class HotpotCookingRecipeContent extends AbstractHotpotRecipeContent {
                 double cookingProgress,
                 double experience) {
             return new HotpotCookingRecipeContent(
-                    itemStack, originalItemStack, cookingTime, cookingProgress, experience);
+                    itemStack,
+                    originalItemStack,
+                    cookingTime,
+                    cookingProgress,
+                    experience);
         }
 
         @Override
         public HotpotCookingRecipeContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return new HotpotCookingRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

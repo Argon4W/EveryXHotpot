@@ -10,6 +10,7 @@ import net.minecraft.util.RandomSource;
 import org.joml.Math;
 
 public abstract class AbstractHotpotGrayScaleSaucedSpriteProcessor implements IHotpotSpriteProcessor {
+
     @Override
     public void processSpriteImage(NativeImage original, NativeImage image, FrameSize frameSize, int frame) {
         double amplifier = 0.7f / getAverageGrayScale(original, frameSize, frame);
@@ -25,15 +26,16 @@ public abstract class AbstractHotpotGrayScaleSaucedSpriteProcessor implements IH
 
             int color = original.getPixelRGBA(x, y);
             int alpha = FastColor.ABGR32.alpha(color);
-            double grayScale =
-                    Math.min(1f, getGrayScale(color) * amplifier + source.nextGaussian() * getRandomFactor());
+            double grayScale = Math.min(1f, getGrayScale(color) * amplifier + source.nextGaussian() * getRandomFactor());
 
             double resultAlpha = getResultAlpha(alpha, x, y, frameSize.width(), frameSize.height());
             double resultColor = base + grayScale * factor;
 
-            image.setPixelRGBA(
-                    x, y, FastColor.ABGR32.color((int) resultAlpha, (int) resultColor, (int) resultColor, (int)
-                            resultColor));
+            image.setPixelRGBA(x, y, FastColor.ABGR32.color(
+                    (int) resultAlpha,
+                    (int) resultColor,
+                    (int) resultColor,
+                    (int) resultColor));
         });
     }
 
@@ -54,17 +56,18 @@ public abstract class AbstractHotpotGrayScaleSaucedSpriteProcessor implements IH
     }
 
     public Stream<Point> getPointStream(FrameSize frameSize) {
-        return IntStream.range(0, frameSize.width()).boxed().flatMap(x -> IntStream.range(0, frameSize.height())
-                .mapToObj(y -> new Point(x, y)));
+        return IntStream
+                .range(0, frameSize.width())
+                .boxed()
+                .flatMap(x -> IntStream.range(0, frameSize.height()).mapToObj(y -> new Point(x, y)));
     }
 
     public abstract double getResultAlpha(double alpha, int x, int y, double width, double height);
-
     public abstract double getResultGrayScaleBase();
-
     public abstract double getResultGrayScaleFactor();
-
     public abstract double getRandomFactor();
 
-    public record Point(int x, int y) {}
+    public record Point(int x, int y) {
+
+    }
 }

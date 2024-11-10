@@ -4,7 +4,7 @@ import com.mojang.math.Transformation;
 import net.minecraft.client.resources.model.BakedModel;
 
 public interface IBakedModelCache {
-    BakedModel getTransformedModel(Transformation transformation);
 
+    BakedModel getTransformedModel(Transformation transformation);
     int size();
 }

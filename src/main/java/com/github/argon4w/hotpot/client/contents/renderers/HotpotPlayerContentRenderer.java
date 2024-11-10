@@ -15,8 +15,8 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import org.joml.Math;
 
 public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
-    public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext>
-            PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
+
+    public static final HashMap<HotpotPlayerModelRendererContextCacheHolder, HotpotPlayerModelRendererContext> PLAYER_MODEL_RENDER_CONTEXT_CACHE = Maps.newHashMap();
 
     @Override
     public void render(
@@ -37,10 +37,9 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
         int modelPartIndex = playerContent.getModelPartIndex();
         ResolvableProfile profile = playerContent.getProfile();
 
-        HotpotPlayerModelRendererContext renderContext =
-                HotpotPlayerContentRenderer.PLAYER_MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(
-                        new HotpotPlayerModelRendererContextCacheHolder(modelPartIndex, profile),
-                        holder -> new HotpotPlayerModelRendererContext(profile, modelPartIndex));
+        HotpotPlayerModelRendererContext renderContext = HotpotPlayerContentRenderer.PLAYER_MODEL_RENDER_CONTEXT_CACHE.computeIfAbsent(
+                new HotpotPlayerModelRendererContextCacheHolder(modelPartIndex, profile),
+                holder -> new HotpotPlayerModelRendererContext(profile, modelPartIndex));
 
         if (!renderContext.isModelPartLoaded()) {
             renderContext.updateModelPartWithTexture();
@@ -65,8 +64,7 @@ public class HotpotPlayerContentRenderer implements IHotpotContentRenderer {
                 .getModelPart()
                 .render(
                         poseStack,
-                        bufferSource.getBuffer(
-                                RenderType.entityTranslucent(renderContext.getModelPartTextureResourceLocation())),
+                        bufferSource.getBuffer(RenderType.entityTranslucent(renderContext.getModelPartTextureResourceLocation())),
                         combinedLight,
                         combinedOverlay);
 

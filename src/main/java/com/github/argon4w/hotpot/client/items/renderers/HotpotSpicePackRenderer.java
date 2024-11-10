@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
+
     @Override
     public void render(
             ItemStack itemStack,
@@ -53,8 +54,8 @@ public class HotpotSpicePackRenderer implements IHotpotItemSpecialRenderer {
                             combinedLight,
                             combinedOverlay,
                             ItemDisplayContext.FIXED.ordinal());
-            poseStack.popPose();
 
+            poseStack.popPose();
             poseStack.translate(itemPositionX, 0, 0);
         }
 

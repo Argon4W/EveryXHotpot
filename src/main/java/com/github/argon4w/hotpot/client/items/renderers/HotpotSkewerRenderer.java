@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotSkewerRenderer implements IHotpotItemSpecialRenderer {
+
     @Override
     public void render(
             ItemStack itemStack,

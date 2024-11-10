@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.blocks;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementCoords;
 import com.mojang.serialization.MapCodec;
@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class HotpotElegantPlacementRackBlock extends BaseEntityBlock {
+
     public static final VoxelShape SHAPE_NORTH = Shapes.or(
             box(8.0f, 2.0f, 0.0f, 16.0f, 3.0f, 16.0f),
             box(8.0f, 11.0f, 0.0f, 16.0f, 12.0f, 16.0f),
@@ -51,9 +52,14 @@ public class HotpotElegantPlacementRackBlock extends BaseEntityBlock {
             box(0.0f, 11.0f, 0.0f, 16.0f, 12.0f, 8.0f),
             box(0.0f, 0.0f, 0.0f, 16.0f, 2.0f, 16.0f));
 
-    public static final VoxelShape[] SHAPES_BY_INDEX = {SHAPE_SOUTH, SHAPE_WEST, SHAPE_NORTH, SHAPE_EAST};
-    private static final Object2IntMap<BlockState> STATE_TO_INDEX = new Object2IntOpenHashMap<>();
+    public static final VoxelShape[] SHAPES_BY_INDEX = {
+            SHAPE_SOUTH,
+            SHAPE_WEST,
+            SHAPE_NORTH,
+            SHAPE_EAST
+    };
 
+    private static final Object2IntMap<BlockState> STATE_TO_INDEX = new Object2IntOpenHashMap<>();
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public HotpotElegantPlacementRackBlock() {
@@ -83,8 +89,7 @@ public class HotpotElegantPlacementRackBlock extends BaseEntityBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem
-                && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
+        if (HotpotPlacementBlockItem.shouldPass(itemStack, player, hand, blockPos)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -113,42 +118,49 @@ public class HotpotElegantPlacementRackBlock extends BaseEntityBlock {
 
         LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (!(blockPos.getBlockEntity()
-                instanceof HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity)) {
+        if (!(blockPos.getBlockEntity() instanceof HotpotElegantPlacementRackBlockEntity blockEntity)) {
             return super.getCloneItemStack(state, target, levelReader, pos, player);
         }
 
         int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
         int layer = HotpotElegantPlacementRackBlockEntity.getLayerFromHitResult(target, pos);
+        int index = blockEntity.getPlacementIndexInPosAndLayer(position, layer);
 
-        return hotpotElegantPlacementRackBlockEntity
-                .getPlacementInPosAndLayer(position, layer)
-                .getCloneItemStack(hotpotElegantPlacementRackBlockEntity, blockPos);
+        if (index < 0) {
+            return super.getCloneItemStack(state, target, levelReader, pos, player);
+        }
+
+        return blockEntity.getPlacements(layer).get(index).getCloneItemStack(blockEntity, blockPos);
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean b) {
+    public void onRemove(
+            BlockState state,
+            @NotNull Level level,
+            @NotNull BlockPos pos,
+            BlockState newState,
+            boolean movedByPiston) {
+        LevelBlockPos blockPos = new LevelBlockPos(level, pos);
+
         if (state.is(newState.getBlock())) {
             return;
         }
 
-        if (level.getBlockEntity(pos)
-                instanceof HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity) {
-            hotpotElegantPlacementRackBlockEntity.onRemove(new LevelBlockPos(level, pos));
+        if (blockPos.getBlockEntity() instanceof HotpotElegantPlacementRackBlockEntity blockEntity) {
+            blockEntity.onRemove(blockPos);
         }
 
-        super.onRemove(state, level, pos, newState, b);
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-            Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> blockEntityType) {
+            Level level,
+            @NotNull BlockState blockState,
+            @NotNull BlockEntityType<T> blockEntityType) {
         return level.isClientSide
                 ? null
-                : createTickerHelper(
-                        blockEntityType,
-                        HotpotModEntry.HOTPOT_ELEGANT_PLACEMENT_RACK_BLOCK_ENTITY.get(),
-                        HotpotElegantPlacementRackBlockEntity::tick);
+                : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_ELEGANT_PLACEMENT_RACK_BLOCK_ENTITY.get(), HotpotElegantPlacementRackBlockEntity::tick);
     }
 
     @SuppressWarnings("deprecation")
@@ -158,8 +170,7 @@ public class HotpotElegantPlacementRackBlock extends BaseEntityBlock {
             @NotNull BlockGetter blockGetter,
             @NotNull BlockPos pos,
             @NotNull CollisionContext context) {
-        return SHAPES_BY_INDEX[
-                STATE_TO_INDEX.computeIntIfAbsent(state, s -> s.getValue(FACING).get2DDataValue())];
+        return SHAPES_BY_INDEX[STATE_TO_INDEX.computeIntIfAbsent(state, s -> s.getValue(FACING).get2DDataValue())];
     }
 
     @Override
@@ -180,8 +191,7 @@ public class HotpotElegantPlacementRackBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState()
-                .setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
     }
 
     @Override

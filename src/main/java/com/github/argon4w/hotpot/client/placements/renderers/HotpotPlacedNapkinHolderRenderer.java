@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
@@ -20,6 +20,7 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import org.joml.Math;
 
 public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -48,13 +49,10 @@ public class HotpotPlacedNapkinHolderRenderer implements IHotpotPlacementRendere
         double x = HotpotPlacementPositions.getRenderCenterX(placedNapkinHolder.getPosition());
         double z = HotpotPlacementPositions.getRenderCenterZ(placedNapkinHolder.getPosition());
 
-        int color = DyedItemColor.getOrDefault(
-                placedNapkinHolder.getNapkinHolderItemSlot().getItemStack(), -1);
+        int color = DyedItemColor.getOrDefault(placedNapkinHolder.getNapkinHolderItemSlot().getItemStack(), -1);
 
         long posHashCode = Objects.hashCode(pos);
-        long randomSeed = color * placedNapkinHolder.getPosition() * posHashCode
-                + napkinItemSlot.getItemStack().getCount()
-                + 42L;
+        long randomSeed = color * placedNapkinHolder.getPosition() * posHashCode + napkinItemSlot.getItemStack().getCount() + 42L;
 
         RandomSource randomSource = RandomSource.create();
         randomSource.setSeed(randomSeed);

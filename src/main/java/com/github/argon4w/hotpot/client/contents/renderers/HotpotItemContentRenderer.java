@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 public class HotpotItemContentRenderer implements IHotpotContentRenderer {
+
     @Override
     public void render(
             IHotpotContent content,
@@ -30,10 +31,17 @@ public class HotpotItemContentRenderer implements IHotpotContentRenderer {
 
         Item item = itemStackContent.getItemStack().getItem();
         ResourceLocation resourceLocation = BuiltInRegistries.ITEM.getKey(item);
-        IHotpotItemContentSpecialRenderer itemContentSpecialRenderer =
-                HotpotItemContentSpecialRenderers.getItemContentSpecialRenderer(resourceLocation);
+        IHotpotItemContentSpecialRenderer itemContentSpecialRenderer = HotpotItemContentSpecialRenderers.getItemContentSpecialRenderer(resourceLocation);
 
         itemContentSpecialRenderer.render(
-                itemStackContent, poseStack, bufferSource, combinedLight, combinedOverlay, waterLevel, rotation, x, z);
+                itemStackContent,
+                poseStack,
+                bufferSource,
+                combinedLight,
+                combinedOverlay,
+                waterLevel,
+                rotation,
+                x,
+                z);
     }
 }

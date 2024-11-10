@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.modifiers;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
@@ -17,6 +17,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupComponent {
+
     private final double factor;
     private final double base;
 
@@ -35,6 +36,7 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent> {
+
         private final double factor;
         private final double base;
         private final HotpotModifyExperienceSoupComponent unit;
@@ -81,13 +83,16 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
     }
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotModifyExperienceSoupComponent> {
+
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                        Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
-                        Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase))
-                .apply(type, Type::new));
+                Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
+                Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase)
+        ).apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getFactor, ByteBufCodecs.DOUBLE, Type::getBase, Type::new);
+                ByteBufCodecs.DOUBLE, Type::getFactor,
+                ByteBufCodecs.DOUBLE, Type::getBase,
+                Type::new);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent>> getCodec() {
@@ -95,10 +100,7 @@ public class HotpotModifyExperienceSoupComponent extends AbstractHotpotSoupCompo
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotModifyExperienceSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

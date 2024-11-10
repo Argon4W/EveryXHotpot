@@ -24,6 +24,7 @@ import com.github.argon4w.hotpot.soups.components.ticks.HotpotDropWaterLevelSoup
 import com.github.argon4w.hotpot.soups.components.ticks.HotpotIncreasePunishCooldownWhenEmptySoupComponent;
 import com.github.argon4w.hotpot.soups.components.updates.*;
 import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -37,411 +38,86 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class HotpotSoupComponentTypeSerializers {
-    public static final ResourceKey<Registry<IHotpotSoupComponentTypeSerializer<?>>>
-            SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY_KEY = ResourceKey.createRegistryKey(
-                    ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup_component_type_serializer"));
-    public static final ResourceKey<Registry<IHotpotSoupComponentType<?>>> SOUP_COMPONENT_TYPE_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(
-                    ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup_component"));
 
-    public static final ResourceLocation EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER_LOCATION =
-            ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_soup_component");
+    public static final ResourceKey<Registry<IHotpotSoupComponentTypeSerializer<?>>> SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup_component_type_serializer"));
+    public static final ResourceKey<Registry<IHotpotSoupComponentType<?>>> SOUP_COMPONENT_TYPE_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "soup_component"));
 
-    public static final Codec<Holder<IHotpotSoupComponentTypeSerializer<?>>> SERIALIZER_CODEC =
-            Codec.lazyInitialized(() -> getSoupComponentTypeSerializerRegistry().holderByNameCodec());
-    public static final Codec<IHotpotSoupComponentType<?>> TYPE_CODEC = Codec.lazyInitialized(
-            () -> SERIALIZER_CODEC.dispatch(IHotpotSoupComponentType::getSerializerHolder, holder -> holder.value()
-                    .getCodec()));
-    public static final Codec<Holder<IHotpotSoupComponentType<?>>> TYPE_HOLDER_CODEC =
-            Codec.lazyInitialized(() -> RegistryFileCodec.create(SOUP_COMPONENT_TYPE_REGISTRY_KEY, TYPE_CODEC, true));
+    public static final ResourceLocation EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER_LOCATION = ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "empty_soup_component");
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<IHotpotSoupComponentTypeSerializer<?>>>
-            SERIALIZER_STREAM_CODEC = NeoForgeStreamCodecs.lazy(
-                    () -> ByteBufCodecs.holderRegistry(SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY_KEY));
-    public static final StreamCodec<RegistryFriendlyByteBuf, IHotpotSoupComponentType<?>> TYPE_STREAM_CODEC =
-            NeoForgeStreamCodecs.lazy(() -> SERIALIZER_STREAM_CODEC.dispatch(
-                    IHotpotSoupComponentType::getSerializerHolder,
-                    holder -> holder.value().getStreamCodec()));
-    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<IHotpotSoupComponentType<?>>>
-            TYPE_HOLDER_STREAM_CODEC = NeoForgeStreamCodecs.lazy(
-                    () -> ByteBufCodecs.holder(SOUP_COMPONENT_TYPE_REGISTRY_KEY, TYPE_STREAM_CODEC));
+    public static final Codec<Holder<IHotpotSoupComponentTypeSerializer<?>>> SERIALIZER_CODEC = Codec.lazyInitialized(() -> getSoupComponentTypeSerializerRegistry().holderByNameCodec());
+    public static final Codec<IHotpotSoupComponentType<?>> TYPE_CODEC = Codec.lazyInitialized(() -> SERIALIZER_CODEC.dispatch(IHotpotSoupComponentType::getSerializerHolder, holder -> holder.value().getCodec()));
+    public static final Codec<Holder<IHotpotSoupComponentType<?>>> TYPE_HOLDER_CODEC = Codec.lazyInitialized(() -> RegistryFileCodec.create(SOUP_COMPONENT_TYPE_REGISTRY_KEY, TYPE_CODEC, true));
 
-    public static final DeferredRegister<IHotpotSoupComponentTypeSerializer<?>> SOUP_COMPONENT_TYPE_SERIALIZERS =
-            DeferredRegister.create(SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY_KEY, HotpotModEntry.MODID);
-    public static final Registry<IHotpotSoupComponentTypeSerializer<?>> SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY =
-            SOUP_COMPONENT_TYPE_SERIALIZERS.makeRegistry(
-                    builder -> builder.defaultKey(EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER_LOCATION)
-                            .sync(true));
+    public static final Codec<ResourceKey<IHotpotSoupComponentType<?>>> KEY_CODEC = ResourceKey.codec(HotpotSoupComponentTypeSerializers.SOUP_COMPONENT_TYPE_REGISTRY_KEY);
+    public static final StreamCodec<ByteBuf, ResourceKey<IHotpotSoupComponentType<?>>> KEY_STREAM_CODEC = ResourceKey.streamCodec(HotpotSoupComponentTypeSerializers.SOUP_COMPONENT_TYPE_REGISTRY_KEY);
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotCampfireRecipeContentProviderSoupComponent>>
-            CAMPFIRE_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "campfire_recipe_content_provider_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotCampfireRecipeContentProviderSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .CAMPFIRE_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSmeltingRecipeContentProviderSoupComponent>>
-            SMELTING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "smelting_recipe_content_provider_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSmeltingRecipeContentProviderSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .SMELTING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotDisassemblingRecipeContentProviderSoupComponent>>
-            DISASSEMBLING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "disassembling_recipe_content_provider_soup_component",
-                            () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                                    new HotpotDisassemblingRecipeContentProviderSoupComponent(),
-                                    HotpotSoupComponentTypeSerializers
-                                            .DISASSEMBLING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotPiglinBarterRecipeContentProviderSoupComponent>>
-            PIGLIN_BARTER_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "piglin_barter_recipe_content_provider_soup_component",
-                            () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                                    new HotpotPiglinBarterRecipeContentProviderSoupComponent(),
-                                    HotpotSoupComponentTypeSerializers
-                                            .PIGLIN_BARTER_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotCookingRecipeContentProviderSoupComponent>>
-            COOKING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "cooking_recipe_content_provider_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotCookingRecipeContentProviderSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .COOKING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotStrainerBasketContentProviderSoupComponent>>
-            STRAINER_BASKET_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "strainer_basket_content_provider_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotStrainerBasketContentProviderSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .STRAINER_BASKET_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<IHotpotSoupComponentTypeSerializer<?>>> SERIALIZER_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holderRegistry(SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY_KEY));
+    public static final StreamCodec<RegistryFriendlyByteBuf, IHotpotSoupComponentType<?>> TYPE_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> SERIALIZER_STREAM_CODEC.dispatch(IHotpotSoupComponentType::getSerializerHolder, holder -> holder.value().getStreamCodec()));
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<IHotpotSoupComponentType<?>>> TYPE_HOLDER_STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ByteBufCodecs.holder(SOUP_COMPONENT_TYPE_REGISTRY_KEY, TYPE_STREAM_CODEC));
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSoupBaseRecipeAcceptorSoupComponent>>
-            SOUP_BASE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "soup_base_recipe_acceptor_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSoupBaseRecipeAcceptorSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .SOUP_BASE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSoupRechargeRecipeAcceptorSoupComponent>>
-            SOUP_RECHARGE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "soup_recharge_recipe_acceptor_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSoupRechargeRecipeAcceptorSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .SOUP_RECHARGE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent>>
-            SOUP_RANDOM_MOB_EFFECT_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "soup_random_mob_effect_recipe_acceptor_soup_component",
-                            () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                                    new HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent(),
-                                    HotpotSoupComponentTypeSerializers
-                                            .SOUP_RANDOM_MOB_EFFECT_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredRegister<IHotpotSoupComponentTypeSerializer<?>> SOUP_COMPONENT_TYPE_SERIALIZERS = DeferredRegister.create(SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY_KEY, HotpotModEntry.MODID);
+    public static final Registry<IHotpotSoupComponentTypeSerializer<?>> SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY = SOUP_COMPONENT_TYPE_SERIALIZERS.makeRegistry(builder -> builder.defaultKey(EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER_LOCATION).sync(true));
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotEmptySoupComponent>>
-            EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "empty_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotEmptySoupComponent(),
-                            HotpotSoupComponentTypeSerializers.EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotRemoveSoupWhenCrouchingSoupComponent>>
-            REMOVE_SOUP_WHEN_CROUCHING_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "remove_soup_when_crouching_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotRemoveSoupWhenCrouchingSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .REMOVE_SOUP_WHEN_CROUCHING_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSummonExperienceOrbSoupComponent>>
-            SUMMON_EXPERIENCE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "summon_experience_orb_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSummonExperienceOrbSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.SUMMON_EXPERIENCE_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotCanBePackedSoupComponent>>
-            CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "can_be_packed_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotCanBePackedSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotCompoundSoupComponent.Serializer>
-            COMPOUND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "compound_soup_component", HotpotCompoundSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotNoLitSoupComponent>>
-            NO_LIT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "no_lit_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotNoLitSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.NO_LIT_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotCampfireRecipeContentProviderSoupComponent>> CAMPFIRE_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("campfire_recipe_content_provider_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotCampfireRecipeContentProviderSoupComponent(), HotpotSoupComponentTypeSerializers.CAMPFIRE_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSmeltingRecipeContentProviderSoupComponent>> SMELTING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("smelting_recipe_content_provider_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSmeltingRecipeContentProviderSoupComponent(), HotpotSoupComponentTypeSerializers.SMELTING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotDisassemblingRecipeContentProviderSoupComponent>> DISASSEMBLING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("disassembling_recipe_content_provider_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotDisassemblingRecipeContentProviderSoupComponent(), HotpotSoupComponentTypeSerializers.DISASSEMBLING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotPiglinBarterRecipeContentProviderSoupComponent>> PIGLIN_BARTER_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("piglin_barter_recipe_content_provider_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotPiglinBarterRecipeContentProviderSoupComponent(), HotpotSoupComponentTypeSerializers.PIGLIN_BARTER_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotCookingRecipeContentProviderSoupComponent>> COOKING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("cooking_recipe_content_provider_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotCookingRecipeContentProviderSoupComponent(), HotpotSoupComponentTypeSerializers.COOKING_RECIPE_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotStrainerBasketContentProviderSoupComponent>> STRAINER_BASKET_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("strainer_basket_content_provider_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotStrainerBasketContentProviderSoupComponent(), HotpotSoupComponentTypeSerializers.STRAINER_BASKET_CONTENT_PROVIDER_SOUP_COMPONENT_TYPE_SERIALIZER));
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotAddItemStackContentByHandSoupComponent>>
-            ADD_ITEM_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "add_item_content_by_hand_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotAddItemStackContentByHandSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .ADD_ITEM_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotDropContentByHandSoupComponent>>
-            DROP_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "drop_content_by_hand_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotDropContentByHandSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.DROP_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotDropFloatingContentByHandSoupComponent>>
-            DROP_FLOATING_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "drop_floating_content_by_hand_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotDropFloatingContentByHandSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .DROP_FLOATING_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotGetContentByHandSoupComponent>>
-            GET_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "get_content_by_hand_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotGetContentByHandSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.GET_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotTryPickContentByHandSoupComponent>>
-            TRY_PICK_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "try_pick_content_by_hand_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotTryPickContentByHandSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .TRY_PICK_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotHurtPlayerWHenInteractSoupComponent.Serializer>
-            HURT_PLAYER_WHEN_INTERACT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "hurt_player_when_interact_soup_component",
-                    HotpotHurtPlayerWHenInteractSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotApplySpriteConfigsWhenGetContentSoupComponent.Serializer>
-            APPLY_SPRITE_CONFIGS_WHEN_GET_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "apply_sprite_configs_when_get_content",
-                            HotpotApplySpriteConfigsWhenGetContentSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSoupBaseRecipeAcceptorSoupComponent>> SOUP_BASE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("soup_base_recipe_acceptor_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSoupBaseRecipeAcceptorSoupComponent(), HotpotSoupComponentTypeSerializers.SOUP_BASE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSoupRechargeRecipeAcceptorSoupComponent>> SOUP_RECHARGE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("soup_recharge_recipe_acceptor_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSoupRechargeRecipeAcceptorSoupComponent(), HotpotSoupComponentTypeSerializers.SOUP_RECHARGE_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent>> SOUP_RANDOM_MOB_EFFECT_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("soup_random_mob_effect_recipe_acceptor_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent(), HotpotSoupComponentTypeSerializers.SOUP_RANDOM_MOB_EFFECT_RECIPE_ACCEPTOR_SOUP_COMPONENT_TYPE_SERIALIZER));
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotAddItemEntityInsideSoupComponent.Serializer>
-            ADD_ITEM_ENTITY_INSIDE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "add_item_entity_inside_soup_component", HotpotAddItemEntityInsideSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotAttackEntityInsideSoupComponent.Serializer>
-            ATTACK_ENTITY_INSIDE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "attack_entity_inside_soup_component", HotpotAttackEntityInsideSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotEmptySoupComponent>> EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("empty_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotEmptySoupComponent(), HotpotSoupComponentTypeSerializers.EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotRemoveSoupWhenCrouchingSoupComponent>> REMOVE_SOUP_WHEN_CROUCHING_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("remove_soup_when_crouching_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotRemoveSoupWhenCrouchingSoupComponent(), HotpotSoupComponentTypeSerializers.REMOVE_SOUP_WHEN_CROUCHING_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSummonExperienceOrbSoupComponent>> SUMMON_EXPERIENCE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("summon_experience_orb_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSummonExperienceOrbSoupComponent(), HotpotSoupComponentTypeSerializers.SUMMON_EXPERIENCE_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotCanBePackedSoupComponent>> CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("can_be_packed_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotCanBePackedSoupComponent(), HotpotSoupComponentTypeSerializers.CAN_BE_PACKED_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotCompoundSoupComponent.Serializer> COMPOUND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("compound_soup_component", HotpotCompoundSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotNoLitSoupComponent>> NO_LIT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("no_lit_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotNoLitSoupComponent(), HotpotSoupComponentTypeSerializers.NO_LIT_SOUP_COMPONENT_TYPE_SERIALIZER));
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotModifyExperienceSoupComponent.Serializer>
-            MODIFY_EXPERIENCE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "modify_experience_soup_component", HotpotModifyExperienceSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotModifyContentTickSpeedSoupComponent.Serializer>
-            MODIFY_CONTENT_TICK_SPEED_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "modify_content_tick_speed_soup_component",
-                    HotpotModifyContentTickSpeedSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotModifyWaterLevelSoupComponent.Serializer>
-            MODIFY_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "modify_water_level_soup_component", HotpotModifyWaterLevelSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotAddItemStackContentByHandSoupComponent>> ADD_ITEM_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("add_item_content_by_hand_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotAddItemStackContentByHandSoupComponent(), HotpotSoupComponentTypeSerializers.ADD_ITEM_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotDropContentByHandSoupComponent>> DROP_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("drop_content_by_hand_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotDropContentByHandSoupComponent(), HotpotSoupComponentTypeSerializers.DROP_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotDropFloatingContentByHandSoupComponent>> DROP_FLOATING_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("drop_floating_content_by_hand_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotDropFloatingContentByHandSoupComponent(), HotpotSoupComponentTypeSerializers.DROP_FLOATING_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotGetContentByHandSoupComponent>> GET_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("get_content_by_hand_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotGetContentByHandSoupComponent(), HotpotSoupComponentTypeSerializers.GET_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotTryPickContentByHandSoupComponent>> TRY_PICK_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("try_pick_content_by_hand_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotTryPickContentByHandSoupComponent(), HotpotSoupComponentTypeSerializers.TRY_PICK_CONTENT_BY_HAND_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotHurtPlayerWHenInteractSoupComponent.Serializer> HURT_PLAYER_WHEN_INTERACT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("hurt_player_when_interact_soup_component", HotpotHurtPlayerWHenInteractSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotApplySpriteConfigsWhenGetContentSoupComponent.Serializer> APPLY_SPRITE_CONFIGS_WHEN_GET_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("apply_sprite_configs_when_get_content", HotpotApplySpriteConfigsWhenGetContentSoupComponent.Serializer::new);
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotActivenessContainerSoupComponent.Serializer>
-            ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "activeness_container_soup_component", HotpotActivenessContainerSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotWaterLevelContainerSoupComponent>>
-            WATER_LEVEL_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "water_level_container_soup_container",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotWaterLevelContainerSoupComponent.Type()));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotFixedMobEffectContainerSoupComponent.Serializer>
-            FIXED_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "fixed_mob_effect_container_soup_component",
-                    HotpotFixedMobEffectContainerSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotDynamicMobEffectContainerSoupComponent.Serializer>
-            DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "dynamic_mob_effect_container_soup_component",
-                    HotpotDynamicMobEffectContainerSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotPunishCooldownContainerSoupComponent.Serializer>
-            PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "punish_cooldown_container_soup_component",
-                    HotpotPunishCooldownContainerSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotAddItemEntityInsideSoupComponent.Serializer> ADD_ITEM_ENTITY_INSIDE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("add_item_entity_inside_soup_component", HotpotAddItemEntityInsideSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotAttackEntityInsideSoupComponent.Serializer> ATTACK_ENTITY_INSIDE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("attack_entity_inside_soup_component", HotpotAttackEntityInsideSoupComponent.Serializer::new);
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotDropActivenessSoupComponent.Serializer>
-            DROP_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "drop_activeness_soup_component", HotpotDropActivenessSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotDropWaterLevelSoupComponent.Serializer>
-            DROP_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "drop_water_level_soup_component", HotpotDropWaterLevelSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotDropPunishCooldownWhenNotEmptySoupComponent.Serializer>
-            DROP_PUNISH_COOLDOWN_WHEN_NOT_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "drop_punish_cooldown_when_not_empty_soup_component",
-                            HotpotDropPunishCooldownWhenNotEmptySoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotIncreasePunishCooldownWhenEmptySoupComponent.Serializer>
-            INCREASE_PUNISH_COOLDOWN_WHEN_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "increase_punish_cooldown_when_empty_soup_component",
-                            HotpotIncreasePunishCooldownWhenEmptySoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotModifyExperienceSoupComponent.Serializer> MODIFY_EXPERIENCE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("modify_experience_soup_component", HotpotModifyExperienceSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotModifyContentTickSpeedSoupComponent.Serializer> MODIFY_CONTENT_TICK_SPEED_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("modify_content_tick_speed_soup_component", HotpotModifyContentTickSpeedSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotModifyWaterLevelSoupComponent.Serializer> MODIFY_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("modify_water_level_soup_component", HotpotModifyWaterLevelSoupComponent.Serializer::new);
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotGetExtraContentTickSpeedFromActivenessSoupComponent.Serializer>
-            GET_EXTRA_CONTENT_TICK_SPEED_FROM_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "get_extra_content_tick_speed_from_activeness_soup_component",
-                            HotpotGetExtraContentTickSpeedFromActivenessSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent.Serializer>
-            GET_EXTRA_CONTENT_TICK_SPEED_FROM_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "get_extra_content_tick_speed_from_water_level_soup_component",
-                            HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotGetExtraExperienceFromActivenessSoupComponent.Serializer>
-            GET_EXTRA_EXPERIENCE_FROM_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "get_extra_experience_from_activeness_soup_component",
-                            HotpotGetExtraExperienceFromActivenessSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotActivenessContainerSoupComponent.Serializer> ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("activeness_container_soup_component", HotpotActivenessContainerSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotWaterLevelContainerSoupComponent>> WATER_LEVEL_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("water_level_container_soup_container", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotWaterLevelContainerSoupComponent.Type()));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotFixedMobEffectContainerSoupComponent.Serializer> FIXED_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("fixed_mob_effect_container_soup_component", HotpotFixedMobEffectContainerSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotDynamicMobEffectContainerSoupComponent.Serializer> DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("dynamic_mob_effect_container_soup_component", HotpotDynamicMobEffectContainerSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotPunishCooldownContainerSoupComponent.Serializer> PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("punish_cooldown_container_soup_component", HotpotPunishCooldownContainerSoupComponent.Serializer::new);
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotIncreaseActivenessOnContentUpdateSoupComponent.Serializer>
-            INCREASE_ACTIVENESS_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "increase_activeness_on_content_update_soup_component",
-                            HotpotIncreaseActivenessOnContentUpdateSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotIncreaseWaterLevelOnContentUpdateSoupComponent.Serializer>
-            INCREASE_WATER_LEVEL_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "increase_water_level_on_content_update_soup_component",
-                            HotpotIncreaseWaterLevelOnContentUpdateSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>, HotpotApplyMobEffectOnContentUpdateSoupComponent.Serializer>
-            APPLY_MOB_EFFECT_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "apply_mob_effect_on_content_update_soup_component",
-                            HotpotApplyMobEffectOnContentUpdateSoupComponent.Serializer::new);
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotUpdateContentSoupComponent>>
-            UPDATE_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "update_content_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotUpdateContentSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.UPDATE_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotBlockContentUpdateWhenEmptySoupComponent>>
-            BLOCK_CONTENT_UPDATE_WHEN_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "block_content_update_when_empty_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotBlockContentUpdateWhenEmptySoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .BLOCK_CONTENT_UPDATE_WHEN_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent>>
-            BLOCK_CONTENT_UPDATE_WHEN_IN_PUNISH_COOLDOWN_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "block_content_update_when_in_punish_cooldown_soup_component",
-                            () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                                    new HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent(),
-                                    HotpotSoupComponentTypeSerializers
-                                            .BLOCK_CONTENT_UPDATE_WHEN_IN_PUNISH_COOLDOWN_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotDropPunishCooldownOnContentUpdateSoupComponent.Serializer>
-            DROP_PUNISH_COOLDOWN_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER =
-                    SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                            "drop_punish_cooldown_on_content_update_soup_component",
-                            HotpotDropPunishCooldownOnContentUpdateSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotDropActivenessSoupComponent.Serializer> DROP_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("drop_activeness_soup_component", HotpotDropActivenessSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotDropWaterLevelSoupComponent.Serializer> DROP_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("drop_water_level_soup_component", HotpotDropWaterLevelSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotDropPunishCooldownWhenNotEmptySoupComponent.Serializer> DROP_PUNISH_COOLDOWN_WHEN_NOT_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("drop_punish_cooldown_when_not_empty_soup_component", HotpotDropPunishCooldownWhenNotEmptySoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotIncreasePunishCooldownWhenEmptySoupComponent.Serializer> INCREASE_PUNISH_COOLDOWN_WHEN_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("increase_punish_cooldown_when_empty_soup_component", HotpotIncreasePunishCooldownWhenEmptySoupComponent.Serializer::new);
 
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeActivenessSoupComponent>>
-            SYNCHRONIZE_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "synchronize_activeness_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSynchronizeActivenessSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.SYNCHRONIZE_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeTickSoupComponent>>
-            SYNCHRONIZE_TICK_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "synchronize_tick_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSynchronizeTickSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.SYNCHRONIZE_TICK_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeWaterLevelSoupComponent>>
-            SYNCHRONIZE_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "synchronize_water_level_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSynchronizeWaterLevelSoupComponent(),
-                            HotpotSoupComponentTypeSerializers.SYNCHRONIZE_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER));
-    public static final DeferredHolder<
-                    IHotpotSoupComponentTypeSerializer<?>,
-                    HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeDynamicMobEffectsSoupComponent>>
-            SYNCHRONIZE_DYNAMIC_MOB_EFFECTS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register(
-                    "synchronize_dynamic_mob_effects_soup_component",
-                    () -> new HotpotSoupComponentTypeUnitSerializer<>(
-                            new HotpotSynchronizeDynamicMobEffectsSoupComponent(),
-                            HotpotSoupComponentTypeSerializers
-                                    .SYNCHRONIZE_DYNAMIC_MOB_EFFECTS_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotGetExtraContentTickSpeedFromActivenessSoupComponent.Serializer> GET_EXTRA_CONTENT_TICK_SPEED_FROM_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("get_extra_content_tick_speed_from_activeness_soup_component", HotpotGetExtraContentTickSpeedFromActivenessSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent.Serializer> GET_EXTRA_CONTENT_TICK_SPEED_FROM_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("get_extra_content_tick_speed_from_water_level_soup_component", HotpotGetExtraContentTickSpeedFromWaterLevelSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotGetExtraExperienceFromActivenessSoupComponent.Serializer> GET_EXTRA_EXPERIENCE_FROM_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("get_extra_experience_from_activeness_soup_component", HotpotGetExtraExperienceFromActivenessSoupComponent.Serializer::new);
+
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotIncreaseActivenessOnContentUpdateSoupComponent.Serializer> INCREASE_ACTIVENESS_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("increase_activeness_on_content_update_soup_component", HotpotIncreaseActivenessOnContentUpdateSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotIncreaseWaterLevelOnContentUpdateSoupComponent.Serializer> INCREASE_WATER_LEVEL_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("increase_water_level_on_content_update_soup_component", HotpotIncreaseWaterLevelOnContentUpdateSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotApplyMobEffectOnContentUpdateSoupComponent.Serializer> APPLY_MOB_EFFECT_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("apply_mob_effect_on_content_update_soup_component", HotpotApplyMobEffectOnContentUpdateSoupComponent.Serializer::new);
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotUpdateContentSoupComponent>> UPDATE_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("update_content_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotUpdateContentSoupComponent(), HotpotSoupComponentTypeSerializers.UPDATE_CONTENT_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotBlockContentUpdateWhenEmptySoupComponent>> BLOCK_CONTENT_UPDATE_WHEN_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("block_content_update_when_empty_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotBlockContentUpdateWhenEmptySoupComponent(), HotpotSoupComponentTypeSerializers.BLOCK_CONTENT_UPDATE_WHEN_EMPTY_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent>> BLOCK_CONTENT_UPDATE_WHEN_IN_PUNISH_COOLDOWN_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("block_content_update_when_in_punish_cooldown_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent(), HotpotSoupComponentTypeSerializers.BLOCK_CONTENT_UPDATE_WHEN_IN_PUNISH_COOLDOWN_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotDropPunishCooldownOnContentUpdateSoupComponent.Serializer> DROP_PUNISH_COOLDOWN_ON_CONTENT_UPDATE_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("drop_punish_cooldown_on_content_update_soup_component", HotpotDropPunishCooldownOnContentUpdateSoupComponent.Serializer::new);
+
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeActivenessSoupComponent>> SYNCHRONIZE_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("synchronize_activeness_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSynchronizeActivenessSoupComponent(), HotpotSoupComponentTypeSerializers.SYNCHRONIZE_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeTickSoupComponent>> SYNCHRONIZE_TICK_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("synchronize_tick_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSynchronizeTickSoupComponent(), HotpotSoupComponentTypeSerializers.SYNCHRONIZE_TICK_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeWaterLevelSoupComponent>> SYNCHRONIZE_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("synchronize_water_level_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSynchronizeWaterLevelSoupComponent(), HotpotSoupComponentTypeSerializers.SYNCHRONIZE_WATER_LEVEL_SOUP_COMPONENT_TYPE_SERIALIZER));
+    public static final DeferredHolder<IHotpotSoupComponentTypeSerializer<?>, HotpotSoupComponentTypeUnitSerializer<HotpotSynchronizeDynamicMobEffectsSoupComponent>> SYNCHRONIZE_DYNAMIC_MOB_EFFECTS_SOUP_COMPONENT_TYPE_SERIALIZER = SOUP_COMPONENT_TYPE_SERIALIZERS.register("synchronize_dynamic_mob_effects_soup_component", () -> new HotpotSoupComponentTypeUnitSerializer<>(new HotpotSynchronizeDynamicMobEffectsSoupComponent(), HotpotSoupComponentTypeSerializers.SYNCHRONIZE_DYNAMIC_MOB_EFFECTS_SOUP_COMPONENT_TYPE_SERIALIZER));
 
     public static Registry<IHotpotSoupComponentTypeSerializer<?>> getSoupComponentTypeSerializerRegistry() {
         return SOUP_COMPONENT_TYPE_SERIALIZER_REGISTRY;

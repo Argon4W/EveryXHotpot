@@ -7,6 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 
 public interface IHotpotSoupCustomElementRenderer {
+
     void render(
             long time,
             float partialTick,
@@ -17,10 +18,7 @@ public interface IHotpotSoupCustomElementRenderer {
             double waterLevel);
 
     void prepareModel();
-
     boolean shouldRenderInBowl();
-
     List<ResourceLocation> getRequiredModelResourceLocations();
-
     Holder<IHotpotSoupCustomElementRendererSerializer<?>> getSerializer();
 }

@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.appendents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
@@ -18,6 +18,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotGetExtraExperienceFromActivenessSoupComponent extends AbstractHotpotSoupComponent {
+
     private final double factor;
     private final double base;
 
@@ -32,26 +33,21 @@ public class HotpotGetExtraExperienceFromActivenessSoupComponent extends Abstrac
             HotpotComponentSoup soup,
             LevelBlockPos pos,
             IHotpotResult<Double> result) {
-        return result.map(experience -> experience
-                * (base
-                        + factor
-                                * soup
-                                        .getComponentsByType(
-                                                HotpotSoupComponentTypeSerializers
-                                                        .ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
-                                        .stream()
-                                        .mapToDouble(HotpotActivenessContainerSoupComponent::getActiveness)
-                                        .sum()));
+        return result.map(experience -> experience * (base + factor * soup
+                .getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                .stream()
+                .mapToDouble(HotpotActivenessContainerSoupComponent::getActiveness)
+                .sum()));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotGetExtraExperienceFromActivenessSoupComponent> {
+
         private final double factor;
         private final double base;
         private final HotpotGetExtraExperienceFromActivenessSoupComponent unit;
 
         private final MapCodec<HotpotGetExtraExperienceFromActivenessSoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotGetExtraExperienceFromActivenessSoupComponent>
-                streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotGetExtraExperienceFromActivenessSoupComponent> streamCodec;
 
         public Type(double factor, double base) {
             this.factor = factor;
@@ -68,8 +64,7 @@ public class HotpotGetExtraExperienceFromActivenessSoupComponent extends Abstrac
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, HotpotGetExtraExperienceFromActivenessSoupComponent>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, HotpotGetExtraExperienceFromActivenessSoupComponent> getStreamCodec() {
             return streamCodec;
         }
 
@@ -80,8 +75,7 @@ public class HotpotGetExtraExperienceFromActivenessSoupComponent extends Abstrac
 
         @Override
         public Holder<IHotpotSoupComponentTypeSerializer<?>> getSerializerHolder() {
-            return HotpotSoupComponentTypeSerializers
-                    .GET_EXTRA_EXPERIENCE_FROM_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER;
+            return HotpotSoupComponentTypeSerializers.GET_EXTRA_EXPERIENCE_FROM_ACTIVENESS_SOUP_COMPONENT_TYPE_SERIALIZER;
         }
 
         public double getFactor() {
@@ -93,27 +87,25 @@ public class HotpotGetExtraExperienceFromActivenessSoupComponent extends Abstrac
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotGetExtraExperienceFromActivenessSoupComponent> {
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotGetExtraExperienceFromActivenessSoupComponent> {
+
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                        Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
-                        Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase))
-                .apply(type, Type::new));
+                Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
+                Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase)
+        ).apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getFactor, ByteBufCodecs.DOUBLE, Type::getBase, Type::new);
+                ByteBufCodecs.DOUBLE, Type::getFactor,
+                ByteBufCodecs.DOUBLE, Type::getBase,
+                Type::new);
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotGetExtraExperienceFromActivenessSoupComponent>>
-                getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotGetExtraExperienceFromActivenessSoupComponent>> getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotGetExtraExperienceFromActivenessSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotGetExtraExperienceFromActivenessSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

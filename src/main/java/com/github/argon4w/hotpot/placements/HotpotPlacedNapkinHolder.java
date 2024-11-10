@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
+
     private final int position;
     private final ComplexDirection direction;
     private final SimpleItemSlot napkinHolderItemSlot;
@@ -71,8 +72,7 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
             return;
         }
 
-        List<Holder<MobEffect>> holders =
-                player.getActiveEffectsMap().keySet().stream().toList();
+        List<Holder<MobEffect>> holders = player.getActiveEffectsMap().keySet().stream().toList();
         player.removeEffect(holders.get(player.getRandom().nextInt(holders.size())));
     }
 
@@ -165,16 +165,12 @@ public class HotpotPlacedNapkinHolder implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedNapkinHolder> {
-        public static final MapCodec<HotpotPlacedNapkinHolder> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
-                                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedNapkinHolder::getPosition),
-                                ComplexDirection.CODEC
-                                        .fieldOf("direction")
-                                        .forGetter(HotpotPlacedNapkinHolder::getDirection),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("napkin_holder_item_slot")
-                                        .forGetter(HotpotPlacedNapkinHolder::getNapkinHolderItemSlot))
-                        .apply(plate, HotpotPlacedNapkinHolder::new)));
+
+        public static final MapCodec<HotpotPlacedNapkinHolder> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
+                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedNapkinHolder::getPosition),
+                ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotPlacedNapkinHolder::getDirection),
+                SimpleItemSlot.CODEC.fieldOf("napkin_holder_item_slot").forGetter(HotpotPlacedNapkinHolder::getNapkinHolderItemSlot)
+        ).apply(plate, HotpotPlacedNapkinHolder::new)));
 
         @Override
         public HotpotPlacedNapkinHolder createPlacement(List<Integer> positions, ComplexDirection direction) {

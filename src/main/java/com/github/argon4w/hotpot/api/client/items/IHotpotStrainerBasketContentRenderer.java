@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemStack;
 
 public interface IHotpotStrainerBasketContentRenderer {
+
     void renderInSoup(
             List<ItemStack> itemStacks,
             PoseStack poseStack,

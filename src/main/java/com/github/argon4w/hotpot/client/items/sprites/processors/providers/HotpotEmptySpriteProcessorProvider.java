@@ -6,6 +6,7 @@ import com.github.argon4w.hotpot.client.items.sprites.processors.HotpotSpritePro
 import net.minecraft.resources.ResourceLocation;
 
 public class HotpotEmptySpriteProcessorProvider implements IHotpotSpriteProcessorProvider {
+
     @Override
     public ResourceLocation getProcessorResourceLocation(IHotpotSpriteConfig config) {
         return HotpotSpriteProcessors.EMPTY_SPRITE_PROCESSOR_LOCATION;

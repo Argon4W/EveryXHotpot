@@ -11,32 +11,33 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import org.jetbrains.annotations.NotNull;
 
-public class HotpotPlacementBlockEntityRenderer
-        implements BlockEntityRenderer<HotpotPlacementBlockEntity>,
-                IBlockEntitySectionGeometryRenderer<HotpotPlacementBlockEntity> {
+public class HotpotPlacementBlockEntityRenderer implements
+        BlockEntityRenderer<HotpotPlacementBlockEntity>,
+        IBlockEntitySectionGeometryRenderer<HotpotPlacementBlockEntity> {
+
     @Override
     public void render(
             HotpotPlacementBlockEntity hotpotPlacementBlockEntity,
             float partialTick,
-            PoseStack poseStack,
-            MultiBufferSource bufferSource,
+            @NotNull PoseStack poseStack,
+            @NotNull MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay) {
         hotpotPlacementBlockEntity.getPlacements(0).forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .render(
-                                placement,
-                                hotpotPlacementBlockEntity,
-                                hotpotPlacementBlockEntity.getBlockPos(),
-                                poseStack,
-                                bufferSource,
-                                combinedLight,
-                                combinedOverlay,
-                                partialTick)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(
+                        placement,
+                        hotpotPlacementBlockEntity,
+                        hotpotPlacementBlockEntity.getBlockPos(),
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        partialTick)));
     }
 
     @Override
@@ -51,23 +52,22 @@ public class HotpotPlacementBlockEntityRenderer
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .renderSectionGeometry(
-                                placement, context, hotpotPlacementBlockEntity, pos, poseStack, modelRenderContext)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).renderSectionGeometry(
+                        placement,
+                        context,
+                        hotpotPlacementBlockEntity,
+                        pos,
+                        poseStack,
+                        modelRenderContext)));
     }
 
     @Override
-    public boolean shouldRenderOffScreen(HotpotPlacementBlockEntity hotpotBlockEntity) {
+    public boolean shouldRenderOffScreen(@NotNull HotpotPlacementBlockEntity hotpotBlockEntity) {
         return true;
     }
 
     @Override
-    public boolean shouldRender(HotpotPlacementBlockEntity p_173568_, Vec3 p_173569_) {
+    public boolean shouldRender(@NotNull HotpotPlacementBlockEntity p_173568_, @NotNull Vec3 p_173569_) {
         return true;
-    }
-
-    @Override
-    public int getViewDistance() {
-        return 64;
     }
 }

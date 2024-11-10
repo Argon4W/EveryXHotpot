@@ -8,18 +8,22 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import org.jetbrains.annotations.NotNull;
 
-public class HotpotTestBenchBlockEntityRenderer
-        implements BlockEntityRenderer<HotpotTestBenchBlockEntity>,
-                IBlockEntitySectionGeometryRenderer<HotpotTestBenchBlockEntity> {
+public class HotpotTestBenchBlockEntityRenderer implements
+        BlockEntityRenderer<HotpotTestBenchBlockEntity>,
+        IBlockEntitySectionGeometryRenderer<HotpotTestBenchBlockEntity> {
+
     @Override
     public void render(
-            HotpotTestBenchBlockEntity pBlockEntity,
+            @NotNull HotpotTestBenchBlockEntity pBlockEntity,
             float pPartialTick,
-            PoseStack stack,
-            MultiBufferSource pBufferSource,
+            @NotNull PoseStack stack,
+            @NotNull MultiBufferSource pBufferSource,
             int pPackedLight,
-            int pPackedOverlay) {}
+            int pPackedOverlay) {
+
+    }
 
     @Override
     public void renderSectionGeometry(
@@ -28,5 +32,7 @@ public class HotpotTestBenchBlockEntityRenderer
             PoseStack stack,
             BlockPos blockPos,
             BlockPos regionOrigin,
-            ISectionGeometryRenderContext modelRenderContext) {}
+            ISectionGeometryRenderContext modelRenderContext) {
+
+    }
 }

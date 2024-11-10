@@ -14,6 +14,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotModifyWaterLevelSoupComponent extends AbstractHotpotSoupComponent {
+
     private final double factor;
     private final double base;
 
@@ -74,13 +75,16 @@ public class HotpotModifyWaterLevelSoupComponent extends AbstractHotpotSoupCompo
     }
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotModifyWaterLevelSoupComponent> {
+
         public static final MapCodec<Type> CODEC = RecordCodecBuilder.mapCodec(type -> type.group(
-                        Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
-                        Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase))
-                .apply(type, Type::new));
+                Codec.DOUBLE.optionalFieldOf("factor", 1.0).forGetter(Type::getFactor),
+                Codec.DOUBLE.optionalFieldOf("base", 0.0).forGetter(Type::getBase)
+        ).apply(type, Type::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.DOUBLE, Type::getFactor, ByteBufCodecs.DOUBLE, Type::getBase, Type::new);
+                ByteBufCodecs.DOUBLE, Type::getFactor,
+                ByteBufCodecs.DOUBLE, Type::getBase,
+                Type::new);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotModifyWaterLevelSoupComponent>> getCodec() {
@@ -88,10 +92,7 @@ public class HotpotModifyWaterLevelSoupComponent extends AbstractHotpotSoupCompo
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotModifyWaterLevelSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotModifyWaterLevelSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

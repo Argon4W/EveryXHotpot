@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotPlacedSpoon implements IHotpotPlacement {
+
     private final int position1;
     private final int position2;
     private final SimpleItemSlot spoonItemSlot;
@@ -107,14 +108,12 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedSpoon> {
-        public static final MapCodec<HotpotPlacedSpoon> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(spoon -> spoon.group(
-                                Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPosition1),
-                                Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPosition2),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("spoon_item_slot")
-                                        .forGetter(HotpotPlacedSpoon::getSpoonItemSlot))
-                        .apply(spoon, HotpotPlacedSpoon::new)));
+
+        public static final MapCodec<HotpotPlacedSpoon> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(spoon -> spoon.group(
+                Codec.INT.fieldOf("pos_1").forGetter(HotpotPlacedSpoon::getPosition1),
+                Codec.INT.fieldOf("pos_2").forGetter(HotpotPlacedSpoon::getPosition2),
+                SimpleItemSlot.CODEC.fieldOf("spoon_item_slot").forGetter(HotpotPlacedSpoon::getSpoonItemSlot)
+        ).apply(spoon, HotpotPlacedSpoon::new)));
 
         @Override
         public HotpotPlacedSpoon createPlacement(List<Integer> positions, ComplexDirection direction) {

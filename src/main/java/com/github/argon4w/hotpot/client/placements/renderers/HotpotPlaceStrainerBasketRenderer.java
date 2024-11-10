@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotPlaceStrainerBasketRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -45,8 +46,7 @@ public class HotpotPlaceStrainerBasketRenderer implements IHotpotPlacementRender
         double rotationY = placedStrainerBasket.getDirection().toYRot();
         double positionY = 0.5 * scale + 0.01;
 
-        ItemStack strainerBasketItemStack =
-                placedStrainerBasket.getStrainerBasketItemSlot().getItemStack();
+        ItemStack strainerBasketItemStack = placedStrainerBasket.getStrainerBasketItemSlot().getItemStack();
 
         poseStack.pushPose();
         poseStack.translate(x, positionY, z);
@@ -54,7 +54,11 @@ public class HotpotPlaceStrainerBasketRenderer implements IHotpotPlacementRender
         poseStack.scale((float) scale, (float) scale, (float) scale);
 
         modelRenderContext.renderUncachedItem(
-                strainerBasketItemStack, ItemDisplayContext.NONE, false, poseStack, OverlayTexture.NO_OVERLAY);
+                strainerBasketItemStack,
+                ItemDisplayContext.NONE,
+                false,
+                poseStack,
+                OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
     }

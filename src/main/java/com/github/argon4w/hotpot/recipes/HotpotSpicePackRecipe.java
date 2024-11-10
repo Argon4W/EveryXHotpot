@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotSpicePackRecipe extends CustomRecipe {
+
     public HotpotSpicePackRecipe(CraftingBookCategory category) {
         super(category);
     }
@@ -52,9 +53,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     }
 
     private ItemStack assembleSpicePack(ItemStack assembled, ItemStack ingredient) {
-        return Util.make(
-                assembled,
-                assembled1 -> HotpotSpicePackItem.addSpicePackItems(assembled1, ingredient.copyWithCount(1)));
+        return Util.make(assembled, assembled1 -> HotpotSpicePackItem.addSpicePackItems(assembled1, ingredient.copyWithCount(1)));
     }
 
     private ItemStack setSpicePackCharges(ItemStack itemStack) {
@@ -62,8 +61,7 @@ public class HotpotSpicePackRecipe extends CustomRecipe {
     }
 
     private boolean matchSpicePackItem(ItemStack itemStack, int count) {
-        return itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK)
-                && HotpotSpicePackItem.getSpicePackItemSize(itemStack) + count <= 4;
+        return itemStack.is(HotpotModEntry.HOTPOT_SPICE_PACK) && HotpotSpicePackItem.getSpicePackItemSize(itemStack) + count <= 4;
     }
 
     private boolean hasSuspiciousEffects(ItemStack itemStack) {

@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotPlacedStrainerBasket implements IHotpotPlacement {
+
     private final int position;
     private final ComplexDirection direction;
     private final SimpleItemSlot strainerBasketItemSlot;
@@ -109,17 +110,12 @@ public class HotpotPlacedStrainerBasket implements IHotpotPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotPlacedStrainerBasket> {
-        public static final MapCodec<HotpotPlacedStrainerBasket> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(chopstick -> chopstick
-                        .group(
-                                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedStrainerBasket::getPosition),
-                                ComplexDirection.CODEC
-                                        .fieldOf("direction")
-                                        .forGetter(HotpotPlacedStrainerBasket::getDirection),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("strainer_basket_item_slot")
-                                        .forGetter(HotpotPlacedStrainerBasket::getStrainerBasketItemSlot))
-                        .apply(chopstick, HotpotPlacedStrainerBasket::new)));
+
+        public static final MapCodec<HotpotPlacedStrainerBasket> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(chopstick -> chopstick.group(
+                Codec.INT.fieldOf("pos").forGetter(HotpotPlacedStrainerBasket::getPosition),
+                ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotPlacedStrainerBasket::getDirection),
+                SimpleItemSlot.CODEC.fieldOf("strainer_basket_item_slot").forGetter(HotpotPlacedStrainerBasket::getStrainerBasketItemSlot)
+        ).apply(chopstick, HotpotPlacedStrainerBasket::new)));
 
         @Override
         public HotpotPlacedStrainerBasket createPlacement(List<Integer> positions, ComplexDirection direction) {

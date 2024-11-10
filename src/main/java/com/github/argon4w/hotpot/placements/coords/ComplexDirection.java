@@ -15,6 +15,7 @@ import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
 public enum ComplexDirection implements StringRepresentable {
+
     IDENTITY("identity", 0),
     NORTH("north", 1, Direction.NORTH),
     SOUTH("south", 2, Direction.SOUTH),
@@ -26,12 +27,12 @@ public enum ComplexDirection implements StringRepresentable {
     SOUTH_WEST("south_west", 8, Direction.SOUTH, Direction.WEST);
 
     public static final Codec<ComplexDirection> CODEC = StringRepresentable.fromEnum(ComplexDirection::values);
-    public static final IntFunction<ComplexDirection> BY_INDEX =
-            ByIdMap.continuous(ComplexDirection::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-    public static final StreamCodec<ByteBuf, ComplexDirection> STREAM_CODEC =
-            ByteBufCodecs.idMapper(BY_INDEX, ComplexDirection::getIndex);
+    public static final IntFunction<ComplexDirection> BY_INDEX = ByIdMap.continuous(ComplexDirection::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<ByteBuf, ComplexDirection> STREAM_CODEC = ByteBufCodecs.idMapper(BY_INDEX, ComplexDirection::getIndex);
 
-    public static final ComplexDirection[] FROM_DIRECTION_DATA2D = {SOUTH, WEST, NORTH, EAST};
+    public static final ComplexDirection[] FROM_DIRECTION_DATA2D = {
+            SOUTH, WEST, NORTH, EAST
+    };
 
     public static final ComplexDirection[] OPPOSITES = {
         IDENTITY, SOUTH, NORTH, WEST, EAST, SOUTH_WEST, NORTH_WEST, SOUTH_EAST, NORTH_EAST

@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -33,7 +34,9 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
             MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay,
-            float partialTick) {}
+            float partialTick) {
+
+    }
 
     @Override
     public void renderSectionGeometry(
@@ -54,17 +57,15 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
         ComplexDirection direction = ComplexDirection.between(position1, position2);
 
         double centerX = (HotpotPlacementPositions.getRenderCenterX(position1)
-                        + HotpotPlacementPositions.getRenderCenterX(position3))
-                / 2;
+                        + HotpotPlacementPositions.getRenderCenterX(position3)) / 2;
 
         double centerZ = (HotpotPlacementPositions.getRenderCenterZ(position1)
-                        + HotpotPlacementPositions.getRenderCenterZ(position3))
-                / 2;
+                        + HotpotPlacementPositions.getRenderCenterZ(position3)) / 2;
 
-        BakedModel model = Minecraft.getInstance()
+        BakedModel model = Minecraft
+                .getInstance()
                 .getModelManager()
-                .getModel(ModelResourceLocation.standalone(
-                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_large_round")));
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_large_round")));
 
         for (int plateCount = 0; plateCount < largeRoundPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
             float positionY = plateCount * 0.0625f;
@@ -74,7 +75,11 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.scale(0.66f, 0.66f, 0.66f);
 
             modelRenderContext.renderCachedModel(
-                    model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+                    model,
+                    poseStack,
+                    RenderType.solid(),
+                    OverlayTexture.NO_OVERLAY,
+                    ModelData.EMPTY);
 
             poseStack.popPose();
         }
@@ -83,9 +88,7 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
             renderLargeRoundPlateItem(
                     modelRenderContext,
                     poseStack,
-                    largeRoundPlate
-                            .getItemSlots()
-                            .get(largeRoundPlate.getPositions().get(i)),
+                    largeRoundPlate.getItemSlots().get(largeRoundPlate.getPositions().get(i)),
                     largeRoundPlate.getPlateItemSlot().getRenderCount(8),
                     i,
                     centerX,
@@ -120,7 +123,11 @@ public class HotpotLargeRoundPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.scale(0.35f, 0.35f, 0.35f);
 
             modelRenderContext.renderUncachedItem(
-                    slot.getItemStack(), ItemDisplayContext.FIXED, false, poseStack, OverlayTexture.NO_OVERLAY);
+                    slot.getItemStack(),
+                    ItemDisplayContext.FIXED,
+                    false,
+                    poseStack,
+                    OverlayTexture.NO_OVERLAY);
 
             poseStack.popPose();
         }

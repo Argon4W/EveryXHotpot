@@ -1,32 +1,28 @@
 package com.github.argon4w.hotpot.soups.components;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponent;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
-import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupComponentSynchronizer;
+import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupSyncData;
 import java.util.Optional;
 import net.minecraft.core.Holder;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptySoupComponent implements IHotpotSoupComponent {
 
     @Override
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
-            int position,
-            Player player,
-            InteractionHand hand,
+            IHotpotTablewareInteraction.Context context,
             ItemStack itemStack,
-            HotpotComponentSoup soup,
-            LevelBlockPos pos,
             IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
-            HotpotBlockEntity hotpotBlockEntity) {
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup) {
         return result;
     }
 
@@ -77,16 +73,6 @@ public class HotpotEmptySoupComponent implements IHotpotSoupComponent {
     }
 
     @Override
-    public IHotpotResult<Double> getWaterLevel(IHotpotResult<Double> result) {
-        return result;
-    }
-
-    @Override
-    public IHotpotResult<Double> getOverflowWaterLevel(IHotpotResult<Double> result) {
-        return result;
-    }
-
-    @Override
     public IHotpotResult<Double> onAwardExperience(
             HotpotBlockEntity hotpotBlockEntity,
             HotpotComponentSoup soup,
@@ -106,27 +92,63 @@ public class HotpotEmptySoupComponent implements IHotpotSoupComponent {
 
     @Override
     public void onDiscardOverflowWaterLevel(
-            HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {}
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
+
+    }
 
     @Override
     public void onEntityInside(
-            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {}
+            Entity entity,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
+
+    }
 
     @Override
-    public void onTick(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {}
+    public void onTick(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
+
+    }
 
     @Override
     public void setWaterLevelWithOverflow(
-            double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {}
+            double waterLevel,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
+
+    }
 
     @Override
     public void setWaterLevel(
-            double waterLevel, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {}
+            double waterLevel,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
+
+    }
 
     @Override
-    public Optional<IHotpotSoupComponentSynchronizer> getSoupComponentSynchronizer(
-            HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+    public Optional<IHotpotSoupSyncData> getSoupComponenentSyncData(
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         return Optional.empty();
+    }
+
+    @Override
+    public IHotpotResult<Double> getWaterLevel(IHotpotResult<Double> result) {
+        return result;
+    }
+
+    @Override
+    public IHotpotResult<Double> getOverflowWaterLevel(IHotpotResult<Double> result) {
+        return result;
     }
 
     @Override

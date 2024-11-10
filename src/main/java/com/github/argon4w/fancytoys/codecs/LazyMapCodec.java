@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot.codecs;
+package com.github.argon4w.fancytoys.codecs;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.*;

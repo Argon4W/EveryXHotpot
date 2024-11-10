@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,6 +20,7 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRenderer {
+
     @Override
     public void render(
             ItemStack itemStack,
@@ -30,15 +31,15 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
             int combinedOverlay) {
         SimpleItemSlot napkinItemSlot = HotpotNapkinHolderItem.getNapkinItemSlot(itemStack);
 
-        BakedModel napkinHolderModel = Minecraft.getInstance()
+        BakedModel napkinHolderModel = Minecraft
+                .getInstance()
                 .getModelManager()
-                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(
-                        HotpotModEntry.MODID, "item/hotpot_napkin_holder_model")));
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_napkin_holder_model")));
 
-        BakedModel napkinModel = Minecraft.getInstance()
+        BakedModel napkinModel = Minecraft
+                .getInstance()
                 .getModelManager()
-                .getModel(ModelResourceLocation.standalone(
-                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_napkin")));
 
         int color = DyedItemColor.getOrDefault(itemStack, -1);
         float r = FastColor.ARGB32.red(color) / 255.0f;
@@ -47,7 +48,8 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
 
         poseStack.pushPose();
 
-        Minecraft.getInstance()
+        Minecraft
+                .getInstance()
                 .getBlockRenderer()
                 .getModelRenderer()
                 .renderModel(
@@ -55,9 +57,7 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
                         bufferSource.getBuffer(Sheets.solidBlockSheet()),
                         null,
                         napkinHolderModel,
-                        r,
-                        g,
-                        b,
+                        r, g, b,
                         combinedLight,
                         combinedOverlay,
                         ModelData.EMPTY,
@@ -78,7 +78,8 @@ public class HotpotNapkinHolderItemRenderer implements IHotpotItemSpecialRendere
             poseStack.translate(0.5f, positionY, 0.5f);
             poseStack.mulPose(Axis.YP.rotationDegrees(rotationY));
 
-            Minecraft.getInstance()
+            Minecraft
+                    .getInstance()
                     .getBlockRenderer()
                     .getModelRenderer()
                     .renderModel(

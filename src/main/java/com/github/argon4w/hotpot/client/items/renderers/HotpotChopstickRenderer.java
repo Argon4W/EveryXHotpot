@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotChopstickRenderer implements IHotpotItemSpecialRenderer {
+
     @Override
     public void render(
             ItemStack itemStack,
@@ -27,9 +28,9 @@ public class HotpotChopstickRenderer implements IHotpotItemSpecialRenderer {
         }
 
         poseStack.pushPose();
-
         poseStack.translate(0.5f, 0.1f, 0.5f);
         poseStack.mulPose(Axis.YP.rotationDegrees(90f));
+
         Minecraft.getInstance()
                 .getItemRenderer()
                 .renderStatic(

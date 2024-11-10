@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
@@ -8,6 +8,7 @@ import java.util.Optional;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStackContent {
+
     public AbstractHotpotRecipeContent(
             ItemStack itemStack,
             ItemStack originalItemStack,
@@ -22,31 +23,42 @@ public abstract class AbstractHotpotRecipeContent extends AbstractHotpotItemStac
     }
 
     public abstract Optional<IHotpotCookingRecipeHolder> getRecipe(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos);
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos);
 
     @Override
     public Optional<Integer> getCookingTime(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return getRecipeHolder(soup, itemStack, pos)
-                .map(holder -> holder.getCookingTime(soup, itemStack, pos, hotpotBlockEntity, this));
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity) {
+        return getRecipeHolder(soup, itemStack, pos).map(holder -> holder.getCookingTime(soup, itemStack, pos, hotpotBlockEntity, this));
     }
 
     @Override
     public Optional<Double> getExperience(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity) {
         return getRecipeHolder(soup, itemStack, pos)
                 .map(holder -> holder.getExperience(soup, itemStack, pos, hotpotBlockEntity, this));
     }
 
     @Override
     public Optional<ItemStack> getResult(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
-        return getRecipeHolder(soup, itemStack, pos)
-                .map(holder -> holder.getResult(soup, itemStack, pos, hotpotBlockEntity, this));
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos,
+            HotpotBlockEntity hotpotBlockEntity) {
+        return getRecipeHolder(soup, itemStack, pos).map(holder -> holder.getResult(soup, itemStack, pos, hotpotBlockEntity, this));
     }
 
     public Optional<IHotpotCookingRecipeHolder> getRecipeHolder(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos) {
         return itemStack.getItem() instanceof IHotpotCookingRecipeHolder holder
                 ? Optional.of(holder)
                 : getRecipe(soup, itemStack, pos);

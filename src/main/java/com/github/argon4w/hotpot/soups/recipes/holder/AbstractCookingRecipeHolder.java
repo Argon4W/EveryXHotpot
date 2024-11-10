@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.recipes.holder;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.AbstractHotpotRecipeContent;
@@ -10,6 +10,7 @@ import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 
 public record AbstractCookingRecipeHolder(AbstractCookingRecipe recipe) implements IHotpotCookingRecipeHolder {
+
     @Override
     public int getCookingTime(
             HotpotComponentSoup soup,

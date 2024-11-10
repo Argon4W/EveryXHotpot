@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import org.joml.Math;
 
 public class HotpotDefaultItemContentRenderer implements IHotpotItemContentSpecialRenderer {
+
     @Override
     public void render(
             AbstractHotpotItemStackContent itemStackContent,

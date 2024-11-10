@@ -29,16 +29,26 @@ import org.jetbrains.annotations.Nullable;
  */
 @SuppressWarnings("deprecation")
 public record DynamicTransformedBakedModel(
-        BakedModel model, Transformation transformation, IQuadTransformer transformer, RendererBakedModelsCache cache)
-        implements BakedModel {
+        BakedModel model,
+        Transformation transformation,
+        IQuadTransformer transformer,
+        RendererBakedModelsCache cache) implements BakedModel {
+
     public DynamicTransformedBakedModel(
-            BakedModel model, Transformation transformation, RendererBakedModelsCache cache) {
+            BakedModel model,
+            Transformation transformation,
+            RendererBakedModelsCache cache) {
         this(model, transformation, QuadTransformers.applying(transformation), cache);
     }
 
     @NotNull @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand) {
-        return model.getQuads(state, side, rand).stream()
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand) {
+        return model
+                .getQuads(state, side, rand)
+                .stream()
                 .map(transformer::process)
                 .toList();
     }
@@ -55,15 +65,51 @@ public record DynamicTransformedBakedModel(
                 .toList();
     }
 
-    @Override
-    public boolean useAmbientOcclusion() {
-        return model.useAmbientOcclusion();
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state,
+            @NotNull ModelData data,
+            @NotNull RenderType renderType) {
+        return model.useAmbientOcclusion(state, data, renderType);
     }
 
     @NotNull @Override
-    public TriState useAmbientOcclusion(
-            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
-        return model.useAmbientOcclusion(state, data, renderType);
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
+        return model.getModelData(level, pos, state, modelData);
+    }
+
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType,
+            @NotNull PoseStack poseStack,
+            boolean applyLeftHandTransform) {
+        return new DynamicTransformedBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformation, cache);
+    }
+
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data) {
+        return model.getRenderTypes(state, rand, data);
+    }
+
+    @NotNull @Override
+    public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
+        return model
+                .getRenderPasses(itemStack, fabulous)
+                .stream()
+                .map(model1 -> cache.getTransformedModel(model, transformation))
+                .toList();
+    }
+
+    @Override
+    public boolean useAmbientOcclusion() {
+        return model.useAmbientOcclusion();
     }
 
     @Override
@@ -97,36 +143,7 @@ public record DynamicTransformedBakedModel(
     }
 
     @NotNull @Override
-    public ModelData getModelData(
-            @NotNull BlockAndTintGetter level,
-            @NotNull BlockPos pos,
-            @NotNull BlockState state,
-            @NotNull ModelData modelData) {
-        return model.getModelData(level, pos, state, modelData);
-    }
-
-    @NotNull @Override
-    public BakedModel applyTransform(
-            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new DynamicTransformedBakedModel(
-                model.applyTransform(transformType, poseStack, applyLeftHandTransform), transformation, cache);
-    }
-
-    @NotNull @Override
-    public ChunkRenderTypeSet getRenderTypes(
-            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-        return model.getRenderTypes(state, rand, data);
-    }
-
-    @NotNull @Override
     public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
         return model.getRenderTypes(itemStack, fabulous);
-    }
-
-    @NotNull @Override
-    public List<BakedModel> getRenderPasses(@NotNull ItemStack itemStack, boolean fabulous) {
-        return model.getRenderPasses(itemStack, fabulous).stream()
-                .map(model1 -> cache.getTransformedModel(model, transformation))
-                .toList();
     }
 }

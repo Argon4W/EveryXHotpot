@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotSoupComponentUnitType<T extends IHotpotSoupComponent> implements IHotpotSoupComponentType<T> {
+
     private final T unit;
     private final Holder<IHotpotSoupComponentTypeSerializer<?>> serializerHolder;
 

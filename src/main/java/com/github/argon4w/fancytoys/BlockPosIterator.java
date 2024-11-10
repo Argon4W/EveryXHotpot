@@ -1,6 +1,5 @@
-package com.github.argon4w.hotpot.blocks;
+package com.github.argon4w.fancytoys;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Predicate;
@@ -35,11 +34,11 @@ public class BlockPosIterator implements Iterator<LevelBlockPos> {
     }
 
     private Node getNode(Node node) {
-        Node nextNode;
+        Node next;
 
         while (node.hasNextNode()) {
-            nextNode = node.next();
-            LevelBlockPos pos = nextNode.getPos();
+            next = node.next();
+            LevelBlockPos pos = next.getPos();
 
             if (list.contains(pos)) {
                 continue;
@@ -49,10 +48,14 @@ public class BlockPosIterator implements Iterator<LevelBlockPos> {
                 continue;
             }
 
-            return nextNode;
+            return next;
         }
 
-        return node.getParent() == null ? null : getNode(node.getParent());
+        if (node.getParent() == null) {
+            return null;
+        }
+
+        return getNode(node.getParent());
     }
 
     public static class Node {

@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import org.joml.Math;
 
 public class HotpotSummonExperienceOrbSoupComponent extends AbstractHotpotSoupComponent {
+
     @Override
     public IHotpotResult<Double> onAwardExperience(
             HotpotBlockEntity hotpotBlockEntity,

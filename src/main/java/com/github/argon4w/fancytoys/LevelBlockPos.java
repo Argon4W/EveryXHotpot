@@ -1,7 +1,6 @@
-package com.github.argon4w.hotpot;
+package com.github.argon4w.fancytoys;
 
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
-import com.google.common.base.Objects;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
@@ -37,12 +36,16 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return level.getBlockEntity(pos);
     }
 
+    public BlockState getBlockState() {
+        return level.getBlockState(pos);
+    }
+
     public <T extends BlockEntity> T getBlockEntity(BlockEntityType<T> blockEntityType) {
         return blockEntityType.getBlockEntity(level, pos);
     }
 
-    public BlockState getBlockState() {
-        return level.getBlockState(pos);
+    public <T extends BlockEntity> boolean isBlockEntity(BlockEntityType<T> blockEntityType) {
+        return getBlockEntity(blockEntityType) != null;
     }
 
     public <T extends Comparable<T>, V extends T> void setBlockStateProperty(Property<T> property, V value) {
@@ -55,10 +58,6 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public LevelChunk getChunkAt() {
         return level.getChunkAt(pos);
-    }
-
-    public LevelBlockPos updatePos(Function<BlockPos, BlockPos> function) {
-        return new LevelBlockPos(level, function.apply(pos));
     }
 
     public void dropCopiedItemStacks(List<ItemStack> itemStacks) {
@@ -113,8 +112,7 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         level.playSound(null, pos, soundEvent, soundSource, volume, pitch);
     }
 
-    public void addParticle(
-            ParticleType<?> type, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+    public void addParticle(ParticleType<?> type, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
         level.addParticle((ParticleOptions) type, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
     }
 
@@ -134,10 +132,6 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return level.getServer().reloadableRegistries().getLootTable(lootTableKey);
     }
 
-    public Vec3 toVec3() {
-        return new Vec3(pos.getX(), pos.getY(), pos.getZ());
-    }
-
     public SoundType getSoundType(Entity entity) {
         return getBlockState().getSoundType(level, pos, entity);
     }
@@ -148,6 +142,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public boolean isServerSide() {
         return !level.isClientSide;
+    }
+
+    public LevelBlockPos updatePos(Function<BlockPos, BlockPos> function) {
+        return new LevelBlockPos(level, function.apply(pos));
     }
 
     public LevelBlockPos north() {
@@ -178,6 +176,10 @@ public record LevelBlockPos(Level level, BlockPos pos) {
         return getBlockState().isAir();
     }
 
+    public Vec3 toVec3() {
+        return new Vec3(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     public static LevelBlockPos fromVec3(Level level, Vec3 vec) {
         return new LevelBlockPos(level, new BlockPos((int) vec.x, (int) vec.y, (int) vec.z));
     }
@@ -188,18 +190,6 @@ public record LevelBlockPos(Level level, BlockPos pos) {
 
     public static LevelBlockPos fromBlockPlaceContext(BlockPlaceContext context) {
         return new LevelBlockPos(context.getLevel(), context.getClickedPos());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(level, pos);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof LevelBlockPos levelBlockPos
-                && level.equals(levelBlockPos.level)
-                && levelBlockPos.pos.equals(pos);
     }
 
     public static void dropFloatingItemStack(Level level, double x, double y, double z, ItemStack itemStack) {

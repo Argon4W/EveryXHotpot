@@ -1,4 +1,4 @@
-package com.github.argon4w.hotpot;
+package com.github.argon4w.fancytoys;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -7,11 +7,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class SimpleItemSlot {
-    public static final Codec<SimpleItemSlot> CODEC = Codec.lazyInitialized(
-            () -> ItemStack.OPTIONAL_CODEC.xmap(SimpleItemSlot::new, SimpleItemSlot::getItemStack));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SimpleItemSlot> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
-            () -> ItemStack.OPTIONAL_STREAM_CODEC.map(SimpleItemSlot::new, SimpleItemSlot::getItemStack));
+    public static final Codec<SimpleItemSlot> CODEC = Codec.lazyInitialized(() -> ItemStack.OPTIONAL_CODEC.xmap(SimpleItemSlot::new, SimpleItemSlot::getItemStack));
+    public static final StreamCodec<RegistryFriendlyByteBuf, SimpleItemSlot> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> ItemStack.OPTIONAL_STREAM_CODEC.map(SimpleItemSlot::new, SimpleItemSlot::getItemStack));
 
     private ItemStack itemStack;
 
@@ -21,6 +19,12 @@ public class SimpleItemSlot {
 
     public SimpleItemSlot() {
         this(ItemStack.EMPTY);
+    }
+
+    public int getRenderCountNotEmpty(float maxCount) {
+        return getMaxStackSize() < maxCount
+                ? getCount()
+                : Math.max(1, Math.round(getCount() / (getMaxStackSize() / maxCount)));
     }
 
     public SimpleItemSlot transferItem(ItemStack itemStack) {
@@ -49,12 +53,6 @@ public class SimpleItemSlot {
 
     public int getRenderCount(float maxCount) {
         return isEmpty() ? 0 : getRenderCountNotEmpty(maxCount);
-    }
-
-    public int getRenderCountNotEmpty(float maxCount) {
-        return getMaxStackSize() < maxCount
-                ? getCount()
-                : Math.max(1, Math.round(getCount() / (getMaxStackSize() / maxCount)));
     }
 
     public int getCount() {

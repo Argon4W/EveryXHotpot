@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public interface IHotpotPlacementRenderer {
+
     void render(
             IHotpotPlacement placement,
             IHotpotPlacementContainer container,

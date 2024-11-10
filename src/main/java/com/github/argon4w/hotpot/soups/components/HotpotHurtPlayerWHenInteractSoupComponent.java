@@ -1,24 +1,23 @@
 package com.github.argon4w.hotpot.soups.components;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotDamageSource;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSoupComponent {
+
     private final IHotpotDamageSource.Wrapper damageSourceWrapper;
 
     public HotpotHurtPlayerWHenInteractSoupComponent(IHotpotDamageSource.Wrapper damageSourceWrapper) {
@@ -27,14 +26,11 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
 
     @Override
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
-            int position,
-            Player player,
-            InteractionHand hand,
+            IHotpotTablewareInteraction.Context context,
             ItemStack itemStack,
-            HotpotComponentSoup soup,
-            LevelBlockPos pos,
             IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
-            HotpotBlockEntity hotpotBlockEntity) {
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup) {
         if (result.isPresent()) {
             return result;
         }
@@ -43,11 +39,12 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
             return result;
         }
 
-        damageSourceWrapper.hurt(player);
+        damageSourceWrapper.hurt(context.player());
         return IHotpotResult.pass();
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent> {
+
         private final IHotpotDamageSource.Wrapper damageSourceWrapper;
         private final HotpotHurtPlayerWHenInteractSoupComponent unit;
 
@@ -87,13 +84,14 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotHurtPlayerWHenInteractSoupComponent> {
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotHurtPlayerWHenInteractSoupComponent> {
+
         public static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> IHotpotDamageSource.CODEC
                 .optionalFieldOf("damage_source", IHotpotDamageSource.EMPTY)
                 .xmap(Type::new, Type::getDamageSourceWrapper));
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
-                () -> IHotpotDamageSource.STREAM_CODEC.map(Type::new, Type::getDamageSourceWrapper));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> IHotpotDamageSource.STREAM_CODEC
+                .map(Type::new, Type::getDamageSourceWrapper));
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent>> getCodec() {
@@ -101,10 +99,7 @@ public class HotpotHurtPlayerWHenInteractSoupComponent extends AbstractHotpotSou
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotHurtPlayerWHenInteractSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

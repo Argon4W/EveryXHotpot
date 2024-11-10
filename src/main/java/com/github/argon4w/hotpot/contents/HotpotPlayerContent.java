@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.AbstractHotpotRotatingContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -19,6 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 
 public class HotpotPlayerContent implements IHotpotContent {
+
     public static final String[] VALID_PARTS = {"head", "body", "right_arm", "left_arm", "right_leg", "left_leg"};
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
 
@@ -46,7 +47,9 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+
+    }
 
     @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
@@ -79,15 +82,18 @@ public class HotpotPlayerContent implements IHotpotContent {
     }
 
     public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotPlayerContent> {
-        public static final MapCodec<HotpotPlayerContent> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(content -> content.group(
-                                ResolvableProfile.CODEC.fieldOf("profile").forGetter(HotpotPlayerContent::getProfile),
-                                Codec.INT.fieldOf("model_part_index").forGetter(HotpotPlayerContent::getModelPartIndex))
-                        .apply(content, HotpotPlayerContent::new)));
+
+        public static final MapCodec<HotpotPlayerContent> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(content -> content.group(
+                ResolvableProfile.CODEC.fieldOf("profile").forGetter(HotpotPlayerContent::getProfile),
+                Codec.INT.fieldOf("model_part_index").forGetter(HotpotPlayerContent::getModelPartIndex)
+        ).apply(content, HotpotPlayerContent::new)));
 
         @Override
         public HotpotPlayerContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             throw new IllegalStateException("Illegal call to a non-item based content");
         }
 

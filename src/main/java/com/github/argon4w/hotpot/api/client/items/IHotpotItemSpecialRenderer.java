@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public interface IHotpotItemSpecialRenderer {
+
     void render(
             ItemStack itemStack,
             ItemDisplayContext displayContext,

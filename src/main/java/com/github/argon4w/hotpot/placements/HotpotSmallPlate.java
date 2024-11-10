@@ -1,12 +1,12 @@
 package com.github.argon4w.hotpot.placements;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotCommonPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotSmallPlate implements IHotpotCommonPlacement {
+
     private final int position;
     private final ComplexDirection direction;
     private final SimpleItemSlot itemSlot;
@@ -32,7 +33,10 @@ public class HotpotSmallPlate implements IHotpotCommonPlacement {
     }
 
     public HotpotSmallPlate(
-            int position, ComplexDirection direction, SimpleItemSlot itemSlot, SimpleItemSlot plateItemSlot) {
+            int position,
+            ComplexDirection direction,
+            SimpleItemSlot itemSlot,
+            SimpleItemSlot plateItemSlot) {
         this.position = position;
         this.direction = direction;
         this.itemSlot = itemSlot;
@@ -133,15 +137,13 @@ public class HotpotSmallPlate implements IHotpotCommonPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotSmallPlate> {
-        public static final MapCodec<HotpotSmallPlate> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
-                                Codec.INT.fieldOf("pos").forGetter(HotpotSmallPlate::getPosition),
-                                ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotSmallPlate::getDirection),
-                                SimpleItemSlot.CODEC.fieldOf("item_slot").forGetter(HotpotSmallPlate::getItemSlot),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("plate_item_slot")
-                                        .forGetter(HotpotSmallPlate::getPlateItemSlot))
-                        .apply(plate, HotpotSmallPlate::new)));
+
+        public static final MapCodec<HotpotSmallPlate> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
+                Codec.INT.fieldOf("pos").forGetter(HotpotSmallPlate::getPosition),
+                ComplexDirection.CODEC.fieldOf("direction").forGetter(HotpotSmallPlate::getDirection),
+                SimpleItemSlot.CODEC.fieldOf("item_slot").forGetter(HotpotSmallPlate::getItemSlot),
+                SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotSmallPlate::getPlateItemSlot)
+        ).apply(plate, HotpotSmallPlate::new)));
 
         @Override
         public HotpotSmallPlate createPlacement(List<Integer> positions, ComplexDirection direction) {

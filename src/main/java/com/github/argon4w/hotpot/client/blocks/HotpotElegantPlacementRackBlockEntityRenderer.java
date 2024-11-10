@@ -13,9 +13,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class HotpotElegantPlacementRackBlockEntityRenderer
-        implements BlockEntityRenderer<HotpotElegantPlacementRackBlockEntity>,
-                IBlockEntitySectionGeometryRenderer<HotpotElegantPlacementRackBlockEntity> {
+public class HotpotElegantPlacementRackBlockEntityRenderer implements
+        BlockEntityRenderer<HotpotElegantPlacementRackBlockEntity>,
+        IBlockEntitySectionGeometryRenderer<HotpotElegantPlacementRackBlockEntity> {
+
     @Override
     public void render(
             HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity,
@@ -28,56 +29,53 @@ public class HotpotElegantPlacementRackBlockEntityRenderer
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .render(
-                                placement,
-                                hotpotElegantPlacementRackBlockEntity,
-                                hotpotElegantPlacementRackBlockEntity.getBlockPos(),
-                                poseStack,
-                                bufferSource,
-                                combinedLight,
-                                combinedOverlay,
-                                partialTick)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(
+                        placement,
+                        hotpotElegantPlacementRackBlockEntity,
+                        hotpotElegantPlacementRackBlockEntity.getBlockPos(),
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        partialTick)));
 
         poseStack.pushPose();
-
         poseStack.translate(0.05f, 0.1875f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
+
         hotpotElegantPlacementRackBlockEntity.getPlacements1().forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .render(
-                                placement,
-                                hotpotElegantPlacementRackBlockEntity,
-                                hotpotElegantPlacementRackBlockEntity.getBlockPos(),
-                                poseStack,
-                                bufferSource,
-                                combinedLight,
-                                combinedOverlay,
-                                partialTick)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(
+                        placement,
+                        hotpotElegantPlacementRackBlockEntity,
+                        hotpotElegantPlacementRackBlockEntity.getBlockPos(),
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        partialTick)));
 
         poseStack.popPose();
 
         poseStack.pushPose();
-
         poseStack.translate(0.05f, 0.75f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
+
         hotpotElegantPlacementRackBlockEntity.getPlacements2().forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .render(
-                                placement,
-                                hotpotElegantPlacementRackBlockEntity,
-                                hotpotElegantPlacementRackBlockEntity.getBlockPos(),
-                                poseStack,
-                                bufferSource,
-                                combinedLight,
-                                combinedOverlay,
-                                partialTick)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(
+                        placement,
+                        hotpotElegantPlacementRackBlockEntity,
+                        hotpotElegantPlacementRackBlockEntity.getBlockPos(),
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        partialTick)));
 
         poseStack.popPose();
     }
@@ -94,57 +92,53 @@ public class HotpotElegantPlacementRackBlockEntityRenderer
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .renderSectionGeometry(
-                                placement,
-                                context,
-                                hotpotElegantPlacementRackBlockEntity,
-                                pos,
-                                poseStack,
-                                modelRenderContext)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).renderSectionGeometry(
+                        placement,
+                        context,
+                        hotpotElegantPlacementRackBlockEntity,
+                        pos,
+                        poseStack,
+                        modelRenderContext)));
 
         poseStack.pushPose();
-
         poseStack.translate(0.05f, 0.1875f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
+
         hotpotElegantPlacementRackBlockEntity.getPlacements1().forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .renderSectionGeometry(
-                                placement,
-                                context,
-                                hotpotElegantPlacementRackBlockEntity,
-                                pos,
-                                poseStack,
-                                modelRenderContext)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).renderSectionGeometry(
+                        placement,
+                        context,
+                        hotpotElegantPlacementRackBlockEntity,
+                        pos,
+                        poseStack,
+                        modelRenderContext)));
 
         poseStack.popPose();
 
         poseStack.pushPose();
-
         poseStack.translate(0.05f, 0.75f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
+
         hotpotElegantPlacementRackBlockEntity.getPlacements2().forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .renderSectionGeometry(
-                                placement,
-                                context,
-                                hotpotElegantPlacementRackBlockEntity,
-                                pos,
-                                poseStack,
-                                modelRenderContext)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).renderSectionGeometry(
+                        placement,
+                        context,
+                        hotpotElegantPlacementRackBlockEntity,
+                        pos,
+                        poseStack,
+                        modelRenderContext)));
 
         poseStack.popPose();
     }
 
     @Override
-    public boolean shouldRenderOffScreen(
-            @NotNull HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity) {
+    public boolean shouldRenderOffScreen(@NotNull HotpotElegantPlacementRackBlockEntity hotpotElegantPlacementRackBlockEntity) {
         return true;
     }
 

@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
 public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
+
     @Override
     public void render(
             ItemStack itemStack,
@@ -31,8 +32,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
             return;
         }
 
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(
-                HotpotPaperBowlItem.getPaperBowlSoupTypeKey(itemStack));
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(HotpotPaperBowlItem.getPaperBowlSoupTypeKey(itemStack));
 
         List<ItemStack> bowlItems = HotpotPaperBowlItem.getPaperBowlItems(itemStack);
         List<ItemStack> bowlSkewers = HotpotPaperBowlItem.getPaperBowlSkewers(itemStack);
@@ -51,8 +51,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
         double minElementLevel = (fullWaterLevel - (0.06 / 0.4375) * 6.0) + 0.13;
 
         double waterLevel = drained ? minWaterLevel : (minWaterLevelNoLimit + 0.06 * size + 0.5625);
-        double elementLevel =
-                drained ? minElementLevel : ((fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size);
+        double elementLevel = drained ? minElementLevel : ((fullWaterLevel - (0.06 / 0.4375) * 8.0) + (0.06 / 0.4375) * size);
 
         poseStack.pushPose();
 
@@ -124,6 +123,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
                             combinedLight,
                             combinedOverlay,
                             ItemDisplayContext.NONE.ordinal());
+
             poseStack.popPose();
         }
 
@@ -162,6 +162,7 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
                             combinedLight,
                             combinedOverlay,
                             ItemDisplayContext.FIXED.ordinal());
+
             poseStack.popPose();
         }
 
@@ -198,7 +199,6 @@ public class HotpotPaperBowlRenderer implements IHotpotItemSpecialRenderer {
 
     @Override
     public Optional<ResourceLocation> getItemModelResourceLocation() {
-        return Optional.of(
-                ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model"));
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_paper_bowl_reworked_model"));
     }
 }

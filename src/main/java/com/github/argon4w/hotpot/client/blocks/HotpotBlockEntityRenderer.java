@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
 public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBlockEntity> {
+
     @Override
     public void render(
             HotpotBlockEntity blockEntity,
@@ -33,8 +34,11 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
         double renderedWaterLevel = blockEntity.clientWaterLevel;
         double difference = (waterLevel - renderedWaterLevel);
-        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(
-                blockEntity.getSoup().soupTypeHolder().getKey());
+
+        HotpotSoupRendererConfig soupRendererConfig = HotpotSoupRendererConfigManager.getSoupRendererConfig(blockEntity
+                .getSoup()
+                .soupTypeHolder()
+                .getKey());
 
         renderHotpotSoupCustomElements(
                 soupRendererConfig,
@@ -46,6 +50,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
                 combinedOverlay,
                 renderedWaterLevel,
                 false);
+
         renderHotpotSoup(
                 soupRendererConfig,
                 poseStack,
@@ -54,9 +59,13 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
                 combinedOverlay,
                 Math.max(0.563, renderedWaterLevel * 0.4375 + 0.5625));
 
-        double newRenderedWaterLevel =
-                Math.abs(difference) < 0.02f ? waterLevel : (renderedWaterLevel + difference * partialTick / 8f);
-        blockEntity.clientWaterLevel = Math.max(0.35f, renderedWaterLevel < 0 ? waterLevel : newRenderedWaterLevel);
+        double newRenderedWaterLevel = Math.abs(difference) < 0.02f
+                ? waterLevel
+                : (renderedWaterLevel + difference * partialTick / 8f);
+
+        blockEntity.clientWaterLevel = Math.max(0.35f, renderedWaterLevel < 0
+                ? waterLevel
+                : newRenderedWaterLevel);
 
         double interval = 360.0f / 8.0f;
         double round = blockEntity.getTime() / 20.0f / 60.0f * 360.0f;
@@ -75,27 +84,22 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             lastOrbitY = orbitY;
 
             IHotpotContent content = blockEntity.getContents().get(i);
-            content.getContentSerializerHolder()
+            content
+                    .getContentSerializerHolder()
                     .unwrapKey()
                     .map(ResourceKey::location)
-                    .ifPresent(key -> HotpotContentRenderers.getContentRenderer(key)
-                            .render(
-                                    content,
-                                    poseStack,
-                                    bufferSource,
-                                    combinedLight,
-                                    combinedOverlay,
-                                    rotation,
-                                    renderedWaterLevel,
-                                    orbitY,
-                                    orbitX,
-                                    index));
+                    .ifPresent(key -> HotpotContentRenderers.getContentRenderer(key).render(
+                            content,
+                            poseStack,
+                            bufferSource,
+                            combinedLight,
+                            combinedOverlay,
+                            rotation,
+                            renderedWaterLevel,
+                            orbitY,
+                            orbitX,
+                            index));
         }
-    }
-
-    @Override
-    public int getViewDistance() {
-        return 12;
     }
 
     public static void renderHotpotSoup(
@@ -108,8 +112,11 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
         poseStack.pushPose();
         poseStack.translate(0, renderedWaterLevel, 0);
 
-        BakedModel model =
-                Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(resourceLocation));
+        BakedModel model = Minecraft
+                .getInstance()
+                .getModelManager()
+                .getModel(ModelResourceLocation.standalone(resourceLocation));
+
         Minecraft.getInstance()
                 .getBlockRenderer()
                 .getModelRenderer()
@@ -118,9 +125,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
                         bufferSource.getBuffer(Sheets.translucentCullBlockSheet()),
                         null,
                         model,
-                        1,
-                        1,
-                        1,
+                        1, 1, 1,
                         combinedLight,
                         combinedOverlay,
                         ModelData.EMPTY,
@@ -157,7 +162,9 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             int combinedOverlay,
             double renderedWaterLevel,
             boolean bowlOnly) {
-        soupRendererConfig.customElementRenderers().stream()
+        soupRendererConfig
+                .customElementRenderers()
+                .stream()
                 .filter(renderer -> !bowlOnly || renderer.shouldRenderInBowl())
                 .forEach(iHotpotSoupCustomElementRenderer -> iHotpotSoupCustomElementRenderer.render(
                         time,
@@ -171,6 +178,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
     private double squareX(double degree) {
         degree = degree % 360;
+
         return switch ((int) ((degree - (degree % 45)) / 45)) {
             case 0, 7 -> 1.0;
             case 1, 2 -> 1.0 / Math.tan(Math.toRadians(degree));
@@ -182,6 +190,7 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
     private double squareY(double degree) {
         degree = degree % 360;
+
         return switch ((int) ((degree - (degree % 45)) / 45)) {
             case 0, 7 -> Math.tan(Math.toRadians(degree));
             case 1, 2 -> 1.0;
@@ -197,5 +206,10 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
 
     private double orbitY(double degree) {
         return Math.sin(Math.toRadians(degree)) * 0.4f + squareY(degree) * 0.6f;
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 12;
     }
 }

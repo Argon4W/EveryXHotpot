@@ -22,6 +22,7 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -48,10 +49,10 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
         double x = HotpotPlacementPositions.getRenderCenterX(smallPlate.getPosition());
         double z = HotpotPlacementPositions.getRenderCenterZ(smallPlate.getPosition());
 
-        BakedModel model = Minecraft.getInstance()
+        BakedModel model = Minecraft
+                .getInstance()
                 .getModelManager()
-                .getModel(ModelResourceLocation.standalone(
-                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_small")));
 
         for (int plateCount = 0; plateCount < smallPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
             double positionY = plateCount * 0.0625;
@@ -61,7 +62,11 @@ public class HotpotSmallPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
             modelRenderContext.renderCachedModel(
-                    model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+                    model,
+                    poseStack,
+                    RenderType.solid(),
+                    OverlayTexture.NO_OVERLAY,
+                    ModelData.EMPTY);
 
             poseStack.popPose();
         }

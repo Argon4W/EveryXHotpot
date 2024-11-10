@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.ticks;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -15,6 +15,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupComponent {
+
     private final double waterLevelDropRate;
 
     public HotpotDropWaterLevelSoupComponent(double waterLevelDropRate) {
@@ -27,6 +28,7 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent> {
+
         private final double waterLevelDropRate;
         private final HotpotDropWaterLevelSoupComponent unit;
 
@@ -67,10 +69,14 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
     }
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotDropWaterLevelSoupComponent> {
-        public static final MapCodec<Type> CODEC =
-                Codec.DOUBLE.fieldOf("water_level_drop_rate").xmap(Type::new, Type::getWaterLevelDropRate);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
-                ByteBufCodecs.DOUBLE.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getWaterLevelDropRate);
+
+        public static final MapCodec<Type> CODEC = Codec.DOUBLE
+                .fieldOf("water_level_drop_rate")
+                .xmap(Type::new, Type::getWaterLevelDropRate);
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.DOUBLE
+                .<RegistryFriendlyByteBuf>cast()
+                .map(Type::new, Type::getWaterLevelDropRate);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent>> getCodec() {
@@ -78,9 +84,7 @@ public class HotpotDropWaterLevelSoupComponent extends AbstractHotpotSoupCompone
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropWaterLevelSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

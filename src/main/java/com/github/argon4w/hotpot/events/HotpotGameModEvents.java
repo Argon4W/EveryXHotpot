@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.events;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.contents.HotpotPlayerContent;
@@ -27,6 +27,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 @EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class HotpotGameModEvents {
+
     @SubscribeEvent
     public static void onLivingBlock(LivingShieldBlockEvent event) {
         if (!(event.getDamageContainer().getSource().getDirectEntity() instanceof LivingEntity livingEntity)) {
@@ -64,9 +65,9 @@ public class HotpotGameModEvents {
 
         ResolvableProfile profile = new ResolvableProfile(player.getGameProfile());
 
-        hotpotBlockEntity.setContentWhenEmpty(() -> new HotpotPlayerContent(profile, true), pos);
-        hotpotBlockEntity.setContentWhenEmpty(() -> new HotpotPlayerContent(profile, false), pos);
-        hotpotBlockEntity.setContentWhenEmpty(() -> new HotpotPlayerContent(profile, false), pos);
+        hotpotBlockEntity.setContentFromNeighbors(pos, () -> new HotpotPlayerContent(profile, true));
+        hotpotBlockEntity.setContentFromNeighbors(pos, () -> new HotpotPlayerContent(profile, false));
+        hotpotBlockEntity.setContentFromNeighbors(pos, () -> new HotpotPlayerContent(profile, false));
     }
 
     @SubscribeEvent
@@ -113,21 +114,12 @@ public class HotpotGameModEvents {
         }
 
         if (!event.getFlags().hasControlDown()) {
-            event.getToolTip()
-                    .add(Component.translatable("item.everyxhotpot.tooltip.effects.collapsed")
-                            .withStyle(ChatFormatting.GRAY));
+            event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects.collapsed").withStyle(ChatFormatting.GRAY));
             return;
         }
 
-        event.getToolTip()
-                .add(Component.translatable("item.everyxhotpot.tooltip.effects").withStyle(ChatFormatting.GRAY));
-        PotionContents.addPotionTooltip(
-                effects,
-                component -> event.getToolTip()
-                        .add(Component.translatable("item.everyxhotpot.tooltip.line.2", component)
-                                .withStyle(ChatFormatting.GRAY)),
-                1.0f,
-                context.tickRate());
+        event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.effects").withStyle(ChatFormatting.GRAY));
+        PotionContents.addPotionTooltip(effects, component -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line.2", component).withStyle(ChatFormatting.GRAY)), 1.0f, context.tickRate());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -149,17 +141,11 @@ public class HotpotGameModEvents {
         }
 
         if (!event.getFlags().hasShiftDown()) {
-            event.getToolTip()
-                    .add(Component.translatable("item.everyxhotpot.tooltip.contains.collapsed")
-                            .withStyle(ChatFormatting.GRAY));
+            event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains.collapsed").withStyle(ChatFormatting.GRAY));
             return;
         }
 
-        event.getToolTip()
-                .add(Component.translatable("item.everyxhotpot.tooltip.contains")
-                        .withStyle(ChatFormatting.GRAY));
-        itemStacks.forEach(itemStack1 -> event.getToolTip()
-                .add(Component.translatable("item.everyxhotpot.tooltip.line.1", itemStack1.getDisplayName())
-                        .withStyle(ChatFormatting.GRAY)));
+        event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.contains").withStyle(ChatFormatting.GRAY));
+        itemStacks.forEach(itemStack1 -> event.getToolTip().add(Component.translatable("item.everyxhotpot.tooltip.line.1", itemStack1.getDisplayName()).withStyle(ChatFormatting.GRAY)));
     }
 }

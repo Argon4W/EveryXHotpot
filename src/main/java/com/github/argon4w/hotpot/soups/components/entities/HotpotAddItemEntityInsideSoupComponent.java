@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.entities;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -18,6 +18,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupComponent {
+
     private final boolean delayed;
 
     public HotpotAddItemEntityInsideSoupComponent(boolean delayed) {
@@ -26,7 +27,10 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
 
     @Override
     public void onEntityInside(
-            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            Entity entity,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         if (!(entity instanceof ItemEntity itemEntity)) {
             return;
         }
@@ -47,6 +51,7 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent> {
+
         private final boolean delayed;
         private final HotpotAddItemEntityInsideSoupComponent unit;
 
@@ -86,12 +91,15 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotAddItemEntityInsideSoupComponent> {
-        public static final MapCodec<Type> CODEC =
-                Codec.BOOL.optionalFieldOf("delayed", false).xmap(Type::new, Type::isDelayed);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
-                ByteBufCodecs.BOOL.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::isDelayed);
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotAddItemEntityInsideSoupComponent> {
+
+        public static final MapCodec<Type> CODEC = Codec.BOOL
+                .optionalFieldOf("delayed", false)
+                .xmap(Type::new, Type::isDelayed);
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.BOOL
+                .<RegistryFriendlyByteBuf>cast()
+                .map(Type::new, Type::isDelayed);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent>> getCodec() {
@@ -99,10 +107,7 @@ public class HotpotAddItemEntityInsideSoupComponent extends AbstractHotpotSoupCo
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotAddItemEntityInsideSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

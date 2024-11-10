@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.updates;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotItemUpdaterContent;
@@ -23,6 +23,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHotpotSoupComponent {
+
     private final List<ResourceLocation> keys;
 
     public HotpotApplyMobEffectOnContentUpdateSoupComponent(List<ResourceLocation> keys) {
@@ -54,10 +55,8 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
 
             soup
                     .getComponentPairsByTypes(List.of(
-                            HotpotSoupComponentTypeSerializers
-                                    .FIXED_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER,
-                            HotpotSoupComponentTypeSerializers
-                                    .DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER))
+                            HotpotSoupComponentTypeSerializers.FIXED_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER,
+                            HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER))
                     .stream()
                     .filter(pair -> keys.isEmpty() || keys.contains(pair.getFirst()))
                     .map(Pair::getSecond)
@@ -69,12 +68,12 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent> {
+
         private final List<ResourceLocation> keys;
         private final HotpotApplyMobEffectOnContentUpdateSoupComponent unit;
 
         private final MapCodec<HotpotApplyMobEffectOnContentUpdateSoupComponent> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, HotpotApplyMobEffectOnContentUpdateSoupComponent>
-                streamCodec;
+        private final StreamCodec<RegistryFriendlyByteBuf, HotpotApplyMobEffectOnContentUpdateSoupComponent> streamCodec;
 
         public Type(List<ResourceLocation> keys) {
             this.keys = keys;
@@ -109,28 +108,25 @@ public class HotpotApplyMobEffectOnContentUpdateSoupComponent extends AbstractHo
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotApplyMobEffectOnContentUpdateSoupComponent> {
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotApplyMobEffectOnContentUpdateSoupComponent> {
+
         public static final MapCodec<Type> CODEC = ResourceLocation.CODEC
                 .listOf()
                 .optionalFieldOf("keys", List.of())
                 .xmap(Type::new, Type::getKeys);
+
         public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ResourceLocation.STREAM_CODEC
                 .apply(ByteBufCodecs.list())
                 .<RegistryFriendlyByteBuf>cast()
                 .map(Type::new, Type::getKeys);
 
         @Override
-        public MapCodec<? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>>
-                getCodec() {
+        public MapCodec<? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>> getCodec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotApplyMobEffectOnContentUpdateSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

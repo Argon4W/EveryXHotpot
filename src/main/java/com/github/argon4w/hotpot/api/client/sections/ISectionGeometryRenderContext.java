@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public interface ISectionGeometryRenderContext {
+
     void renderCachedModel(
             BakedModel model,
             BlockState blockState,
@@ -31,14 +32,20 @@ public interface ISectionGeometryRenderContext {
             int overlay);
 
     void renderUncachedItem(
-            ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, int overlay);
+            ItemStack itemStack,
+            ItemDisplayContext displayContext,
+            boolean leftHand,
+            PoseStack poseStack,
+            int overlay);
 
     void renderCachedModel(
-            BakedModel model, PoseStack poseStack, RenderType renderType, int overlay, ModelData modelData);
+            BakedModel model,
+            PoseStack poseStack,
+            RenderType renderType,
+            int overlay,
+            ModelData modelData);
 
     int getPackedLight();
-
     MultiBufferSource getUncachedBufferSource();
-
     MultiBufferSource getUncachedItemBufferSource();
 }

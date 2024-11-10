@@ -1,28 +1,24 @@
 package com.github.argon4w.hotpot.soups.components.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotPickableContent;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import net.minecraft.core.Holder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotTryPickContentByHandSoupComponent extends AbstractHotpotSoupComponent {
+
     @Override
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
-            int position,
-            Player player,
-            InteractionHand hand,
+            IHotpotTablewareInteraction.Context context,
             ItemStack itemStack,
-            HotpotComponentSoup soup,
-            LevelBlockPos pos,
             IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
-            HotpotBlockEntity hotpotBlockEntity) {
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup) {
         if (result.isPresent()) {
             return result;
         }
@@ -31,11 +27,11 @@ public class HotpotTryPickContentByHandSoupComponent extends AbstractHotpotSoupC
             return result;
         }
 
-        if (!(hotpotBlockEntity.getContentAtPosition(position) instanceof IHotpotPickableContent)) {
+        if (!(hotpotBlockEntity.getContentAtPosition(context.position()) instanceof IHotpotPickableContent)) {
             return result;
         }
 
-        hotpotBlockEntity.pickContentByHand(player, hand, position, pos);
+        hotpotBlockEntity.pickContentByHand(context);
 
         return IHotpotResult.blocked();
     }

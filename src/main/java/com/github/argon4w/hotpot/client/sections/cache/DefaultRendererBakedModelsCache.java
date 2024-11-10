@@ -13,6 +13,7 @@ import net.minecraft.client.resources.model.SimpleBakedModel;
  * @author Argon4W
  */
 public class DefaultRendererBakedModelsCache implements RendererBakedModelsCache {
+
     private final Map<BakedModel, IBakedModelCache> modelCache;
 
     public DefaultRendererBakedModelsCache() {
@@ -22,11 +23,7 @@ public class DefaultRendererBakedModelsCache implements RendererBakedModelsCache
     @Override
     public BakedModel getTransformedModel(BakedModel model, Transformation transformation) {
         return modelCache
-                .compute(
-                        model,
-                        (model1, cache) -> cache == null
-                                ? createModelCache(model)
-                                : (cache.size() > 32 ? new DynamicModelCache(model1, this) : cache))
+                .compute(model, (model1, cache) -> cache == null ? createModelCache(model) : (cache.size() > 32 ? new DynamicModelCache(model1, this) : cache))
                 .getTransformedModel(transformation);
     }
 

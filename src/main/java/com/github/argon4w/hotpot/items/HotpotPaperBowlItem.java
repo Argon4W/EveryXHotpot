@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.items;
 
-import com.github.argon4w.hotpot.HotpotItemUtils;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.ItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.api.items.IHotpotItemContainer;
@@ -27,15 +27,14 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPaperBowl>
-        implements IHotpotItemContainer {
+public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPaperBowl> implements IHotpotItemContainer {
+
     public HotpotPaperBowlItem() {
         super(
                 HotpotPlacementSerializers.PLACED_PAPER_BOWL_SERIALIZER,
                 new Properties()
                         .stacksTo(64)
-                        .component(
-                                HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
+                        .component(HotpotModEntry.HOTPOT_PAPER_BOWL_DATA_COMPONENT, HotpotPaperBowlDataComponent.EMPTY));
     }
 
     @Override
@@ -59,8 +58,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
 
     @Override
     public List<ItemStack> getAllContainedItemStacks(ItemStack itemStack) {
-        return ImmutableList.<ItemStack>builderWithExpectedSize(
-                        getPaperBowlItemSize(itemStack) + getPaperBowlSkewerSize(itemStack))
+        return ImmutableList.<ItemStack>builderWithExpectedSize(getPaperBowlItemSize(itemStack) + getPaperBowlSkewerSize(itemStack))
                 .addAll(getPaperBowlItems(itemStack))
                 .addAll(getPaperBowlSkewers(itemStack))
                 .build();
@@ -95,7 +93,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return InteractionResultHolder.consume(itemStack);
         }
 
-        HotpotItemUtils.addToInventory(player, firstItemStack);
+        ItemUtils.addToInventory(player, firstItemStack);
         itemStacks.removeFirst();
 
         setPaperBowlItems(itemStack, items);
@@ -137,7 +135,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
         firstItemStack = itemStacks.getFirst().copy();
 
         if (!canEatInPaperBowl(firstItemStack)) {
-            HotpotItemUtils.addToInventory(player, firstItemStack);
+            ItemUtils.addToInventory(player, firstItemStack);
             itemStacks.removeFirst();
         }
 
@@ -230,8 +228,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
             return super.getDescriptionId(itemStack) + ".skewer";
         }
 
-        return super.getDescriptionId(itemStack)
-                + getPaperBowlSoupStatus(itemStack).getSuffix();
+        return super.getDescriptionId(itemStack) + getPaperBowlSoupStatus(itemStack).getSuffix();
     }
 
     public static boolean isFood(ItemStack itemStack) {
@@ -239,8 +236,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean canEatInPaperBowl(ItemStack itemStack) {
-        return isFood(itemStack)
-                || (itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && !HotpotSkewerItem.isSkewerEmpty(itemStack));
+        return isFood(itemStack) || (itemStack.is(HotpotModEntry.HOTPOT_SKEWER) && !HotpotSkewerItem.isSkewerEmpty(itemStack));
     }
 
     public static boolean isPaperBowlEmpty(ItemStack itemStack) {
@@ -288,8 +284,7 @@ public class HotpotPaperBowlItem extends HotpotPlacementBlockItem<HotpotPlacedPa
     }
 
     public static boolean isPaperBowlSameSoup(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY)
-                || hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
+        return getPaperBowlSoupTypeKey(itemStack).equals(HotpotComponentSoupType.EMPTY_SOUP_TYPE_KEY) || hotpotBlockEntity.getSoup().soupTypeHolder().is(getPaperBowlSoupTypeKey(itemStack));
     }
 
     public static ResourceKey<HotpotComponentSoupType> getPaperBowlSoupTypeKey(ItemStack itemStack) {

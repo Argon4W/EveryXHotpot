@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 
 public class HotpotEmptyContentRenderer implements IHotpotContentRenderer {
+
     @Override
     public void render(
             IHotpotContent content,
@@ -17,5 +18,7 @@ public class HotpotEmptyContentRenderer implements IHotpotContentRenderer {
             double waterLevel,
             double x,
             double z,
-            int index) {}
+            int index) {
+
+    }
 }

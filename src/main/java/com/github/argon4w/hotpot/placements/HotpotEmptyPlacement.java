@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptyPlacement implements IHotpotPlacement {
+
     @Override
     public void interact(
             Player player,
@@ -22,7 +23,9 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
             int position,
             int layer,
             LevelBlockPos pos,
-            IHotpotPlacementContainer container) {}
+            IHotpotPlacementContainer container) {
+
+    }
 
     @Override
     public ItemStack getContent(
@@ -49,7 +52,9 @@ public class HotpotEmptyPlacement implements IHotpotPlacement {
     }
 
     @Override
-    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {}
+    public void onRemove(IHotpotPlacementContainer container, LevelBlockPos pos) {
+
+    }
 
     @Override
     public ItemStack getCloneItemStack(IHotpotPlacementContainer container, LevelBlockPos pos) {

@@ -1,8 +1,8 @@
 package com.github.argon4w.hotpot.items;
 
-import com.github.argon4w.hotpot.HotpotMobEffectMap;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.MobEffectMap;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotItemUpdaterContent;
 import com.github.argon4w.hotpot.api.items.IHotpotUpdateAwareContentItem;
@@ -20,9 +20,9 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareContentItem {
+
     public HotpotSpicePackItem() {
-        super(new Properties()
-                .component(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY));
+        super(new Properties().component(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY));
     }
 
     @Override
@@ -42,7 +42,10 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
 
     @Override
     public ItemStack onContentUpdate(
-            ItemStack itemStack, IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+            ItemStack itemStack,
+            IHotpotContent content,
+            HotpotBlockEntity hotpotBlockEntity,
+            LevelBlockPos pos) {
         if (!hasSpicePackCharges(itemStack)) {
             return itemStack;
         }
@@ -56,8 +59,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
         }
 
         shrinkSpicePackCharges(itemStack);
-        itemUpdaterContent.updateItemStack(contentItemStack ->
-                HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
+        itemUpdaterContent.updateItemStack(contentItemStack -> HotpotFoodEffectsDataComponent.addEffects(contentItemStack, getSpicePackEffects(itemStack)));
 
         return itemStack;
     }
@@ -65,7 +67,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
     @Override
     public void appendHoverText(
             @NotNull ItemStack itemStack,
-            Item.@NotNull TooltipContext context,
+            @NotNull TooltipContext context,
             @NotNull List<Component> components,
             @NotNull TooltipFlag flag) {
         super.appendHoverText(itemStack, context, components, flag);
@@ -78,11 +80,8 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
             return;
         }
 
-        components.add(
-                Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpicePackCharges(itemStack))
-                        .withStyle(ChatFormatting.BLUE));
-        PotionContents.addPotionTooltip(
-                getSpicePackEffects(itemStack).getMobEffects(), components::add, 1.0f, context.tickRate());
+        components.add(Component.translatable("item.everyxhotpot.hotpot_spice_pack.amount", getSpicePackCharges(itemStack)).withStyle(ChatFormatting.BLUE));
+        PotionContents.addPotionTooltip(getSpicePackEffects(itemStack).getMobEffects(), components::add, 1.0f, context.tickRate());
     }
 
     @Override
@@ -99,8 +98,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
     }
 
     public static HotpotSpicePackDataComponent getDataComponent(ItemStack itemStack) {
-        return itemStack.getOrDefault(
-                HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY);
+        return itemStack.getOrDefault(HotpotModEntry.HOTPOT_SPICE_PACK_DATA_COMPONENT, HotpotSpicePackDataComponent.EMPTY);
     }
 
     public static void setDataComponent(ItemStack itemStack, HotpotSpicePackDataComponent dataComponent) {
@@ -143,7 +141,7 @@ public class HotpotSpicePackItem extends Item implements IHotpotUpdateAwareConte
         setDataComponent(itemStack, getDataComponent(itemStack).setCharges(charges));
     }
 
-    public static HotpotMobEffectMap getSpicePackEffects(ItemStack itemStack) {
+    public static MobEffectMap getSpicePackEffects(ItemStack itemStack) {
         return getDataComponent(itemStack).getSpicePackEffects();
     }
 }

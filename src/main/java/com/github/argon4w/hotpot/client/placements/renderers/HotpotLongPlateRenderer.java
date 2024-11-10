@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
@@ -34,7 +34,9 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
             MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay,
-            float partialTick) {}
+            float partialTick) {
+
+    }
 
     @Override
     public void renderSectionGeometry(
@@ -65,10 +67,10 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         int plateCount = 0;
         int i = 0;
 
-        BakedModel model = Minecraft.getInstance()
+        BakedModel model = Minecraft
+                .getInstance()
                 .getModelManager()
-                .getModel(ModelResourceLocation.standalone(
-                        ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_long")));
+                .getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "block/hotpot_plate_long")));
 
         for (; plateCount < longPlate.getPlateItemSlot().getRenderCount(8); plateCount++) {
             double positionY = plateCount * 0.0625f;
@@ -79,19 +81,37 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
             poseStack.scale(0.68f, 0.68f, 0.68f);
 
             modelRenderContext.renderCachedModel(
-                    model, poseStack, RenderType.solid(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY);
+                    model,
+                    poseStack,
+                    RenderType.solid(),
+                    OverlayTexture.NO_OVERLAY,
+                    ModelData.EMPTY);
 
             poseStack.popPose();
         }
 
         for (int k = 0; k < longPlate.getItemSlot1().getRenderCount(); k++, i++) {
             renderLongPlateItem(
-                    modelRenderContext, poseStack, longPlate.getItemSlot1(), x1, z1, i, plateCount, direction);
+                    modelRenderContext,
+                    poseStack,
+                    longPlate.getItemSlot1(),
+                    x1,
+                    z1,
+                    i,
+                    plateCount,
+                    direction);
         }
 
         for (int k = 0; k < longPlate.getItemSlot2().getRenderCount(); k++, i++) {
             renderLongPlateItem(
-                    modelRenderContext, poseStack, longPlate.getItemSlot2(), x1, z1, i, plateCount, direction);
+                    modelRenderContext,
+                    poseStack,
+                    longPlate.getItemSlot2(),
+                    x1,
+                    z1,
+                    i,
+                    plateCount,
+                    direction);
         }
     }
 
@@ -115,7 +135,11 @@ public class HotpotLongPlateRenderer implements IHotpotPlacementRenderer {
         poseStack.scale(0.35f, 0.35f, 0.35f);
 
         modelRenderContext.renderUncachedItem(
-                slot.getItemStack(), ItemDisplayContext.FIXED, false, poseStack, OverlayTexture.NO_OVERLAY);
+                slot.getItemStack(),
+                ItemDisplayContext.FIXED,
+                false,
+                poseStack,
+                OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
     }

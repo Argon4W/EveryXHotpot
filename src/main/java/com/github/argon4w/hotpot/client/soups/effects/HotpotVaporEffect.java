@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.client.soups.effects;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffect;
 import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffectSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
 import com.github.argon4w.hotpot.soups.components.containers.HotpotPunishCooldownContainerSoupComponent;
 import com.mojang.serialization.Codec;
@@ -30,17 +30,15 @@ public record HotpotVaporEffect(
         float ySpeed,
         float zSpeed)
         implements IHotpotSoupClientTickEffect {
+
     @Override
     public void tick(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         if (hotpotBlockEntity
-                        .getSoup()
-                        .getComponentsByType(
-                                HotpotSoupComponentTypeSerializers
-                                        .PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
-                        .stream()
-                        .mapToInt(HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown)
-                        .sum()
-                > 0) {
+                .getSoup()
+                .getComponentsByType(HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                .stream()
+                .mapToInt(HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown)
+                .sum() > 0) {
             return;
         }
 
@@ -75,24 +73,21 @@ public record HotpotVaporEffect(
     }
 
     public static class Serializer implements IHotpotSoupClientTickEffectSerializer<HotpotVaporEffect> {
-        public static final MapCodec<HotpotVaporEffect> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(effect -> effect.group(
-                                BuiltInRegistries.PARTICLE_TYPE
-                                        .byNameCodec()
-                                        .fieldOf("particle_type")
-                                        .forGetter(HotpotVaporEffect::particleType),
-                                Codec.FLOAT.fieldOf("rate_per_tick").forGetter(HotpotVaporEffect::ratePerTick),
-                                Codec.INT.fieldOf("min_amount_per_tick").forGetter(HotpotVaporEffect::minAmountPerTick),
-                                Codec.INT.fieldOf("max_amount_per_tick").forGetter(HotpotVaporEffect::maxAmountPerTick),
-                                Codec.FLOAT.fieldOf("x_offset").forGetter(HotpotVaporEffect::xOffset),
-                                Codec.FLOAT.fieldOf("y_offset").forGetter(HotpotVaporEffect::yOffset),
-                                Codec.FLOAT.fieldOf("z_offset").forGetter(HotpotVaporEffect::zOffset),
-                                Codec.FLOAT.fieldOf("x_scale").forGetter(HotpotVaporEffect::xScale),
-                                Codec.FLOAT.fieldOf("z_scale").forGetter(HotpotVaporEffect::zScale),
-                                Codec.FLOAT.fieldOf("x_speed").forGetter(HotpotVaporEffect::xSpeed),
-                                Codec.FLOAT.fieldOf("y_speed").forGetter(HotpotVaporEffect::ySpeed),
-                                Codec.FLOAT.fieldOf("z_speed").forGetter(HotpotVaporEffect::zSpeed))
-                        .apply(effect, HotpotVaporEffect::new)));
+
+        public static final MapCodec<HotpotVaporEffect> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(effect -> effect.group(
+                BuiltInRegistries.PARTICLE_TYPE.byNameCodec().fieldOf("particle_type").forGetter(HotpotVaporEffect::particleType),
+                Codec.FLOAT.fieldOf("rate_per_tick").forGetter(HotpotVaporEffect::ratePerTick),
+                Codec.INT.fieldOf("min_amount_per_tick").forGetter(HotpotVaporEffect::minAmountPerTick),
+                Codec.INT.fieldOf("max_amount_per_tick").forGetter(HotpotVaporEffect::maxAmountPerTick),
+                Codec.FLOAT.fieldOf("x_offset").forGetter(HotpotVaporEffect::xOffset),
+                Codec.FLOAT.fieldOf("y_offset").forGetter(HotpotVaporEffect::yOffset),
+                Codec.FLOAT.fieldOf("z_offset").forGetter(HotpotVaporEffect::zOffset),
+                Codec.FLOAT.fieldOf("x_scale").forGetter(HotpotVaporEffect::xScale),
+                Codec.FLOAT.fieldOf("z_scale").forGetter(HotpotVaporEffect::zScale),
+                Codec.FLOAT.fieldOf("x_speed").forGetter(HotpotVaporEffect::xSpeed),
+                Codec.FLOAT.fieldOf("y_speed").forGetter(HotpotVaporEffect::ySpeed),
+                Codec.FLOAT.fieldOf("z_speed").forGetter(HotpotVaporEffect::zSpeed)
+        ).apply(effect, HotpotVaporEffect::new)));
 
         @Override
         public MapCodec<HotpotVaporEffect> getCodec() {

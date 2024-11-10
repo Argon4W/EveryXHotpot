@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 public class SimpleRecipeMatcher {
+
     private final List<ItemStack> items;
     private boolean matched;
     private int count;
@@ -72,6 +73,7 @@ public class SimpleRecipeMatcher {
     }
 
     public static class SimpleRecipeMatchContext {
+
         private final SimpleRecipeMatcher matcher;
         private final List<ItemStack> collected;
 

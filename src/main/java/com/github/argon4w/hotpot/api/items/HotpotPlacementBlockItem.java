@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.api.items;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
@@ -11,6 +11,7 @@ import com.github.argon4w.hotpot.placements.coords.HotpotPlacementPositions;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -25,17 +26,15 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockItem {
+
     private final DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder;
 
-    public HotpotPlacementBlockItem(
-            DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder) {
+    public HotpotPlacementBlockItem(DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder) {
         super(HotpotModEntry.HOTPOT_PLACEMENT.get(), new Properties().stacksTo(64));
         this.holder = holder;
     }
 
-    public HotpotPlacementBlockItem(
-            DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder,
-            Properties properties) {
+    public HotpotPlacementBlockItem(DeferredHolder<IHotpotPlacementSerializer<?>, ? extends IHotpotPlacementSerializer<T>> holder, Properties properties) {
         super(HotpotModEntry.HOTPOT_PLACEMENT.get(), properties);
         this.holder = holder;
     }
@@ -44,8 +43,9 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         return true;
     }
 
-    public void loadPlacement(
-            IHotpotPlacementContainer container, LevelBlockPos pos, T placement, ItemStack itemStack) {}
+    public void loadPlacement(IHotpotPlacementContainer container, LevelBlockPos pos, T placement, ItemStack itemStack) {
+
+    }
 
     @NotNull @Override
     public String getDescriptionId() {
@@ -105,13 +105,12 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
 
         IHotpotPlacementSerializer<T> serializer = holder.value();
         List<Optional<Integer>> positions = serializer.getPositions(position, direction);
+        List<Integer> occupiedPositions = HotpotPlacementCoords.getNearbyOccupiedPositions(pos, layer);
+        List<Integer> nonConflictPositions = isNotConflict(positions, layer, pos, occupiedPositions);
 
         if (positions.isEmpty()) {
             return InteractionResult.FAIL;
         }
-
-        List<Integer> occupiedPositions = HotpotPlacementCoords.getNearbyOccupiedPositions(pos, layer);
-        List<Integer> nonConflictPositions = isNotConflict(positions, layer, pos, occupiedPositions);
 
         if (nonConflictPositions.size() != positions.size()) {
             return InteractionResult.FAIL;
@@ -132,12 +131,11 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
             int layer) {
         List<Integer> occupiedPositions = HotpotPlacementCoords.getNearbyOccupiedPositions(pos, layer);
         List<Optional<Integer>> positions = serializer.getPositions(position, direction);
+        List<Integer> nonConflictPositions = isNotConflict(positions, layer, pos, occupiedPositions);
 
         if (positions.isEmpty()) {
             return false;
         }
-
-        List<Integer> nonConflictPositions = isNotConflict(positions, layer, pos, occupiedPositions);
 
         if (nonConflictPositions.size() != positions.size()) {
             return false;
@@ -164,8 +162,8 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
 
         T placement = serializer.createPlacement(positions, direction);
         container.place(placement, position, layer, pos);
-
         loadPlacement(container, pos, placement, itemStack);
+
         return true;
     }
 
@@ -175,6 +173,10 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
                 this.getPlaceSound(pos.getBlockState(), pos.level(), pos.pos(), player),
                 (soundtype.getVolume() + 1.0F) / 2.0F,
                 soundtype.getPitch() * 0.8F);
+    }
+
+    public static boolean shouldPass(ItemStack itemStack, Player player, InteractionHand hand, LevelBlockPos pos) {
+        return itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem && hotpotPlacementBlockItem.canPlace(player, hand, pos);
     }
 
     public static int getPosition(BlockPos pos, Vec3 location) {
@@ -201,18 +203,19 @@ public class HotpotPlacementBlockItem<T extends IHotpotPlacement> extends BlockI
         return getPosition(context.getClickedPos(), context.getClickLocation());
     }
 
+    public static boolean isPositionNotConflict(int position, int layer, LevelBlockPos pos) {
+        return pos.getBlockState().isAir() || pos.getBlockEntity() instanceof IHotpotPlacementContainer blockEntity && blockEntity.getProvidedPositions(layer, pos).contains(position);
+    }
+
     public static List<Integer> isNotConflict(
-            List<Optional<Integer>> positions, int layer, LevelBlockPos pos, List<Integer> occupiedPositions) {
+            List<Optional<Integer>> positions,
+            int layer,
+            LevelBlockPos pos,
+            List<Integer> occupiedPositions) {
         return positions.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(i -> !occupiedPositions.contains(i) && isPositionNotConflict(i, layer, pos))
                 .toList();
-    }
-
-    public static boolean isPositionNotConflict(int position, int layer, LevelBlockPos pos) {
-        return pos.getBlockState().isAir()
-                || pos.getBlockEntity() instanceof IHotpotPlacementContainer blockEntity
-                        && blockEntity.getProvidedPositions(layer, pos).contains(position);
     }
 }

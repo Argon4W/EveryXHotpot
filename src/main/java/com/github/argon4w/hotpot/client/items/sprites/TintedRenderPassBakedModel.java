@@ -24,12 +24,64 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public record TintedRenderPassBakedModel(BakedModel model, HotpotColor color) implements BakedModel {
+
     @NotNull @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState pState, @Nullable Direction pDirection, @NotNull RandomSource pRandom) {
-        return model.getQuads(pState, pDirection, pRandom).stream()
+            @Nullable BlockState pState,
+            @Nullable Direction pDirection,
+            @NotNull RandomSource pRandom) {
+        return model
+                .getQuads(pState, pDirection, pRandom)
+                .stream()
                 .<BakedQuad>map(bakedQuad -> new TintedBakedQuad(bakedQuad, color))
                 .toList();
+    }
+
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType) {
+        return model
+                .getQuads(state, side, rand, data, renderType)
+                .stream()
+                .<BakedQuad>map(bakedQuad -> new TintedBakedQuad(bakedQuad, color))
+                .toList();
+    }
+
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state,
+            @NotNull ModelData data,
+            @NotNull RenderType renderType) {
+        return model.useAmbientOcclusion(state, data, renderType);
+    }
+
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType,
+            @NotNull PoseStack poseStack,
+            boolean applyLeftHandTransform) {
+        return new TintedRenderPassBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform), color);
+    }
+
+    @NotNull @Override
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
+        return model.getModelData(level, pos, state, modelData);
+    }
+
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data) {
+        return model.getRenderTypes(state, rand, data);
     }
 
     @Override
@@ -73,48 +125,8 @@ public record TintedRenderPassBakedModel(BakedModel model, HotpotColor color) im
     }
 
     @NotNull @Override
-    public List<BakedQuad> getQuads(
-            @Nullable BlockState state,
-            @Nullable Direction side,
-            @NotNull RandomSource rand,
-            @NotNull ModelData data,
-            @Nullable RenderType renderType) {
-        return model.getQuads(state, side, rand, data, renderType).stream()
-                .<BakedQuad>map(bakedQuad -> new TintedBakedQuad(bakedQuad, color))
-                .toList();
-    }
-
-    @NotNull @Override
-    public TriState useAmbientOcclusion(
-            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
-        return model.useAmbientOcclusion(state, data, renderType);
-    }
-
-    @NotNull @Override
-    public BakedModel applyTransform(
-            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new TintedRenderPassBakedModel(
-                model.applyTransform(transformType, poseStack, applyLeftHandTransform), color);
-    }
-
-    @NotNull @Override
-    public ModelData getModelData(
-            @NotNull BlockAndTintGetter level,
-            @NotNull BlockPos pos,
-            @NotNull BlockState state,
-            @NotNull ModelData modelData) {
-        return model.getModelData(level, pos, state, modelData);
-    }
-
-    @NotNull @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return model.getParticleIcon();
-    }
-
-    @NotNull @Override
-    public ChunkRenderTypeSet getRenderTypes(
-            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-        return model.getRenderTypes(state, rand, data);
     }
 
     @NotNull @Override

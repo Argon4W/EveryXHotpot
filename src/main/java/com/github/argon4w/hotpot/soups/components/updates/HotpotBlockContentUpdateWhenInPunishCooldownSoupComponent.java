@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.updates;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -10,6 +10,7 @@ import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSeriali
 import com.github.argon4w.hotpot.soups.components.containers.HotpotPunishCooldownContainerSoupComponent;
 
 public class HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent extends AbstractHotpotSoupComponent {
+
     @Override
     public IHotpotResult<IHotpotContent> onContentUpdate(
             HotpotBlockEntity hotpotBlockEntity,
@@ -17,13 +18,11 @@ public class HotpotBlockContentUpdateWhenInPunishCooldownSoupComponent extends A
             LevelBlockPos pos,
             IHotpotResult<IHotpotContent> result) {
         return soup
-                                .getComponentsByType(
-                                        HotpotSoupComponentTypeSerializers
-                                                .PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                .getComponentsByType(HotpotSoupComponentTypeSerializers.PUNISH_COOLDOWN_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
                                 .stream()
                                 .mapToInt(HotpotPunishCooldownContainerSoupComponent::getEmptyWaterPunishCooldown)
-                                .sum()
-                        > 0
+                                .sum() > 0
+
                 ? IHotpotResult.blocked()
                 : result;
     }

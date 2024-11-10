@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotEmptyPlacementRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -19,7 +20,9 @@ public class HotpotEmptyPlacementRenderer implements IHotpotPlacementRenderer {
             MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay,
-            float partialTick) {}
+            float partialTick) {
+
+    }
 
     @Override
     public void renderSectionGeometry(
@@ -28,5 +31,7 @@ public class HotpotEmptyPlacementRenderer implements IHotpotPlacementRenderer {
             IHotpotPlacementContainer container,
             BlockPos pos,
             PoseStack poseStack,
-            ISectionGeometryRenderContext modelRenderContext) {}
+            ISectionGeometryRenderContext modelRenderContext) {
+
+    }
 }

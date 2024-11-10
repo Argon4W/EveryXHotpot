@@ -7,6 +7,7 @@ import com.github.argon4w.hotpot.items.sprites.HotpotCustomColorSpriteConfig;
 import net.minecraft.resources.ResourceLocation;
 
 public class HotpotCustomColorSpriteProcessorProvider implements IHotpotSpriteProcessorProvider {
+
     @Override
     public ResourceLocation getProcessorResourceLocation(IHotpotSpriteConfig config) {
         return config instanceof HotpotCustomColorSpriteConfig customColor

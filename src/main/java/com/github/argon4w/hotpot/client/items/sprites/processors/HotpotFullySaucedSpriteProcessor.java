@@ -1,6 +1,7 @@
 package com.github.argon4w.hotpot.client.items.sprites.processors;
 
 public class HotpotFullySaucedSpriteProcessor extends AbstractHotpotGrayScaleSaucedSpriteProcessor {
+
     @Override
     public double getResultAlpha(double alpha, int x, int y, double width, double height) {
         return alpha;

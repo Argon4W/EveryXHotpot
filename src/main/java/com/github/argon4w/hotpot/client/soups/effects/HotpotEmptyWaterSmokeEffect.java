@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.client.soups.effects;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffect;
 import com.github.argon4w.hotpot.api.client.soups.effects.IHotpotSoupClientTickEffectSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -26,6 +26,7 @@ public record HotpotEmptyWaterSmokeEffect(
         float ySpeed,
         float zSpeed)
         implements IHotpotSoupClientTickEffect {
+
     @Override
     public void tick(LevelBlockPos pos, HotpotBlockEntity hotpotBlockEntity) {
         if (hotpotBlockEntity.getWaterLevel() > 0) {
@@ -57,24 +58,19 @@ public record HotpotEmptyWaterSmokeEffect(
     }
 
     public static class Serializer implements IHotpotSoupClientTickEffectSerializer<HotpotEmptyWaterSmokeEffect> {
-        public static final MapCodec<HotpotEmptyWaterSmokeEffect> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(effect -> effect.group(
-                                BuiltInRegistries.PARTICLE_TYPE
-                                        .byNameCodec()
-                                        .fieldOf("particle_type")
-                                        .forGetter(HotpotEmptyWaterSmokeEffect::particleType),
-                                Codec.INT
-                                        .fieldOf("amount_per_tick")
-                                        .forGetter(HotpotEmptyWaterSmokeEffect::amountPerTick),
-                                Codec.FLOAT.fieldOf("x_offset").forGetter(HotpotEmptyWaterSmokeEffect::xOffset),
-                                Codec.FLOAT.fieldOf("y_offset").forGetter(HotpotEmptyWaterSmokeEffect::yOffset),
-                                Codec.FLOAT.fieldOf("z_offset").forGetter(HotpotEmptyWaterSmokeEffect::zOffset),
-                                Codec.FLOAT.fieldOf("x_scale").forGetter(HotpotEmptyWaterSmokeEffect::xScale),
-                                Codec.FLOAT.fieldOf("z_scale").forGetter(HotpotEmptyWaterSmokeEffect::zScale),
-                                Codec.FLOAT.fieldOf("x_speed").forGetter(HotpotEmptyWaterSmokeEffect::xSpeed),
-                                Codec.FLOAT.fieldOf("y_speed").forGetter(HotpotEmptyWaterSmokeEffect::ySpeed),
-                                Codec.FLOAT.fieldOf("z_speed").forGetter(HotpotEmptyWaterSmokeEffect::zSpeed))
-                        .apply(effect, HotpotEmptyWaterSmokeEffect::new)));
+
+        public static final MapCodec<HotpotEmptyWaterSmokeEffect> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(effect -> effect.group(
+                BuiltInRegistries.PARTICLE_TYPE.byNameCodec().fieldOf("particle_type").forGetter(HotpotEmptyWaterSmokeEffect::particleType),
+                Codec.INT.fieldOf("amount_per_tick").forGetter(HotpotEmptyWaterSmokeEffect::amountPerTick),
+                Codec.FLOAT.fieldOf("x_offset").forGetter(HotpotEmptyWaterSmokeEffect::xOffset),
+                Codec.FLOAT.fieldOf("y_offset").forGetter(HotpotEmptyWaterSmokeEffect::yOffset),
+                Codec.FLOAT.fieldOf("z_offset").forGetter(HotpotEmptyWaterSmokeEffect::zOffset),
+                Codec.FLOAT.fieldOf("x_scale").forGetter(HotpotEmptyWaterSmokeEffect::xScale),
+                Codec.FLOAT.fieldOf("z_scale").forGetter(HotpotEmptyWaterSmokeEffect::zScale),
+                Codec.FLOAT.fieldOf("x_speed").forGetter(HotpotEmptyWaterSmokeEffect::xSpeed),
+                Codec.FLOAT.fieldOf("y_speed").forGetter(HotpotEmptyWaterSmokeEffect::ySpeed),
+                Codec.FLOAT.fieldOf("z_speed").forGetter(HotpotEmptyWaterSmokeEffect::zSpeed)
+        ).apply(effect, HotpotEmptyWaterSmokeEffect::new)));
 
         @Override
         public MapCodec<HotpotEmptyWaterSmokeEffect> getCodec() {

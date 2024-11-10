@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NeutralMob.class)
 public interface NeutralMobMixin {
+
     @Inject(method = "isAngryAt", at = @At("RETURN"), cancellable = true)
     default void isAngryAt(LivingEntity pTarget, CallbackInfoReturnable<Boolean> cir) {
         if (this instanceof Enemy) {

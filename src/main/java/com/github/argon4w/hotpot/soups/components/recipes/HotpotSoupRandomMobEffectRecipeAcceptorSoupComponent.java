@@ -1,19 +1,23 @@
 package com.github.argon4w.hotpot.soups.components.recipes;
 
-import com.github.argon4w.hotpot.HotpotItemUtils;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.ItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
+import com.github.argon4w.hotpot.api.items.IHotpotTablewareInteraction;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
+import com.github.argon4w.hotpot.soups.components.containers.HotpotDynamicMobEffectContainerSoupComponent;
 import com.github.argon4w.hotpot.soups.recipes.HotpotSoupRandomMobEffectRecipe;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
+
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.Holder;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,20 +26,19 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends AbstractHotpotSoupComponent {
-    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRandomMobEffectRecipe>
-            SOUP_RANDOM_MOB_EFFECT_RECIPE_QUICK_CHECK =
-                    RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RANDOM_MOB_EFFECT_RECIPE_TYPE.get());
+
+    public static final RecipeManager.CachedCheck<HotpotRecipeInput, HotpotSoupRandomMobEffectRecipe> SOUP_RANDOM_MOB_EFFECT_RECIPE_QUICK_CHECK = RecipeManager.createCheck(HotpotModEntry.HOTPOT_SOUP_RANDOM_MOB_EFFECT_RECIPE_TYPE.get());
 
     @Override
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(
-            int position,
-            Player player,
-            InteractionHand hand,
+            IHotpotTablewareInteraction.Context context,
             ItemStack itemStack,
-            HotpotComponentSoup soup,
-            LevelBlockPos pos,
             IHotpotResult<Holder<IHotpotContentSerializer<?>>> result,
-            HotpotBlockEntity hotpotBlockEntity) {
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup) {
+        Player player = context.player();
+        LevelBlockPos pos = context.pos();
+
         if (result.isPresent()) {
             return result;
         }
@@ -49,11 +52,15 @@ public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends Abstra
         }
 
         HotpotSoupRandomMobEffectRecipe recipe = optional.get();
+        Optional<MobEffectInstance> mobEffect = recipe.getMobEffect();
+        List<HotpotDynamicMobEffectContainerSoupComponent> containers = soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER);
 
-        HotpotItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
-        recipe.getMobEffect().ifPresent(mobEffectInstance -> soup.getComponentsByType(
-                        HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
-                .forEach(component -> component.putScheduledEffect(mobEffectInstance)));
+        if (mobEffect.isEmpty()) {
+            return result;
+        }
+
+        ItemUtils.consumeAndReturnRemaining(player, itemStack, recipe.getRemainingItem());
+        containers.forEach(component -> component.putScheduledEffect(mobEffect.get()));
         pos.playSound(recipe.getSoundEvent());
 
         return IHotpotResult.blocked();
@@ -61,7 +68,10 @@ public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends Abstra
 
     @Override
     public void onEntityInside(
-            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            Entity entity,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         if (!(entity instanceof ItemEntity itemEntity)) {
             return;
         }
@@ -81,12 +91,11 @@ public class HotpotSoupRandomMobEffectRecipeAcceptorSoupComponent extends Abstra
         }
 
         HotpotSoupRandomMobEffectRecipe recipe = optional.get();
+        List<HotpotDynamicMobEffectContainerSoupComponent> containers = soup.getComponentsByType(HotpotSoupComponentTypeSerializers.DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER);
 
         for (int i = 0; i < itemStack.getCount(); i++) {
-            recipe.getMobEffect().ifPresent(mobEffectInstance -> soup.getComponentsByType(
-                            HotpotSoupComponentTypeSerializers
-                                    .DYNAMIC_MOB_EFFECT_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
-                    .forEach(component -> component.putScheduledEffect(mobEffectInstance)));
+            containers.forEach(component -> recipe.getMobEffect().ifPresent(component::putScheduledEffect));
+
             pos.playSound(recipe.getSoundEvent());
             pos.dropItemStack(recipe.getRemainingItem());
         }

@@ -1,9 +1,10 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.streams.EntryStream;
 import com.github.argon4w.hotpot.api.contents.*;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.items.HotpotStrainerBasketItem;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,6 +18,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHotpotItemUpdaterContent {
+
     private final Direction direction;
     private final NonNullList<IHotpotContent> strainerContents;
     private final double cookingSpeed;
@@ -25,21 +27,13 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
             List<ItemStack> itemStacks, Direction direction, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         this.direction = direction;
 
-        this.strainerContents = IntStream.range(0, Math.min(8, itemStacks.size()))
-                .collect(
-                        () -> NonNullList.withSize(8, HotpotContentSerializers.loadEmptyContent()),
-                        (contents, i) -> contents.set(
-                                i,
-                                hotpotBlockEntity
-                                        .getSoup()
-                                        .getContentSerializerResultFromItemStack(
-                                                itemStacks.get(i), hotpotBlockEntity, pos)
-                                        .orElse(HotpotContentSerializers.ITEM_STACK_DUMMY_CONTENT_SERIALIZER)
-                                        .value()
-                                        .createContent(itemStacks.get(i).copy(), hotpotBlockEntity, pos, direction)),
-                        (contents1, contents2) -> {});
+        this.strainerContents = EntryStream
+                .fromKeys(IntStream.range(0, Math.min(8, itemStacks.size())).boxed(), itemStacks::get)
+                .mapValue(ItemStack::copy)
+                .collect(() -> NonNullList.withSize(8, HotpotContentSerializers.empty()), (contents, i, itemStack) -> contents.set(i, hotpotBlockEntity.getSoup().getContentSerializerResultFromItemStack(itemStack, hotpotBlockEntity, pos).orElse(HotpotContentSerializers.ITEM_STACK_DUMMY_CONTENT_SERIALIZER).value().createContent(itemStack, hotpotBlockEntity, pos, direction)));
 
-        this.cookingSpeed = HotpotStrainerBasketItem.getStrainerBasketCookingSpeed(this.strainerContents.stream()
+        this.cookingSpeed = HotpotStrainerBasketItem.getStrainerBasketCookingSpeed(this.strainerContents
+                .stream()
                 .filter(c -> !(c instanceof HotpotEmptyContent))
                 .count());
     }
@@ -48,26 +42,25 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
         this.direction = direction;
         this.strainerContents = strainerContents;
 
-        this.cookingSpeed = HotpotStrainerBasketItem.getStrainerBasketCookingSpeed(this.strainerContents.stream()
+        this.cookingSpeed = HotpotStrainerBasketItem.getStrainerBasketCookingSpeed(this.strainerContents
+                .stream()
                 .filter(c -> !(c instanceof HotpotEmptyContent))
                 .count());
     }
 
     @Override
     public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return HotpotStrainerBasketItem.createStrainerBasketFromItems(strainerContents.stream()
-                .map(content -> hotpotBlockEntity
-                        .getSoup()
-                        .getContentResultByTableware(content, hotpotBlockEntity, pos)
-                        .map(c -> c.getContentItemStack(hotpotBlockEntity, pos).copy())
-                        .orElse(ItemStack.EMPTY))
+        return HotpotStrainerBasketItem.createStrainerBasketFromItems(strainerContents
+                .stream()
+                .map(content -> hotpotBlockEntity.getSoup().getContentResultByTableware(content, hotpotBlockEntity, pos).map(c -> c.getContentItemStack(hotpotBlockEntity, pos).copy()).orElse(ItemStack.EMPTY))
                 .filter(Predicate.not(ItemStack::isEmpty))
                 .toList());
     }
 
     @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
-        strainerContents.stream()
+        strainerContents
+                .stream()
                 .filter(content -> content.onTick(hotpotBlockEntity, pos, ticks * cookingSpeed))
                 .peek(content -> hotpotBlockEntity.getSoup().onContentUpdate(content, hotpotBlockEntity, pos))
                 .findAny()
@@ -78,7 +71,8 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
 
     @Override
     public void updateItemStack(Consumer<ItemStack> consumer) {
-        strainerContents.stream()
+        strainerContents
+                .stream()
                 .filter(content -> content instanceof IHotpotItemUpdaterContent)
                 .forEach(content -> ((IHotpotItemUpdaterContent) content).updateItemStack(consumer));
     }
@@ -94,7 +88,9 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+
+    }
 
     @Override
     public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
@@ -114,19 +110,19 @@ public class HotpotStrainerBasketContent implements IHotpotPickableContent, IHot
     }
 
     public static class Serializer extends AbstractHotpotFixedContentSerializer<HotpotStrainerBasketContent> {
-        public static final MapCodec<HotpotStrainerBasketContent> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(content -> content.group(
-                                Direction.CODEC
-                                        .fieldOf("direction")
-                                        .forGetter(HotpotStrainerBasketContent::getDirection),
-                                HotpotContentSerializers.HOTPOT_CONTENTS_CODEC
-                                        .fieldOf("strainer_contents")
-                                        .forGetter(HotpotStrainerBasketContent::getStrainerContents))
-                        .apply(content, HotpotStrainerBasketContent::new)));
+
+        public static final MapCodec<HotpotStrainerBasketContent> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(content ->
+                content.group(
+                        Direction.CODEC.fieldOf("direction").forGetter(HotpotStrainerBasketContent::getDirection),
+                        HotpotContentSerializers.HOTPOT_CONTENTS_CODEC.fieldOf("strainer_contents").forGetter(HotpotStrainerBasketContent::getStrainerContents)
+                ).apply(content, HotpotStrainerBasketContent::new)));
 
         @Override
         public HotpotStrainerBasketContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return new HotpotStrainerBasketContent(
                     HotpotStrainerBasketItem.getStrainerBasketItems(itemStack.split(1)),
                     direction,

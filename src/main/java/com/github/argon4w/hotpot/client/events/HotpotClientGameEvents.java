@@ -12,10 +12,10 @@ import org.joml.Vector3f;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = HotpotModEntry.MODID, value = Dist.CLIENT)
 public class HotpotClientGameEvents {
+
     @SubscribeEvent
     public static void addSectionGeometry(AddSectionGeometryEvent event) {
-        event.addRenderer(new AdditionalSectionGeometryBlockEntityRendererDispatcher(
-                event.getSectionOrigin().immutable()));
+        event.addRenderer(new AdditionalSectionGeometryBlockEntityRendererDispatcher(event.getSectionOrigin().immutable()));
     }
 
     @SubscribeEvent
@@ -29,7 +29,8 @@ public class HotpotClientGameEvents {
         }
 
         Vector3f position = event.getCamera().getPosition().toVector3f();
-        event.getLevelRenderer()
+        event
+                .getLevelRenderer()
                 .renderSectionLayer(
                         HotpotClientRenderTypeEvents.get(),
                         position.x,
@@ -37,6 +38,11 @@ public class HotpotClientGameEvents {
                         position.z,
                         event.getModelViewMatrix(),
                         event.getProjectionMatrix());
-        event.getLevelRenderer().renderBuffers.bufferSource().endBatch(HotpotClientRenderTypeEvents.get());
+
+        event
+                .getLevelRenderer()
+                .renderBuffers
+                .bufferSource()
+                .endBatch(HotpotClientRenderTypeEvents.get());
     }
 }

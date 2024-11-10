@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
 import com.mojang.serialization.Codec;
@@ -22,6 +22,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
+
     private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
     private final float rechargeWaterLevel;
     private final Ingredient ingredient;
@@ -43,8 +44,7 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
 
     @Override
     public boolean matches(HotpotRecipeInput container, @NotNull Level level) {
-        return ingredient.test(container.itemStack())
-                && targetSoupTypeKey.equals(container.soup().soupTypeHolder().getKey());
+        return ingredient.test(container.itemStack()) && targetSoupTypeKey.equals(container.soup().soupTypeHolder().getKey());
     }
 
     public ItemStack getRemainingItem() {
@@ -78,38 +78,22 @@ public class HotpotSoupRechargeRecipe extends AbstractHotpotCommonInputRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<HotpotSoupRechargeRecipe> {
-        public static final MapCodec<HotpotSoupRechargeRecipe> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                                HotpotComponentSoupType.KEY_CODEC
-                                        .fieldOf("target_soup")
-                                        .forGetter(HotpotSoupRechargeRecipe::getTargetSoupTypeKey),
-                                Codec.FLOAT
-                                        .fieldOf("recharge_water_level")
-                                        .forGetter(HotpotSoupRechargeRecipe::getRechargeWaterLevel),
-                                Ingredient.CODEC
-                                        .fieldOf("ingredient")
-                                        .forGetter(HotpotSoupRechargeRecipe::getIngredient),
-                                ItemStack.OPTIONAL_CODEC
-                                        .optionalFieldOf("remaining_item", ItemStack.EMPTY)
-                                        .forGetter(HotpotSoupRechargeRecipe::getRemainingItem),
-                                SoundEvent.CODEC
-                                        .fieldOf("sound_event")
-                                        .forGetter(HotpotSoupRechargeRecipe::getSoundEvent))
-                        .apply(recipe, HotpotSoupRechargeRecipe::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRechargeRecipe> STREAM_CODEC =
-                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-                        HotpotComponentSoupType.KEY_STREAM_CODEC,
-                        HotpotSoupRechargeRecipe::getTargetSoupTypeKey,
-                        ByteBufCodecs.FLOAT,
-                        HotpotSoupRechargeRecipe::getRechargeWaterLevel,
-                        Ingredient.CONTENTS_STREAM_CODEC,
-                        HotpotSoupRechargeRecipe::getIngredient,
-                        ItemStack.OPTIONAL_STREAM_CODEC,
-                        HotpotSoupRechargeRecipe::getRemainingItem,
-                        SoundEvent.STREAM_CODEC,
-                        HotpotSoupRechargeRecipe::getSoundEvent,
-                        HotpotSoupRechargeRecipe::new));
+        public static final MapCodec<HotpotSoupRechargeRecipe> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRechargeRecipe::getTargetSoupTypeKey),
+                Codec.FLOAT.fieldOf("recharge_water_level").forGetter(HotpotSoupRechargeRecipe::getRechargeWaterLevel),
+                Ingredient.CODEC.fieldOf("ingredient").forGetter(HotpotSoupRechargeRecipe::getIngredient),
+                ItemStack.OPTIONAL_CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupRechargeRecipe::getRemainingItem),
+                SoundEvent.CODEC.fieldOf("sound_event").forGetter(HotpotSoupRechargeRecipe::getSoundEvent)
+        ).apply(recipe, HotpotSoupRechargeRecipe::new)));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRechargeRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupRechargeRecipe::getTargetSoupTypeKey,
+                ByteBufCodecs.FLOAT, HotpotSoupRechargeRecipe::getRechargeWaterLevel,
+                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupRechargeRecipe::getIngredient,
+                ItemStack.OPTIONAL_STREAM_CODEC, HotpotSoupRechargeRecipe::getRemainingItem,
+                SoundEvent.STREAM_CODEC, HotpotSoupRechargeRecipe::getSoundEvent,
+                HotpotSoupRechargeRecipe::new));
 
         @NotNull @Override
         public MapCodec<HotpotSoupRechargeRecipe> codec() {

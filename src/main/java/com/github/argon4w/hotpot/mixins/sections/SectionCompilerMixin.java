@@ -12,16 +12,14 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(SectionCompiler.class)
 public class SectionCompilerMixin {
-    @WrapOperation(
-            method = "getOrBeginLayer",
-            at =
-                    @At(
-                            value = "FIELD",
-                            target =
-                                    "Lcom/mojang/blaze3d/vertex/DefaultVertexFormat;BLOCK:Lcom/mojang/blaze3d/vertex/VertexFormat;",
-                            opcode = Opcodes.GETSTATIC))
+
+    @WrapOperation(method = "getOrBeginLayer", at = @At(
+            value = "FIELD",
+            target = "Lcom/mojang/blaze3d/vertex/DefaultVertexFormat;BLOCK:Lcom/mojang/blaze3d/vertex/VertexFormat;",
+            opcode = Opcodes.GETSTATIC))
     public VertexFormat wrapFormatBasedOnRenderType(
-            Operation<VertexFormat> original, @Local(argsOnly = true) RenderType renderTypeRef) {
+            Operation<VertexFormat> original,
+            @Local(argsOnly = true) RenderType renderTypeRef) {
         return renderTypeRef.format;
     }
 }

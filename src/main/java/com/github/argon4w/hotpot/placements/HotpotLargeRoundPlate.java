@@ -1,12 +1,12 @@
 package com.github.argon4w.hotpot.placements;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotCommonPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
+
     private final SimpleItemSlot itemSlot1;
     private final SimpleItemSlot itemSlot2;
     private final SimpleItemSlot itemSlot3;
@@ -46,10 +47,14 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
         this.position4 = position4;
 
         this.itemSlots = Map.of(
-                this.position1, this.itemSlot1,
-                this.position2, this.itemSlot2,
-                this.position3, this.itemSlot3,
-                this.position4, this.itemSlot4);
+                this.position1,
+                this.itemSlot1,
+                this.position2,
+                this.itemSlot2,
+                this.position3,
+                this.itemSlot3,
+                this.position4,
+                this.itemSlot4);
     }
 
     public HotpotLargeRoundPlate(
@@ -74,10 +79,14 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
         this.position4 = position4;
 
         this.itemSlots = Map.of(
-                this.position1, this.itemSlot1,
-                this.position2, this.itemSlot2,
-                this.position3, this.itemSlot3,
-                this.position4, this.itemSlot4);
+                this.position1,
+                this.itemSlot1,
+                this.position2,
+                this.itemSlot2,
+                this.position3,
+                this.itemSlot3,
+                this.position4,
+                this.itemSlot4);
     }
 
     @Override
@@ -205,33 +214,26 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
     }
 
     public static class Serializer implements IHotpotPlacementSerializer<HotpotLargeRoundPlate> {
-        public static final MapCodec<HotpotLargeRoundPlate> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("item_slot_1")
-                                        .forGetter(HotpotLargeRoundPlate::getItemSlot1),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("item_slot_2")
-                                        .forGetter(HotpotLargeRoundPlate::getItemSlot2),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("item_slot_3")
-                                        .forGetter(HotpotLargeRoundPlate::getItemSlot3),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("item_slot_4")
-                                        .forGetter(HotpotLargeRoundPlate::getItemSlot4),
-                                SimpleItemSlot.CODEC
-                                        .fieldOf("plate_item_slot")
-                                        .forGetter(HotpotLargeRoundPlate::getPlateItemSlot),
-                                Codec.INT.fieldOf("position_1").forGetter(HotpotLargeRoundPlate::getPosition1),
-                                Codec.INT.fieldOf("position_2").forGetter(HotpotLargeRoundPlate::getPosition2),
-                                Codec.INT.fieldOf("position_3").forGetter(HotpotLargeRoundPlate::getPosition3),
-                                Codec.INT.fieldOf("position_4").forGetter(HotpotLargeRoundPlate::getPosition4))
-                        .apply(plate, HotpotLargeRoundPlate::new)));
+
+        public static final MapCodec<HotpotLargeRoundPlate> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(plate -> plate.group(
+                SimpleItemSlot.CODEC.fieldOf("item_slot_1").forGetter(HotpotLargeRoundPlate::getItemSlot1),
+                SimpleItemSlot.CODEC.fieldOf("item_slot_2").forGetter(HotpotLargeRoundPlate::getItemSlot2),
+                SimpleItemSlot.CODEC.fieldOf("item_slot_3").forGetter(HotpotLargeRoundPlate::getItemSlot3),
+                SimpleItemSlot.CODEC.fieldOf("item_slot_4").forGetter(HotpotLargeRoundPlate::getItemSlot4),
+                SimpleItemSlot.CODEC.fieldOf("plate_item_slot").forGetter(HotpotLargeRoundPlate::getPlateItemSlot),
+                Codec.INT.fieldOf("position_1").forGetter(HotpotLargeRoundPlate::getPosition1),
+                Codec.INT.fieldOf("position_2").forGetter(HotpotLargeRoundPlate::getPosition2),
+                Codec.INT.fieldOf("position_3").forGetter(HotpotLargeRoundPlate::getPosition3),
+                Codec.INT.fieldOf("position_4").forGetter(HotpotLargeRoundPlate::getPosition4)
+        ).apply(plate, HotpotLargeRoundPlate::new)));
 
         @Override
         public HotpotLargeRoundPlate createPlacement(List<Integer> positions, ComplexDirection direction) {
             return new HotpotLargeRoundPlate(
-                    positions.getFirst(), positions.get(1), positions.get(2), positions.get(3));
+                    positions.getFirst(),
+                    positions.get(1),
+                    positions.get(2),
+                    positions.get(3));
         }
 
         @Override

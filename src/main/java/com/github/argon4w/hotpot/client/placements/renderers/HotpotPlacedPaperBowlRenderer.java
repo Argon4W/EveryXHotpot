@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.client.placements.renderers;
 
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.client.placements.IHotpotPlacementRenderer;
 import com.github.argon4w.hotpot.api.client.sections.ISectionGeometryRenderContext;
@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,
@@ -47,8 +48,7 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
         SimpleItemSlot paperBowlItemSlot = placedPaperBowl.getPaperBowlItemSlot();
         ItemStack paperBowlItemStack = paperBowlItemSlot.getItemStack();
 
-        int renderCount =
-                HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemStack) ? paperBowlItemSlot.getRenderCount() : 1;
+        int renderCount = HotpotPaperBowlItem.isPaperBowlClear(paperBowlItemStack) ? paperBowlItemSlot.getRenderCount() : 1;
 
         for (int i = 0; i < renderCount; i++) {
             double scale = (i % 2 == 0) ? 0.6 : (0.6 - 0.01);
@@ -61,7 +61,11 @@ public class HotpotPlacedPaperBowlRenderer implements IHotpotPlacementRenderer {
             poseStack.scale((float) scale, (float) scale, (float) scale);
 
             modelRenderContext.renderUncachedItem(
-                    paperBowlItemStack, ItemDisplayContext.FIXED, false, poseStack, OverlayTexture.NO_OVERLAY);
+                    paperBowlItemStack,
+                    ItemDisplayContext.FIXED,
+                    false,
+                    poseStack,
+                    OverlayTexture.NO_OVERLAY);
 
             poseStack.popPose();
         }

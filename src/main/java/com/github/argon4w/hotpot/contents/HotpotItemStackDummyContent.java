@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.AbstractHotpotRotatingContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
@@ -12,6 +12,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 
 public record HotpotItemStackDummyContent(ItemStack itemStack) implements IHotpotContent {
+
     @Override
     public boolean shouldRemove(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return false;
@@ -33,7 +34,9 @@ public record HotpotItemStackDummyContent(ItemStack itemStack) implements IHotpo
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+
+    }
 
     @Override
     public Holder<IHotpotContentSerializer<?>> getContentSerializerHolder() {
@@ -41,13 +44,17 @@ public record HotpotItemStackDummyContent(ItemStack itemStack) implements IHotpo
     }
 
     public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotItemStackDummyContent> {
+
         public static final MapCodec<HotpotItemStackDummyContent> CODEC = ItemStack.CODEC
                 .fieldOf("item_stack")
                 .xmap(HotpotItemStackDummyContent::new, HotpotItemStackDummyContent::itemStack);
 
         @Override
         public HotpotItemStackDummyContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return new HotpotItemStackDummyContent(itemStack);
         }
 

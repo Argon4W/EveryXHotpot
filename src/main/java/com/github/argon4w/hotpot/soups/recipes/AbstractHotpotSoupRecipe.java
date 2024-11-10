@@ -8,6 +8,7 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractHotpotSoupRecipe<T extends RecipeInput> implements Recipe<T> {
+
     @NotNull @Override
     public ItemStack getResultItem(@NotNull HolderLookup.Provider access) {
         return ItemStack.EMPTY;

@@ -1,11 +1,11 @@
 package com.github.argon4w.hotpot.soups.components.entities;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotDamageSource;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoup;
 import com.github.argon4w.hotpot.soups.components.AbstractHotpotSoupComponent;
 import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSerializers;
@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupComponent {
+
     private final IHotpotDamageSource.Wrapper damageSourceWrapper;
 
     public HotpotAttackEntityInsideSoupComponent(IHotpotDamageSource.Wrapper damageSourceWrapper) {
@@ -25,13 +26,17 @@ public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupCom
 
     @Override
     public void onEntityInside(
-            Entity entity, HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
+            Entity entity,
+            HotpotBlockEntity hotpotBlockEntity,
+            HotpotComponentSoup soup,
+            LevelBlockPos pos) {
         if (entity.isAttackable()) {
             damageSourceWrapper.hurt(entity, pos.toVec3());
         }
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent> {
+
         private final IHotpotDamageSource.Wrapper damageSourceWrapper;
         private final HotpotAttackEntityInsideSoupComponent unit;
 
@@ -71,13 +76,14 @@ public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupCom
         }
     }
 
-    public static class Serializer
-            implements IHotpotSoupComponentTypeSerializer<HotpotAttackEntityInsideSoupComponent> {
+    public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotAttackEntityInsideSoupComponent> {
+
         private static final MapCodec<Type> CODEC = LazyMapCodec.of(() -> IHotpotDamageSource.CODEC
                 .optionalFieldOf("damage_source", IHotpotDamageSource.EMPTY)
                 .xmap(Type::new, Type::getDamageSourceWrapper));
-        private static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(
-                () -> IHotpotDamageSource.STREAM_CODEC.map(Type::new, Type::getDamageSourceWrapper));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> IHotpotDamageSource.STREAM_CODEC.
+                map(Type::new, Type::getDamageSourceWrapper));
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent>> getCodec() {
@@ -85,10 +91,7 @@ public class HotpotAttackEntityInsideSoupComponent extends AbstractHotpotSoupCom
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf,
-                        ? extends IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotAttackEntityInsideSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

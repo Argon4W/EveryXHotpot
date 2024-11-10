@@ -2,7 +2,7 @@ package com.github.argon4w.hotpot.soups.recipes;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.api.soups.recipes.effects.IHotpotRandomMobEffectKey;
-import com.github.argon4w.hotpot.codecs.LazyMapCodec;
+import com.github.argon4w.fancytoys.codecs.LazyMapCodec;
 import com.github.argon4w.hotpot.soups.HotpotComponentSoupType;
 import com.github.argon4w.hotpot.soups.recipes.effects.HotpotRandomMobEffectMap;
 import com.github.argon4w.hotpot.soups.recipes.input.HotpotRecipeInput;
@@ -24,6 +24,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRecipe {
+
     private final ResourceKey<HotpotComponentSoupType> targetSoupTypeKey;
     private final Ingredient ingredient;
     private final Holder<HotpotRandomMobEffectMap> mobEffectMapHolder;
@@ -90,43 +91,24 @@ public class HotpotSoupRandomMobEffectRecipe extends AbstractHotpotCommonInputRe
     }
 
     public static class Serializer implements RecipeSerializer<HotpotSoupRandomMobEffectRecipe> {
-        public static final MapCodec<HotpotSoupRandomMobEffectRecipe> CODEC =
-                LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
-                                HotpotComponentSoupType.KEY_CODEC
-                                        .fieldOf("target_soup")
-                                        .forGetter(HotpotSoupRandomMobEffectRecipe::getTargetSoupTypeKey),
-                                Ingredient.CODEC_NONEMPTY
-                                        .fieldOf("ingredient")
-                                        .forGetter(HotpotSoupRandomMobEffectRecipe::getIngredient),
-                                HotpotRandomMobEffectMap.HOLDER_CODEC
-                                        .fieldOf("mob_effect_map")
-                                        .forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder),
-                                IHotpotRandomMobEffectKey.CODEC
-                                        .fieldOf("mob_effect_key")
-                                        .forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectKey),
-                                ItemStack.OPTIONAL_CODEC
-                                        .optionalFieldOf("remaining_item", ItemStack.EMPTY)
-                                        .forGetter(HotpotSoupRandomMobEffectRecipe::getRemainingItem),
-                                SoundEvent.CODEC
-                                        .fieldOf("sound_event")
-                                        .forGetter(HotpotSoupRandomMobEffectRecipe::getSoundEvent))
-                        .apply(recipe, HotpotSoupRandomMobEffectRecipe::new)));
 
-        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRandomMobEffectRecipe> STREAM_CODEC =
-                NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-                        HotpotComponentSoupType.KEY_STREAM_CODEC,
-                        HotpotSoupRandomMobEffectRecipe::getTargetSoupTypeKey,
-                        Ingredient.CONTENTS_STREAM_CODEC,
-                        HotpotSoupRandomMobEffectRecipe::getIngredient,
-                        HotpotRandomMobEffectMap.HOLDER_STREAM_CODEC,
-                        HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder,
-                        IHotpotRandomMobEffectKey.STREAM_CODEC,
-                        HotpotSoupRandomMobEffectRecipe::getMobEffectKey,
-                        ItemStack.OPTIONAL_STREAM_CODEC,
-                        HotpotSoupRandomMobEffectRecipe::getRemainingItem,
-                        SoundEvent.STREAM_CODEC,
-                        HotpotSoupRandomMobEffectRecipe::getSoundEvent,
-                        HotpotSoupRandomMobEffectRecipe::new));
+        public static final MapCodec<HotpotSoupRandomMobEffectRecipe> CODEC = LazyMapCodec.of(() -> RecordCodecBuilder.mapCodec(recipe -> recipe.group(
+                HotpotComponentSoupType.KEY_CODEC.fieldOf("target_soup").forGetter(HotpotSoupRandomMobEffectRecipe::getTargetSoupTypeKey),
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(HotpotSoupRandomMobEffectRecipe::getIngredient),
+                HotpotRandomMobEffectMap.HOLDER_CODEC.fieldOf("mob_effect_map").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder),
+                IHotpotRandomMobEffectKey.CODEC.fieldOf("mob_effect_key").forGetter(HotpotSoupRandomMobEffectRecipe::getMobEffectKey),
+                ItemStack.OPTIONAL_CODEC.optionalFieldOf("remaining_item", ItemStack.EMPTY).forGetter(HotpotSoupRandomMobEffectRecipe::getRemainingItem),
+                SoundEvent.CODEC.fieldOf("sound_event").forGetter(HotpotSoupRandomMobEffectRecipe::getSoundEvent)
+        ).apply(recipe, HotpotSoupRandomMobEffectRecipe::new)));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSoupRandomMobEffectRecipe> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+                HotpotComponentSoupType.KEY_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getTargetSoupTypeKey,
+                Ingredient.CONTENTS_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getIngredient,
+                HotpotRandomMobEffectMap.HOLDER_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getMobEffectMapHolder,
+                IHotpotRandomMobEffectKey.STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getMobEffectKey,
+                ItemStack.OPTIONAL_STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getRemainingItem,
+                SoundEvent.STREAM_CODEC, HotpotSoupRandomMobEffectRecipe::getSoundEvent,
+                HotpotSoupRandomMobEffectRecipe::new));
 
         @NotNull @Override
         public MapCodec<HotpotSoupRandomMobEffectRecipe> codec() {

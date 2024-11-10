@@ -12,23 +12,13 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Material.class)
 public class EmbeddiumMaterialMixin {
-    @Mutable
-    @Shadow
-    @Final
-    public AlphaCutoffParameter alphaCutoff;
 
-    @Mutable
-    @Shadow
-    @Final
-    public int packed;
+    @Mutable @Shadow @Final public AlphaCutoffParameter alphaCutoff;
+    @Mutable @Shadow @Final public int packed;
 
-    @WrapOperation(
-            method = "<init>",
-            at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/parameters/MaterialParameters;pack(Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/parameters/AlphaCutoffParameter;Z)I"))
+    @WrapOperation(method = "<init>", at = @At(
+            value = "INVOKE",
+            target = "Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/parameters/MaterialParameters;pack(Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/parameters/AlphaCutoffParameter;Z)I"))
     public int wrapPackedParameters(
             AlphaCutoffParameter alphaCutoff,
             boolean useMipmaps,
@@ -39,19 +29,16 @@ public class EmbeddiumMaterialMixin {
                 useMipmaps);
     }
 
-    @WrapOperation(
-            method = "<init>",
-            at =
-                    @At(
-                            value = "FIELD",
-                            target =
-                                    "Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/Material;alphaCutoff:Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/parameters/AlphaCutoffParameter;"))
+    @WrapOperation(method = "<init>", at = @At(
+            value = "FIELD",
+            target = "Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/Material;alphaCutoff:Lorg/embeddedt/embeddium/impl/render/chunk/terrain/material/parameters/AlphaCutoffParameter;"))
     public void wrapAlphaCutoff(
             Material instance,
             AlphaCutoffParameter value,
             Operation<Void> original,
             @Local(argsOnly = true) TerrainRenderPass pass) {
         original.call(
-                instance, pass == DefaultTerrainRenderPasses.TRANSLUCENT ? AlphaCutoffParameter.ONE_TENTH : value);
+                instance,
+                pass == DefaultTerrainRenderPasses.TRANSLUCENT ? AlphaCutoffParameter.ONE_TENTH : value);
     }
 }

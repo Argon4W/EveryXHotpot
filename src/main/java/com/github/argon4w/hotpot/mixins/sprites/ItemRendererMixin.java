@@ -16,16 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {
-    @Inject(
-            method = "renderQuadList",
-            at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I",
-                            shift = At.Shift.BY,
-                            by = 2),
-            require = 0)
+
+    @Inject(method = "renderQuadList", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I",
+            shift = At.Shift.BY,
+            by = 2), require = 0)
     public void renderQuadList(
             PoseStack pPoseStack,
             VertexConsumer pBuffer,

@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
 import com.github.argon4w.hotpot.api.soups.recipes.IHotpotCookingRecipeHolder;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 
 public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
-    public static final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> SMELTING_RECIPE_CHECK =
-            RecipeManager.createCheck(RecipeType.BLASTING);
+
+    public static final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> SMELTING_RECIPE_CHECK = RecipeManager.createCheck(RecipeType.BLASTING);
 
     public HotpotBlastingRecipeContent(
             ItemStack itemStack,
@@ -31,7 +31,9 @@ public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
 
     @Override
     public Optional<IHotpotCookingRecipeHolder> getRecipe(
-            HotpotComponentSoup soup, ItemStack itemStack, LevelBlockPos pos) {
+            HotpotComponentSoup soup,
+            ItemStack itemStack,
+            LevelBlockPos pos) {
         return HotpotBlastingRecipeContent.SMELTING_RECIPE_CHECK
                 .getRecipeFor(new SingleRecipeInput(itemStack), pos.level())
                 .map(RecipeHolder::value)
@@ -44,6 +46,7 @@ public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
     }
 
     public static class Serializer extends AbstractHotpotItemStackContent.Serializer<HotpotBlastingRecipeContent> {
+
         @Override
         public HotpotBlastingRecipeContent createContent(
                 ItemStack itemStack,
@@ -52,12 +55,19 @@ public class HotpotBlastingRecipeContent extends AbstractHotpotRecipeContent {
                 double cookingProgress,
                 double experience) {
             return new HotpotBlastingRecipeContent(
-                    itemStack, originalItemStack, cookingTime, cookingProgress, experience);
+                    itemStack,
+                    originalItemStack,
+                    cookingTime,
+                    cookingProgress,
+                    experience);
         }
 
         @Override
         public HotpotBlastingRecipeContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return new HotpotBlastingRecipeContent(itemStack, hotpotBlockEntity, pos);
         }
     }

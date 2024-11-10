@@ -26,10 +26,56 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements BakedModel {
+
     @NotNull @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction direction, @NotNull RandomSource randomSource) {
+            @Nullable BlockState state,
+            @Nullable Direction direction,
+            @NotNull RandomSource randomSource) {
         return overlayModelMap.getOriginalModel().getQuads(state, direction, randomSource);
+    }
+
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType) {
+        return overlayModelMap.getOriginalModel().getQuads(state, side, rand, data, renderType);
+    }
+
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state,
+            @NotNull ModelData data,
+            @NotNull RenderType renderType) {
+        return overlayModelMap.getOriginalModel().useAmbientOcclusion(state, data, renderType);
+    }
+
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType,
+            @NotNull PoseStack poseStack,
+            boolean applyLeftHandTransform) {
+        return new OverlayBakedModel(overlayModelMap.applyTransform(transformType, poseStack, applyLeftHandTransform));
+    }
+
+    @NotNull @Override
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
+        return overlayModelMap.getOriginalModel().getModelData(level, pos, state, modelData);
+    }
+
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data) {
+        return overlayModelMap.getOriginalModel().getRenderTypes(state, rand, data);
     }
 
     @Override
@@ -73,45 +119,8 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
     }
 
     @NotNull @Override
-    public List<BakedQuad> getQuads(
-            @Nullable BlockState state,
-            @Nullable Direction side,
-            @NotNull RandomSource rand,
-            @NotNull ModelData data,
-            @Nullable RenderType renderType) {
-        return overlayModelMap.getOriginalModel().getQuads(state, side, rand, data, renderType);
-    }
-
-    @NotNull @Override
-    public TriState useAmbientOcclusion(
-            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
-        return overlayModelMap.getOriginalModel().useAmbientOcclusion(state, data, renderType);
-    }
-
-    @NotNull @Override
-    public BakedModel applyTransform(
-            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new OverlayBakedModel(overlayModelMap.applyTransform(transformType, poseStack, applyLeftHandTransform));
-    }
-
-    @NotNull @Override
-    public ModelData getModelData(
-            @NotNull BlockAndTintGetter level,
-            @NotNull BlockPos pos,
-            @NotNull BlockState state,
-            @NotNull ModelData modelData) {
-        return overlayModelMap.getOriginalModel().getModelData(level, pos, state, modelData);
-    }
-
-    @NotNull @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return overlayModelMap.getOriginalModel().getParticleIcon();
-    }
-
-    @NotNull @Override
-    public ChunkRenderTypeSet getRenderTypes(
-            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-        return overlayModelMap.getOriginalModel().getRenderTypes(state, rand, data);
     }
 
     @NotNull @Override
@@ -120,6 +129,7 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
     }
 
     private class OverlayOverrides extends ItemOverrides {
+
         @Nullable @Override
         public BakedModel resolve(
                 @NotNull BakedModel bakedModel,
@@ -127,8 +137,7 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
                 @Nullable ClientLevel clientLevel,
                 @Nullable LivingEntity livingEntity,
                 int seed) {
-            BakedModel resolved =
-                    overlayModelMap.resolveOriginalModel(bakedModel, itemStack, clientLevel, livingEntity, seed);
+            BakedModel resolved = overlayModelMap.resolveOriginalModel(bakedModel, itemStack, clientLevel, livingEntity, seed);
 
             if (resolved == null) {
                 return null;
@@ -138,8 +147,7 @@ public record OverlayBakedModel(OverlayModelMap overlayModelMap) implements Bake
                 return resolved;
             }
 
-            return new TintedResolvedBakedModel(
-                    resolved, overlayModelMap.getResolvedTintedModels(itemStack, clientLevel, livingEntity, seed));
+            return new TintedResolvedBakedModel(resolved, overlayModelMap.getResolvedTintedModels(itemStack, clientLevel, livingEntity, seed));
         }
     }
 }

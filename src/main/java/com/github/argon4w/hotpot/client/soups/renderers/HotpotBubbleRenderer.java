@@ -20,6 +20,7 @@ import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
+
     private final Bubble[] bubbles;
     private final double spread;
     private final double maxScale;
@@ -59,7 +60,8 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
 
     @Override
     public void prepareModel() {
-        model = Minecraft.getInstance()
+        model = Minecraft
+                .getInstance()
                 .getModelManager()
                 .getModel(ModelResourceLocation.standalone(bubbleModelResourceLocation));
     }
@@ -73,9 +75,16 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
             int combinedLight,
             int combinedOverlay,
             double renderedWaterLevel) {
-        IntStream.range(0, bubbles.length)
+        IntStream
+                .range(0, bubbles.length)
                 .forEach(i -> renderBubble(
-                        time, renderedWaterLevel, i, poseStack, bufferSource, combinedLight, combinedOverlay));
+                        time,
+                        renderedWaterLevel,
+                        i,
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay));
     }
 
     @Override
@@ -175,25 +184,23 @@ public class HotpotBubbleRenderer implements IHotpotSoupCustomElementRenderer {
         return bubbleModelResourceLocation;
     }
 
-    public record Bubble(double x, double z, int offset, long time) {}
+    public record Bubble(double x, double z, int offset, long time) {
+
+    }
 
     public static class Serializer implements IHotpotSoupCustomElementRendererSerializer<HotpotBubbleRenderer> {
-        public static final MapCodec<HotpotBubbleRenderer> CODEC =
-                RecordCodecBuilder.mapCodec(renderer -> renderer.group(
-                                Codec.DOUBLE.fieldOf("spread").forGetter(HotpotBubbleRenderer::getSpread),
-                                Codec.DOUBLE.fieldOf("max_scale").forGetter(HotpotBubbleRenderer::getMaxScale),
-                                Codec.INT.fieldOf("amount").forGetter(HotpotBubbleRenderer::getAmount),
-                                Codec.INT.fieldOf("offset_range").forGetter(HotpotBubbleRenderer::getOffsetRange),
-                                Codec.DOUBLE.fieldOf("max_time").forGetter(HotpotBubbleRenderer::getMaxTime),
-                                Codec.DOUBLE.fieldOf("min_y").forGetter(HotpotBubbleRenderer::getMinY),
-                                Codec.DOUBLE.fieldOf("max_y").forGetter(HotpotBubbleRenderer::getMaxY),
-                                ResourceLocation.CODEC
-                                        .fieldOf("bubble_model_resource_location")
-                                        .forGetter(HotpotBubbleRenderer::getBubbleModelResourceLocation),
-                                Codec.BOOL
-                                        .fieldOf("should_render_in_bowl")
-                                        .forGetter(HotpotBubbleRenderer::shouldRenderInBowl))
-                        .apply(renderer, HotpotBubbleRenderer::new));
+
+        public static final MapCodec<HotpotBubbleRenderer> CODEC = RecordCodecBuilder.mapCodec(renderer -> renderer.group(
+                Codec.DOUBLE.fieldOf("spread").forGetter(HotpotBubbleRenderer::getSpread),
+                Codec.DOUBLE.fieldOf("max_scale").forGetter(HotpotBubbleRenderer::getMaxScale),
+                Codec.INT.fieldOf("amount").forGetter(HotpotBubbleRenderer::getAmount),
+                Codec.INT.fieldOf("offset_range").forGetter(HotpotBubbleRenderer::getOffsetRange),
+                Codec.DOUBLE.fieldOf("max_time").forGetter(HotpotBubbleRenderer::getMaxTime),
+                Codec.DOUBLE.fieldOf("min_y").forGetter(HotpotBubbleRenderer::getMinY),
+                Codec.DOUBLE.fieldOf("max_y").forGetter(HotpotBubbleRenderer::getMaxY),
+                ResourceLocation.CODEC.fieldOf("bubble_model_resource_location").forGetter(HotpotBubbleRenderer::getBubbleModelResourceLocation),
+                Codec.BOOL.fieldOf("should_render_in_bowl").forGetter(HotpotBubbleRenderer::shouldRenderInBowl)
+        ).apply(renderer, HotpotBubbleRenderer::new));
 
         @Override
         public MapCodec<HotpotBubbleRenderer> getCodec() {

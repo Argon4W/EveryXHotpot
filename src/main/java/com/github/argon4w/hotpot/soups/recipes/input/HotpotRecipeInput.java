@@ -6,6 +6,7 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.NotNull;
 
 public record HotpotRecipeInput(ItemStack itemStack, HotpotComponentSoup soup) implements RecipeInput {
+
     @NotNull @Override
     public ItemStack getItem(int slot) {
         return itemStack;

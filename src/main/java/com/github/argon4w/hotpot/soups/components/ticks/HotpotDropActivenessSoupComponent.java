@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups.components.ticks;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentType;
 import com.github.argon4w.hotpot.api.soups.components.IHotpotSoupComponentTypeSerializer;
 import com.github.argon4w.hotpot.blocks.HotpotBlockEntity;
@@ -15,6 +15,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class HotpotDropActivenessSoupComponent extends AbstractHotpotSoupComponent {
+
     private final double activenessDropRate;
 
     public HotpotDropActivenessSoupComponent(double activenessDropRate) {
@@ -23,12 +24,13 @@ public class HotpotDropActivenessSoupComponent extends AbstractHotpotSoupCompone
 
     @Override
     public void onTick(HotpotBlockEntity hotpotBlockEntity, HotpotComponentSoup soup, LevelBlockPos pos) {
-        soup.getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
-                .forEach(component ->
-                        component.setActiveness(component.getActiveness() - activenessDropRate / 20.0 / 60.0));
+        soup
+                .getComponentsByType(HotpotSoupComponentTypeSerializers.ACTIVENESS_CONTAINER_SOUP_COMPONENT_TYPE_SERIALIZER)
+                .forEach(component -> component.setActiveness(component.getActiveness() - activenessDropRate / 20.0 / 60.0));
     }
 
     public static class Type implements IHotpotSoupComponentType<HotpotDropActivenessSoupComponent> {
+
         private final double activenessDropRate;
         private final HotpotDropActivenessSoupComponent unit;
 
@@ -69,10 +71,14 @@ public class HotpotDropActivenessSoupComponent extends AbstractHotpotSoupCompone
     }
 
     public static class Serializer implements IHotpotSoupComponentTypeSerializer<HotpotDropActivenessSoupComponent> {
-        public static final MapCodec<Type> CODEC =
-                Codec.DOUBLE.fieldOf("activeness_drop_rate").xmap(Type::new, Type::getActivenessDropRate);
-        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC =
-                ByteBufCodecs.DOUBLE.<RegistryFriendlyByteBuf>cast().map(Type::new, Type::getActivenessDropRate);
+
+        public static final MapCodec<Type> CODEC = Codec.DOUBLE
+                .fieldOf("activeness_drop_rate")
+                .xmap(Type::new, Type::getActivenessDropRate);
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = ByteBufCodecs.DOUBLE
+                .<RegistryFriendlyByteBuf>cast()
+                .map(Type::new, Type::getActivenessDropRate);
 
         @Override
         public MapCodec<? extends IHotpotSoupComponentType<HotpotDropActivenessSoupComponent>> getCodec() {
@@ -80,9 +86,7 @@ public class HotpotDropActivenessSoupComponent extends AbstractHotpotSoupCompone
         }
 
         @Override
-        public StreamCodec<
-                        RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropActivenessSoupComponent>>
-                getStreamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ? extends IHotpotSoupComponentType<HotpotDropActivenessSoupComponent>> getStreamCodec() {
             return STREAM_CODEC;
         }
     }

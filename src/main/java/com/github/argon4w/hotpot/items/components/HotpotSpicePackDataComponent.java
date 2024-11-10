@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.items.components;
 
-import com.github.argon4w.hotpot.HotpotMobEffectMap;
+import com.github.argon4w.fancytoys.MobEffectMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
@@ -17,39 +17,30 @@ import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotSpicePackDataComponent(int charges, List<ItemStack> itemStacks) {
+
     public static final HotpotSpicePackDataComponent EMPTY = new HotpotSpicePackDataComponent(0, List.of());
 
-    public static final Codec<HotpotSpicePackDataComponent> CODEC =
-            Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(
-                            Codec.INT.fieldOf("charges").forGetter(HotpotSpicePackDataComponent::charges),
-                            ItemStack.CODEC
-                                    .listOf()
-                                    .fieldOf("item_stacks")
-                                    .forGetter(HotpotSpicePackDataComponent::itemStacks))
-                    .apply(data, HotpotSpicePackDataComponent::new)));
+    public static final Codec<HotpotSpicePackDataComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(
+            Codec.INT.fieldOf("charges").forGetter(HotpotSpicePackDataComponent::charges),
+            ItemStack.CODEC.listOf().fieldOf("item_stacks").forGetter(HotpotSpicePackDataComponent::itemStacks)
+    ).apply(data, HotpotSpicePackDataComponent::new)));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSpicePackDataComponent> STREAM_CODEC =
-            NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-                    ByteBufCodecs.INT,
-                    HotpotSpicePackDataComponent::charges,
-                    ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC),
-                    HotpotSpicePackDataComponent::itemStacks,
-                    HotpotSpicePackDataComponent::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotSpicePackDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
+            ByteBufCodecs.INT, HotpotSpicePackDataComponent::charges,
+            ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC), HotpotSpicePackDataComponent::itemStacks,
+            HotpotSpicePackDataComponent::new));
 
     public HotpotSpicePackDataComponent setCharges(int charges) {
         return new HotpotSpicePackDataComponent(charges, List.copyOf(itemStacks));
     }
 
     public HotpotSpicePackDataComponent addItemStack(ItemStack itemStack) {
-        return itemStack.isEmpty()
-                ? this
-                : new HotpotSpicePackDataComponent(
-                        charges,
-                        Stream.concat(itemStacks.stream(), Stream.of(itemStack)).toList());
+        return itemStack.isEmpty() ? this : new HotpotSpicePackDataComponent(charges, Stream.concat(itemStacks.stream(), Stream.of(itemStack)).toList());
     }
 
-    public HotpotMobEffectMap getSpicePackEffects() {
-        return new HotpotMobEffectMap(itemStacks.stream()
+    public MobEffectMap getSpicePackEffects() {
+        return new MobEffectMap(itemStacks
+                .stream()
                 .map(ItemStack::getItem)
                 .map(SuspiciousEffectHolder::tryGet)
                 .filter(Objects::nonNull)

@@ -18,32 +18,18 @@ public record HotpotSoupRendererConfig(
         Optional<HotpotSoupSpriteConfig> spriteConfig,
         List<IHotpotSoupCustomElementRenderer> customElementRenderers,
         List<IHotpotSoupClientTickEffect> clientTickEffects) {
-    public static final Codec<HotpotSoupRendererConfig> CODEC =
-            Codec.lazyInitialized(() -> RecordCodecBuilder.create(config -> config.group(
-                            ResourceLocation.CODEC
-                                    .optionalFieldOf("soup_model_resource_location")
-                                    .forGetter(HotpotSoupRendererConfig::soupModelResourceLocation),
-                            Codec.BOOL
-                                    .optionalFieldOf("fixed_lighting", false)
-                                    .forGetter(HotpotSoupRendererConfig::fixedLighting),
-                            HotpotSoupSpriteConfig.CODEC
-                                    .optionalFieldOf("sprite_config")
-                                    .forGetter(HotpotSoupRendererConfig::spriteConfig),
-                            HotpotSoupCustomElementSerializers.CODEC
-                                    .listOf()
-                                    .optionalFieldOf("custom_elements_renderers", List.of())
-                                    .forGetter(HotpotSoupRendererConfig::customElementRenderers),
-                            HotpotSoupClientTickEffects.CODEC
-                                    .listOf()
-                                    .optionalFieldOf("client_tick_effects", List.of())
-                                    .forGetter(HotpotSoupRendererConfig::clientTickEffects))
-                    .apply(config, HotpotSoupRendererConfig::new)));
+
+    public static final Codec<HotpotSoupRendererConfig> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(config -> config.group(
+            ResourceLocation.CODEC.optionalFieldOf("soup_model_resource_location").forGetter(HotpotSoupRendererConfig::soupModelResourceLocation),
+            Codec.BOOL.optionalFieldOf("fixed_lighting", false).forGetter(HotpotSoupRendererConfig::fixedLighting),
+            HotpotSoupSpriteConfig.CODEC.optionalFieldOf("sprite_config").forGetter(HotpotSoupRendererConfig::spriteConfig),
+            HotpotSoupCustomElementSerializers.CODEC.listOf().optionalFieldOf("custom_elements_renderers", List.of()).forGetter(HotpotSoupRendererConfig::customElementRenderers),
+            HotpotSoupClientTickEffects.CODEC.listOf().optionalFieldOf("client_tick_effects", List.of()).forGetter(HotpotSoupRendererConfig::clientTickEffects)
+    ).apply(config, HotpotSoupRendererConfig::new)));
 
     public Stream<ResourceLocation> getRequiredModelResourceLocations() {
         return Stream.concat(
-                customElementRenderers.stream()
-                        .map(IHotpotSoupCustomElementRenderer::getRequiredModelResourceLocations)
-                        .flatMap(Collection::stream),
+                customElementRenderers.stream().map(IHotpotSoupCustomElementRenderer::getRequiredModelResourceLocations).flatMap(Collection::stream),
                 soupModelResourceLocation.stream());
     }
 }

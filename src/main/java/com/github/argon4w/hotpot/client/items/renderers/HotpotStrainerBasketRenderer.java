@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotStrainerBasketRenderer implements IHotpotItemSpecialRenderer {
+
     @Override
     public void render(
             ItemStack itemStack,
@@ -27,23 +28,20 @@ public class HotpotStrainerBasketRenderer implements IHotpotItemSpecialRenderer 
         poseStack.pushPose();
         poseStack.translate(0.5, 0, 0.5);
 
-        HotpotStrainerBasketItem.getStrainerBasketItems(itemStack).stream()
+        HotpotStrainerBasketItem
+                .getStrainerBasketItems(itemStack)
+                .stream()
                 .collect(
                         () -> new HashMap<IHotpotStrainerBasketContentRenderer, List<ItemStack>>(),
-                        (map, itemStack1) -> map.computeIfAbsent(
-                                        HotpotStrainerBasketContentRenderers.getStrainerBasketContentRenderer(
-                                                itemStack1),
-                                        renderer -> new ArrayList<>())
-                                .add(itemStack1),
+                        (map, itemStack1) -> map.computeIfAbsent(HotpotStrainerBasketContentRenderers.getStrainerBasketContentRenderer(itemStack1), renderer -> new ArrayList<>()).add(itemStack1),
                         (map1, map2) -> {})
-                .forEach((renderer, itemStacks) ->
-                        renderer.renderAsItem(itemStacks, poseStack, bufferSource, combinedLight, combinedOverlay));
+                .forEach((renderer, itemStacks) -> renderer.renderAsItem(itemStacks, poseStack, bufferSource, combinedLight, combinedOverlay));
+
         poseStack.popPose();
     }
 
     @Override
     public Optional<ResourceLocation> getItemModelResourceLocation() {
-        return Optional.of(
-                ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_strainer_basket_model"));
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(HotpotModEntry.MODID, "item/hotpot_strainer_basket_model"));
     }
 }

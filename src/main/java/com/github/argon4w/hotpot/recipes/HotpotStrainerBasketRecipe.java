@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class HotpotStrainerBasketRecipe extends CustomRecipe {
+
     public HotpotStrainerBasketRecipe(CraftingBookCategory category) {
         super(category);
     }
@@ -52,18 +53,14 @@ public class HotpotStrainerBasketRecipe extends CustomRecipe {
     }
 
     private ItemStack assembleStrainerBasket(ItemStack assembled, ItemStack ingredient) {
-        return Util.make(
-                assembled,
-                assembled2 -> HotpotStrainerBasketItem.addStrainerBasketItems(assembled2, ingredient.copyWithCount(1)));
+        return Util.make(assembled, assembled2 -> HotpotStrainerBasketItem.addStrainerBasketItems(assembled2, ingredient.copyWithCount(1)));
     }
 
     private boolean matchStrainerBasketItem(ItemStack itemStack, int count) {
-        return itemStack.is(HotpotModEntry.HOTPOT_STRAINER_BASKET)
-                && HotpotStrainerBasketItem.getStrainerBasketItems(itemStack).size() + count <= 8;
+        return itemStack.is(HotpotModEntry.HOTPOT_STRAINER_BASKET) && HotpotStrainerBasketItem.getStrainerBasketItems(itemStack).size() + count <= 8;
     }
 
     private boolean isFood(ItemStack itemStack) {
-        return (itemStack.has(DataComponents.FOOD) && !itemStack.hasCraftingRemainingItem())
-                || itemStack.is(HotpotModEntry.HOTPOT_SKEWER);
+        return (itemStack.has(DataComponents.FOOD) && !itemStack.hasCraftingRemainingItem()) || itemStack.is(HotpotModEntry.HOTPOT_SKEWER);
     }
 }

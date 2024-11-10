@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.items.components;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
-import com.github.argon4w.hotpot.SimpleItemSlot;
+import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.SimpleItemSlot;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,20 +11,16 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 public record HotpotNapkinHolderDataComponent(SimpleItemSlot itemSlot) {
-    public static final HotpotNapkinHolderDataComponent EMPTY =
-            new HotpotNapkinHolderDataComponent(new SimpleItemSlot());
 
-    public static final Codec<HotpotNapkinHolderDataComponent> CODEC =
-            Codec.lazyInitialized(() -> RecordCodecBuilder.create(data -> data.group(SimpleItemSlot.CODEC
-                            .fieldOf("item_slot")
-                            .forGetter(HotpotNapkinHolderDataComponent::itemSlot))
-                    .apply(data, HotpotNapkinHolderDataComponent::new)));
+    public static final HotpotNapkinHolderDataComponent EMPTY = new HotpotNapkinHolderDataComponent(new SimpleItemSlot());
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotNapkinHolderDataComponent> STREAM_CODEC =
-            NeoForgeStreamCodecs.lazy(() -> StreamCodec.composite(
-                    SimpleItemSlot.STREAM_CODEC,
-                    HotpotNapkinHolderDataComponent::itemSlot,
-                    HotpotNapkinHolderDataComponent::new));
+    public static final Codec<HotpotNapkinHolderDataComponent> CODEC = Codec.lazyInitialized(() -> SimpleItemSlot.CODEC
+            .fieldOf("item_slot")
+            .xmap(HotpotNapkinHolderDataComponent::new, HotpotNapkinHolderDataComponent::itemSlot)
+            .codec());
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, HotpotNapkinHolderDataComponent> STREAM_CODEC = NeoForgeStreamCodecs.lazy(() -> SimpleItemSlot.STREAM_CODEC
+            .map(HotpotNapkinHolderDataComponent::new, HotpotNapkinHolderDataComponent::itemSlot));
 
     public HotpotNapkinHolderDataComponent dropNapkinItemSlot(LevelBlockPos pos) {
         return new HotpotNapkinHolderDataComponent(itemSlot().copy().dropItem(pos));

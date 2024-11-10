@@ -6,6 +6,7 @@ import com.mojang.math.Transformation;
 import net.minecraft.client.resources.model.BakedModel;
 
 public class UncachedRendererBakedModelsCache implements RendererBakedModelsCache {
+
     @Override
     public BakedModel getTransformedModel(BakedModel model, PoseStack poseStack) {
         return getTransformedModel(model, new Transformation(poseStack.last().pose()));

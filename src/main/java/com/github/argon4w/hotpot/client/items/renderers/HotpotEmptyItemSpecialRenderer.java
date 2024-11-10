@@ -16,7 +16,9 @@ public class HotpotEmptyItemSpecialRenderer implements IHotpotItemSpecialRendere
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             int combinedLight,
-            int combinedOverlay) {}
+            int combinedOverlay) {
+
+    }
 
     @Override
     public Optional<ResourceLocation> getItemModelResourceLocation() {

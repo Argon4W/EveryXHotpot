@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.blocks;
 
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.hotpot.LevelBlockPos;
 import com.github.argon4w.hotpot.api.items.HotpotPlacementBlockItem;
 import com.github.argon4w.hotpot.placements.coords.HotpotPlacementCoords;
 import com.mojang.serialization.MapCodec;
@@ -61,17 +61,16 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
         int position = HotpotPlacementBlockItem.getPosition(pos, target.getLocation());
         int index = hotpotPlacementBlockEntity.getPlacementIndexInPosAndLayer(position, 0);
 
-        return index < 0
-                ? ItemStack.EMPTY
-                : hotpotPlacementBlockEntity
-                        .getPlacements(0)
-                        .get(index)
-                        .getCloneItemStack(hotpotPlacementBlockEntity, blockPos);
+        if (index < 0) {
+            return super.getCloneItemStack(state, target, levelReader, pos, player);
+        }
+
+        return hotpotPlacementBlockEntity.getPlacements(0).get(index).getCloneItemStack(hotpotPlacementBlockEntity, blockPos);
     }
 
     @NotNull @Override
     protected ItemInteractionResult useItemOn(
-            ItemStack itemStack,
+            @NotNull ItemStack itemStack,
             @NotNull BlockState state,
             @NotNull Level level,
             @NotNull BlockPos pos,
@@ -80,8 +79,7 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
             @NotNull BlockHitResult result) {
         LevelBlockPos blockPos = new LevelBlockPos(level, pos);
 
-        if (itemStack.getItem() instanceof HotpotPlacementBlockItem<?> hotpotPlacementBlockItem
-                && hotpotPlacementBlockItem.canPlace(player, hand, blockPos)) {
+        if (HotpotPlacementBlockItem.shouldPass(itemStack, player, hand, blockPos)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
@@ -97,13 +95,17 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(
-            BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
+            BlockState state,
+            @NotNull Level level,
+            @NotNull BlockPos pos,
+            BlockState newState,
+            boolean movedByPiston) {
         if (state.is(newState.getBlock())) {
             return;
         }
 
-        if (level.getBlockEntity(pos) instanceof HotpotPlacementBlockEntity hotpotPlacementBlockEntity) {
-            hotpotPlacementBlockEntity.onRemove(new LevelBlockPos(level, pos));
+        if (level.getBlockEntity(pos) instanceof HotpotPlacementBlockEntity blockEntity) {
+            blockEntity.onRemove(new LevelBlockPos(level, pos));
         }
 
         super.onRemove(state, level, pos, newState, movedByPiston);
@@ -111,13 +113,12 @@ public class HotpotPlacementBlock extends BaseEntityBlock {
 
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-            Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> blockEntityType) {
+            Level level,
+            @NotNull BlockState blockState,
+            @NotNull BlockEntityType<T> blockEntityType) {
         return level.isClientSide
                 ? null
-                : createTickerHelper(
-                        blockEntityType,
-                        HotpotModEntry.HOTPOT_PLACEMENT_BLOCK_ENTITY.get(),
-                        HotpotPlacementBlockEntity::tick);
+                : createTickerHelper(blockEntityType, HotpotModEntry.HOTPOT_PLACEMENT_BLOCK_ENTITY.get(), HotpotPlacementBlockEntity::tick);
     }
 
     @NotNull @Override

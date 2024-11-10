@@ -8,12 +8,12 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.NotNull;
 
 public enum HotpotSoupStatus implements StringRepresentable {
+
     FILLED("filled", ".hotpot", 40, 1.5, false),
     DRAINED("drained", ".drained", 20, 1.0, true);
 
     public static final Codec<HotpotSoupStatus> CODEC = StringRepresentable.fromEnum(HotpotSoupStatus::values);
-    public static final StreamCodec<FriendlyByteBuf, HotpotSoupStatus> STREAM_CODEC =
-            NeoForgeStreamCodecs.enumCodec(HotpotSoupStatus.class);
+    public static final StreamCodec<FriendlyByteBuf, HotpotSoupStatus> STREAM_CODEC = NeoForgeStreamCodecs.enumCodec(HotpotSoupStatus.class);
 
     private final String name;
     private final String suffix;

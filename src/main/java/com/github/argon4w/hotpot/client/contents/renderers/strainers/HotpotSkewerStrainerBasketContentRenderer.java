@@ -11,7 +11,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Math;
 
-public class DefaultStrainerBasketContentRenderer implements IHotpotStrainerBasketContentRenderer {
+public class HotpotSkewerStrainerBasketContentRenderer implements IHotpotStrainerBasketContentRenderer {
+
     @Override
     public void renderInSoup(
             List<ItemStack> itemStacks,
@@ -23,29 +24,33 @@ public class DefaultStrainerBasketContentRenderer implements IHotpotStrainerBask
             double waterLevel,
             double maxHeight,
             double time) {
-        double fullHeight = waterLevel * maxHeight;
-        double safeZoneHeight = fullHeight * 0.75;
-        double safeZonePositionY = (fullHeight - safeZoneHeight) / 2.0;
-        double safeZoneOffsetY = safeZoneHeight / itemStacks.size();
+        double offsetX = (9 / 4.0) / 16.0;
+        double startPositionX = offsetX * Math.max(0, itemStacks.size() - 1) / 2.0;
+        double progress = (waterLevel - 0.35) / 0.65;
 
         for (int i = 0; i < Math.min(4, itemStacks.size()); i++) {
             poseStack.pushPose();
 
             double curveOffset = (contentIndex + i + 1) * Math.PI;
-            double positionOffset = curve(time, curveOffset);
-            double rotationOffset = curve(time / 2.0, curveOffset);
-            double positionY =
-                    safeZonePositionY + safeZoneHeight - i * safeZoneOffsetY + positionOffset * safeZonePositionY;
-            double rotationY = (i % 2) * 90.0f;
-            double rotation = 15.0 * rotationOffset;
-            Axis rotationAxis = (i % 2 == 0 ? Axis.ZP : Axis.XN);
+            double positionOffset = 0.5 + curve(time, curveOffset) * 0.5;
+            double positionY = maxHeight + positionOffset * waterLevel * 0.15;
 
-            poseStack.translate(0.0, positionY, 0.0);
-            poseStack.mulPose(rotationAxis.rotationDegrees((float) rotation));
-            poseStack.mulPose(Axis.YP.rotationDegrees((float) rotationY));
-            poseStack.mulPose(Axis.XN.rotationDegrees(90.0f));
-            poseStack.scale(0.56f, 0.56f, 0.56f);
+            double positionX = startPositionX - i * offsetX;
+            double offsetSurfaceX = (4.5 / 16.0 - i * offsetX - positionX) * (1 - progress);
+            double positionSurfaceX = positionX + offsetSurfaceX - (0.5 / 16.0) * (1 - progress);
+            double rotationZ = 90.0 - Math.toDegrees(Math.atan2(positionY, offsetSurfaceX));
 
+            double positionSurfaceZ = (i % 2 == 0 ? 0.1 : -0.1) * (1 - progress);
+            double rotationX = 90.0 - Math.toDegrees(java.lang.Math.atan2(positionY, positionSurfaceZ));
+
+            poseStack.translate(positionSurfaceX, positionY, positionSurfaceZ);
+            poseStack.mulPose(Axis.XP.rotationDegrees((float) rotationX));
+            poseStack.mulPose(Axis.ZN.rotationDegrees((float) rotationZ));
+            poseStack.mulPose(Axis.XP.rotationDegrees(180));
+            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            poseStack.scale(0.68f, 0.68f, 0.68f);
+
+            poseStack.pushPose();
             Minecraft.getInstance()
                     .getItemRenderer()
                     .renderStatic(
@@ -59,6 +64,7 @@ public class DefaultStrainerBasketContentRenderer implements IHotpotStrainerBask
                             42);
 
             poseStack.popPose();
+            poseStack.popPose();
         }
     }
 
@@ -69,24 +75,29 @@ public class DefaultStrainerBasketContentRenderer implements IHotpotStrainerBask
             MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay) {
-        double scale = 0.57;
-        double scaleZ = scale * 2.4625;
-        double offsetY =
-                Math.sin(Math.toRadians(15.0)) * (4.5 / 16.0) + Math.sin(Math.toRadians(90.0 - 15.0)) * (scaleZ / 16.0);
+        double positionY = 0.98 - 0.01 / 0.45;
+        double offsetX = (9 / 4.0) / 16.0;
+        double startPositionX = offsetX * Math.max(0, itemStacks.size() - 1) / 2.0;
 
         for (int i = 0; i < Math.min(4, itemStacks.size()); i++) {
             poseStack.pushPose();
 
-            double rotationY = (i % 2) * 90.0f;
-            double positionY = (i + 1 + 0.01) * offsetY;
-            Axis rotationAxis = (i % 2 == 0 ? Axis.ZP : Axis.XN);
+            double positionX = startPositionX - i * offsetX;
+            double offsetSurfaceX = (4.5 / 16.0 - i * offsetX - positionX);
+            double positionSurfaceX = positionX + offsetSurfaceX - (0.5 / 16.0);
+            double rotationZ = 90.0 - Math.toDegrees(Math.atan2(positionY, offsetSurfaceX));
 
-            poseStack.translate(0.0, positionY, 0.0);
-            poseStack.mulPose(rotationAxis.rotationDegrees(15.0f));
-            poseStack.mulPose(Axis.YP.rotationDegrees((float) rotationY));
-            poseStack.mulPose(Axis.XN.rotationDegrees(90.0f));
-            poseStack.scale((float) scale, (float) scale, (float) scaleZ);
+            double positionSurfaceZ = (i % 2 == 0 ? 0.1 : -0.1);
+            double rotationX = 90.0 - Math.toDegrees(java.lang.Math.atan2(positionY, positionSurfaceZ));
 
+            poseStack.translate(positionSurfaceX, positionY, positionSurfaceZ);
+            poseStack.mulPose(Axis.XP.rotationDegrees((float) rotationX));
+            poseStack.mulPose(Axis.ZN.rotationDegrees((float) rotationZ));
+            poseStack.mulPose(Axis.XP.rotationDegrees(180));
+            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            poseStack.scale(0.68f, 0.68f, 0.68f);
+
+            poseStack.pushPose();
             Minecraft.getInstance()
                     .getItemRenderer()
                     .renderStatic(
@@ -99,6 +110,7 @@ public class DefaultStrainerBasketContentRenderer implements IHotpotStrainerBask
                             null,
                             42);
 
+            poseStack.popPose();
             poseStack.popPose();
         }
     }

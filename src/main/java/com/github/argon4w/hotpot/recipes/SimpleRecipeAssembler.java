@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 public class SimpleRecipeAssembler {
+
     private final List<ItemStack> items;
     private Predicate<ItemStack> filter;
     private ItemStack assembled;
@@ -41,6 +42,7 @@ public class SimpleRecipeAssembler {
                 .filter(Predicate.not(ItemStack::isEmpty))
                 .filter(filter)
                 .forEach(itemStack -> function.apply(assembled, itemStack));
+
         return this;
     }
 
@@ -49,9 +51,7 @@ public class SimpleRecipeAssembler {
                 .filter(Predicate.not(ItemStack::isEmpty))
                 .filter(predicate)
                 .findFirst()
-                .map(itemStack -> Util.make(
-                        filter(Predicate.not(predicate)),
-                        assembler -> assembler.assembled = itemStack.copyWithCount(1)))
+                .map(itemStack -> Util.make(filter(Predicate.not(predicate)), assembler -> assembler.assembled = itemStack.copyWithCount(1)))
                 .orElse(this);
     }
 }

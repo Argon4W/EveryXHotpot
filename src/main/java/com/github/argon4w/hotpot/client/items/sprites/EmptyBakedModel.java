@@ -23,10 +23,56 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public record EmptyBakedModel(BakedModel model) implements BakedModel {
+
     @NotNull @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState blockState, @Nullable Direction direction, @NotNull RandomSource randomSource) {
+            @Nullable BlockState blockState,
+            @Nullable Direction direction,
+            @NotNull RandomSource randomSource) {
         return List.of();
+    }
+
+    @NotNull @Override
+    public List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType) {
+        return model.getQuads(state, side, rand, data, renderType);
+    }
+
+    @NotNull @Override
+    public TriState useAmbientOcclusion(
+            @NotNull BlockState state,
+            @NotNull ModelData data,
+            @NotNull RenderType renderType) {
+        return model.useAmbientOcclusion(state, data, renderType);
+    }
+
+    @NotNull @Override
+    public BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType,
+            @NotNull PoseStack poseStack,
+            boolean applyLeftHandTransform) {
+        return new EmptyBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform));
+    }
+
+    @NotNull @Override
+    public ModelData getModelData(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData) {
+        return model.getModelData(level, pos, state, modelData);
+    }
+
+    @NotNull @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data) {
+        return model.getRenderTypes(state, rand, data);
     }
 
     @Override
@@ -70,45 +116,8 @@ public record EmptyBakedModel(BakedModel model) implements BakedModel {
     }
 
     @NotNull @Override
-    public List<BakedQuad> getQuads(
-            @Nullable BlockState state,
-            @Nullable Direction side,
-            @NotNull RandomSource rand,
-            @NotNull ModelData data,
-            @Nullable RenderType renderType) {
-        return model.getQuads(state, side, rand, data, renderType);
-    }
-
-    @NotNull @Override
-    public TriState useAmbientOcclusion(
-            @NotNull BlockState state, @NotNull ModelData data, @NotNull RenderType renderType) {
-        return model.useAmbientOcclusion(state, data, renderType);
-    }
-
-    @NotNull @Override
-    public BakedModel applyTransform(
-            @NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, boolean applyLeftHandTransform) {
-        return new EmptyBakedModel(model.applyTransform(transformType, poseStack, applyLeftHandTransform));
-    }
-
-    @NotNull @Override
-    public ModelData getModelData(
-            @NotNull BlockAndTintGetter level,
-            @NotNull BlockPos pos,
-            @NotNull BlockState state,
-            @NotNull ModelData modelData) {
-        return model.getModelData(level, pos, state, modelData);
-    }
-
-    @NotNull @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return model.getParticleIcon();
-    }
-
-    @NotNull @Override
-    public ChunkRenderTypeSet getRenderTypes(
-            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-        return model.getRenderTypes(state, rand, data);
     }
 
     @NotNull @Override

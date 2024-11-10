@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 public class HotpotPlacedSpoonRenderer implements IHotpotPlacementRenderer {
+
     @Override
     public void render(
             IHotpotPlacement placement,

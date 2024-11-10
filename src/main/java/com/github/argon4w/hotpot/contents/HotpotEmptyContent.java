@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.contents;
 
-import com.github.argon4w.hotpot.LevelBlockPos;
+import com.github.argon4w.fancytoys.LevelBlockPos;
 import com.github.argon4w.hotpot.api.contents.AbstractHotpotRotatingContentSerializer;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
@@ -12,6 +12,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 
 public class HotpotEmptyContent implements IHotpotContent {
+
     @Override
     public ItemStack getContentItemStack(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         return ItemStack.EMPTY;
@@ -23,7 +24,9 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     @Override
-    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {}
+    public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
+
+    }
 
     @Override
     public boolean onTick(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, double ticks) {
@@ -41,11 +44,15 @@ public class HotpotEmptyContent implements IHotpotContent {
     }
 
     public static class Serializer extends AbstractHotpotRotatingContentSerializer<HotpotEmptyContent> {
+
         public static final HotpotEmptyContent UNIT = new HotpotEmptyContent();
 
         @Override
         public HotpotEmptyContent createContent(
-                ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos, Direction direction) {
+                ItemStack itemStack,
+                HotpotBlockEntity hotpotBlockEntity,
+                LevelBlockPos pos,
+                Direction direction) {
             return UNIT;
         }
 

@@ -11,57 +11,57 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
+import org.jetbrains.annotations.NotNull;
 
-public class HotpotPlacementRackBlockEntityRenderer
-        implements BlockEntityRenderer<HotpotPlacementRackBlockEntity>,
-                IBlockEntitySectionGeometryRenderer<HotpotPlacementRackBlockEntity> {
+public class HotpotPlacementRackBlockEntityRenderer implements
+        BlockEntityRenderer<HotpotPlacementRackBlockEntity>,
+        IBlockEntitySectionGeometryRenderer<HotpotPlacementRackBlockEntity> {
+
     @Override
     public void render(
             HotpotPlacementRackBlockEntity hotpotPlacementRackBlockEntity,
             float partialTick,
             PoseStack poseStack,
-            MultiBufferSource bufferSource,
+            @NotNull MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay) {
         poseStack.pushPose();
-
         poseStack.translate(0.05f, 0.15625f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
+
         hotpotPlacementRackBlockEntity.getPlacements1().forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .render(
-                                placement,
-                                hotpotPlacementRackBlockEntity,
-                                hotpotPlacementRackBlockEntity.getBlockPos(),
-                                poseStack,
-                                bufferSource,
-                                combinedLight,
-                                combinedOverlay,
-                                partialTick)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(
+                        placement,
+                        hotpotPlacementRackBlockEntity,
+                        hotpotPlacementRackBlockEntity.getBlockPos(),
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        partialTick)));
 
         poseStack.popPose();
 
         poseStack.pushPose();
-
         poseStack.translate(0.05f, 0.71875f, 0.05f);
         poseStack.scale(0.9f, 0.9f, 0.9f);
+
         hotpotPlacementRackBlockEntity.getPlacements2().forEach(placement -> placement
                 .getPlacementSerializerHolder()
                 .unwrapKey()
                 .map(ResourceKey::location)
-                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key)
-                        .render(
-                                placement,
-                                hotpotPlacementRackBlockEntity,
-                                hotpotPlacementRackBlockEntity.getBlockPos(),
-                                poseStack,
-                                bufferSource,
-                                combinedLight,
-                                combinedOverlay,
-                                partialTick)));
+                .ifPresent(key -> HotpotPlacementRenderers.getPlacementRenderer(key).render(
+                        placement,
+                        hotpotPlacementRackBlockEntity,
+                        hotpotPlacementRackBlockEntity.getBlockPos(),
+                        poseStack,
+                        bufferSource,
+                        combinedLight,
+                        combinedOverlay,
+                        partialTick)));
 
         poseStack.popPose();
     }

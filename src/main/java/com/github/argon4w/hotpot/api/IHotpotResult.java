@@ -6,27 +6,22 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface IHotpotResult<T> {
+
     IHotpotResult<T> consume(Consumer<T> consumer);
-
     <R> IHotpotResult<R> map(Function<T, R> function);
-
     IHotpotResult<T> ifPresent(Consumer<T> consumer);
-
     IHotpotResult<T> ifEmpty(Runnable runnable);
 
     boolean isPresent();
-
     boolean isEmpty();
-
     boolean isBlocked();
-
     Optional<T> getOptional();
 
     T get();
-
     T orElse(T other);
 
     abstract class Empty<T> implements IHotpotResult<T> {
+
         @Override
         public IHotpotResult<T> consume(Consumer<T> consumer) {
             return this;
@@ -75,6 +70,7 @@ public interface IHotpotResult<T> {
     }
 
     class BlockedEmpty<T> extends Empty<T> {
+
         @Override
         public boolean isBlocked() {
             return true;
@@ -82,6 +78,7 @@ public interface IHotpotResult<T> {
     }
 
     class NonBlockedEmpty<T> extends Empty<T> {
+
         @Override
         public boolean isBlocked() {
             return false;
@@ -89,6 +86,7 @@ public interface IHotpotResult<T> {
     }
 
     class Value<T> implements IHotpotResult<T> {
+
         private final T value;
 
         public Value(T value) {
