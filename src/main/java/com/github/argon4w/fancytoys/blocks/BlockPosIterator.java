@@ -1,10 +1,11 @@
-package com.github.argon4w.fancytoys;
+package com.github.argon4w.fancytoys.blocks;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 
 public class BlockPosIterator implements Iterator<LevelBlockPos> {
+
     private final LinkedList<LevelBlockPos> list;
     private final Predicate<LevelBlockPos> filter;
     private Node node;

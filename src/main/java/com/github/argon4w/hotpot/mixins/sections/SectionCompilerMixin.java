@@ -22,4 +22,14 @@ public class SectionCompilerMixin {
             @Local(argsOnly = true) RenderType renderTypeRef) {
         return renderTypeRef.format;
     }
+
+    @WrapOperation(method = "getOrBeginLayer", at = @At(
+            value = "FIELD",
+            target = "Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;QUADS:Lcom/mojang/blaze3d/vertex/VertexFormat$Mode;",
+            opcode = Opcodes.GETSTATIC))
+    public VertexFormat.Mode wrapModeBasedOnRenderType(
+            Operation<VertexFormat> original,
+            @Local(argsOnly = true) RenderType renderTypeRef) {
+        return renderTypeRef.mode;
+    }
 }

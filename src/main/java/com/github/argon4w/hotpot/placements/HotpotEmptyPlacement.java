@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.placements;
 
-import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacement;
 import com.github.argon4w.hotpot.api.placements.IHotpotPlacementSerializer;

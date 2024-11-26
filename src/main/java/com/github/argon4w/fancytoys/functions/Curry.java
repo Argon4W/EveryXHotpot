@@ -3,6 +3,7 @@ package com.github.argon4w.fancytoys.functions;
 import java.util.function.*;
 
 public class Curry {
+
     public static <P1, P2> Predicate<P2> of(BiPredicate<P1, P2> predicate, P1 p1) {
         return p2 -> predicate.test(p1, p2);
     }

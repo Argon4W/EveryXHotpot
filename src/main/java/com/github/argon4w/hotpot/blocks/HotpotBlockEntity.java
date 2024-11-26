@@ -1,10 +1,10 @@
 package com.github.argon4w.hotpot.blocks;
 
-import com.github.argon4w.fancytoys.AbstractCodecBlockEntity;
+import com.github.argon4w.fancytoys.blocks.AbstractCodecBlockEntity;
 import com.github.argon4w.fancytoys.functions.Curry;
-import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import com.github.argon4w.fancytoys.streams.BlockEntityStreamBuilder;
-import com.github.argon4w.fancytoys.ItemUtils;
+import com.github.argon4w.fancytoys.items.ItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.blocks.IHotpotTablewareContainer;

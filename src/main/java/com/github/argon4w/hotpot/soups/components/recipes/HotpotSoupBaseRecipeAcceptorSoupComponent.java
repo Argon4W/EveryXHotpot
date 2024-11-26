@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.soups.components.recipes;
 
-import com.github.argon4w.fancytoys.LevelBlockPos;
-import com.github.argon4w.fancytoys.ItemUtils;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
+import com.github.argon4w.fancytoys.items.ItemUtils;
 import com.github.argon4w.hotpot.HotpotModEntry;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;

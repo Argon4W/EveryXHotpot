@@ -4,6 +4,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 
 public final class Unsupported {
+
     private Unsupported() {
 
     }

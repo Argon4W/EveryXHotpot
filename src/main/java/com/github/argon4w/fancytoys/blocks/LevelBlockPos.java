@@ -1,4 +1,4 @@
-package com.github.argon4w.fancytoys;
+package com.github.argon4w.fancytoys.blocks;
 
 import com.github.argon4w.hotpot.placements.coords.ComplexDirection;
 import java.util.List;
@@ -32,6 +32,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 
 public record LevelBlockPos(Level level, BlockPos pos) {
+
     public BlockEntity getBlockEntity() {
         return level.getBlockEntity(pos);
     }

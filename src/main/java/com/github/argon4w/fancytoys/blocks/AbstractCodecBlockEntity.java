@@ -1,4 +1,4 @@
-package com.github.argon4w.fancytoys;
+package com.github.argon4w.fancytoys.blocks;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractCodecBlockEntity<T, P extends AbstractCodecBlockEntity.PartialData<T>> extends BlockEntity {
+
     protected T data;
 
     public AbstractCodecBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {

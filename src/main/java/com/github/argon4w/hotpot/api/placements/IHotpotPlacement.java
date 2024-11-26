@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.api.placements;
 
-import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import com.github.argon4w.hotpot.api.blocks.IHotpotPlacementContainer;
 import java.util.List;
 import net.minecraft.core.Holder;

@@ -1,6 +1,6 @@
 package com.github.argon4w.hotpot.soups;
 
-import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import com.github.argon4w.fancytoys.streams.EntryStream;
 import com.github.argon4w.fancytoys.codecs.Sorted;
 import com.github.argon4w.hotpot.api.IHotpotResult;

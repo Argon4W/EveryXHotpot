@@ -1,9 +1,8 @@
 package com.github.argon4w.hotpot.items.components;
 
-import com.github.argon4w.fancytoys.LevelBlockPos;
-import com.github.argon4w.fancytoys.SimpleItemSlot;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
+import com.github.argon4w.fancytoys.items.SimpleItemSlot;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;

@@ -1,7 +1,7 @@
 package com.github.argon4w.fancytoys.streams;
 
-import com.github.argon4w.fancytoys.BlockPosIterator;
-import com.github.argon4w.fancytoys.LevelBlockPos;
+import com.github.argon4w.fancytoys.blocks.BlockPosIterator;
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class BlockEntityStreamBuilder<T extends BlockEntity> {
+
     private final BlockEntityType<T> type;
     private Predicate<LevelBlockPos> filter;
 

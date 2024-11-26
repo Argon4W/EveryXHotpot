@@ -1,7 +1,7 @@
 package com.github.argon4w.hotpot.client.items.renderers;
 
 import com.github.argon4w.hotpot.HotpotModEntry;
-import com.github.argon4w.fancytoys.SimpleItemSlot;
+import com.github.argon4w.fancytoys.items.SimpleItemSlot;
 import com.github.argon4w.hotpot.api.client.items.IHotpotItemSpecialRenderer;
 import com.github.argon4w.hotpot.items.HotpotNapkinHolderItem;
 import com.mojang.blaze3d.vertex.PoseStack;

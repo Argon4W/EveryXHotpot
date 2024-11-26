@@ -3,12 +3,14 @@ package com.github.argon4w.fancytoys.streams;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.github.argon4w.fancytoys.functions.Unsupported;
 import org.apache.commons.lang3.stream.Streams;
 
 public class EntryStream<K, V> {
+
     protected final Stream<Map.Entry<K, V>> stream;
 
     public EntryStream(Stream<Map.Entry<K, V>> stream) {
@@ -276,8 +278,7 @@ public class EntryStream<K, V> {
         return stream.sequential().collect(supplier, (r, entry) -> accumulator.accept(r, entry.getValue()), Unsupported.combinerConsumer());
     }
 
-    public <R> R collectParallel(
-            Supplier<R> supplier, EntryAccumulator<R, K, V> accumulator, BiConsumer<R, R> combiner) {
+    public <R> R collectParallel(Supplier<R> supplier, EntryAccumulator<R, K, V> accumulator, BiConsumer<R, R> combiner) {
         return stream.collect(supplier, (r, entry) -> accumulator.accumulate(r, entry.getKey(), entry.getValue()), combiner);
     }
 
@@ -469,6 +470,10 @@ public class EntryStream<K, V> {
         return new EntryStream<>(map.sequencedEntrySet().stream());
     }
 
+    public static <V> EntryStream<Integer, V> fromKeysRange(int start, int end, Function<Integer, V> valueMapper) {
+        return new EntryStream<>(IntStream.range(start, end).mapToObj(i -> Map.entry(i, valueMapper.apply(i))));
+    }
+
     public static <K, V> EntryStream<K, V> fromKeys(Stream<K> stream, Function<K, V> valueMapper) {
         return new EntryStream<>(stream.map(k -> Map.entry(k, valueMapper.apply(k))));
     }
@@ -479,6 +484,10 @@ public class EntryStream<K, V> {
 
     public static <K, V> EntryStream<K, V> fromKeys(Iterator<K> iterator, Function<K, V> valueMapper) {
         return new EntryStream<>(Streams.of(iterator).map(k -> Map.entry(k, valueMapper.apply(k))));
+    }
+
+    public static <K> EntryStream<K, Integer> fromValuesRange(int start, int end, Function<Integer, K> keyMapper) {
+        return new EntryStream<>(IntStream.range(start, end).mapToObj(i -> Map.entry(keyMapper.apply(i), i)));
     }
 
     public static <K, V> EntryStream<K, V> fromValues(Stream<V> stream, Function<V, K> keyMapper) {

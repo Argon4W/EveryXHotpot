@@ -1,5 +1,6 @@
-package com.github.argon4w.fancytoys;
+package com.github.argon4w.fancytoys.items;
 
+import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

@@ -11,6 +11,7 @@ import org.apache.commons.lang3.stream.Streams;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class OptionalEntryStream<K, V> {
+
     protected final Stream<Map.Entry<K, Optional<V>>> stream;
 
     public OptionalEntryStream(Stream<Map.Entry<K, Optional<V>>> stream) {
