@@ -29,7 +29,6 @@ public class HotpotBlockEntityRenderer implements BlockEntityRenderer<HotpotBloc
             @NotNull MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay) {
-        System.out.println("11111");
         double waterLevel = blockEntity.getSynchronizedWaterLevel();
         long clientTime = blockEntity.hasLevel() ? blockEntity.getLevel().getGameTime() : 0;
 
