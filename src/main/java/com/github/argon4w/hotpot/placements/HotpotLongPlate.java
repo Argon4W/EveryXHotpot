@@ -104,7 +104,11 @@ public class HotpotLongPlate implements IHotpotCommonPlacement {
             return itemSlot2.takeItem(consume);
         }
 
-        return plateItemSlot.takeItem(consume);
+        if (container.canBeRemoved()) {
+            return plateItemSlot.takeItem(consume);
+        }
+
+        return ItemStack.EMPTY;
     }
 
     @Override

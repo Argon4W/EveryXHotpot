@@ -44,7 +44,9 @@ public class HotpotPlacedSpoon implements IHotpotPlacement {
             int layer,
             LevelBlockPos pos,
             IHotpotPlacementContainer container) {
-        onRemove(container, pos);
+        if (container.canBeRemoved()) {
+            onRemove(container, pos);
+        }
     }
 
     @Override

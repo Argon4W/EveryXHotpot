@@ -134,7 +134,15 @@ public class HotpotLargeRoundPlate implements IHotpotCommonPlacement {
             LevelBlockPos pos,
             IHotpotPlacementContainer container,
             boolean tableware) {
-        return (isEmpty() ? plateItemSlot : itemSlots.get(position)).takeItem(container.canConsumeContents());
+        if (!isEmpty()) {
+            return itemSlots.get(position).takeItem(container.canConsumeContents());
+        }
+
+        if (container.canBeRemoved()) {
+            plateItemSlot.takeItem(container.canConsumeContents());
+        }
+
+        return ItemStack.EMPTY;
     }
 
     @Override

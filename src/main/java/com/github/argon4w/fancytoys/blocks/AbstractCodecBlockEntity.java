@@ -51,12 +51,10 @@ public abstract class AbstractCodecBlockEntity<T, P extends AbstractCodecBlockEn
 
     @NotNull @Override
     public CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryAccess) {
-        return Util.make(new CompoundTag(), compoundTag -> {
-            compoundTag.put("value", getCodec()
-                    .encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.left(data))
-                    .resultOrPartial()
-                    .orElse(new CompoundTag()));
-        });
+        return Util.make(new CompoundTag(), compoundTag -> compoundTag.put("value", getCodec()
+                .encodeStart(RegistryOps.create(NbtOps.INSTANCE, registryAccess), Either.left(data))
+                .resultOrPartial()
+                .orElse(new CompoundTag())));
     }
 
     @Override

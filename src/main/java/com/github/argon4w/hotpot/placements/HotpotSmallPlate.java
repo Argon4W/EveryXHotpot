@@ -97,7 +97,15 @@ public class HotpotSmallPlate implements IHotpotCommonPlacement {
             LevelBlockPos selfPos,
             IHotpotPlacementContainer container,
             boolean tableware) {
-        return (itemSlot.isEmpty() ? plateItemSlot : itemSlot).takeItem(container.canConsumeContents());
+        if (!itemSlot.isEmpty()) {
+            return itemSlot.takeItem(container.canConsumeContents());
+        }
+
+        if (container.canBeRemoved()) {
+            return plateItemSlot.takeItem(container.canConsumeContents());
+        }
+
+        return ItemStack.EMPTY;
     }
 
     @Override

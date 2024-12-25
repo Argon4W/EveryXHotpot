@@ -26,7 +26,7 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 @EventBusSubscriber(modid = HotpotModEntry.MODID, bus = EventBusSubscriber.Bus.GAME)
-public class HotpotGameModEvents {
+public class HotpotCommonGameEvents {
 
     @SubscribeEvent
     public static void onLivingBlock(LivingShieldBlockEvent event) {
