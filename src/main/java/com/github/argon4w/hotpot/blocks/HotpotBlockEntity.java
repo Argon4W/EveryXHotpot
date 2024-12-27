@@ -156,12 +156,11 @@ public class HotpotBlockEntity
     }
 
     private void syncSoup(LevelBlockPos pos) {
-        Map<HotpotBlockEntity, LevelBlockPos> synced = data.shouldSyncSoup ? getNeighbors(pos)
+        Map<HotpotBlockEntity, LevelBlockPos> synced = getNeighbors(pos)
                 .filterNot(HotpotBlockEntity::isSoupSynced)
                 .build(pos)
                 .peekKey(HotpotBlockEntity::setSoupSynced)
-                .toMap()
-                : Map.of(this, pos);
+                .toMap();
 
         data.soup.getSyncData(this, pos)
                 .stream()
@@ -407,6 +406,14 @@ public class HotpotBlockEntity
         return data.infiniteContent;
     }
 
+    public boolean shouldSyncSoup() {
+        return data.shouldSyncSoup;
+    }
+
+    public void setShouldSyncSoup(boolean shouldSyncSoup) {
+        this.data.shouldSyncSoup = shouldSyncSoup;
+    }
+
     public boolean canBeRemoved() {
         return data.canBeRemoved;
     }
@@ -437,7 +444,7 @@ public class HotpotBlockEntity
         hotpotBlockEntity.applyVelocity();
         hotpotBlockEntity.shrinkVelocity();
 
-        if (!hotpotBlockEntity.isSoupSynced()) {
+        if (!hotpotBlockEntity.isSoupSynced() && hotpotBlockEntity.shouldSyncSoup()) {
             hotpotBlockEntity.syncSoup(blockPos);
         }
 
