@@ -156,6 +156,14 @@ public class HotpotBlockEntity
     }
 
     private void syncSoup(LevelBlockPos pos) {
+        if (isSoupSynced()) {
+            return;
+        }
+
+        if (!shouldSyncSoup()) {
+            return;
+        }
+
         Map<HotpotBlockEntity, LevelBlockPos> synced = getNeighbors(pos)
                 .filterNot(HotpotBlockEntity::isSoupSynced)
                 .build(pos)
@@ -443,11 +451,7 @@ public class HotpotBlockEntity
 
         hotpotBlockEntity.applyVelocity();
         hotpotBlockEntity.shrinkVelocity();
-
-        if (!hotpotBlockEntity.isSoupSynced() && hotpotBlockEntity.shouldSyncSoup()) {
-            hotpotBlockEntity.syncSoup(blockPos);
-        }
-
+        hotpotBlockEntity.syncSoup(blockPos);
         hotpotBlockEntity.setSoupSynced(false);
 
         hotpotBlockEntity.updateSyncedWaterLevel();
