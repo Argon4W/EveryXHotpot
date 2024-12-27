@@ -177,6 +177,8 @@ public class HotpotBlock extends BaseEntityBlock implements Equipable {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
+        System.out.println(hotpotBlockEntity.isInfiniteContent());
+
         int position = HotpotBlockEntity.getClickPosition(hitResult.getBlockPos(), hitResult.getLocation());
 
         if (blockPos.isServerSide()) {

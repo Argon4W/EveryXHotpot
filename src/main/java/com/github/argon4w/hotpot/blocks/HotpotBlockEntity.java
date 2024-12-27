@@ -22,6 +22,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import net.minecraft.core.*;
@@ -32,6 +33,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.joml.Math;
 
 public class HotpotBlockEntity
@@ -43,9 +45,10 @@ public class HotpotBlockEntity
 
     public static final Codec<Data> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(data ->
             data.group(
-                    Codec.BOOL.fieldOf("can_consume_contents").forGetter(Data::canConsumeContents),
+                    NeoForgeExtraCodecs.mapWithAlternative(Codec.BOOL.fieldOf("infinite_content"), Codec.BOOL.fieldOf("can_consume_contents").xmap(b -> !b, Function.identity())).forGetter(Data::isInfiniteContent),
                     Codec.BOOL.fieldOf("can_be_removed").forGetter(Data::canBeRemoved),
                     Codec.BOOL.fieldOf("infinite_water").forGetter(Data::isInfiniteWater),
+                    NeoForgeExtraCodecs.optionalFieldAlwaysWrite(Codec.BOOL, "should_sync_soup", true).forGetter(Data::shouldSyncSoup),
                     Codec.INT.fieldOf("time").forGetter(Data::getTime),
                     Codec.INT.fieldOf("velocity").forGetter(Data::getVelocity),
                     Codec.DOUBLE.fieldOf("synchronized_water_level").forGetter(Data::getSyncedWaterLevel),
@@ -56,9 +59,10 @@ public class HotpotBlockEntity
 
     public static final Codec<PartialData> PARTIAL_CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(data ->
             data.group(
-                    Codec.BOOL.fieldOf("can_consume_contents").forGetter(PartialData::canConsumeContents),
+                    Codec.BOOL.fieldOf("infinite_content").forGetter(PartialData::infiniteContent),
                     Codec.BOOL.fieldOf("can_be_removed").forGetter(PartialData::canBeRemoved),
                     Codec.BOOL.fieldOf("infinite_water").forGetter(PartialData::infiniteWater),
+                    Codec.BOOL.fieldOf("should_sync_soup").forGetter(PartialData::shouldSyncSoup),
                     Codec.INT.fieldOf("time").forGetter(PartialData::time),
                     Codec.INT.fieldOf("velocity").forGetter(PartialData::velocity),
                     Codec.DOUBLE.fieldOf("synchronized_water_level").forGetter(PartialData::synchronizedWaterLevel),
@@ -81,9 +85,10 @@ public class HotpotBlockEntity
     @Override
     public PartialData getPartialData(HolderLookup.Provider registryAccess) {
         return new PartialData(
-                data.canConsumeContents,
+                data.infiniteContent,
                 data.canBeRemoved,
                 data.infiniteWater,
+                data.shouldSyncSoup,
                 data.time,
                 data.velocity,
                 data.syncedWaterLevel,
@@ -94,9 +99,10 @@ public class HotpotBlockEntity
     @Override
     public Data getDefaultData(HolderLookup.Provider registryAccess) {
         return new Data(
-                true,
+                false,
                 true,
                 false,
+                true,
                 0,
                 0,
                 0.0,
@@ -150,11 +156,12 @@ public class HotpotBlockEntity
     }
 
     private void syncSoup(LevelBlockPos pos) {
-        Map<HotpotBlockEntity, LevelBlockPos> synced = getNeighbors(pos)
+        Map<HotpotBlockEntity, LevelBlockPos> synced = data.shouldSyncSoup ? getNeighbors(pos)
                 .filterNot(HotpotBlockEntity::isSoupSynced)
                 .build(pos)
                 .peekKey(HotpotBlockEntity::setSoupSynced)
-                .toMap();
+                .toMap()
+                : Map.of(this, pos);
 
         data.soup.getSyncData(this, pos)
                 .stream()
@@ -288,7 +295,7 @@ public class HotpotBlockEntity
     }
 
     public void setEmptyContent(int index, LevelBlockPos pos) {
-        setContent(index, data.canConsumeContents ? HotpotContentSerializers.empty() : getContent(index), pos);
+        setContent(index, data.infiniteContent ? getContent(index) : HotpotContentSerializers.empty(), pos);
     }
 
     public void setEmptyContent(int index) {
@@ -396,8 +403,8 @@ public class HotpotBlockEntity
         this.data.infiniteWater = infiniteWater;
     }
 
-    public boolean canConsumeContents() {
-        return data.canConsumeContents;
+    public boolean isInfiniteContent() {
+        return data.infiniteContent;
     }
 
     public boolean canBeRemoved() {
@@ -495,9 +502,10 @@ public class HotpotBlockEntity
     }
 
     public static class Data {
-        private boolean canConsumeContents;
+        private boolean infiniteContent;
         private boolean canBeRemoved;
         private boolean infiniteWater;
+        private boolean shouldSyncSoup;
         private int time;
         private int velocity;
         private double syncedWaterLevel;
@@ -505,17 +513,19 @@ public class HotpotBlockEntity
         private NonNullList<IHotpotContent> contents;
 
         public Data(
-                boolean canConsumeContents,
+                boolean infiniteContent,
                 boolean canBeRemoved,
                 boolean infiniteWater,
+                boolean shouldSyncSoup,
                 int time,
                 int velocity,
                 double syncedWaterLevel,
                 HotpotComponentSoup soup,
                 NonNullList<IHotpotContent> contents) {
-            this.canConsumeContents = canConsumeContents;
+            this.infiniteContent = infiniteContent;
             this.canBeRemoved = canBeRemoved;
             this.infiniteWater = infiniteWater;
+            this.shouldSyncSoup = shouldSyncSoup;
             this.time = time;
             this.velocity = velocity;
             this.syncedWaterLevel = syncedWaterLevel;
@@ -524,9 +534,10 @@ public class HotpotBlockEntity
         }
 
         public Data fromPartialData(PartialData partialData) {
-            this.canConsumeContents = partialData.canConsumeContents;
+            this.infiniteContent = partialData.infiniteContent;
             this.canBeRemoved = partialData.canBeRemoved;
             this.infiniteWater = partialData.infiniteWater;
+            this.shouldSyncSoup = partialData.shouldSyncSoup;
             this.time = partialData.time;
             this.velocity = partialData.velocity;
             this.syncedWaterLevel = partialData.synchronizedWaterLevel;
@@ -536,16 +547,20 @@ public class HotpotBlockEntity
             return this;
         }
 
-        public boolean canConsumeContents() {
-            return canConsumeContents;
-        }
-
         public boolean canBeRemoved() {
             return canBeRemoved;
         }
 
+        public boolean isInfiniteContent() {
+            return infiniteContent;
+        }
+
         public boolean isInfiniteWater() {
             return infiniteWater;
+        }
+
+        public boolean shouldSyncSoup() {
+            return shouldSyncSoup;
         }
 
         public int getTime() {
@@ -570,9 +585,10 @@ public class HotpotBlockEntity
     }
 
     public record PartialData(
-            boolean canConsumeContents,
+            boolean infiniteContent,
             boolean canBeRemoved,
             boolean infiniteWater,
+            boolean shouldSyncSoup,
             int time,
             int velocity,
             double synchronizedWaterLevel,
