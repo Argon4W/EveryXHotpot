@@ -96,7 +96,7 @@ public class HotpotSpoonItem extends HotpotPlacementBlockItem<HotpotPlacedSpoon>
         ArrayList<ItemStack> skewers = new ArrayList<>();
 
         for (int i = 0; i < 8; i++) {
-            ItemStack content = blockEntity.getContentByTableware(context).copy();
+            ItemStack content = blockEntity.getContentByTableware(context.position(i)).copy();
 
             if (content.isEmpty()) {
                 continue;

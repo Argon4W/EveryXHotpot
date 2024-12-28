@@ -170,11 +170,13 @@ public class HotpotBlockEntity
                 .peekKey(HotpotBlockEntity::setSoupSynced)
                 .toMap();
 
-        data.soup.getSyncData(this, pos)
-                .stream()
-                .peek(data -> synced.forEach((hotpot, pos2) -> data.collect(hotpot, hotpot.getSoup(), pos2)))
-                .filter(IHotpotSoupSyncData::shouldApply)
-                .forEach(data -> synced.forEach((hotpot, pos2) -> data.apply(synced.size(), hotpot, hotpot.getSoup(), pos2)));
+        for (IHotpotSoupSyncData syncData : data.soup.getSyncData(this, pos)) {
+            synced.forEach((hotpot, pos2) -> syncData.collect(hotpot, hotpot.getSoup(), pos2));
+
+            if (syncData.shouldApply()) {
+                synced.forEach((hotpot, pos2) -> syncData.apply(synced.size(), hotpot, hotpot.getSoup(), pos2));
+            }
+        }
     }
 
     public void setContentAtBlockEntity(
@@ -457,7 +459,10 @@ public class HotpotBlockEntity
         hotpotBlockEntity.updateSyncedWaterLevel();
         double tickSpeed = hotpotBlockEntity.getContentTickSpeed(blockPos);
 
-        hotpotBlockEntity.getIndexStream().forEach(i -> tickContent(i, hotpotBlockEntity, blockPos, tickSpeed));
+        for (int i = 0; i < hotpotBlockEntity.data.contents.size(); i ++) {
+            tickContent(i, hotpotBlockEntity, blockPos, tickSpeed);
+        }
+
         level.sendBlockUpdated(pos, state, state, 3);
         hotpotBlockEntity.setChanged();
     }

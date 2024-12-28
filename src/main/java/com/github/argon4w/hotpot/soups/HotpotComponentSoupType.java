@@ -11,10 +11,8 @@ import com.github.argon4w.hotpot.soups.components.HotpotSoupComponentTypeSeriali
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SequencedMap;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -66,12 +64,17 @@ public class HotpotComponentSoupType {
 
     private final Map<ResourceLocation, StreamCodec<RegistryFriendlyByteBuf, Map.Entry<ResourceLocation, Sorted<IHotpotSoupComponent>>>> streamCodecs;
     private final Map<ResourceLocation, MapCodec<Map.Entry<ResourceLocation, Sorted<IHotpotSoupComponent>>>> codecs;
+
     private final Map<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> componentTypeHolders;
+    private final Map<ResourceLocation, Holder<IHotpotSoupComponentTypeSerializer<?>>> componentTypeSerializers;
 
     public HotpotComponentSoupType(Map<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> componentTypeHolders) {
         this.componentTypeHolders = HotpotCompoundSoupComponent.Type
                 .expand(EntryStream.fromMap(componentTypeHolders), new AtomicInteger(0))
                 .toSequencedMap();
+
+        this.componentTypeSerializers = new LinkedHashMap<>();
+        this.componentTypeHolders.forEach((key, sorted) -> componentTypeSerializers.put(key, sorted.value().value().getSerializerHolder()));
 
         this.codecs = EntryStream
                 .fromMap(this.componentTypeHolders)
@@ -85,23 +88,19 @@ public class HotpotComponentSoupType {
     }
 
     public boolean hasComponentType(Supplier<? extends IHotpotSoupComponentTypeSerializer<?>> holder) {
-        return componentTypeHolders
-                .values()
-                .stream()
-                .map(Sorted::value)
-                .map(Holder::value)
-                .map(IHotpotSoupComponentType::getSerializerHolder)
-                .anyMatch(holder::equals);
+        return componentTypeSerializers.containsValue(holder);
     }
 
     public <T extends IHotpotSoupComponent> List<ResourceLocation> getComponentKeysByTypes(List<Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>>> holders) {
-        return EntryStream.fromMap(componentTypeHolders)
-                .mapValue(Sorted::value)
-                .mapValue(Holder::value)
-                .mapValue(IHotpotSoupComponentType::getSerializerHolder)
-                .filterValue(holders::contains)
-                .keys()
-                .toList();
+        List<ResourceLocation> keys = new ArrayList<>();
+
+        for (ResourceLocation key : componentTypeSerializers.keySet()) {
+            if (holders.contains(componentTypeSerializers.get(key))) {
+                keys.add(key);
+            }
+        }
+
+        return keys;
     }
 
     public Codec<HotpotComponentSoup> getPartialCodec(Holder<HotpotComponentSoupType> soupTypeHolder) {
@@ -139,6 +138,10 @@ public class HotpotComponentSoupType {
 
     public Map<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> getComponentTypeHolders() {
         return componentTypeHolders;
+    }
+
+    public Map<ResourceLocation, Holder<IHotpotSoupComponentTypeSerializer<?>>> getComponentTypeSerializers() {
+        return componentTypeSerializers;
     }
 
     private static <T extends IHotpotSoupComponent> MapCodec<IHotpotSoupComponent> castCodec(MapCodec<T> codec) {
