@@ -24,12 +24,13 @@ public class HotpotDefaultStrainerBasketContentRenderer implements IHotpotStrain
             double waterLevel,
             double maxHeight,
             double time) {
+        int count = Math.min(4, itemStacks.size());
         double fullHeight = waterLevel * maxHeight;
         double safeZoneHeight = fullHeight * 0.75;
         double safeZonePositionY = (fullHeight - safeZoneHeight) / 2.0;
-        double safeZoneOffsetY = safeZoneHeight / itemStacks.size();
+        double safeZoneOffsetY = safeZoneHeight / count;
 
-        for (int i = 0; i < Math.min(4, itemStacks.size()); i++) {
+        for (int i = 0; i < count; i++) {
             poseStack.pushPose();
 
             double curveOffset = (contentIndex + i + 1) * Math.PI;
@@ -69,11 +70,12 @@ public class HotpotDefaultStrainerBasketContentRenderer implements IHotpotStrain
             MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay) {
+        int count = Math.min(4, itemStacks.size());
         double scale = 0.57;
         double scaleZ = scale * 2.4625;
         double offsetY = Math.sin(Math.toRadians(15.0)) * (4.5 / 16.0) + Math.sin(Math.toRadians(90.0 - 15.0)) * (scaleZ / 16.0);
 
-        for (int i = 0; i < Math.min(4, itemStacks.size()); i++) {
+        for (int i = 0; i < count; i++) {
             poseStack.pushPose();
 
             double rotationY = (i % 2) * 90.0f;

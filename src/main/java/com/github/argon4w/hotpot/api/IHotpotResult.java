@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.api;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -170,5 +171,22 @@ public interface IHotpotResult<T> {
     static <T> IHotpotResult<T> pass(Runnable runnable) {
         runnable.run();
         return pass();
+    }
+
+    static <T1, T2> IHotpotResult<T1> untilBlock(
+            Iterable<T2> iterable,
+            IHotpotResult<T1> defaultResult,
+            BiFunction<T2, IHotpotResult<T1>, IHotpotResult<T1>> function) {
+        IHotpotResult<T1> result = defaultResult;
+
+        for (T2 item : iterable) {
+            if (result.isBlocked()) {
+                break;
+            }
+
+            result = function.apply(item, result);
+        }
+
+        return result;
     }
 }

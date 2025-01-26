@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -68,6 +71,8 @@ public class HotpotComponentSoupType {
     private final Map<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> componentTypeHolders;
     private final Map<ResourceLocation, Holder<IHotpotSoupComponentTypeSerializer<?>>> componentTypeSerializers;
 
+    private final Object2ObjectMap<List<?>, List<ResourceLocation>> cachedKeysByTypes;
+
     public HotpotComponentSoupType(Map<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> componentTypeHolders) {
         this.componentTypeHolders = HotpotCompoundSoupComponent.Type
                 .expand(EntryStream.fromMap(componentTypeHolders), new AtomicInteger(0))
@@ -85,22 +90,16 @@ public class HotpotComponentSoupType {
                 .fromMap(this.componentTypeHolders)
                 .mapValue(HotpotComponentSoupType::makeStreamCodec)
                 .toMap();
-    }
 
-    public boolean hasComponentType(Supplier<? extends IHotpotSoupComponentTypeSerializer<?>> holder) {
-        return componentTypeSerializers.containsValue(holder);
+        this.cachedKeysByTypes = new Object2ObjectOpenHashMap<>();
     }
 
     public <T extends IHotpotSoupComponent> List<ResourceLocation> getComponentKeysByTypes(List<Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>>> holders) {
-        List<ResourceLocation> keys = new ArrayList<>();
-
-        for (ResourceLocation key : componentTypeSerializers.keySet()) {
-            if (holders.contains(componentTypeSerializers.get(key))) {
-                keys.add(key);
-            }
-        }
-
-        return keys;
+        return cachedKeysByTypes.computeIfAbsent(holders, list -> EntryStream
+                .fromMap(componentTypeSerializers)
+                .filterValue(holders::contains)
+                .keys()
+                .toList());
     }
 
     public Codec<HotpotComponentSoup> getPartialCodec(Holder<HotpotComponentSoupType> soupTypeHolder) {
@@ -116,7 +115,7 @@ public class HotpotComponentSoupType {
                 .dispatch("id", Map.Entry::getKey, codecs::get)
                 .listOf()
                 .xmap(HotpotComponentSoupType::toSortedSequencedMap, EntryStream::toList)
-                .xmap(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
+                .xmap(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::getComponents);
     }
 
     public StreamCodec<RegistryFriendlyByteBuf, HotpotComponentSoup> getStreamCodec(Holder<HotpotComponentSoupType> soupTypeHolder) {
@@ -125,7 +124,7 @@ public class HotpotComponentSoupType {
                 .dispatch(Map.Entry::getKey, streamCodecs::get)
                 .apply(ByteBufCodecs.list())
                 .map(EntryStream::toSequencedMap, EntryStream::toList)
-                .map(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::components);
+                .map(map -> new HotpotComponentSoup(map, soupTypeHolder), HotpotComponentSoup::getComponents);
     }
 
     public HotpotComponentSoup createComponentSoup(Holder<HotpotComponentSoupType> soupTypeHolder) {
@@ -134,6 +133,10 @@ public class HotpotComponentSoupType {
                 .mapValue(Sorted.valueMapper(Holder::value))
                 .<Sorted<IHotpotSoupComponent>>mapValue(Sorted.valueMapper(IHotpotSoupComponentType::createSoupComponent))
                 .toSequencedMap(map -> new HotpotComponentSoup(map, soupTypeHolder));
+    }
+
+    public boolean hasComponentType(Supplier<? extends IHotpotSoupComponentTypeSerializer<?>> holder) {
+        return componentTypeSerializers.containsValue(holder);
     }
 
     public Map<ResourceLocation, Sorted<Holder<IHotpotSoupComponentType<?>>>> getComponentTypeHolders() {

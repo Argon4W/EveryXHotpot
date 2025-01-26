@@ -2,6 +2,7 @@ package com.github.argon4w.hotpot.soups;
 
 import com.github.argon4w.fancytoys.blocks.LevelBlockPos;
 import com.github.argon4w.fancytoys.codecs.Sorted;
+import com.github.argon4w.fancytoys.streams.EntryStream;
 import com.github.argon4w.hotpot.api.IHotpotResult;
 import com.github.argon4w.hotpot.api.contents.IHotpotContent;
 import com.github.argon4w.hotpot.api.contents.IHotpotContentSerializer;
@@ -13,8 +14,10 @@ import com.github.argon4w.hotpot.soups.components.synchronizers.IHotpotSoupSyncD
 import com.mojang.datafixers.util.Pair;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +26,10 @@ import net.minecraft.world.item.ItemStack;
 public final class HotpotComponentSoup {
 
     private final SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> components;
+    private final SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> partialComponents;
     private final SequencedMap<ResourceLocation, IHotpotSoupComponent> componentValues;
+    private final Object2ObjectMap<List<?>, List<? extends IHotpotSoupComponent>> cachedComponentsByTypes;
+    private final Object2ObjectMap<List<?>, List<?>> cachedComponentPairsByTypes;
     private final Holder<HotpotComponentSoupType> soupTypeHolder;
 
     public HotpotComponentSoup(SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> components, Holder<HotpotComponentSoupType> soupTypeHolder) {
@@ -31,71 +37,54 @@ public final class HotpotComponentSoup {
         this.soupTypeHolder = soupTypeHolder;
 
         this.componentValues = new LinkedHashMap<>();
-        this.components.forEach((key, sorted) -> componentValues.put(key, sorted.value()));
+        EntryStream.fromMap(this.components).mapValue(Sorted::value).forEach(this.componentValues::put);
+
+        this.partialComponents = new LinkedHashMap<>();
+        EntryStream.fromMap(this.components).filterValue(Sorted.valueFilter(IHotpotSoupComponent::shouldSendToClient)).forEach(this.partialComponents::put);
+
+        this.cachedComponentsByTypes = new Object2ObjectOpenHashMap<>();
+        this.cachedComponentPairsByTypes = new Object2ObjectOpenHashMap<>();
     }
 
     @SuppressWarnings("unchecked")
     public <T extends IHotpotSoupComponent> List<Pair<ResourceLocation, T>> getComponentPairsByTypes(List<Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>>> componentTypeSerializerHolders) {
-        List<ResourceLocation> keys = soupTypeHolder.value().getComponentKeysByTypes(componentTypeSerializerHolders);
-        List<Pair<ResourceLocation, T>> componentPairs = new ArrayList<>(keys.size());
-
-        for (ResourceLocation key : keys) {
-            getComponentPair(key).ifPresent(pair -> componentPairs.add(pair.mapSecond(component -> (T) component)));
-        }
-
-        return componentPairs;
+        return (List<Pair<ResourceLocation, T>>) cachedComponentPairsByTypes.computeIfAbsent(componentTypeSerializerHolders, list -> soupTypeHolder
+                .value()
+                .getComponentKeysByTypes(componentTypeSerializerHolders)
+                .stream()
+                .map(this::getComponentPair)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList());
     }
 
-    public <T> IHotpotResult<T> getResultFromComponents(IHotpotResult<T> defaultResult, BiFunction<IHotpotSoupComponent, IHotpotResult<T>, IHotpotResult<T>> function) {
-        IHotpotResult<T> result = defaultResult;
-
-        for (ResourceLocation key : components.sequencedKeySet()) {
-            result = result.isBlocked() ? result : function.apply(componentValues.get(key), result);
-        }
-
-        return result;
-    }
-
-    public SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> getPartialComponents() {
-        LinkedHashMap<ResourceLocation, Sorted<IHotpotSoupComponent>> partialComponents = new LinkedHashMap<>();
-
-        for (ResourceLocation key : components.sequencedKeySet()) {
-            Sorted<IHotpotSoupComponent> sorted = components.get(key);
-
-            if (sorted.value().shouldSendToClient()) {
-                partialComponents.put(key, sorted);
-            }
-        }
-
-        return partialComponents;
-    }
-
+    @SuppressWarnings("unchecked")
     public <T extends IHotpotSoupComponent> List<T> getComponentsByTypes(List<Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>>> componentTypeSerializerHolders) {
-        List<Pair<ResourceLocation, T>> pairs = getComponentPairsByTypes(componentTypeSerializerHolders);
-        List<T> components = new ArrayList<>(pairs.size());
-
-        for (Pair<ResourceLocation, T> pair : pairs) {
-            components.add(pair.getSecond());
-        }
-
-        return components;
+        return (List<T>) cachedComponentsByTypes.computeIfAbsent(componentTypeSerializerHolders, list -> soupTypeHolder
+                .value()
+                .getComponentKeysByTypes(componentTypeSerializerHolders)
+                .stream()
+                .map(this::getComponent)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(component -> (T) component)
+                .toList());
     }
 
     public <T extends IHotpotSoupComponent> List<T> getComponentsByType(Supplier<? extends IHotpotSoupComponentTypeSerializer<? extends T>> componentTypeSerializerHolder) {
-        List<Pair<ResourceLocation, T>> pairs = getComponentPairsByTypes(List.of(componentTypeSerializerHolder));
-        List<T> components = new ArrayList<>(pairs.size());
-
-        for (Pair<ResourceLocation, T> pair : pairs) {
-            components.add(pair.getSecond());
-        }
-
-        return components;
+        return getComponentsByTypes(List.of(componentTypeSerializerHolder));
     }
 
     public Optional<Pair<ResourceLocation, IHotpotSoupComponent>> getComponentPair(ResourceLocation resourceLocation) {
         return componentValues.get(resourceLocation) == null
                 ? Optional.empty()
                 : Optional.of(Pair.of(resourceLocation, componentValues.get(resourceLocation)));
+    }
+
+    public Optional<IHotpotSoupComponent> getComponent(ResourceLocation resourceLocation) {
+        return componentValues.get(resourceLocation) == null
+                ? Optional.empty()
+                : Optional.of(componentValues.get(resourceLocation));
     }
 
     public boolean hasComponentType(Supplier<? extends IHotpotSoupComponentTypeSerializer<?>> componentTypeSerializerHolder) {
@@ -105,71 +94,78 @@ public final class HotpotComponentSoup {
     }
 
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getPlayerInteractionResult(IHotpotTablewareInteraction.Context context, ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity) {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.pass(),
                 (component, result) -> component.getPlayerInteractionResult(context, itemStack, result, hotpotBlockEntity, this));
     }
 
     public IHotpotResult<Holder<IHotpotContentSerializer<?>>> getContentSerializerResultFromItemStack(ItemStack itemStack, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.pass(),
                 (component, result) -> component.getContentSerializerResultFromItemStack(itemStack, hotpotBlockEntity, this, pos, result));
     }
 
     public IHotpotResult<IHotpotContent> getContentResultByTableware(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.success(content),
                 (component, result) -> component.getContentResultByTableware(hotpotBlockEntity, this, pos, result));
     }
 
     public IHotpotResult<IHotpotContent> getContentResultByHand(IHotpotResult<IHotpotContent> content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 content,
                 (component, result) -> component.getContentResultByHand(hotpotBlockEntity, this, pos, result));
     }
 
     public double getContentTickSpeed(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.success(0.0),
                 (component, result) -> component.getContentTickSpeed(hotpotBlockEntity, this, pos, result)).orElse(0.0);
     }
 
     public boolean isHotpotLit(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.success(true),
                 (component, result) -> component.getHotpotLit(hotpotBlockEntity, this, pos, result)).orElse(true);
     }
 
     public double getWaterLevel() {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.pass(),
                 IHotpotSoupComponent::getWaterLevel).orElse(0.0);
     }
 
     public double getOverflowWaterLevel() {
-        return getResultFromComponents(
+        return IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.pass(),
                 IHotpotSoupComponent::getOverflowWaterLevel).orElse(0.0);
     }
 
     public void onAwardExperience(double experience, HotpotBlockEntity blockEntity, LevelBlockPos pos) {
-        getResultFromComponents(
+        IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.success(experience),
                 (component, result) -> component.onAwardExperience(blockEntity, this, pos, result));
     }
 
     public void onContentUpdate(IHotpotContent content, HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
-        getResultFromComponents(
+        IHotpotResult.untilBlock(
+                componentValues.sequencedValues(),
                 IHotpotResult.success(content),
                 (component, result) -> component.onContentUpdate(hotpotBlockEntity, this, pos, result));
     }
 
     public List<IHotpotSoupSyncData> getSyncData(HotpotBlockEntity hotpotBlockEntity, LevelBlockPos pos) {
         List<IHotpotSoupSyncData> syncDataList = new ArrayList<>();
-
-        for (IHotpotSoupComponent component : componentValues.values()) {
-            component.getSoupComponenentSyncData(hotpotBlockEntity, this, pos).ifPresent(syncDataList::add);
-        }
+        componentValues.values().forEach(component -> component.getSoupComponenentSyncData(hotpotBlockEntity, this, pos).ifPresent(syncDataList::add));
 
         return syncDataList;
     }
@@ -194,48 +190,19 @@ public final class HotpotComponentSoup {
         componentValues.values().forEach(component -> component.setWaterLevel(waterLevel, hotpotBlockEntity, this, pos));
     }
 
-    public SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> components() {
+    public SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> getComponents() {
         return components;
     }
 
-    public SequencedMap<ResourceLocation, IHotpotSoupComponent> componentValues() {
+    public SequencedMap<ResourceLocation, IHotpotSoupComponent> getComponentValues() {
         return componentValues;
+    }
+
+    public SequencedMap<ResourceLocation, Sorted<IHotpotSoupComponent>> getPartialComponents() {
+        return partialComponents;
     }
 
     public Holder<HotpotComponentSoupType> soupTypeHolder() {
         return soupTypeHolder;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-
-        if (obj == null) {
-            return false;
-        }
-
-        if (obj.getClass() != this.getClass()) {
-            return false;
-        }
-
-        var that = (HotpotComponentSoup) obj;
-
-        return Objects.equals(this.components, that.components) &&
-                Objects.equals(this.soupTypeHolder, that.soupTypeHolder) &&
-                Objects.equals(this.componentValues, that.componentValues);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(components, soupTypeHolder);
-    }
-
-    @Override
-    public String toString() {
-        return "HotpotComponentSoup[" +
-                "components=" + components + ", " +
-                "soupTypeHolder=" + soupTypeHolder + ']';
     }
 }

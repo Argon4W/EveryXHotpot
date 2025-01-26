@@ -21,8 +21,9 @@ public class HotpotContentRenderers {
     public static final Registry<IHotpotContentRenderer> CONTENT_RENDERER_REGISTRY = CONTENT_RENDERERS.makeRegistry(builder -> builder.defaultKey(EMPTY_CONTENT_RENDERER_LOCATION));
 
     public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> CAMPFIRE_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("campfire_recipe_content", HotpotItemContentRenderer::new);
-    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> SMELTING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("smelting_recipe_content", HotpotItemContentRenderer::new);
+    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> SMELTING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("blasting_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> DISASSEMBLING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("disassembling_recipe_content", HotpotItemContentRenderer::new);
+    public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> PIGLIN_BARTER_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("piglin_barter_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, IHotpotContentRenderer> COOKING_RECIPE_CONTENT_RENDERER = CONTENT_RENDERERS.register("cooking_recipe_content", HotpotItemContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, HotpotPlayerContentRenderer> PLAYER_CONTENT_RENDERER = CONTENT_RENDERERS.register("player_content", HotpotPlayerContentRenderer::new);
     public static final DeferredHolder<IHotpotContentRenderer, HotpotStrainerBasketContentRenderer> STRAINER_BASKET_CONTENT_RENDERER = CONTENT_RENDERERS.register("strainer_basket_content", HotpotStrainerBasketContentRenderer::new);

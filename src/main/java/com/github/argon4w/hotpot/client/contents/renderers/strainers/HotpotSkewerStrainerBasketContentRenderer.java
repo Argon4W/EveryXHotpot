@@ -24,11 +24,12 @@ public class HotpotSkewerStrainerBasketContentRenderer implements IHotpotStraine
             double waterLevel,
             double maxHeight,
             double time) {
+        int count = Math.min(4, itemStacks.size());
         double offsetX = (9 / 4.0) / 16.0;
-        double startPositionX = offsetX * Math.max(0, itemStacks.size() - 1) / 2.0;
+        double startPositionX = offsetX * Math.max(0, count - 1) / 2.0;
         double progress = (waterLevel - 0.35) / 0.65;
 
-        for (int i = 0; i < Math.min(4, itemStacks.size()); i++) {
+        for (int i = 0; i < count; i++) {
             poseStack.pushPose();
 
             double curveOffset = (contentIndex + i + 1) * Math.PI;
@@ -75,11 +76,12 @@ public class HotpotSkewerStrainerBasketContentRenderer implements IHotpotStraine
             MultiBufferSource bufferSource,
             int combinedLight,
             int combinedOverlay) {
+        int count = Math.min(4, itemStacks.size());
         double positionY = 0.98 - 0.01 / 0.45;
         double offsetX = (9 / 4.0) / 16.0;
-        double startPositionX = offsetX * Math.max(0, itemStacks.size() - 1) / 2.0;
+        double startPositionX = offsetX * Math.max(0, count - 1) / 2.0;
 
-        for (int i = 0; i < Math.min(4, itemStacks.size()); i++) {
+        for (int i = 0; i < count; i++) {
             poseStack.pushPose();
 
             double positionX = startPositionX - i * offsetX;

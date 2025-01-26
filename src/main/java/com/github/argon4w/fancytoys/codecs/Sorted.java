@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
 import java.util.function.IntUnaryOperator;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import net.minecraft.core.Holder;
@@ -63,6 +64,10 @@ public class Sorted<T> {
 
     public static <T, R> Function<Sorted<T>, Sorted<R>> valueMapper(Function<T, R> function) {
         return sorted -> sorted.mapValue(function);
+    }
+
+    public static <T>Predicate<Sorted<T>> valueFilter(Predicate<T> predicate) {
+        return sorted -> predicate.test(sorted.value());
     }
 
     public static <T> Comparator<Sorted<T>> comparator() {
