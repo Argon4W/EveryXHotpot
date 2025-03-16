@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -21,12 +22,12 @@ public class RenderTypeMixin {
             value = "FIELD",
             target = "Lnet/minecraft/client/renderer/RenderType;CHUNK_BUFFER_LAYERS:Lcom/google/common/collect/ImmutableList;"))
     private static void modifyChunkBufferLayers(ImmutableList<RenderType> value, Operation<Void> original) {
-        if (ModList.get().isLoaded("sodium")) {
+        if (LoadingModList.get().getModFileById("sodium") != null) {
             original.call(value);
             return;
         }
 
-        if (ModList.get().isLoaded("embeddium")) {
+        if (LoadingModList.get().getModFileById("embeddium") != null) {
             original.call(value);
             return;
         }

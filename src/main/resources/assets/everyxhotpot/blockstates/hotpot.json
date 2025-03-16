@@ -308,11 +308,6 @@
         "separator_west": "true",
         "south": "true"
       }
-    },
-    {
-      "apply": {
-        "model": "minecraft:block/campfire_off"
-      }
     }
   ]
 }
